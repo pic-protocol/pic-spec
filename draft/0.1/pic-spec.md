@@ -33,6 +33,7 @@ The PIC Model therefore establishes the following `Structural Impossibility Clai
 3. [PIC Data Model](#3-pic-data-model)  
 4. [Integration with Existing IAM Systems](#4-integration-with-existing-iam-systems)  
 A. [Appendix A – Use of Automated Language Assistance](#appendix-a-use-of-automated-language-assistance)  
+B. [Appendix B – Authorship, Attribution, and Derivative Works](#appendix-b-authorship-attribution-and-derivative-works)
 R. [References](#references)
 
 ---
@@ -336,6 +337,74 @@ Execution may begin because it is authorized by configuration, but it may contin
 ## Appendix A. Use of Automated Language Assistance
 
 The authors have used automated language assistance tools solely to improve grammar, clarity, and phrasing. All substantive technical content, including the conceptual model, formal results, and proofs, is the exclusive work of the authors.
+
+---
+
+## Appendix B. Authorship, Attribution, and Derivative Works
+
+The **Provenance Identity Continuity (PIC) Model**, including its core concepts, terminology, execution semantics, and structural invariants, originates from the original theoretical work of **Gallo, N.**, in particular:
+
+- Gallo, N. (2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo.  
+- Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Zenodo.
+
+This specification consolidates, formalizes, and extends that work under the stewardship of the **PIC Protocol Contributors**, without altering authorship of the underlying model.
+
+---
+
+### B.1 License and Use
+
+This document is published under the **Creative Commons Attribution 4.0 International (CC BY 4.0)** license.  
+Under this license, copying, redistribution, and adaptation are permitted, **provided that appropriate attribution is given** in accordance with the terms below.
+
+---
+
+### B.2 Mandatory Attribution Requirements
+
+Any implementation, specification, library, framework, or document that:
+
+- uses the **PIC Model** as defined in this specification, or  
+- claims compatibility with, conformance to, or derivation from the PIC Model (e.g., “PIC-compliant”, “PIC-based”, “PIC-inspired”),
+
+**MUST** provide clear, visible, and unambiguous attribution to:
+
+1. **Gallo, N.** as the original author of the PIC Model and the associated Authority Propagation framework, and  
+2. this specification and its maintainers, the **PIC Protocol Contributors**.
+
+Attribution **MUST NOT** omit the original author in favor of contributors, implementers, or downstream projects.
+
+An acceptable attribution statement includes, for example:
+
+> “This implementation is based on the Provenance Identity Continuity (PIC) Model introduced by Gallo, N., and specified by the PIC Protocol Contributors (see References [1], [2]).”
+
+---
+
+### B.3 Derivative Works and Implementations
+
+Derivative works, including modified specifications, extensions, profiles, or specialized adaptations:
+
+- **MUST** clearly state that they are *derivative works* of the PIC Spec, and  
+- **SHOULD** document any substantive semantic, security, or continuity-relevant changes.
+
+Implementations (software libraries, SDKs, middleware, gateways, or services) **MAY** claim authorship of the implementation itself, **but MUST NOT** claim authorship of the PIC Model, its invariants, or its foundational design.
+
+---
+
+### B.4 Use of PIC Terminology
+
+The terms **“PIC Model”**, **“Provenance Identity Continuity”**, **“PIC-compliant”**, and similar designations **MUST NOT** be used in a way that:
+
+- obscures the original authorship of the model,  
+- implies independent invention of the core PIC invariants, or  
+- attributes the foundational execution semantics to parties other than those cited in this document.
+
+Projects that do not wish to comply with these attribution requirements **MAY** implement similar ideas, but **MUST NOT** represent themselves as implementing or conforming to the PIC Model.
+
+---
+
+### B.5 Rationale
+
+These requirements exist to preserve the integrity, traceability, and academic provenance of the PIC Model as a formal execution framework.  
+They do not restrict implementation, experimentation, or adoption; they ensure that conceptual authorship remains explicit as the ecosystem evolves.
 
 ---
 
