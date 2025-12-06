@@ -10,19 +10,19 @@
 
 ## 1. Introduction
 
-This specification originates from the formalization presented in **"Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem"** [[1]](#references), which demonstrates that the confused deputy problem is formally impossible in any execution model satisfying **Provenance Identity Continuity (PIC)**.
+This specification originates from the formalization presented in **"Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem"** [[1]](#references), which demonstrates that the confused deputy problem is formally impossible in any execution model satisfying `Provenance Identity Continuity (PIC)`.
 
-As described in **“PIC Model — Provenance Identity Continuity for Distributed Execution Systems”** [[2]](#references), the PIC Model is grounded in the **Executor-First Paradigm**, which holds that identity is not a property embedded in static credentials or artifacts, but an emergent invariant of the execution state and its verifiable causal origin.
+As described in **“PIC Model — Provenance Identity Continuity for Distributed Execution Systems”** [[2]](#references), the PIC Model is grounded in the `Executor-First Paradigm`, which holds that identity is not a property embedded in static credentials or artifacts, but an emergent invariant of the execution state and its verifiable causal origin.
 
-The **Provenance Identity Continuity (PIC) Model** specifies the invariants that identity **MUST** satisfy across a complete multi-hop causal execution. Accordingly, artifact possession is replaced by **execution provenance** as the sole continuity anchor.
+The `Provenance Identity Continuity (PIC) Model` specifies the invariants that identity **MUST** satisfy across a complete multi-hop causal execution. Accordingly, artifact possession is replaced by `**`execution provenance** as the sole continuity anchor.
 
-Each execution hop **MUST** be treated as part of a verifiable distributed transaction that binds the **Executor** to its causal predecessor. This binding prevents detachment, impersonation, replay, and unintended authority inheritance commonly observed in token-based and credential-centric systems.
+Each execution hop **MUST** be treated as part of a verifiable distributed transaction that binds the `Executor` to its causal predecessor. This binding prevents detachment, impersonation, replay, and unintended authority inheritance commonly observed in token-based and credential-centric systems.
 
 Because continuity is derived from provenance rather than possession, the model supports both identity-centric execution flows and anonymous capability-based flows. These flows reduce identity leakage, prevent impersonation via transferable credentials, and limit cross-domain replay vectors while preserving full causal verifiability.
 
-Anonymous capability-based flows are inherently privacy-preserving in multi-hop environments, as they preserve continuity through **Proof of Continuity** rather than **Proof of Possession**, without exposing identity.
+Anonymous capability-based flows are inherently privacy-preserving in multi-hop environments, as they preserve continuity through `Proof of Continuity` rather than `Proof of Possession`, without exposing identity.
 
-The PIC Model therefore establishes the following **Structural Impossibility Claim (NO-GO Result)**: within any PIC-compliant execution model, the confused deputy problem cannot arise as a valid execution state.
+The PIC Model therefore establishes the following `Structural Impossibility Claim (NO-GO Result)`: within any PIC-compliant execution model, the confused deputy problem cannot arise as a valid execution state.
 
 ---
 
@@ -49,7 +49,7 @@ A discrete execution step within a distributed transaction, representing a singl
 
 **Executor (Eᵢ)**  
 An active execution entity responsible for performing computations at hop *i* (Hopᵢ). An Executor acts within a bounded execution context and participates in causal authority transitions under Provenance Identity Continuity.
-Each Executor **MUST** be associated with an identity and be capable of producing a valid **Proof of Identity (PoI)** and **Proof of Possession (PoP)**.
+Each Executor **MUST** be associated with an identity and be capable of producing a valid `Proof of Identity (PoI)` and `Proof of Possession (PoP)`.
 These proofs establish executor identity and control, but **DO NOT** grant or propagate authority, nor establish execution continuity in PIC-compliant models.
 
 **Executor Characteristic (ECᵢ)**  
@@ -91,9 +91,9 @@ This section defines the execution model and continuity semantics enforced by Pr
 
 An execution hop represents a causally isolated execution context within a distributed transaction. Each hop defines the scope in which authority is consumed, continuity is verified, and subsequent authority is derived. The semantics described in this section are independent of deployment architecture and apply uniformly across all PIC-compliant environments.
 
-At hop *i* (formally **Hopᵢ**), execution is performed by a single Executor **Eᵢ** operating under **PIC Causal Authority (PCAᵢ)** derived from the immediately preceding hop **Hopᵢ₋₁**. Authority at Hopᵢ is valid only as a causal continuation and cannot be inherited, replayed, or reintroduced out of band.
+At hop *i* (formally **Hopᵢ**), execution is performed by a single Executor **Eᵢ** operating under `PIC Causal Authority (PCAᵢ)` derived from the immediately preceding hop **Hopᵢ₋₁**. Authority at Hopᵢ is valid only as a causal continuation and cannot be inherited, replayed, or reintroduced out of band.
 
-The progression from Hopᵢ to Hopᵢ₊₁ is mediated by a **Causal Authority Transition (CAT)**, which enforces continuity invariants through challenge issuance, proof verification, and authority derivation.
+The progression from Hopᵢ to Hopᵢ₊₁ is mediated by a `Causal Authority Transition (CAT)`, which enforces continuity invariants through challenge issuance, proof verification, and authority derivation.
 
 ```text
                 ┌────────────────────────┐
@@ -124,11 +124,14 @@ The progression from Hopᵢ to Hopᵢ₊₁ is mediated by a **Causal Authority 
                 └────────────────────────┘
 ```
 
-The CAT issues a **PIC Causal Challenge (PCCᵢ)** to establish freshness and bind the transition to the current execution context. In response, Executor **Eᵢ** produces a **Proof of Continuity (PoCᵢ)** demonstrating that execution at Hopᵢ is a valid causal continuation of Hopᵢ₋₁.
+The CAT issues a `PIC Causal Challenge (PCCᵢ)` to establish freshness and bind the transition to the current execution context. In response, Executor **Eᵢ** produces a `Proof of Continuity (PoCᵢ)` demonstrating that execution at Hopᵢ is a valid causal continuation of Hopᵢ₋₁.
 
-The CAT **MUST** verify PoCᵢ against the provenance and authority state of Hopᵢ₋₁. Upon successful verification, the CAT derives a new **PIC Causal Authority (PCAᵢ₊₁)** bound exclusively to the successor execution hop Hopᵢ₊₁.
+The CAT **MUST** validate PoCᵢ against the provenance and authority state of Hopᵢ₋₁ and **MUST** evaluate applicable authorization policies. Policy evaluation **MAY** be performed by an external `Policy Decision Point (PDP)` or **MAY** be integrated within the CAT itself. 
+In all cases, policy evaluation **MUST NOT** replace causal validation nor introduce authority independently of continuity.
 
-No execution at Hopᵢ₊₁ **MAY** occur without a successfully verified Proof of Continuity. Any execution that bypasses this mechanism violates Provenance Identity Continuity and cannot arise in a PIC-compliant model.
+Upon successful causal validation and policy evaluation, the CAT derives a new **PIC Causal Authority (PCAᵢ₊₁)** bound exclusively to the successor execution hop **Hopᵢ₊₁**.
+
+No execution at Hopᵢ₊₁ **MAY** occur without a successfully validated Proof of Continuity and compliant policy evaluation. Any execution that bypasses these requirements violates `Provenance Identity Continuity` and cannot arise in a `PIC-compliant` execution model.
 
 ---
 
