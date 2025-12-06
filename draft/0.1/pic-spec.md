@@ -8,7 +8,7 @@
 
 ---
 
-## Introduction
+## Abstract
 
 This specification originates from the formalization presented in **"Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem"** [[1]](#references), which demonstrates that the confused deputy problem is formally impossible in any execution model satisfying `Provenance Identity Continuity (PIC)`.
 
@@ -37,7 +37,7 @@ R. [References](#references)
 
 ---
 
-## 1 Purpose and Scope
+## 1 Introduction
 
 This specification defines the `Provenance Identity Continuity (PIC) Model`, which establishes the execution semantics required to prevent confused deputy scenarios in distributed execution systems. 
 The PIC Model defines causal invariants that **MUST** hold for any execution to be considered valid under its principles.
