@@ -142,6 +142,119 @@ No execution at Hopᵢ₊₁ **MAY** occur without a successfully completed Caus
 
 ---
 
+## 3. Data Mode
+
+xxxx
+
+---
+
+## 4. Integration with Existing IAM Systems
+
+This section describes how the PIC Model integrates with existing Identity and Access Management (IAM) systems by reinterpreting **configuration** and authorization artifacts as **execution entry conditions** rather than as transferable sources of authority. The intent of this section is explanatory and informative. It does not introduce new invariants beyond those defined by the PIC Model, but clarifies how existing IAM, policy, and configuration models map into PIC semantics.
+
+---
+
+## 4.1 Configuration as an Entry Condition
+
+In traditional IAM systems, configuration artifacts such as **roles**, **trust relationships**, **policy bindings**, and **service identities** are commonly treated as direct or implicit sources of authority. Possession of a valid configuration-backed credential is generally sufficient to exercise the authority it represents, independent of how execution proceeds afterward.
+
+In the **PIC Model**, configuration does **NOT** directly grant authority. Instead, configuration defines the **boundary conditions under which execution is permitted to begin**. Configuration artifacts establish the maximum potential scope of authority but **MUST NOT** authorize its use beyond the execution context in which they are evaluated.
+
+Formally, the PIC Model interprets configuration as part of an **entry condition**, not as authority:
+
+Configuration + Identity + Possession ⇒ `Entry Condition`
+
+An `Entry Condition` allows an **Executor** to participate in the first execution hop of a distributed transaction, but it **MUST NOT** permit authority to propagate across execution boundaries without continuity verification.
+
+This reinterpretation preserves the semantics of existing IAM configuration while eliminating authority detachment, replay, and unintended reuse.
+
+---
+
+## 4.2 Entry Conditions and Execution Initialization
+
+When an IAM authorization decision succeeds, the resulting **configuration** and **possession state** enables an Executor to enter the initial **execution hop** of a distributed transaction. At this point, **Proof of Identity (PoI)** and **Proof of Possession (PoP)** establish that the Executor is legitimate and acting under valid credentials derived from configuration.
+
+However, **no authority is assumed beyond the initial execution boundary**. Configuration artifacts **MUST NOT** be embedded into execution as capabilities, tokens, or transferable grants of authority. Instead, they act as static constraints that define which executions may begin, not how authority continues.
+
+In PIC terms, configuration and possession together form an `Entry Condition` that is consumed at execution start. Any authority exercised beyond this point **MUST** be derived causally and **MUST NOT** be attributed to configuration alone.
+
+---
+
+## 4.3 Execution Continuity and Authority Derivation
+
+After execution has begun, the **PIC Model** enforces **authority continuity** independently of IAM configuration. Each subsequent execution hop **MUST** be causally derived from the previous hop through a `Causal Authority Transition (CAT)`. Authority exists only as a function of verified continuity and **MUST NOT** be recreated, inherited, or replayed from configuration state.
+
+This relationship can be expressed as:
+
+`Entry Condition` + Continuity ⇒ Authority
+
+**Proofs of Continuity (PoC)** bind execution hops together and ensure that authority remains attached to the execution that originally satisfied the entry condition. Even when configuration-backed credentials remain valid, execution **MUST NOT** advance without demonstrating continuity.
+
+Authorization policy evaluation **MAY** further constrain or deny authority at a transition, but policy evaluation **MUST NOT** replace causal validation and **MUST NOT** introduce authority independently of continuity. Policy constrains authority; it does not create it.
+
+---
+
+## 4.4 IAM and PIC Integration Overview
+
+The following diagram illustrates how **configuration**, IAM authorization, and PIC continuity integrate into a single execution model. IAM and configuration establish the `Entry Condition`, while PIC governs execution continuity and authority derivation across execution hops.
+
+```text
+        ┌────────────────────────────────────┐
+        │          Configuration             │
+        │ (Roles, Policies, Trust, Identity) │
+        └──────────────────┬─────────────────┘
+                           │
+           Proof of Identity│ Proof of Possession
+                           ▼
+        ┌────────────────────────────────────┐
+        │           Entry Condition           │
+        │  (Authorized to begin execution)   │
+        └──────────────────┬─────────────────┘
+                           │
+                           │  Execution begins
+                           ▼
+        ┌────────────────────────────────────┐
+        │         Execution Hop Hopᵢ         │
+        │            Executor Eᵢ             │
+        └──────────────────┬─────────────────┘
+                           │
+               PCCᵢ / PoCᵢ │   Causal Authority Transition
+                           ▼
+        ┌────────────────────────────────────┐
+        │     PIC Continuity Enforcement     │
+        │               (CAT)                │
+        └──────────────────┬─────────────────┘
+                           │
+                           │  PIC Causal Authority (PCAᵢ₊₁)
+                           ▼
+        ┌────────────────────────────────────┐
+        │        Next Execution Hop          │
+        │               Hopᵢ₊₁               │
+        └────────────────────────────────────┘
+```
+
+In this model, **configuration and IAM** determine whether execution may begin, while **PIC** determines whether execution may continue. This preserves existing IAM semantics while enforcing strong guarantees on authority continuity.
+
+---
+
+## 4.5 Service Mesh and Gateway Integration
+
+Service meshes, API gateways, and inter-service proxies operate directly in the **execution path** and therefore participate in execution continuity rather than entry authorization. Unlike IAM systems, which evaluate configuration at entry points, these components define execution hop boundaries and **MUST** be **continuity-native**.
+
+A mesh or gateway that forwards execution based solely on possession of a configuration-backed token introduces a break in continuity. Therefore, in a PIC-compliant environment, service meshes and gateways **MUST** preserve, verify, and propagate **Proofs of Continuity**, either by embedding `CAT` logic directly or by invoking a tightly coupled continuity verifier.
+
+---
+
+## 4.6 Relationship to Existing Models
+
+The PIC Model does not replace IAM, policy languages, or configuration systems. It **reclassifies their role**. Configuration defines the conditions under which execution may begin. Authority exists only as a consequence of causal continuation.
+
+This separation enables incremental adoption of PIC in existing systems while eliminating confused deputy scenarios that arise from treating configuration artifacts as transferable authority.
+
+Execution may begin because it is authorized by configuration, but it may continue **only because it is causally valid**.
+
+---
+
 ## Appendix A. Use of Automated Language Assistance
 
 The authors have used automated language assistance tools solely to improve grammar, clarity, and phrasing. All substantive technical content, including the conceptual model, formal results, and proofs, is the exclusive work of the authors.
