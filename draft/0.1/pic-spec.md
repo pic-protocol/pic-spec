@@ -49,6 +49,8 @@ A discrete execution step within a distributed transaction, representing a singl
 
 **Executor (Eᵢ)**  
 An active execution entity responsible for performing computations at hop *i* (Hopᵢ). An Executor acts within a bounded execution context and participates in causal authority transitions under Provenance Identity Continuity.
+Each Executor **MUST** be associated with an identity and be capable of producing a valid **Proof of Identity (PoI)** and **Proof of Possession (PoP)**.
+These proofs establish executor identity and control, but **DO NOT** grant or propagate authority, nor establish execution continuity in PIC-compliant models.
 
 **Executor Characteristic (ECᵢ)**  
 A non-transferable property of an Executor at hop *i* that is bound to its execution context. Executor Characteristics may include environmental, platform, or runtime attributes and are used to establish causal linkage, but do not constitute identity, authority, or policy input.
@@ -71,10 +73,10 @@ A freshness and causality challenge issued at hop *i* to require a Proof of Cont
 **Proof of Continuity (PoCᵢ)**  
 A non-forgeable proof produced by Executor *Eᵢ* at hop *i* that demonstrates causal continuation from the immediately preceding execution hop under Provenance Identity Continuity.
 
-**Proof of Identity**  
+**Proof of Identity (PoI)**  
 A proof that asserts or validates a claimed identity, typically by demonstrating control over an identifying artifact. Proofs of Identity are insufficient to establish authority continuity in PIC-compliant execution models.
 
-**Proof of Possession**  
+**Proof of Possession (PoP)**  
 A proof that demonstrates control or possession of an artifact, credential, or secret. Proofs of Possession establish ownership but do not provide causal continuity or prevent confused deputy scenarios.
 
 ---
