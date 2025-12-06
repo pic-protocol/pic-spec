@@ -162,7 +162,63 @@ No execution at Hopᵢ₊₁ **MAY** occur without a successfully completed Caus
 
 ## 3. PIC Data Model
 
-xxxx
+This section defines the minimal data structures required to represent the core causal artifacts of the `Provenance Identity Continuity (PIC)` Model. The purpose of this section is to specify *what must exist structurally* in order to express continuity, authority derivation, and causal validation, independent of protocol, transport, or cryptographic encoding.
+
+The structures defined here are **normative in semantics** and **informative in representation**. Implementations **MAY** use different encodings or schemas, provided that the causal relationships and invariants defined by these models are preserved.
+
+---
+
+## 3.1 PIC Causal Authority (PCAᵢ)
+
+`PIC Causal Authority (PCAᵢ)` represents the **entire authority available to an Executor at execution hop Hopᵢ**, derived exclusively through verified causal continuity. PCAᵢ is **execution-bound**, **non-transferable**, and **non-replayable**.
+
+PCAᵢ **MUST NOT** be interpreted as a credential, token, or possession-based artifact. It exists only as a function of provenance and **MUST** be invalid outside the causal context in which it was derived.
+
+A minimal structural representation of `PCAᵢ` is shown below.
+
+```json
+{
+}
+```
+
+A `PCAᵢ` **MUST** reference exactly one preceding authority state (except for the initial hop derived from an entry condition) and exactly one `Proof of Continuity`. Any authority not derivable in this way **CANNOT** exist in a PIC-compliant execution model.
+
+---
+
+## 3.2 PIC Causal Challenge (PCCᵢ)
+
+`PIC Causal Challenge (PCCᵢ)` is a **freshness and causality challenge** issued during a `Causal Authority Transition`. Its sole purpose is to bind the continuity check to a specific execution context, executor, and predecessor state.
+
+A PCCᵢ **DOES NOT** grant authority, assert identity, or express permission. It exists only to require a `Proof of Continuity`.
+
+```json
+{
+}
+```
+
+A valid `PCCᵢ` **MUST** be bound to exactly one execution hop and **MUST NOT** be reusable across hops or transactions. Reuse or replay of a challenge **MUST** result in transition failure.
+
+---
+
+## 3.3 Proof of Continuity (PoCᵢ)
+
+`Proof of Continuity (PoCᵢ)` is a **non-forgeable proof** produced by `Executor Eᵢ` in response to `PCCᵢ`. It demonstrates that execution at `Hopᵢ` is a valid causal continuation of `Hopᵢ₋₁` and that authority has remained attached to the executing context.
+
+PoCᵢ is the **only admissible input** for deriving new `PIC Causal Authority`.
+
+```json
+{
+}
+```
+
+A `PoCᵢ` **MUST**:
+
+- reference exactly one `PCCᵢ`,  
+- bind the executing `Executor` to `Hopᵢ`,  
+- reference the immediately preceding hop and authority,  
+- provide sufficient evidence for causal validation.
+
+Without a valid `PoCᵢ`, **NO** new `PCAᵢ₊₁` **MAY** be derived, and **NO** further execution **MAY** occur in a PIC-compliant model.
 
 ---
 
