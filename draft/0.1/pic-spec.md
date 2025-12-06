@@ -83,17 +83,25 @@ A proof that demonstrates control or possession of an artifact, credential, or s
 
 ## 2. Provenance Identity Continuity Model
 
-This section defines the execution model and continuity semantics enforced by Provenance Identity Continuity (PIC). The model specifies how authority, identity, and provenance are preserved across execution boundaries and how causal continuity is established and verified in multi-hop distributed execution.
+This section defines the execution semantics enforced by the Provenance Identity Continuity (PIC) Model. The PIC Model does not prescribe a system architecture, deployment topology, trust boundary, or specific protocol implementation. Instead, it defines causal invariants that MUST hold for any execution to be considered valid. Execution is modeled as a sequence of causally linked execution hops forming a distributed transaction, where authority is never assumed implicitly and continuity must be re-established explicitly at every hop boundary.
 
 ---
 
 ## 2.1 Execution Hop Semantics
 
-An execution hop represents a causally isolated execution context within a distributed transaction. Each hop defines the scope in which authority is consumed, continuity is verified, and subsequent authority is derived. The semantics described in this section are independent of deployment architecture and apply uniformly across all PIC-compliant environments.
+An execution hop represents a causally isolated execution context within a distributed transaction. A hop defines the scope in which authority is exercised, consumed, and constrained, but not created or propagated. An execution hop is not a process, service, or container; it is a logical unit of execution whose validity is determined solely by its position in the provenance chain.
 
-At hop *i* (formally **Hopᵢ**), execution is performed by a single Executor **Eᵢ** operating under `PIC Causal Authority (PCAᵢ)` derived from the immediately preceding hop **Hopᵢ₋₁**. Authority at Hopᵢ is valid only as a causal continuation and cannot be inherited, replayed, or reintroduced out of band.
+At hop *i* (formally **Hopᵢ**), execution is performed by a single Executor **Eᵢ** operating under `PIC Causal Authority (PCAᵢ)` derived exclusively from the immediately preceding hop **Hopᵢ₋₁**. Authority available at Hopᵢ is valid only as a causal continuation and cannot be inherited by unrelated executions, replayed outside its causal context, substituted via credentials or tokens, or reintroduced by external systems.
 
-The progression from Hopᵢ to Hopᵢ₊₁ is mediated by a `Causal Authority Transition (CAT)`, which enforces continuity invariants through challenge issuance, proof verification, and authority derivation.
+Within Hopᵢ, the Executor **MAY** perform any action permitted by PCAᵢ and constrained by applicable policy, but **MUST NOT** derive new authority, expand authority scope, or assert continuity beyond the current hop. Completion of execution at Hopᵢ does not, by itself, authorize execution at a subsequent hop. Progression beyond Hopᵢ requires an explicit causal transition that validates continuity and derives new authority under the PIC invariants.
+
+---
+
+## 2.2 Causal Authority Transition Semantics
+
+A `Causal Authority Transition (CAT)` governs the progression from one execution hop to the next. The CAT is a logical mechanism that enforces Provenance Identity Continuity by mediating challenge issuance, continuity verification, policy evaluation, and authority derivation across hop boundaries. The CAT is not an architectural component or centralized service and may be implemented in-process, externally, or implicitly by a runtime environment, provided the PIC invariants are preserved.
+
+The following diagram illustrates the causal relationship between execution hops and the role of the Causal Authority Transition. The dashed vertical line denotes an execution boundary and represents a causal separation, not a network, trust, or deployment boundary.
 
 ```text
                 ┌────────────────────────┐
@@ -124,14 +132,13 @@ The progression from Hopᵢ to Hopᵢ₊₁ is mediated by a `Causal Authority T
                 └────────────────────────┘
 ```
 
-The CAT issues a `PIC Causal Challenge (PCCᵢ)` to establish freshness and bind the transition to the current execution context. In response, Executor **Eᵢ** produces a `Proof of Continuity (PoCᵢ)` demonstrating that execution at Hopᵢ is a valid causal continuation of Hopᵢ₋₁.
+To initiate a transition from Hopᵢ to Hopᵢ₊₁, the CAT issues a `PIC Causal Challenge (PCCᵢ)` that establishes freshness and binds the transition to the specific execution context of Hopᵢ. In response, Executor **Eᵢ** produces a `Proof of Continuity (PoCᵢ)` demonstrating that execution at Hopᵢ is a valid causal continuation of Hopᵢ₋₁ and that authority has not been detached, replayed, or substituted.
 
-The CAT **MUST** validate PoCᵢ against the provenance and authority state of Hopᵢ₋₁ and **MUST** evaluate applicable authorization policies. Policy evaluation **MAY** be performed by an external `Policy Decision Point (PDP)` or **MAY** be integrated within the CAT itself. 
-In all cases, policy evaluation **MUST NOT** replace causal validation nor introduce authority independently of continuity.
+The CAT **MUST** validate PoCᵢ against the provenance and authority state associated with Hopᵢ₋₁. The CAT **MUST** also evaluate applicable authorization policies. Policy evaluation **MAY** be performed by a distinct `Policy Decision Point (PDP)` or **MAY** be integrated directly within the CAT itself. In all cases, policy evaluation **MUST NOT** replace causal validation and **MUST NOT** introduce new authority independently of continuity; policies may only constrain, deny, or reduce authority derived through causal mechanisms.
 
-Upon successful causal validation and policy evaluation, the CAT derives a new **PIC Causal Authority (PCAᵢ₊₁)** bound exclusively to the successor execution hop **Hopᵢ₊₁**.
+If both causal validation and policy evaluation succeed, the CAT derives a new `PIC Causal Authority (PCAᵢ₊₁)` bound exclusively to the successor execution hop **Hopᵢ₊₁**. The derived PCAᵢ₊₁ defines the maximum authority available at the next hop and is non-transferable, non-replayable, and invalid outside of its causal context.
 
-No execution at Hopᵢ₊₁ **MAY** occur without a successfully validated Proof of Continuity and compliant policy evaluation. Any execution that bypasses these requirements violates `Provenance Identity Continuity` and cannot arise in a `PIC-compliant` execution model.
+No execution at Hopᵢ₊₁ **MAY** occur without a successfully completed Causal Authority Transition. Any execution that bypasses challenge issuance, continuity verification, or policy evaluation violates Provenance Identity Continuity and cannot arise within a PIC-compliant execution model.
 
 ---
 
