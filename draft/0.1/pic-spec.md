@@ -8,7 +8,7 @@
 
 ---
 
-## 1. Introduction
+## Introduction
 
 This specification originates from the formalization presented in **"Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem"** [[1]](#references), which demonstrates that the confused deputy problem is formally impossible in any execution model satisfying `Provenance Identity Continuity (PIC)`.
 
@@ -23,6 +23,24 @@ Because continuity is derived from provenance rather than possession, the model 
 Anonymous capability-based flows are inherently privacy-preserving in multi-hop environments, as they preserve continuity through `Proof of Continuity` rather than `Proof of Possession`, without exposing identity.
 
 The PIC Model therefore establishes the following `Structural Impossibility Claim (NO-GO Result)`: within any PIC-compliant execution model, the confused deputy problem cannot arise as a valid execution state.
+
+---
+
+## Table of Contents
+
+1. [Introduction](#1-introduction)  
+2. [Provenance Identity Continuity Model](#2-provenance-identity-continuity-model)  
+3. [PIC Data Model](#3-pic-data-model)  
+4. [Integration with Existing IAM Systems](#4-integration-with-existing-iam-systems)  
+A. [Appendix A – Use of Automated Language Assistance](#appendix-a-use-of-automated-language-assistance)  
+R. [References](#references)
+
+---
+
+## 1 Purpose and Scope
+
+This specification defines the `Provenance Identity Continuity (PIC) Model`, which establishes the execution semantics required to prevent confused deputy scenarios in distributed execution systems. 
+The PIC Model defines causal invariants that **MUST** hold for any execution to be considered valid under its principles.
 
 ---
 
@@ -142,7 +160,7 @@ No execution at Hopᵢ₊₁ **MAY** occur without a successfully completed Caus
 
 ---
 
-## 3. Data Mode
+## 3. PIC Data Model
 
 xxxx
 
