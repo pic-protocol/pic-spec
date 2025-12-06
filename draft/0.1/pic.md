@@ -40,31 +40,63 @@ in this document are to be interpreted as described in RFC 2119 and RFC 8174 whe
 
 The following definitions are normative for this specification.
 
-**Identity**  
-An invariant attribution of an execution to a specific origin.
-In this specification, identity is not an input to authorization decisions
-nor a policy parameter; it serves to anchor authority and provenance across
-execution boundaries.
+**Executor (Eᵢ)**  
+An active execution entity responsible for performing computations at hop *i*.
+An Executor acts within a bounded execution context and participates in
+causal authority transitions under Provenance Identity Continuity.
 
-**Authority**  
-The set of permissible actions associated with an execution context.
-Authority may be derived or constrained, but it **MUST** be explicitly
-propagated and **MUST NOT** be assumed implicitly from identity alone.
+**Executor Characteristic (C₍Eᵢ₎)**  
+A non-transferable property of an Executor at hop *i* that is bound to its
+execution context. Executor Characteristics may include environmental,
+platform, or runtime attributes and are used to establish causal linkage,
+but do not constitute identity or authority.
 
-**Provenance**  
-The ordered and non-forgeable history of execution contexts and authority
-propagations that led to a given execution state.
+**Execution Hop (hop *i*)**  
+A discrete execution step within a distributed transaction, representing a
+single bounded execution context in which an Executor operates.
+An execution hop forms the minimal unit of causal progression in the PIC
+Model and is uniquely positioned in the provenance chain by its immediate
+causal predecessor and successor.
 
-**Provenance Identity Continuity (PIC)**  
-An execution-model invariant in which identity, authority, and provenance
-remain continuously bound across all execution boundaries.
-In a PIC-compliant model, authority **MUST NOT** be introduced, substituted,
-or amplified without preserving identity and provenance continuity.
+**Provenance (P)**  
+The ordered, non-forgeable history of execution hops and authority derivations
+that causally led to a given execution state.
 
-**PIC-Compliant Execution Model**  
-An execution model that satisfies Provenance Identity Continuity.
-In such models, the confused deputy problem is structurally impossible and
-cannot arise as a valid execution state.
+**Distributed Transaction (τ)**  
+A causally linked sequence of execution hops forming a single logical
+operation across multiple execution contexts. Each hop participates in τ by
+verifying continuity with its immediate causal predecessor.
+
+**Causal Authority Transition (CAT)**  
+A normative mechanism that enforces Provenance Identity Continuity invariants
+by issuing PIC Causal Challenges, verifying Proofs of Continuity, and
+deriving subsequent PIC Causal Authority states.
+
+**PIC Causal Authority (PCAᵢ)**  
+The causally derived authority available to Executor *Eᵢ* at hop *i*. PIC
+Causal Authority represents execution-bound capability and is neither
+possessed nor transferable as an artifact.
+
+**PIC Causal Challenge (PCCᵢ)**  
+A freshness and causality challenge issued at hop *i* to require a Proof of
+Continuity from the Executor. A PIC Causal Challenge does not constitute a
+proof and conveys no authority by itself.
+
+**Proof of Continuity (PoCᵢ)**  
+A non-forgeable proof produced by Executor *Eᵢ* at hop *i* that demonstrates
+causal continuation from the immediately preceding execution hop under
+Provenance Identity Continuity.
+
+**Proof of Identity**  
+A proof that asserts or validates a claimed identity, typically by
+demonstrating control over an identifying artifact. Proofs of Identity are
+insufficient to establish authority continuity in PIC-compliant execution
+models.
+
+**Proof of Possession**  
+A proof that demonstrates control or possession of an artifact, credential,
+or secret. Proofs of Possession establish ownership but do not provide
+causal continuity or prevent confused deputy scenarios.
 
 ## Architecture
 
