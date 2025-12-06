@@ -207,7 +207,7 @@ The following diagram illustrates how **configuration**, IAM authorization, and 
            Proof of Identity│ Proof of Possession
                            ▼
         ┌────────────────────────────────────┐
-        │           Entry Condition           │
+        │           Entry Condition          │
         │  (Authorized to begin execution)   │
         └──────────────────┬─────────────────┘
                            │
