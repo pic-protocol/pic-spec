@@ -285,7 +285,7 @@ The following diagram illustrates how **configuration**, IAM authorization, and 
         │ (Roles, Policies, Trust, Identity) │
         └──────────────────┬─────────────────┘
                            │
-           Proof of Identity│ Proof of Possession
+          Proof of Identity│ Proof of Possession
                            ▼
         ┌────────────────────────────────────┐
         │           Entry Condition          │
