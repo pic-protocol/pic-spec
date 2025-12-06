@@ -165,7 +165,9 @@ No execution at Hopᵢ₊₁ **MAY** occur without a successfully completed Caus
 
 This section defines the minimal data structures required to represent the core causal artifacts of the `Provenance Identity Continuity (PIC)` Model. The purpose of this section is to specify *what must exist structurally* in order to express continuity, authority derivation, and causal validation, independent of protocol, transport, or cryptographic encoding.
 
-The structures defined here are **normative in semantics** and **informative in representation**. Implementations **MAY** use different encodings or schemas, provided that the causal relationships and invariants defined by these models are preserved.
+Unless explicitly stated otherwise, the JSON snippets in this section are **illustrative and non-normative**. They describe the *logical shape* of the data, not a required wire format. Implementations **MAY** use any suitable representation (including, but not limited to, JSON, CBOR, COSE, Protocol Buffers, or ASN.1), provided that the represented objects preserve the causal relationships and invariants defined by this specification.
+
+The structures defined here are therefore **normative in semantics** and **informative in representation**. Alternative encodings, field names, or serialization strategies **MAY** be used, as long as they remain semantically equivalent to the models described in this section.
 
 ---
 
