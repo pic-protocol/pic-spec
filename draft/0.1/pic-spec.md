@@ -150,7 +150,7 @@ xxxx
 
 ## 4. Integration with Existing IAM Systems
 
-This section describes how the PIC Model integrates with existing Identity and Access Management (IAM) systems by reinterpreting **configuration** and authorization artifacts as **execution entry conditions** rather than as transferable sources of authority. The intent of this section is explanatory and informative. It does not introduce new invariants beyond those defined by the PIC Model, but clarifies how existing IAM, policy, and configuration models map into PIC semantics.
+This section describes how the `PIC Model` integrates with existing `Identity and Access Management` (IAM) systems by reinterpreting `configuration` and authorization artifacts as `execution entry conditions` rather than as transferable sources of authority. The intent of this section is explanatory and informative. It does not introduce new invariants beyond those defined by the PIC Model, but clarifies how existing IAM, policy, and configuration models map into PIC semantics.
 
 ---
 
