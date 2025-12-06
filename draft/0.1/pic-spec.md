@@ -93,7 +93,7 @@ At hop *i* (formally **Hopᵢ**), execution is performed by a single Executor **
 
 The progression from Hopᵢ to Hopᵢ₊₁ is mediated by a **Causal Authority Transition (CAT)**, which enforces continuity invariants through challenge issuance, proof verification, and authority derivation.
 
-```
+```text
                 ┌────────────────────────┐
                 │   Previous Execution   │
                 │        Hopᵢ₋₁          │
@@ -101,18 +101,18 @@ The progression from Hopᵢ to Hopᵢ₊₁ is mediated by a **Causal Authority 
                             │
                             │  PIC Causal Authority (PCAᵢ)
                             ▼
-┌────────────────────────────────────────────────────────┐
-│                 Execution Hop Hopᵢ                     │
-│                                                        │
-│   ┌──────────────┐       PCCᵢ        ┌─────────────┐   │
-│   │   Executor   │◀──────────────────│     CAT     │   │
-│   │     Eᵢ       │──────────────────▶│             │   │
-│   └──────┬───────┘       PoCᵢ        └──────┬──────┘   │
-│          │                                  │          │
-│          │        consumes PCAᵢ             │          │
-│          └──────────────────────────────────┘          │
-│                                                        │
-└──────────────────────────┬─────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│                 Execution Hop Hopᵢ          │
+│                                             │
+│   ┌──────────────┐       PCCᵢ               │    ┌─────────────┐   
+│   │   Executor   │◀─────────────────────────┼────│     CAT     │
+│   │      Eᵢ      │──────────────────────────┼───▶│      E      │
+│   └──────┬───────┘       PoCᵢ               │    └──────┬──────┘
+│          │                                  │           │       
+│          │        consumes PCAᵢ             │           │       
+│          └──────────────────────────────────┼───────────┘       
+│                                             │
+└──────────────────────────┬──────────────────┘
                            │
                            │  PIC Causal Authority (PCAᵢ₊₁)
                            ▼
