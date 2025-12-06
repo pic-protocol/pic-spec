@@ -123,32 +123,32 @@ A `Causal Authority Transition (CAT)` governs the progression from one execution
 The following diagram illustrates the causal relationship between execution hops and the role of the Causal Authority Transition. The dashed vertical line denotes an execution boundary and represents a causal separation, not a network, trust, or deployment boundary.
 
 ```text
-                ┌────────────────────────┐
-                │   Previous Execution   │
-                │        Hopᵢ₋₁          │
-                └───────────┬────────────┘
-                            │
-                            │  PIC Causal Authority (PCAᵢ)
-                            ▼
-┌─────────────────────────────────────────────┐
-│                 Execution Hop Hopᵢ          │
-│                                             │
-│   ┌──────────────┐       PCCᵢ               │    ┌─────────────┐   
-│   │   Executor   │◀─────────────────────────┼────│     CAT     │
-│   │      Eᵢ      │──────────────────────────┼───▶│      E      │
-│   └──────┬───────┘       PoCᵢ               │    └──────┬──────┘
-│          │                                  │           │       
-│          │        consumes PCAᵢ             │           │       
-│          └──────────────────────────────────┼───────────┘       
-│                                             │
-└──────────────────────────┬──────────────────┘
-                           │
-                           │  PIC Causal Authority (PCAᵢ₊₁)
-                           ▼
-                ┌────────────────────────┐
-                │     Next Execution     │
-                │        Hopᵢ₊₁          │
-                └────────────────────────┘
+                        ┌────────────────────────┐
+                        │   Previous Execution   │
+                        │        Hopᵢ₋₁          │
+                        └───────────┬────────────┘
+                                    │
+                                    │  PIC Causal Authority (PCAᵢ)
+                                    ▼
+        ┌─────────────────────────────────────────────┐
+        │                 Execution Hop Hopᵢ          │
+        │                                             │
+        │   ┌──────────────┐       PCCᵢ               │    ┌─────────────┐   
+        │   │   Executor   │◀─────────────────────────┼────│     CAT     │
+        │   │      Eᵢ      │──────────────────────────┼───▶│      E      │
+        │   └──────┬───────┘       PoCᵢ               │    └──────┬──────┘
+        │          │                                  │           │       
+        │          │        consumes PCAᵢ             │           │       
+        │          └──────────────────────────────────┼───────────┘       
+        │                                             │
+        └──────────────────────────┬──────────────────┘
+                                │
+                                │  PIC Causal Authority (PCAᵢ₊₁)
+                                ▼
+                        ┌────────────────────────┐
+                        │     Next Execution     │
+                        │        Hopᵢ₊₁          │
+                        └────────────────────────┘
 ```
 
 To initiate a transition from Hopᵢ to Hopᵢ₊₁, the CAT issues a `PIC Causal Challenge (PCCᵢ)` that establishes freshness and binds the transition to the specific execution context of Hopᵢ. In response, Executor **Eᵢ** produces a `Proof of Continuity (PoCᵢ)` demonstrating that execution at Hopᵢ is a valid causal continuation of Hopᵢ₋₁ and that authority has not been detached, replayed, or substituted.
@@ -284,30 +284,30 @@ The following diagram illustrates how **configuration**, IAM authorization, and 
         │          Configuration             │
         │ (Roles, Policies, Trust, Identity) │
         └──────────────────┬─────────────────┘
-                           │
-          Proof of Identity│ Proof of Possession
-                           ▼
+                            │
+            Proof of Identity│ Proof of Possession
+                            ▼
         ┌────────────────────────────────────┐
         │           Entry Condition          │
         │  (Authorized to begin execution)   │
         └──────────────────┬─────────────────┘
-                           │
-                           │  Execution begins
-                           ▼
+                            │
+                            │  Execution begins
+                            ▼
         ┌────────────────────────────────────┐
         │         Execution Hop Hopᵢ         │
         │            Executor Eᵢ             │
         └──────────────────┬─────────────────┘
-                           │
-               PCCᵢ / PoCᵢ │   Causal Authority Transition
-                           ▼
+                            │
+                PCCᵢ / PoCᵢ │   Causal Authority Transition
+                            ▼
         ┌────────────────────────────────────┐
         │     PIC Continuity Enforcement     │
         │               (CAT)                │
         └──────────────────┬─────────────────┘
-                           │
-                           │  PIC Causal Authority (PCAᵢ₊₁)
-                           ▼
+                            │
+                            │  PIC Causal Authority (PCAᵢ₊₁)
+                            ▼
         ┌────────────────────────────────────┐
         │        Next Execution Hop          │
         │               Hopᵢ₊₁               │
