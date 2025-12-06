@@ -162,7 +162,9 @@ In the **PIC Model**, configuration does **NOT** directly grant authority. Inste
 
 Formally, the PIC Model interprets configuration as part of an **entry condition**, not as authority:
 
-Configuration + Identity + Possession ⇒ `Entry Condition`
+```text
+Configuration + Identity + Possession ⇒ Entry Condition
+```
 
 An `Entry Condition` allows an **Executor** to participate in the first execution hop of a distributed transaction, but it **MUST NOT** permit authority to propagate across execution boundaries without continuity verification.
 
@@ -186,7 +188,9 @@ After execution has begun, the **PIC Model** enforces **authority continuity** i
 
 This relationship can be expressed as:
 
-`Entry Condition` + Continuity ⇒ Authority
+```text
+Entry Condition + Continuity ⇒ Authority
+```
 
 **Proofs of Continuity (PoC)** bind execution hops together and ensure that authority remains attached to the execution that originally satisfied the entry condition. Even when configuration-backed credentials remain valid, execution **MUST NOT** advance without demonstrating continuity.
 
