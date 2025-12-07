@@ -181,6 +181,56 @@ A minimal structural representation of `PCAᵢ` is shown below.
 
 ```json
 {
+  "signature": "sig_jws_or_cose_over_pca_payload",
+  // Signature covering the entire 'pca_payload', produced by the CAT
+  // to assert the validity of this derived authority state.
+
+  "pca_payload": {
+    // Core, causally derived authority payload.
+    "pic": "0.1",
+    // PIC protocol version.
+
+    "pca_id": "urn:pic:pca:26e70c965c8c4f31939e74c2f0f39cf9",
+    // Unique ID for this PCA object. Format: urn:pic:pca:[GUID].
+
+    "pca_successor_identity": {
+      // Identity / characteristics of the successor Executor E_(i+1)
+      // that this authority is bound to (execution-bound, non-transferable).
+      "characteristics": {
+        // Executor Characteristics (EC_(i+1)) bound to the execution environment.
+        "runtime_name": "pic-runtime-v3",
+        "platform_os": "linux-20.04",
+        "deployment_namespace": "prod-east-1"
+      }
+    },
+
+    "pca_predecessor_identity": {
+      // Identity of the predecessor Executor E_i.
+      "identity_id": "uid:exec:origin-service-id",
+      // UID of the predecessor Executor.
+      "key_ref": "#signing-key-456"
+      // Reference to the key used by E_i to sign the PoC.
+    },
+
+    "pca_predecessor_poc_id": "urn:pic:poc:88aa33bb44cc55dd66ee77ff",
+    // Reference to the specific PoC_i that enabled this transition.
+
+    "pca_predecessor_poc_hash": "sha256:hash-of-poc-claim-x9y8-z7w6",
+    // Cryptographic hash of the validated PoC_i payload.
+
+    "pca_authority_set": [
+      // Derived privileges (ops_(i+1)).
+      // MUST be a subset of the authority available at E_i (monotonicity).
+      { "op": "write", "res": "file:log/stats" },
+      { "op": "read",  "res": "db:users" }
+    ],
+
+    "pca_validity": {
+      // Validity window for this PCA object.
+      "nbf": 1764950400, // Not Before (Unix timestamp)
+      "exp": 1764950460  // Expiration (short TTL for freshness)
+    }
+  }
 }
 ```
 
@@ -196,6 +246,36 @@ A PCCᵢ **DOES NOT** grant authority, assert identity, or express permission. I
 
 ```json
 {
+  "signature": "sig_jws_or_cose_over_pcc_payload",
+  // JWS/COSE signature over 'pcc_payload', produced by the CAT/challenger.
+  // This binds the challenge to a specific authority state and issuer.
+
+  "pcc_payload": {
+    "pic": "0.1",
+    // PIC protocol version.
+
+    "pcc_id": "urn:pic:pcc:00ff11ee22dd33cc44bb55aa",
+    // Unique ID for this Causal Challenge instance.
+
+    "pcc_nonce": "random-base64-string-AEC5F4",
+    // Cryptographic nonce to prevent replay of this challenge.
+
+    "pcc_issued_at": 1764950400,
+    // Unix timestamp when the challenge was issued.
+
+    "pcc_validity": {
+      // Validity period for accepting a PoC in response to this challenge.
+      "nbf": 1764950400, // Not Before (Unix timestamp)
+      "exp": 1764950460  // Expiration (Unix timestamp)
+    },
+
+    "pca_id": "urn:pic:pca:26e70c965c8c4f31939e74c2f0f39cf9",
+    // ID of the PCA_i being validated.
+
+    "pca_hash": "sha256:hash-of-pca-claim"
+    // Cryptographic hash of the PCA_i payload, binding the PCC to a
+    // specific authority state.
+  }
 }
 ```
 
@@ -211,6 +291,39 @@ PoCᵢ is the **only admissible input** for deriving new `PIC Causal Authority`.
 
 ```json
 {
+  "signature": "sig_jws_or_cose_over_poc_payload",
+  // Signature produced by Executor E_i over 'poc_payload'.
+  // This binds the continuity proof to the predecessor executor.
+
+  "poc_payload": {
+    "pic": "0.1",
+    // PIC protocol version.
+
+    "poc_id": "urn:pic:poc:88aa33bb44cc55dd66ee77ff",
+    // Unique identifier for this Proof of Continuity.
+
+    "poc_issued_at": 1764950460,
+    // Unix timestamp when the PoC was produced.
+
+    "poc_pca": { ... },
+    // Reference or embedded representation of the validated PCA_i
+    // (e.g. { "pca_id": "...", "pca_hash": "sha256:..." }).
+
+    "poc_pcc": { ... },
+    // Reference or embedded representation of PCC_i
+    // that triggered this Proof of Continuity
+    // (e.g. { "pcc_id": "...", "pcc_nonce": "..." }).
+
+    "executor_poi": "urn:pic:poi:executor-ei",
+    // Reference/ID of the Proof of Identity (PoI) claimed by Executor E_i.
+
+    "executor_key_ref": "#signing-key-123",
+    // Reference to the key used by E_i to sign this PoC.
+
+    "executor_pop_signature": "BASE64_O_COSE_SIGNATURE_OVER_PCC_AND_CONTEXT"
+    // PoP signature proving control of the key associated with executor_poi,
+    // typically computed over (poc_pcc, poc_pca, executor context).
+  }
 }
 ```
 
