@@ -35,11 +35,24 @@ In these environments, humans and AI agents operate within a single distributed 
 
 A common architectural assumption is that wallets, credentials, or delegated tokens are sufficient to safely transfer authority across execution boundaries. This assumption leads to execution models in which authority is implicitly inferred from identity or possession and is passed across hops as artifacts. Such models permit authority detachment and reinterpretation during execution and are therefore vulnerable to confused deputy scenarios by construction.
 
-<p align="center">
-  <img src="images/pic-ai-agents.jpg"
-       alt="PIC AI Agents Execution Model"
-       width="300"/>
-</p>
+```text
++------------------------------------------------------+
+|                  HUMAN AND AI AGENTS                 |
+|  (humans, services, AI copilots, background agents)  |
++------------------------------------------------------+
+|              ONTOLOGY / RELATIONSHIPS                |
+|  (links between human and non-human identities)      |
++------------------------------------------------------+
+|                      AUTHORITY                       |
+|   (how authority is composed before execution)       |
++------------------------------------------------------+
+|                         PIC                          |
+|   Provenance Identity Continuity across all hops     |
++------------------------------------------------------+
+|             TRANSPORT / MESSAGING LAYER              |
+|   HTTP / gRPC / messaging buses      TCP / UDP       |
++------------------------------------------------------+
+```
 
 This specification adopts the PIC Model’s foundational principle that **authority is not inferred from identity, role, or possession**, but is instead **derived exclusively through verified causal continuity across execution hops**. Under this model:
 
