@@ -2,7 +2,7 @@
 
 **Version:** 0.1  
 **Date:** 2025-12-06  
-**Source:** https://github.com/pic-protocol/pic-protocol  
+**Source:** [github.com/pic-protocol/pic-spec/draft/0.1/pic-protocol.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.1/pic-protocol.md)
 
 ---
 
