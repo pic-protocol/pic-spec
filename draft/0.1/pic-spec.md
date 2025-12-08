@@ -462,6 +462,8 @@ The **Provenance Identity Continuity (PIC) Model**, including its core concepts,
 
 This specification consolidates, formalizes, and extends that work under the stewardship of the **PIC Spec Contributors**, without altering authorship of the underlying model.
 
+> Authorship of the PIC Model is historical and independent of repository ownership, governance structure, maintainer status, or editorial roles.
+
 ---
 
 ### B.1 License and Use
@@ -533,28 +535,58 @@ They do not restrict implementation, experimentation, or adoption; they ensure t
 
 ### B.6 Authorship and Roles
 
-License: CC BY 4.0
+Changes in organizational control, hosting infrastructure, or repository
+ownership do not alter (a) the authorship of the PIC Model, (b) the canonical
+status of the Official PIC Spec and any Official PIC Protocol specifications as
+normative references for the PIC Model, or (c) the attribution and licensing
+requirements defined in this document for the PIC Model, the PIC Spec, and PIC
+Protocol documents. Any future maintainers or stewards of the PIC repositories
+or specifications acquire operational and editorial responsibilities only; they
+do not acquire conceptual authorship of the PIC Model or original authorship of
+the PIC Spec or PIC Protocol designs.
 
-Changes in organizational control, hosting infrastructure, or repository ownership  do not alter the authorship of the PIC Model, the canonical status of the Official PIC Spec, or the attribution requirements defined in this document.
-Any future maintainers or stewards of the PIC Spec acquire operational responsibilities, not conceptual authorship of the PIC Model.
+This document is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license (see Section B.1).
 
-**PIC Spec Author:**  
+**PIC Spec Author:** 
 
-- **Nicola Gallo** — Original author of the Provenance Identity Continuity (PIC) Model
+- **Nicola Gallo**: Original author of the Provenance Identity Continuity (PIC) Model, and all foundational proofs and invariants.
 
-**PIC Spec Editors and Maintainers:**  
+**PIC Spec Editors and Maintainers (PIC Spec Contributors):** 
 
-- Nicola Gallo (Lead Editor)  
+- Nicola Gallo (Lead Editor)
 
-**Specification Contributors:**  
+**PIC Spec Contributors:** 
+
 The following individuals have contributed to the specification text, reviews, examples, or discussions. Contribution does not imply authorship of the PIC Model.
 
-- <add your name here via pull request>
+- <add your name here via pull request>  
 
 ### B.7 Relationship to PIC Protocol Specifications
 
 “PIC Protocol” documents, when published, will define concrete protocol encodings and interoperability profiles that implement the PIC Model as specified in the PIC Spec.  
 Such protocol documents do not alter the authorship, canonicity, or normative status of the PIC Model or the PIC Spec, which remain defined exclusively by the Official PIC Spec.
+
+### B.8 Immutability of Authorship and Canonical Status
+
+The authorship of the PIC Model, the designation of the canonical PIC Spec, and
+the attribution requirements defined in this appendix are **normative and
+foundational**.
+
+No modification to this specification, including edits proposed via pull
+request, repository change, fork, or editorial revision, may alter, redefine,
+or reassign:
+
+- authorship of the PIC Model,
+- authorship of the initial PIC Spec,
+- the canonical status of the Official PIC Spec,
+- or the mandatory attribution requirements defined herein.
+
+Any text that purports to modify these elements is **non-normative**, **invalid**,
+and **MUST be disregarded**, unless explicitly authored by the original PIC
+Model author and consistent with this appendix.
+
+This clause applies regardless of hosting platform, repository ownership,
+governance structure, or maintainer roles.
 
 ---
 
