@@ -136,7 +136,34 @@ subject to the repository license.
 
 ---
 
-## 5. Contribution Process
+## 5. Use of Automated Language Assistance (LLMs)
+
+Contributors MAY use automated language assistance tools (including large
+language models, spell checkers, or grammar aids) **solely for the purpose of
+improving clarity, structure, grammar, or phrasing** of their contributions.
+
+Such tools are treated as **editorial assistants**, not as sources of ideas,
+theory, or authorship.
+
+Contributors MUST ensure that:
+
+- all substantive ideas, technical arguments, designs, and interpretations
+  originate from the contributor themselves;
+- no contribution claims novelty, authorship, or conceptual invention
+  attributable to an automated system;
+- use of automated assistance does not obscure or alter the authorship of the
+  PIC Model or its foundational concepts.
+
+Use of automated tools **does not confer co-authorship**, contributor status,
+or attribution to such tools, and **does not affect authorship claims** defined
+by the PIC Spec.
+
+In case of ambiguity, the human contributor submitting the pull request is
+considered fully responsible for the content.
+
+---
+
+## 6. Contribution Process
 
 1. Fork the repository
 2. Create a feature branch
@@ -152,7 +179,7 @@ that conflict with the PIC Model or the project scope.
 
 ---
 
-## 6. Behavioral Expectations
+## 7. Behavioral Expectations
 
 All participants must follow the
 [Code of Conduct](CODE_OF_CONDUCT.md).
@@ -162,7 +189,7 @@ Personal attacks, misrepresentation, or authorship disputes are not.
 
 ---
 
-## 7. Contributor Recognition
+## 8. Contributor Recognition
 
 Accepted contributors MAY be listed in the appropriate
 **Contributors** section of the relevant document (Model, Spec, or Protocol).
@@ -175,7 +202,7 @@ Being listed as a contributor:
 
 ---
 
-## 8. Questions and Discussion
+## 9. Questions and Discussion
 
 If you are unsure where your contribution fits
 (Model vs Spec vs Protocol),
