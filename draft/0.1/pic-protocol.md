@@ -212,7 +212,6 @@ disregarded**, unless explicitly authored by the original PIC Model author.
 
 ## References
 
-- [1] Gallo, N. (2025). *Authority Propagation Models: PoP vs PoC and the Confused
-  Deputy Problem*. Zenodo. https://doi.org/10.5281/zenodo.17833000  
-- [2] Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed
-  Execution Systems*. Zenodo. https://doi.org/10.5281/zenodo.17777421  
+- [1] Gallo, N. (2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. [doi.org/10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
+- [2] Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems (0.1-draft)*. Zenodo. [doi.org/10.5281/zenodo.17777421](https://doi.org/10.5281/zenodo.17777421)
+- [3] Gallo, N. (2025). *Authority is a Continuous System. (0.1-draft)*. Zenodo. [doi.org/10.5281/zenodo.17860199](https://doi.org/10.5281/zenodo.17860199)
