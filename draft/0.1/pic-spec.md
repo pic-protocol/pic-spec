@@ -2,9 +2,7 @@
 
 **Version:** 0.1 (Draft)  
 **Date:** 2025-12-06  
-**Author:** PIC Protocol Contributors  
-**Source:** https://github.com/pic-protocol/pic-spec  
-**License:** CC BY 4.0
+**Source:** [github.com/pic-protocol/pic-spec](https://github.com/pic-protocol/pic-spec)  
 
 ---
 
@@ -14,7 +12,7 @@ This specification originates from the formalization presented in **"Authority P
 
 As described in **“PIC Model — Provenance Identity Continuity for Distributed Execution Systems”** [[2]](#references), the PIC Model is grounded in the `Executor-First Paradigm`, which holds that identity is not a property embedded in static credentials or artifacts, but an emergent invariant of the execution state and its verifiable causal origin.
 
-The `Provenance Identity Continuity (PIC) Model` specifies the invariants that identity **MUST** satisfy across a complete multi-hop causal execution. Accordingly, artifact possession is replaced by `**`execution provenance** as the sole continuity anchor.
+The `Provenance Identity Continuity (PIC) Model` specifies the invariants that identity **MUST** satisfy across a complete multi-hop causal execution. Accordingly, artifact possession is replaced by **execution provenance** as the sole continuity anchor.
 
 Each execution hop **MUST** be treated as part of a verifiable distributed transaction that binds the `Executor` to its causal predecessor. This binding prevents detachment, impersonation, replay, and unintended authority inheritance commonly observed in token-based and credential-centric systems.
 
@@ -33,7 +31,7 @@ The PIC Model therefore establishes the following `Structural Impossibility Clai
 3. [PIC Data Model](#3-pic-data-model)  
 4. [Integration with Existing IAM Systems](#4-integration-with-existing-iam-systems)  
 A. [Appendix A – Use of Automated Language Assistance](#appendix-a-use-of-automated-language-assistance)  
-B. [Appendix B – Authorship, Attribution, and Derivative Works](#appendix-b-authorship-attribution-and-derivative-works)
+B. [Appendix B – Authorship, Attribution, and Derivative Works](#appendix-b-authorship-attribution-and-derivative-works)  
 R. [References](#references)
 
 ---
@@ -188,7 +186,7 @@ A minimal structural representation of `PCAᵢ` is shown below.
   "pca_payload": {
     // Core, causally derived authority payload.
     "pic": "0.1",
-    // PIC protocol version.
+    // PIC spec version.
 
     "pca_id": "urn:pic:pca:26e70c965c8c4f31939e74c2f0f39cf9",
     // Unique ID for this PCA object. Format: urn:pic:pca:[GUID].
@@ -252,7 +250,7 @@ A PCCᵢ **DOES NOT** grant authority, assert identity, or express permission. I
 
   "pcc_payload": {
     "pic": "0.1",
-    // PIC protocol version.
+    // PIC spec version.
 
     "pcc_id": "urn:pic:pcc:00ff11ee22dd33cc44bb55aa",
     // Unique ID for this Causal Challenge instance.
@@ -297,7 +295,7 @@ PoCᵢ is the **only admissible input** for deriving new `PIC Causal Authority`.
 
   "poc_payload": {
     "pic": "0.1",
-    // PIC protocol version.
+    // PIC spec version.
 
     "poc_id": "urn:pic:poc:88aa33bb44cc55dd66ee77ff",
     // Unique identifier for this Proof of Continuity.
@@ -462,7 +460,7 @@ The **Provenance Identity Continuity (PIC) Model**, including its core concepts,
 - Gallo, N. (2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo.  
 - Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Zenodo.
 
-This specification consolidates, formalizes, and extends that work under the stewardship of the **PIC Protocol Contributors**, without altering authorship of the underlying model.
+This specification consolidates, formalizes, and extends that work under the stewardship of the **PIC Spec Contributors**, without altering authorship of the underlying model.
 
 ---
 
@@ -475,21 +473,31 @@ Under this license, copying, redistribution, and adaptation are permitted, **pro
 
 ### B.2 Mandatory Attribution Requirements
 
+The PIC Model and the PIC Spec are canonically defined by this document as published in the official PIC Spec repositories (the “Official PIC Spec”).  
+Forks and derivative specifications MAY exist, but MUST NOT represent themselves as the canonical PIC Model, the canonical PIC Spec, or the normative reference for PIC unless explicitly designated by the PIC Spec Contributors.
+
 Any implementation, specification, library, framework, or document that:
 
 - uses the **PIC Model** as defined in this specification, or  
-- claims compatibility with, conformance to, or derivation from the PIC Model (e.g., “PIC-compliant”, “PIC-based”, “PIC-inspired”),
+- claims compatibility with, conformance to, or derivation from the **PIC Model** or the **PIC Spec**
+  (e.g., “PIC-compliant”, “PIC-based”, “PIC-inspired”, “implements the PIC Spec”),
 
 **MUST** provide clear, visible, and unambiguous attribution to:
 
-1. **Gallo, N.** as the original author of the PIC Model and the associated Authority Propagation framework, and  
-2. this specification and its maintainers, the **PIC Protocol Contributors**.
+1. **Gallo, N.** as the original author of the **PIC Model** and the associated Authority Propagation framework; and  
+2. this specification (the **PIC Spec**) and its maintainers, the **PIC Spec Contributors**, as the editors and custodians of the normative specification.
 
 Attribution **MUST NOT** omit the original author in favor of contributors, implementers, or downstream projects.
 
+These attribution requirements DO NOT restrict contribution, experimentation, or the creation of forks and derivative works; they only ensure that conceptual authorship and normative provenance remain explicit as the ecosystem evolves.
+
 An acceptable attribution statement includes, for example:
 
-> “This implementation is based on the Provenance Identity Continuity (PIC) Model introduced by Gallo, N., and specified by the PIC Protocol Contributors (see References [1], [2]).”
+> “This work is based on the Provenance Identity Continuity (PIC) Model created by 
+> Nicola Gallo. The model and its initial specification originate from this work. 
+> Maintenance of the PIC Spec and related PIC Protocol documents is performed over 
+> time by the PIC Spec Contributors, with authorship of the model remaining with 
+> Nicola Gallo.”
 
 ---
 
@@ -506,7 +514,7 @@ Implementations (software libraries, SDKs, middleware, gateways, or services) **
 
 ### B.4 Use of PIC Terminology
 
-The terms **“PIC Model”**, **“Provenance Identity Continuity”**, **“PIC-compliant”**, and similar designations **MUST NOT** be used in a way that:
+The terms **“PIC Model”**, **“Provenance Identity Continuity”**, **“PIC Spec”**, **“PIC-compliant”**, and similar designations **MUST NOT** be used in a way that:
 
 - obscures the original authorship of the model,  
 - implies independent invention of the core PIC invariants, or  
@@ -520,6 +528,33 @@ Projects that do not wish to comply with these attribution requirements **MAY** 
 
 These requirements exist to preserve the integrity, traceability, and academic provenance of the PIC Model as a formal execution framework.  
 They do not restrict implementation, experimentation, or adoption; they ensure that conceptual authorship remains explicit as the ecosystem evolves.
+
+---
+
+### B.6 Authorship and Roles
+
+License: CC BY 4.0
+
+Changes in organizational control, hosting infrastructure, or repository ownership  do not alter the authorship of the PIC Model, the canonical status of the Official PIC Spec, or the attribution requirements defined in this document.
+Any future maintainers or stewards of the PIC Spec acquire operational responsibilities, not conceptual authorship of the PIC Model.
+
+**PIC Spec Author:**  
+
+- **Nicola Gallo** — Original author of the Provenance Identity Continuity (PIC) Model
+
+**PIC Spec Editors and Maintainers:**  
+
+- Nicola Gallo (Lead Editor)  
+
+**Specification Contributors:**  
+The following individuals have contributed to the specification text, reviews, examples, or discussions. Contribution does not imply authorship of the PIC Model.
+
+- <add your name here via pull request>
+
+### B.7 Relationship to PIC Protocol Specifications
+
+“PIC Protocol” documents, when published, will define concrete protocol encodings and interoperability profiles that implement the PIC Model as specified in the PIC Spec.  
+Such protocol documents do not alter the authorship, canonicity, or normative status of the PIC Model or the PIC Spec, which remain defined exclusively by the Official PIC Spec.
 
 ---
 
