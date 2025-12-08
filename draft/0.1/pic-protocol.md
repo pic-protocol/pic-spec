@@ -64,15 +64,7 @@ by the PIC Model and PIC Spec. Any protocol that violates these invariants is
 
 ## Appendix A. Use of Automated Language Assistance
 
-Automated language assistance tools (including large language models) MAY have
-been used solely to improve grammar, clarity, and phrasing.
-
-All substantive technical content specific to this protocol, including protocol
-design, encodings, and interoperability semantics, is authored and reviewed by
-human contributors.
-
-The underlying **PIC Model**, its foundational concepts, invariants, and formal
-results are the exclusive work of the original PIC Model author.
+The authors have used automated language assistance tools solely to improve grammar, clarity, and phrasing. All substantive technical content, including the conceptual model, formal results, and proofs, is the exclusive work of the authors.
 
 ---
 
