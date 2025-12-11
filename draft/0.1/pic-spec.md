@@ -19,6 +19,10 @@ The PIC Model makes entire families of authorization bugs **structurally inexpre
 3. **Causal Binding**: Each hop is verifiably linked to its predecessor via a Trust Model
 4. **Continuity Validation**: Transitions satisfy executor continuity requirements
 
+**Distributed Coordination**: These invariants enable PIC to provide authorization semantics for distributed coordination patterns. PIC functions as an authorization layer for orchestration engines (Temporal, Apache Airflow, Step Functions), choreography systems (event-driven architectures, saga patterns), and agent frameworks (LangChain, AutoGPT, multi-agent systems). Where traditional authorization models require each service to independently verify credentials—creating coordination complexity and confused deputy risks—PIC provides a unified authority chain that flows through the entire coordination graph. An orchestrator receiving `PCA_n` can delegate to multiple workers, each receiving `PCA_{n+1}` with appropriately scoped authority, all traceable to the same `p_0` and subject to `ops_0` bounds.
+
+**Impact**: This authorization model was previously impossible to implement: no existing system can maintain origin immutability and authority monotonicity across arbitrary distributed executions spanning multiple clouds, orchestration engines, and administrative domains. PIC provides the first formal framework where a user action in System A causally constrains execution in System Z through 100 intermediate hops, with mathematical guarantees that authority cannot expand and the confused deputy problem cannot occur.
+
 A **transaction** in PIC encompasses the entire distributed execution from user initiation to completion, not merely database BEGIN/COMMIT semantics. A single transaction may span:
 
 - Hundreds of execution hops across microservices, message queues, and serverless functions
