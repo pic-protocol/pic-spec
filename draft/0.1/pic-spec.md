@@ -31,7 +31,7 @@ As proven in "Authority Propagation Models: PoP vs PoC and the Confused Deputy P
 2. [Terminology](#2-terminology)  
 3. [Architecture and Components](#3-architecture-and-components)  
 4. [Normative Data Structures and Processing Logic](#4-normative-data-structures-and-processing-logic)  
-5. [Implementation Considerations](#5-implementation-considerations)  
+5. [Deployment and Adoption Considerations](#5-implementation-considerations)  
 
 **Appendices:**  
 A. [Appendix A – Use of Automated Language Assistance](#appendix-a-use-of-automated-language-assistance)  
@@ -48,14 +48,14 @@ This specification defines the Provenance Identity Continuity (PIC) Model for di
 
 1. **Formal Model**: Causal invariants and execution semantics that MUST hold for any execution to be considered PIC-compliant
 2. **Architecture and Components**: Reference architecture defining the separation between untrusted execution (Executors) and trusted validation (CAT/Trust Plane)
-3. **Implementation Considerations**: Deployment patterns, integration strategies, and performance trade-offs for practical adoption
+3. **Deployment and Adoption Considerations**: Deployment patterns, integration strategies, and performance trade-offs for practical adoption
 
 The PIC Model establishes a foundational execution model that eliminates confused deputy conditions by construction. While the specification provides reference architecture and implementation guidance, it does not mandate specific protocol encodings, wire formats, or cryptographic primitives. These are defined in separate PIC Protocol specifications.
 
 **Normative vs. Informative**:
 
 - Sections 1-3 define **normative** requirements (terminology, architecture, invariants)
-- Sections 4-5 provide **informative** guidance (data model examples, implementation considerations)
+- Sections 4-5 provide **informative** guidance (data model examples, deployment and adoption considerations)
 - Appendices provide **informative** context (authorship, references)
 
 ### 1.2 Normative Language
@@ -1122,7 +1122,7 @@ Example protocols: PIC-HTTP, PIC-gRPC, PIC-SPIFFE, PIC-Blockchain.
 
 ---
 
-## 5. Implementation Considerations
+## 5. Deployment and Adoption Considerations
 
 This section addresses practical deployment considerations and clarifies the relationship between PIC and existing authorization patterns.
 
