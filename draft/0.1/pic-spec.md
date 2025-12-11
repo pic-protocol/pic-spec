@@ -1,8 +1,8 @@
 # Provenance Identity Continuity (PIC) Model Specification
 
-**Version:** 1.0-draft  
-**Date:** December 2025  
-**Author:** Nicola Gallo
+**Version:** 0.1 (Draft)  
+**Date:** 2025-12-11  
+**Source:** [github.com/pic-protocol/pic-spec/draft/0.1/pic-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.1/pic-spec.md)
 
 ---
 
@@ -11,6 +11,7 @@
 This specification defines the **Provenance Identity Continuity (PIC) Model**, an execution model that eliminates confused deputy vulnerabilities through verifiable causal continuity rather than artifact possession.
 
 The PIC Model enforces that authority is derived from execution provenance, not from possession of credentials or tokens. Each execution hop maintains:
+
 1. **Origin Immutability**: The initiating subject (`p_0`) remains constant throughout the transaction
 2. **Authority Monotonicity**: Authority can only decrease or remain constant (`ops_i ⊆ ops_{i-1}`)
 3. **Causal Binding**: Each hop is verifiably linked to its predecessor via a Trust Model
@@ -26,14 +27,16 @@ As proven in "Authority Propagation Models: PoP vs PoC and the Confused Deputy P
 
 ## Table of Contents
 
-1. [Introduction](#1-introduction)
-2. [Terminology](#2-terminology)
-3. [Architecture and Components](#3-architecture-and-components)
-4. [Normative Data Structures and Processing Logic](#4-normative-data-structures-and-processing-logic)
-5. [Adoption and Implementation Considerations](#5-adoption-and-implementation-considerations)
+1. [Introduction](#1-introduction)  
+2. [Terminology](#2-terminology)  
+3. [Architecture and Components](#3-architecture-and-components)  
+4. [Normative Data Structures and Processing Logic](#4-normative-data-structures-and-processing-logic)  
+5. [Adoption and Implementation Considerations](#5-adoption-and-implementation-considerations)  
+
+Appendices:  
 A. [Appendix A – Use of Automated Language Assistance](#appendix-a-use-of-automated-language-assistance)  
-B. [Appendix B – Authorship, Attribution, and Derivative Works](#appendix-b-authorship-attribution-and-derivative-works)
-R. [References](#references)
+B. [Appendix B – Authorship, Attribution, and Derivative Works](#appendix-b-authorship-attribution-and-derivative-works)  
+R. [References](#references)  
 
 ---
 
@@ -1183,12 +1186,6 @@ If no → Continue using possession-based models and accept the security risk.
 
 ---
 
-## References
-
-[1] N. Gallo. "Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem." Zenodo, 2025. [doi.org/10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
-
----
-
 ## Appendix A. Use of Automated Language Assistance
 
 The authors have used automated language assistance tools solely to improve grammar, clarity, and phrasing. All substantive technical content, including the conceptual model, formal results, and proofs, is the exclusive work of the authors.
@@ -1217,14 +1214,14 @@ Under this license, copying, redistribution, and adaptation are permitted, **pro
 
 ### B.2 Mandatory Attribution Requirements
 
-The PIC Model and the PIC Spec are canonically defined by this document as published in the official PIC Spec repositories (the "Official PIC Spec").  
+The PIC Model and the PIC Spec are canonically defined by this document as published in the official PIC Spec repositories (the “Official PIC Spec”).  
 Forks and derivative specifications MAY exist, but MUST NOT represent themselves as the canonical PIC Model, the canonical PIC Spec, or the normative reference for PIC unless explicitly designated by the PIC Spec Contributors.
 
 Any implementation, specification, library, framework, or document that:
 
 - uses the **PIC Model** as defined in this specification, or  
 - claims compatibility with, conformance to, or derivation from the **PIC Model** or the **PIC Spec**
-  (e.g., "PIC-compliant", "PIC-based", "PIC-inspired", "implements the PIC Spec"),
+  (e.g., “PIC-compliant”, “PIC-based”, “PIC-inspired”, “implements the PIC Spec”),
 
 **MUST** provide clear, visible, and unambiguous attribution to:
 
@@ -1237,11 +1234,11 @@ These attribution requirements DO NOT restrict contribution, experimentation, or
 
 An acceptable attribution statement includes, for example:
 
-> "This work is based on the Provenance Identity Continuity (PIC) Model created by 
+> “This work is based on the Provenance Identity Continuity (PIC) Model created by 
 > Nicola Gallo. The model and its initial specification originate from this work. 
 > Maintenance of the PIC Spec and related PIC Protocol documents is performed over 
 > time by the PIC Spec Contributors, with authorship of the model remaining with 
-> Nicola Gallo."
+> Nicola Gallo.”
 
 ---
 
@@ -1258,7 +1255,7 @@ Implementations (software libraries, SDKs, middleware, gateways, or services) **
 
 ### B.4 Use of PIC Terminology
 
-The terms **"PIC Model"**, **"Provenance Identity Continuity"**, **"PIC Spec"**, **"PIC-compliant"**, and similar designations **MUST NOT** be used in a way that:
+The terms **“PIC Model”**, **“Provenance Identity Continuity”**, **“PIC Spec”**, **“PIC-compliant”**, and similar designations **MUST NOT** be used in a way that:
 
 - obscures the original authorship of the model,  
 - implies independent invention of the core PIC invariants, or  
@@ -1305,7 +1302,7 @@ The following individuals have contributed to the specification text, reviews, e
 
 ### B.7 Relationship to PIC Protocol Specifications
 
-"PIC Protocol" documents, when published, will define concrete protocol encodings and interoperability profiles that implement the PIC Model as specified in the PIC Spec.  
+“PIC Protocol” documents, when published, will define concrete protocol encodings and interoperability profiles that implement the PIC Model as specified in the PIC Spec.  
 Such protocol documents do not alter the authorship, canonicity, or normative status of the PIC Model or the PIC Spec, which remain defined exclusively by the Official PIC Spec.
 
 ### B.8 Immutability of Authorship and Canonical Status
@@ -1334,16 +1331,6 @@ governance structure, or maintainer roles.
 
 ## References
 
-[1] N. Gallo. "Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem." Zenodo, 2025. [doi.org/10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
-
-[2] N. Gallo. "PIC Model — Provenance Identity Continuity for Distributed Execution Systems." Zenodo, 2025. [doi.org/10.5281/zenodo.17777421](https://doi.org/10.5281/zenodo.17777421)
-
-[3] N. Gallo. "Authority is a Continuous System." Zenodo, 2025. [doi.org/10.5281/zenodo.17860199](https://doi.org/10.5281/zenodo.17860199)
-
-[4] N. Hardy. "The Confused Deputy." Operating Systems Review, 1988.
-
-[5] NIST. "Zero Trust Architecture." Special Publication 800-207, 2020.
-
-[6] RFC 2119. "Key words for use in RFCs to Indicate Requirement Levels."
-
-[7] RFC 8174. "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words."
+- [1] Gallo, N. (2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. [doi.org/10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
+- [2] Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems (0.1-draft)*. Zenodo. [doi.org/10.5281/zenodo.17777421](https://doi.org/10.5281/zenodo.17777421)
+- [3] Gallo, N. (2025). *Authority is a Continuous System. (0.1-draft)*. Zenodo. [doi.org/10.5281/zenodo.17860199](https://doi.org/10.5281/zenodo.17860199)
