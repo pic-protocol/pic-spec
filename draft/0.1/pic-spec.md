@@ -1283,6 +1283,35 @@ Executor                CAT
 
 ---
 
+### 5.2.1 Performance in Trusted Environments
+
+When deploying PIC with internal CAT in trusted environments, authority transitions occur entirely in-memory without network round-trips:
+
+```text
+                    ENTRY (once)
+User → OAuth/OIDC → JWT → CAT derives PCA_0
+                              │
+                    ──────────┼────────────────────────
+                              │  INTERNAL (all in-memory)
+                              ▼
+                    ┌─────────────────────────────────┐
+                    │   Trusted Zone (K8s/Mesh/TEE)   │
+                    │                                 │
+                    │   E_1 ──→ E_2 ──→ E_3 ──→ E_4   │
+                    │     │       │       │       │   │
+                    │    CAT     CAT     CAT     CAT  │
+                    │ (embedded)(embedded)(embedded)  │
+                    │                                 │
+                    │   ZERO network calls            │
+                    │   ZERO IdP round-trips          │
+                    │   All in-process validation     │
+                    └─────────────────────────────────┘
+```
+
+With external CAT or Token Exchange, each hop requires a network round-trip to an external service. With internal CAT, validation occurs in-process, eliminating network latency entirely while preserving all PIC security guarantees.
+
+---
+
 ## 5.3 Validation Frequency Options
 
 PIC does not mandate validation frequency. Implementations MAY choose validation strategies based on their security requirements and threat model, similar to existing authorization protocols.
