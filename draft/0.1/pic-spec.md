@@ -1283,16 +1283,16 @@ Executor                CAT
 
 ---
 
-### 5.2.1 Performance in Trusted Environments
+### 5.2.1 Performance in Trusted Environments (Network-Internal)
 
-When deploying PIC with internal CAT in trusted environments, authority transitions occur entirely in-memory without network round-trips:
+When deploying PIC with internal CAT in trusted network environments, authority transitions remain within the trusted zone but still traverse the network stack between nodes:
 
 ```text
                     ENTRY (once)
 User → OAuth/OIDC → JWT → CAT derives PCA_0
                               │
                     ──────────┼────────────────────────
-                              │  INTERNAL (all in-memory)
+                              │  INTERNAL (trusted network)
                               ▼
                     ┌─────────────────────────────────┐
                     │   Trusted Zone (K8s/Mesh/TEE)   │
@@ -1302,13 +1302,65 @@ User → OAuth/OIDC → JWT → CAT derives PCA_0
                     │    CAT     CAT     CAT     CAT  │
                     │ (embedded)(embedded)(embedded)  │
                     │                                 │
-                    │   ZERO network calls            │
-                    │   ZERO IdP round-trips          │
-                    │   All in-process validation     │
+                    │   Internal network only         │
+                    │   ZERO external IdP calls       │
+                    │   Low-latency node-to-node      │
                     └─────────────────────────────────┘
 ```
 
-With external CAT or Token Exchange, each hop requires a network round-trip to an external service. With internal CAT, validation occurs in-process, eliminating network latency entirely while preserving all PIC security guarantees.
+With external CAT or Token Exchange, each hop requires a network round-trip to an external IdP. With internal CAT in a trusted zone, validation stays within the local network, eliminating external dependencies while preserving all PIC security guarantees.
+
+---
+
+### 5.2.2 Performance in Embedded Environments (Shared Memory)
+
+In IoT devices or embedded systems, multiple executors MAY share memory or communicate via local bus, enabling PCA transitions with zero network overhead:
+
+```text
+┌─────────────────────────────────────────────────┐
+│           Embedded Device / IoT Node            │
+│                                                 │
+│   ┌───────┐    ┌───────┐    ┌───────┐           │
+│   │ E_1   │───▶│ E_2   │───▶│ E_3   │           │
+│   │ +CAT  │    │ +CAT  │    │ +CAT  │           │
+│   └───────┘    └───────┘    └───────┘           │
+│       │            │            │               │
+│       └────────────┴────────────┘               │
+│              Shared Memory / Bus                │
+│                                                 │
+│   PCA transitions: memory copy only             │
+│   ZERO serialization overhead                   │
+│   ZERO network stack                            │
+└─────────────────────────────────────────────────┘
+```
+
+In this deployment, PCA structures are passed directly via shared memory or hardware bus. Validation occurs in-process within each executor's embedded CAT, achieving minimal latency suitable for real-time and resource-constrained environments.
+
+---
+
+### 5.2.3 Performance in Kernel/OS Environments (IPC)
+
+Within a single operating system, processes MAY exchange PCA via kernel IPC mechanisms, eliminating network overhead entirely:
+
+```text
+┌─────────────────────────────────────────────────┐
+│                 Operating System                │
+│                                                 │
+│   ┌─────────┐  ┌─────────┐  ┌─────────┐         │
+│   │Process A│  │Process B│  │Process C│         │
+│   │  +CAT   │  │  +CAT   │  │  +CAT   │         │
+│   └────┬────┘  └────┬────┘  └────┬────┘         │
+│        │            │            │              │
+│        └────────────┴────────────┘              │
+│         IPC / Shared Memory / Pipes             │
+│                                                 │
+│   PCA transitions: kernel IPC                   │
+│   ZERO network stack                            │
+│   Microsecond-level latency                     │
+└─────────────────────────────────────────────────┘
+```
+
+PCA transitions between processes occur via standard OS primitives (Unix domain sockets, shared memory, pipes). Each process embeds its own CAT for validation, enabling PIC-compliant authorization within a single host with minimal overhead.
 
 ---
 
