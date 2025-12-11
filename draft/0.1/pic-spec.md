@@ -8,18 +8,48 @@
 
 ## Abstract
 
-This specification defines the **Provenance Identity Continuity (PIC) Model**, an execution model that eliminates confused deputy vulnerabilities through verifiable causal continuity rather than artifact possession.
+This specification defines the **Provenance Identity Continuity (PIC) Model**, an execution model for distributed systems that eliminates the confused deputy problem and entire classes of authorization vulnerabilities through verifiable causal continuity rather than artifact possession.
 
-The PIC Model enforces that authority is derived from execution provenance, not from possession of credentials or tokens. Each execution hop maintains:
+Unlike capability-based systems that provide delegatable objects for process-to-process authority transfer, PIC enforces **execution continuity** across complete distributed transactions—from origin to completion—spanning multiple services, clouds, and administrative domains. Where capabilities enable controlled delegation within bounded contexts, PIC maintains authority invariants across unbounded distributed executions: API gateways calling microservices, event streams processing through Kafka pipelines, AI agents orchestrating multiple API calls, or serverless functions chaining across cloud providers.
+
+The PIC Model makes entire families of authorization bugs **structurally inexpressible** within a transaction by enforcing four invariants at every execution hop:
 
 1. **Origin Immutability**: The initiating subject (`p_0`) remains constant throughout the transaction
 2. **Authority Monotonicity**: Authority can only decrease or remain constant (`ops_i ⊆ ops_{i-1}`)
 3. **Causal Binding**: Each hop is verifiably linked to its predecessor via a Trust Model
 4. **Continuity Validation**: Transitions satisfy executor continuity requirements
 
+A **transaction** in PIC encompasses the entire distributed execution from user initiation to completion, not merely database BEGIN/COMMIT semantics. A single transaction may span:
+
+- Hundreds of execution hops across microservices, message queues, and serverless functions
+- Multiple administrative domains and cloud providers
+- Hours or days of asynchronous processing
+- Event-driven flows (Kafka streams, message buses)
+- AI agent orchestrations calling multiple external APIs
+- Human-initiated workflows across heterogeneous systems
+
+**Example transaction**:
+
+```
+User → API Gateway → 5 microservices → Kafka → Stream processor 
+  → Lambda functions → Multiple APIs → S3 storage
+(100+ hops, 3 clouds, 1 authority chain, 1 p_0, monotonic ops)
+```
+
+**AI agent example**:
+
+```
+User authorizes AI agent (ops_0 = {read:calendar, send:email, call:weather_api})
+  → Agent orchestrates:
+      → Calendar API (ops_1 = {read:calendar})
+      → Weather API (ops_2 = {call:weather_api})
+      → Email API (ops_3 = {send:email})
+All three API calls operate within ops_0, enforced by CAT validation
+```
+
 The origin subject (`p_0`) may be a human user (authenticated via OAuth, SAML, OIDC, VC), a service/workload (identified via DID, SPIFFE, X.509), or anonymous (capability-based). The origin authority (`ops_0`) may derive from identity-based grants, capability tokens, or hybrid models.
 
-As proven in "Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem" [[1]](#references), the confused deputy problem is structurally impossible in PIC-compliant systems—it cannot be formulated, not merely prevented.
+As proven in "Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem" [[1]](#references), the confused deputy problem is structurally impossible in PIC-compliant systems—it cannot be formulated, not merely prevented. By making authority derivation dependent on execution provenance rather than credential possession, PIC eliminates confused deputy, privilege escalation, token substitution, ambient authority exploitation, and other attack classes that are inherent to possession-based authorization models.
 
 **Trust Model Note**: This specification uses "cryptographic" as shorthand for "based on a Trust Model." Trust Models MAY be implemented via cryptographic primitives, hardware attestation, distributed consensus, or other mechanisms providing non-repudiable binding. The specific Trust Model is implementation-specific.
 
