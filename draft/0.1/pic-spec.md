@@ -56,7 +56,7 @@ The PIC Model establishes a foundational execution model that eliminates confuse
 **Normative vs. Informative**:
 
 - Sections 1-3 define **normative** requirements (terminology, architecture, invariants)
-- Sections 4-5 provide **informative** guidance (data model examples, deployment and adoption considerations)
+- Sections 4-6 provide **informative** guidance (data model examples, deployment and adoption considerations)
 - Appendices provide **informative** context (authorship, references)
 
 ### 1.2 Normative Language
