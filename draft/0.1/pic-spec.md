@@ -1548,7 +1548,7 @@ A confused deputy attack occurs when a service (deputy) with elevated privileges
 
 **Token-Based Systems (VULNERABLE)**:
 
-@@@
+```
 User (limited authority)
   │
   │ Request: "Delete my file: /home/user/doc.txt"
@@ -1560,7 +1560,7 @@ Service (broad authority: delete:*)
   ▼
 Backend executes: DELETE /admin/critical.txt
   ❌ CONFUSED DEPUTY: Service's authority used, not user's
-@@@
+```
 
 **Why Token-Based is Vulnerable**:
 - Service holds token with authority `delete:*`
@@ -1570,7 +1570,7 @@ Backend executes: DELETE /admin/critical.txt
 
 **PIC Model (IMMUNE)**:
 
-@@@
+```
 User (ops_0 = {delete:/home/user/*})
   │
   │ PCA_0 with ops_0 = {delete:/home/user/*}
@@ -1583,7 +1583,7 @@ Service (receives PCA_1 with ops_1 ⊆ ops_0)
 Backend receives PCA_2 with ops_2 = {delete:/home/user/*}
   ✓ IMMUNE: Backend can only delete within ops_0
   ✓ Attempt to delete /admin/critical.txt rejected by CAT (ops violation)
-@@@
+```
 
 **Why PIC is Immune**:
 - Authority derived from user's PCA_0, not service's credentials
@@ -1603,7 +1603,7 @@ An attacker steals a token (bearer token, session cookie, API key) and reuses it
 
 **Token-Based Systems (VULNERABLE)**:
 
-@@@
+```
 Legitimate User
   │ Token: "Bearer abc123..."
   ▼
@@ -1614,7 +1614,7 @@ Attacker steals token
   ▼
 Service accepts token
   ❌ IMPERSONATION SUCCESS
-@@@
+```
 
 **Why Token-Based is Vulnerable**:
 - Token validity independent of execution context
@@ -1624,7 +1624,7 @@ Service accepts token
 
 **PIC Model (RESISTANT)**:
 
-@@@
+```
 Executor E_n (has PCA_n)
   │
 [Attacker intercepts PCA_n]
@@ -1637,7 +1637,7 @@ CAT validation:
   ✓ Validates PoP (attacker's credentials)
   ❌ REJECTED: Executor binding mismatch
   ❌ REJECTED: PoI doesn't match PCA_n's executor binding
-@@@
+```
 
 **Why PIC is Resistant**:
 - PCA bound to executor characteristics (federation, namespace, attributes)
@@ -1660,7 +1660,7 @@ A service with limited authority escalates to higher privileges by manipulating 
 
 **Token-Based Systems (VULNERABLE)**:
 
-@@@
+```
 Service A (token: read:*)
   │
   │ Calls Service B (token: write:*)
@@ -1671,7 +1671,7 @@ Service A uses Service B's token
   ▼
 Backend executes write operation
   ❌ PRIVILEGE ESCALATION
-@@@
+```
 
 **Why Token-Based is Vulnerable**:
 - No enforcement of authority monotonicity
@@ -1681,7 +1681,7 @@ Backend executes write operation
 
 **PIC Model (IMMUNE)**:
 
-@@@
+```
 Service A (PCA_1 with ops_1 = {read:*})
   │
   │ Requests PCA_2 from CAT
@@ -1690,7 +1690,7 @@ Service A (PCA_1 with ops_1 = {read:*})
 CAT validation:
   ✓ Checks ops_2 ⊆ ops_1
   ❌ REJECTED: {write:*} ⊄ {read:*}
-@@@
+```
 
 **Why PIC is Immune**:
 - **Monotonicity enforced**: ops_{i+1} ⊆ ops_i for all transitions
@@ -1708,7 +1708,7 @@ A service holds broad ambient authority (e.g., "admin" token) and an attacker ex
 
 **Token-Based Systems (VULNERABLE)**:
 
-@@@
+```
 Service (token: admin, authority: *)
   │
   │ Attacker sends: "Process file: /etc/passwd"
@@ -1718,7 +1718,7 @@ Service uses admin token
   ▼
 Backend accepts (token has authority)
   ❌ AMBIENT AUTHORITY EXPLOITED
-@@@
+```
 
 **Why Token-Based is Vulnerable**:
 - Service holds single token with broad authority
@@ -1728,7 +1728,7 @@ Backend accepts (token has authority)
 
 **PIC Model (IMMUNE)**:
 
-@@@
+```
 User request (ops_0 = {read:/home/user/*})
   │
   │ PCA_0 with ops_0
@@ -1741,7 +1741,7 @@ Service (receives PCA_1 with ops_1 = {read:/home/user/*})
 CAT validation:
   ✓ Checks ops_2 ⊆ ops_1
   ❌ REJECTED: {read:/etc/passwd} ⊄ {read:/home/user/*}
-@@@
+```
 
 **Why PIC is Immune**:
 - Authority scoped to origin request (ops_0)
@@ -1759,7 +1759,7 @@ A malicious service substitutes the client's token with its own higher-privilege
 
 **Token-Based Systems (VULNERABLE)**:
 
-@@@
+```
 Client (token_client: read:/data/*)
   │
   │ Sends: token_client
@@ -1771,7 +1771,7 @@ Backend receives token_service
   │ Executes write operation
   ▼
   ❌ TOKEN SUBSTITUTION SUCCESS
-@@@
+```
 
 **Why Token-Based is Vulnerable**:
 - No binding between tokens in a call chain
@@ -1781,7 +1781,7 @@ Backend receives token_service
 
 **PIC Model (IMMUNE)**:
 
-@@@
+```
 Client (PCA_0 with ops_0 = {read:/data/*})
   │
   │ Passes PCA_1 to service
@@ -1795,7 +1795,7 @@ CAT validation:
   ✓ Verifies PoC_2 references PCA_1
   ✓ Checks ops_2 ⊆ ops_1
   ❌ REJECTED: {read:*, write:*} ⊄ {read:/data/*}
-@@@
+```
 
 **Why PIC is Immune**:
 - PoC cryptographically binds to previous PCA
@@ -1813,7 +1813,7 @@ An attacker captures a valid token and replays it later to gain unauthorized acc
 
 **Token-Based Systems (VULNERABLE)**:
 
-@@@
+```
 Legitimate request: "Bearer token123"
   │
 [Attacker captures token]
@@ -1823,7 +1823,7 @@ Attacker replays: "Bearer token123"
   ▼
 Service accepts token (still valid)
   ❌ REPLAY SUCCESS
-@@@
+```
 
 **Why Token-Based is Vulnerable**:
 - Long-lived tokens remain valid until expiry
@@ -1835,7 +1835,7 @@ Service accepts token (still valid)
 
 **With PCC (Challenge-Response)**:
 
-@@@
+```
 Executor requests PCC_i from CAT
   │
 CAT issues fresh challenge (nonce, timestamp)
@@ -1849,11 +1849,11 @@ Attacker attempts replay
 CAT validation:
   ✓ Checks challenge response
   ❌ REJECTED: Challenge expired or already used
-@@@
+```
 
 **Without PCC (Temporal Binding)**:
 
-@@@
+```
 PCA_i contains temporal constraints (start_time + duration)
   │
 [Attacker captures PCA_i]
@@ -1863,7 +1863,7 @@ Attacker attempts replay (after validity period)
 CAT validation:
   ✓ Checks temporal constraints
   ❌ REJECTED: PCA expired
-@@@
+```
 
 **Why PIC is Resistant**:
 - Challenge-response prevents replay (fresh nonce per transition)
@@ -1881,7 +1881,7 @@ A service forwards the client's credentials to another service, allowing unautho
 
 **Token-Based Systems (VULNERABLE)**:
 
-@@@
+```
 Client → Service A (forwards client token)
            │
            └→ Service B (uses client token)
@@ -1890,7 +1890,7 @@ Client → Service A (forwards client token)
                      │
                      └→ Any service in infrastructure
   ❌ UNRESTRICTED FORWARDING
-@@@
+```
 
 **Why Token-Based is Vulnerable**:
 - Single token usable across entire infrastructure
@@ -1900,7 +1900,7 @@ Client → Service A (forwards client token)
 
 **PIC Model (CONTROLLED)**:
 
-@@@
+```
 Client (PCA_0)
   │
   ├→ Service A (receives PCA_1, requests PCA_2 from CAT)
@@ -1913,7 +1913,7 @@ Every transition validated by CAT:
   ✓ ops_i monotonically decreasing
   ✓ Executor binding validated
   ✓ Complete provenance tracked
-@@@
+```
 
 **Why PIC is Controlled**:
 - Each hop requires CAT validation
@@ -1931,7 +1931,7 @@ Service A impersonates Service B by reusing Service B's token.
 
 **Token-Based Systems (VULNERABLE)**:
 
-@@@
+```
 Service B (token_B: high privileges)
   │ Token leaked/stolen
   │
@@ -1940,7 +1940,7 @@ Service A acquires token_B
   ▼
 Backend accepts token_B
   ❌ IMPERSONATION: Service A acts as Service B
-@@@
+```
 
 **Why Token-Based is Vulnerable**:
 - Token validity independent of holder identity
@@ -1950,7 +1950,7 @@ Backend accepts token_B
 
 **PIC Model (RESISTANT)**:
 
-@@@
+```
 Service B (PCA_B with executor_binding for Service B)
   │
 Service A attempts to use PCA_B
@@ -1960,7 +1960,7 @@ CAT validation:
   ✓ Validates PoI (Service A's identity)
   ✓ Checks executor_binding in PCA_B
   ❌ REJECTED: Service A's PoI doesn't match PCA_B's executor_binding
-@@@
+```
 
 **Why PIC is Resistant**:
 - PCA bound to executor characteristics
@@ -1978,7 +1978,7 @@ An attacker intercepts communication and modifies tokens to escalate privileges.
 
 **Token-Based Systems (VULNERABLE)**:
 
-@@@
+```
 Client → Service
   │ Token: {user: alice, role: user}
   │
@@ -1988,7 +1988,7 @@ Client → Service
   ▼
 Service accepts modified token
   ❌ PRIVILEGE ESCALATION via MITM
-@@@
+```
 
 **Why Token-Based is Vulnerable** (without signatures):
 - Tokens may be transmitted without integrity protection
@@ -1997,7 +1997,7 @@ Service accepts modified token
 
 **PIC Model (IMMUNE)**:
 
-@@@
+```
 Executor → CAT
   │ PoC bundle signed by executor
   │
@@ -2007,7 +2007,7 @@ Executor → CAT
 CAT validation:
   ✓ Verifies executor_signature on bundle
   ❌ REJECTED: Signature invalid (bundle modified)
-@@@
+```
 
 **Why PIC is Immune**:
 - All PoC bundles signed by executor
@@ -2025,7 +2025,7 @@ A compromised service continues operating with valid token despite being revoked
 
 **Token-Based Systems (VULNERABLE)**:
 
-@@@
+```
 Service compromised at t=0
   │ Token valid until t=3600 (1 hour)
   │
@@ -2035,7 +2035,7 @@ Service continues using token until t=3600
   │ Performs malicious operations
   ▼
   ❌ REVOCATION INEFFECTIVE (50-minute window)
-@@@
+```
 
 **Why Token-Based is Vulnerable**:
 - Long-lived tokens remain valid until expiry
@@ -2045,7 +2045,7 @@ Service continues using token until t=3600
 
 **PIC Model (RESPONSIVE)**:
 
-@@@
+```
 Service compromised at t=0
   │ Has PCA_i
   │
@@ -2059,7 +2059,7 @@ CAT validation:
   ✓ Validates PoI (service identity)
   ✓ Checks revocation list
   ❌ REJECTED: Service revoked
-@@@
+```
 
 **Why PIC is Responsive**:
 - Revocation checked at every CAT validation
