@@ -1338,29 +1338,37 @@ In this deployment, PCA structures are passed directly via shared memory or hard
 
 ---
 
-### 5.2.3 Performance in Kernel/OS Environments (IPC)
+### 5.2.2 Performance in IoT Ring (Local Network)
 
-Within a single operating system, processes MAY exchange PCA via kernel IPC mechanisms, eliminating network overhead entirely:
+In IoT deployments, devices on a local network MAY form a ring where requests propagate device-to-device. A user presenting a Verifiable Credential (VC) initiates the chain, and each device performs its operation before passing the PCA to the next:
 
 ```text
-┌─────────────────────────────────────────────────┐
-│                 Operating System                │
-│                                                 │
-│   ┌─────────┐  ┌─────────┐  ┌─────────┐         │
-│   │Process A│  │Process B│  │Process C│         │
-│   │  +CAT   │  │  +CAT   │  │  +CAT   │         │
-│   └────┬────┘  └────┬────┘  └────┬────┘         │
-│        │            │            │              │
-│        └────────────┴────────────┘              │
-│         IPC / Shared Memory / Pipes             │
-│                                                 │
-│   PCA transitions: kernel IPC                   │
-│   ZERO network stack                            │
-│   Microsecond-level latency                     │
-└─────────────────────────────────────────────────┘
+                         User arrives with VC
+                                  │
+                                  ▼
+                    ┌─────────────────────────────┐
+                    │      IoT Local Network      │
+                    │                             │
+                    │   ┌───────┐    ┌───────┐   │
+                    │   │Device │───▶│Device │   │
+                    │   │  A    │    │  B    │   │
+                    │   │ +CAT  │    │ +CAT  │   │
+                    │   └───────┘    └───────┘   │
+                    │       ▲            │        │
+                    │       │            ▼        │
+                    │   ┌───────┐    ┌───────┐   │
+                    │   │Device │◀───│Device │   │
+                    │   │  D    │    │  C    │   │
+                    │   │ +CAT  │    │ +CAT  │   │
+                    │   └───────┘    └───────┘   │
+                    │                             │
+                    │   PCA flows in ring         │
+                    │   Local network only        │
+                    │   ZERO cloud round-trips    │
+                    └─────────────────────────────┘
 ```
 
-PCA transitions between processes occur via standard OS primitives (Unix domain sockets, shared memory, pipes). Each process embeds its own CAT for validation, enabling PIC-compliant authorization within a single host with minimal overhead.
+Each device validates the incoming PCA via its embedded CAT, performs its authorized operation (e.g., sensor read, actuator command), restricts authority if needed, and forwards the new PCA to the next device. The entire ring operates without external IdP calls, achieving low-latency coordination suitable for industrial IoT and smart home scenarios.
 
 ---
 
