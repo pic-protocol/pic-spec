@@ -31,7 +31,7 @@ A **transaction** in PIC encompasses the entire distributed execution from user 
 **Example transaction**:
 
 ```
-User → API Gateway → 5 microservices → Kafka → Stream processor 
+User → API Gateway → microservice → Kafka → Stream processor → microservice
   → Lambda functions → Multiple APIs → S3 storage
 (100+ hops, 3 clouds, 1 authority chain, 1 p_0, monotonic ops)
 ```
