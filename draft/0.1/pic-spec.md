@@ -29,10 +29,11 @@ As proven in "Authority Propagation Models: PoP vs PoC and the Confused Deputy P
 1. [Introduction](#1-introduction)
 2. [Terminology](#2-terminology)
 3. [Architecture and Components](#3-architecture-and-components)
-4. [PIC Data Model](#4-pic-data-model)
-5. [Integration with Existing IAM Systems](#5-integration-with-existing-iam-systems)
-6. [Security Considerations](#6-security-considerations)
-7. [References](#7-references)
+4. [Normative Data Structures and Processing Logic](#4-normative-data-structures-and-processing-logic)
+5. [Adoption and Implementation Considerations](#5-adoption-and-implementation-considerations)
+A. [Appendix A – Use of Automated Language Assistance](#appendix-a-use-of-automated-language-assistance)  
+B. [Appendix B – Authorship, Attribution, and Derivative Works](#appendix-b-authorship-attribution-and-derivative-works)
+R. [References](#references)
 
 ---
 
@@ -861,6 +862,330 @@ E_{n-1}                    E_n                      E_{n+1}
 | **PDP** | Trusted | - Evaluate policies<br>- Provide policy decisions to CAT<br>- Apply contextual constraints | - Issue PCA<br>- Validate PoC<br>- Replace CAT validation |
 
 **Architectural Principle**: Executors **initiate** transitions and **exchange** PCAs. CAT **validates** and **signs** new PCAs based on cryptographic proof and policy. PDP provides policy decisions. This separation ensures no single untrusted component can compromise authority flow.
+
+---
+
+## 4. Normative Data Structures and Processing Logic
+
+[WORK IN PROGRESS]
+
+---
+
+## 5. Adoption and Implementation Considerations
+
+This section addresses common concerns regarding PIC Model adoption and demonstrates that PIC introduces no fundamental computational overhead beyond existing widely-deployed authorization patterns.
+
+---
+
+## 5.1 Trust Boundary Separation: Untrusted and Trusted Components
+
+**Concern**: "You cannot have trusted components (CAT) interact with untrusted components (Executors) - this creates a security vulnerability."
+
+**Response**: This concern fundamentally misunderstands security architecture. **All practical security systems rely on trusted components validating requests from untrusted components.** This is not a weakness; it is the foundation of security architecture.
+
+**Universal Pattern in Production Systems**:
+
+| System | Untrusted Component | Trusted Component | Interaction |
+|--------|-------------------|-------------------|-------------|
+| OAuth 2.0 | Client Application | Authorization Server | Client requests token, AS validates and issues |
+| TLS/SSL | Client | Certificate Authority | Client requests certificate validation |
+| Kerberos | Service | Key Distribution Center (KDC) | Service requests ticket validation |
+| SPIFFE | Workload | SPIFFE Server | Workload requests SVID validation |
+| JWT | API Consumer | Token Issuer | Consumer submits JWT for validation |
+| PIC | Executor | CAT (Trust Plane) | Executor requests PCA validation |
+
+**The CAT-Executor interaction is identical in nature to OAuth Authorization Server validating client requests.** If this pattern were fundamentally insecure, the entire internet would be insecure.
+
+The security property is not "trusted and untrusted cannot interact" but rather:
+- Untrusted components **cannot bypass** trusted validation
+- Untrusted components **cannot forge** trusted signatures
+- Trusted components **enforce invariants** independently
+
+PIC maintains these properties through:
+1. **Cryptographic signatures** (CAT signs PCA, Executor cannot forge)
+2. **Challenge-response** (prevents replay)
+3. **Revocation** (compromised Executors immediately invalidated)
+5. **Monotonicity enforcement** (CAT validates ops_{i+1} ⊆ ops_i)
+
+---
+
+## 5.2 Computational Overhead: Token Exchange Equivalence
+
+**Concern**: "PIC requires CAT validation at every hop, introducing unacceptable performance overhead."
+
+**Response**: PIC's computational model is **functionally identical** to OAuth 2.0 Token Exchange (RFC 8693), which is widely deployed in production systems at scale.
+
+**OAuth 2.0 Token Exchange Flow**:
+
+```text
+Client                  Authorization Server
+  │                            │
+  │ (1) Request token          │
+  ├───────────────────────────▶│
+  │ (2) Validate request       │
+  │     Check credentials      │
+  │     Check policies         │
+  │     Generate token         │
+  │     Sign token             │
+  │◀───────────────────────────┤
+  │ (3) Receive signed token   │
+```
+
+**PIC Causal Authority Transition Flow**:
+```
+Executor                CAT
+  │                      │
+  │ (1) Request PCC      │
+  ├─────────────────────▶│
+  │ (2) Issue PCC        │
+  │◀─────────────────────┤
+  │ (3) Submit PoC       │
+  ├─────────────────────▶│
+  │ (4) Validate PoC     │
+  │     Check signature  │
+  │     Check policies   │
+  │     Generate PCA     │
+  │     Sign PCA         │
+  │◀─────────────────────┤
+  │ (5) Receive PCA      │
+```
+
+**Computational Comparison**:
+
+| Operation | OAuth Token Exchange | PIC CAT Validation |
+|-----------|---------------------|-------------------|
+| Request validation | ✓ | ✓ |
+| Credential verification | ✓ (client credentials) | ✓ (PoI + PoP) |
+| Policy evaluation | ✓ (scopes, audience) | ✓ (PDP consultation) |
+| Token generation | ✓ (JWT creation) | ✓ (PCA creation) |
+| Cryptographic signing | ✓ (JWT signature) | ✓ (PCA signature) |
+| Response delivery | ✓ | ✓ |
+
+**Conclusion**: PIC introduces **zero additional computational overhead** compared to OAuth 2.0 Token Exchange. Both require:
+- Cryptographic operations (signing, verification)
+- Policy evaluation
+- Token generation and validation
+
+If OAuth Token Exchange is acceptable for production systems (which it demonstrably is - it powers most modern API ecosystems), then PIC is equally acceptable.
+
+---
+
+## 5.3 Validation Frequency: Flexibility vs. Security Trade-off
+
+**Concern**: "Requiring validation at every hop is too restrictive and introduces latency."
+
+**Response**: PIC does **not mandate validation at every hop**. Like all authorization systems, PIC allows implementers to make **security-performance trade-offs** based on their threat model.
+
+**PIC Validation Strategies**:
+
+### 5.3.1 Full Validation (Maximum Security)
+
+Validate at every hop:
+```
+E_0 → [CAT] → E_1 → [CAT] → E_2 → [CAT] → E_3
+```
+
+**When to use**:
+- High-security environments (financial, healthcare, government)
+- Cross-trust-domain transitions
+- Untrusted execution environments
+- Compliance requirements (SOC 2, PCI-DSS, HIPAA)
+
+**Overhead**: Equivalent to OAuth Token Exchange at each hop
+
+### 5.3.2 Selective Validation (Balanced)
+
+Validate only at trust boundaries:
+```
+E_0 → [CAT] → E_1 → E_2 → E_3 → [CAT] → E_4
+      ↑                           ↑
+   Boundary                    Boundary
+```
+
+**When to use**:
+- Internal microservices (same trust domain)
+- Performance-critical paths
+- Known execution environments
+
+**Security property**: Hops E_1 → E_2 → E_3 operate without CAT validation, **but PCA_1 remains cryptographically valid and non-forgeable**. Compromise of E_2 cannot expand authority beyond ops_1.
+
+### 5.3.3 Deferred Validation (Performance-Optimized)
+
+Validate asynchronously or in batches:
+```
+E_0 → E_1 → E_2 → E_3
+│                   │
+└───[CAT validates retroactively]
+```
+
+**When to use**:
+- Audit and compliance logging
+- Non-critical operations
+- High-throughput event processing
+
+**Security property**: Execution proceeds optimistically; violations detected post-facto for audit and remediation.
+
+### 5.3.4 No Validation (Trust-Based)
+
+Skip validation entirely within trusted zones:
+```
+E_0 → [CAT] → E_1 → E_2 → E_3 → E_4
+      ↑
+   Once at entry
+```
+
+**When to use**:
+- Tightly controlled environments (single process, trusted infrastructure)
+- Development/testing
+- Performance-critical legacy systems
+
+**Security property**: Equivalent to traditional authorization models where tokens are validated once at entry and trusted thereafter.
+
+---
+
+## 5.4 Comparison to Existing Authorization Protocols
+
+**The key insight**: PIC's validation frequency is **no different** from existing authorization protocols. All authorization systems face the same trade-off:
+
+| Protocol | Validation Strategy | PIC Equivalent |
+|----------|-------------------|----------------|
+| **OAuth 2.0** | Validate token at each API call | Full Validation (5.3.1) |
+| **JWT + Trust** | Validate signature once, trust thereafter | Selective Validation (5.3.2) |
+| **API Keys** | Validate key at entry, trust internally | No Validation (5.3.4) |
+| **Session Cookies** | Validate cookie once, session ID trusted | No Validation (5.3.4) |
+| **mTLS** | Validate certificate at connection, trust session | Selective Validation (5.3.2) |
+
+**PIC provides the same flexibility as existing protocols**, but with **provable security properties** that prevent confused deputy vulnerabilities.
+
+**The choice is yours**:
+- Want maximum security? Validate at every hop (like OAuth validates every API call)
+- Want performance? Validate only at boundaries (like JWT signature verification)
+- Want legacy compatibility? Validate once at entry (like session cookies)
+
+**But here's what PIC guarantees that others don't**:
+- Authority cannot expand (ops_{i+1} ⊆ ops_i is structurally enforced)
+- Confused deputy is impossible (proven in [[1]](#references))
+- Provenance is auditable (complete causal chain maintained)
+
+---
+
+## 5.5 Adopting PIC: No Architectural Disruption
+
+**Concern**: "Adopting PIC requires rebuilding our entire authorization infrastructure."
+
+**Response**: False. PIC is designed to **augment existing authorization systems**, not replace them.
+
+**Integration Patterns**:
+
+### 5.5.1 OAuth 2.0 + PIC
+```
+User → OAuth AS → Client
+         ↓
+      issues JWT (p_0 = user_id, ops_0 = scopes)
+         ↓
+Client → CAT (validates JWT, issues PCA_1)
+         ↓
+PCA_1 → Executor_1 → Executor_2 → ...
+```
+
+**Migration**: Replace token validation with CAT validation. OAuth AS becomes origin of authority.
+
+### 5.5.2 SPIFFE + PIC
+```
+Workload → SPIFFE Server → SVID
+            ↓
+         CAT uses SVID as PoI
+            ↓
+         Issues PCA with SPIFFE ID as p_0
+```
+
+**Migration**: CAT validates SPIFFE SVIDs. No changes to SPIFFE infrastructure.
+
+### 5.5.3 API Gateway + PIC
+```
+Client → API Gateway (CAT role)
+         ↓
+      validates credentials
+         ↓
+      issues PCA_0
+         ↓
+      forwards to backend services
+```
+
+**Migration**: API Gateway becomes CAT. Backend services validate PCA instead of gateway-issued tokens.
+
+**Key Point**: PIC adapts to **your existing infrastructure**. You choose where to deploy CAT validation based on your security and performance requirements.
+
+---
+
+## 5.6 Response to "It's Too Complex"
+
+**Concern**: "PIC is more complex than current authorization models."
+
+**Response**: PIC's **conceptual model** is simpler than existing approaches:
+
+**Current Authorization** (confused deputy vulnerable):
+- Token issuance (OAuth, JWT, API keys)
+- Token validation (signatures, expiry, scopes)
+- Ambient authority (services trust tokens blindly)
+- **No provenance** (cannot trace authority origin)
+- **No monotonicity** (tokens can be escalated, reused)
+
+**PIC Model**:
+- Authority issuance (CAT issues PCA)
+- Continuity validation (PoC proves causal link)
+- Explicit derivation (ops_{i+1} ⊆ ops_i enforced)
+- **Complete provenance** (p_0 → hop_1 → hop_2 → ... auditable)
+- **Structural security** (confused deputy impossible by design)
+
+**What PIC adds**:
+1. Causal continuity (PoC)
+2. Monotonic authority (ops_i ⊆ ops_{i-1})
+3. Origin preservation (p_0 immutable)
+
+**What PIC removes**:
+1. Ambient authority vulnerabilities
+2. Token escalation attacks
+3. Confused deputy scenarios
+5. Authority provenance ambiguity
+
+**Complexity vs. Security**: PIC trades **implementation flexibility** (you must validate continuity) for **structural security guarantees** (confused deputy cannot occur). This is the same trade-off as TLS (must perform handshake) or OAuth (must validate tokens).
+
+---
+
+## 5.7 Final Rebuttal: The Security Argument
+
+**If your criticism is**: "PIC forces validation at every hop, this is impractical"
+
+**Our response is**: No more impractical than OAuth 2.0, which **already requires validation at every API boundary** and is deployed successfully at global scale (Google, Microsoft, AWS, etc.).
+
+**If your criticism is**: "PIC's CAT-Executor interaction is insecure"
+
+**Our response is**: Then OAuth Authorization Servers, TLS Certificate Authorities, Kerberos KDCs, and every other trusted validation service in production is also insecure. This criticism rejects the **entire foundation of modern security architecture**.
+
+**If your criticism is**: "We want performance, not security"
+
+**Our response is**: PIC provides the **same performance-security trade-offs** as existing protocols (see Section 5.3). You can skip validation where appropriate - but you cannot escape the consequences of ambient authority vulnerabilities.
+
+**The fundamental question is not**:
+- "Is PIC faster than OAuth?" (Answer: Equivalent computational cost)
+- "Is PIC simpler than JWT?" (Answer: Simpler conceptual model, proven security)
+- "Can I skip validation?" (Answer: Yes, same as any protocol)
+
+**The fundamental question is**:
+- "Do you want to eliminate confused deputy vulnerabilities?"
+
+If yes → PIC is the **only model** with a formal proof that confused deputy is impossible [[1]](#references).
+
+If no → Continue using possession-based models and accept the security risk.
+
+**There is no middle ground.** Confused deputy is either possible (PoP) or impossible (PoC). Choose accordingly.
+
+---
+
+## References
+
+[1] N. Gallo. "Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem." Zenodo, 2025. [doi.org/10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
 
 ---
 
