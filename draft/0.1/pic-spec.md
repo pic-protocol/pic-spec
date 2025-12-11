@@ -31,9 +31,9 @@ As proven in "Authority Propagation Models: PoP vs PoC and the Confused Deputy P
 2. [Terminology](#2-terminology)  
 3. [Architecture and Components](#3-architecture-and-components)  
 4. [Normative Data Structures and Processing Logic](#4-normative-data-structures-and-processing-logic)  
-5. [Adoption and Implementation Considerations](#5-adoption-and-implementation-considerations)  
+5. [Implementation Considerations](#5-implementation-considerations)  
 
-Appendices:  
+**Appendices:**  
 A. [Appendix A – Use of Automated Language Assistance](#appendix-a-use-of-automated-language-assistance)  
 B. [Appendix B – Authorship, Attribution, and Derivative Works](#appendix-b-authorship-attribution-and-derivative-works)  
 R. [References](#references)  
@@ -44,9 +44,19 @@ R. [References](#references)
 
 ### 1.1 Scope
 
-This specification defines the Provenance Identity Continuity (PIC) Model for distributed execution systems. The PIC Model establishes causal invariants that MUST hold for any execution to be considered valid under its principles.
+This specification defines the Provenance Identity Continuity (PIC) Model for distributed execution systems. The specification includes:
 
-The PIC Model does not prescribe system architecture, deployment topology, trust boundaries, or specific protocol implementations. Instead, it defines execution semantics and causal invariants that eliminate confused deputy conditions by construction.
+1. **Formal Model**: Causal invariants and execution semantics that MUST hold for any execution to be considered PIC-compliant
+2. **Architecture and Components**: Reference architecture defining the separation between untrusted execution (Executors) and trusted validation (CAT/Trust Plane)
+3. **Implementation Considerations**: Deployment patterns, integration strategies, and performance trade-offs for practical adoption
+
+The PIC Model establishes a foundational execution model that eliminates confused deputy conditions by construction. While the specification provides reference architecture and implementation guidance, it does not mandate specific protocol encodings, wire formats, or cryptographic primitives. These are defined in separate PIC Protocol specifications.
+
+**Normative vs. Informative**:
+
+- Sections 1-3 define **normative** requirements (terminology, architecture, invariants)
+- Sections 4-5 provide **informative** guidance (data model examples, implementation considerations)
+- Appendices provide **informative** context (authorship, references)
 
 ### 1.2 Normative Language
 
@@ -71,6 +81,7 @@ A verifiable mechanism for establishing non-repudiable binding between execution
 3. **Freshness**: Bindings are temporally bound to prevent replay attacks
 
 Trust Models MAY be implemented via:
+
 - Cryptographic primitives (signatures, MACs, hash chains)
 - Hardware security modules (TPM, TEE, SGX)
 - Distributed consensus mechanisms (blockchain, DAG)
@@ -87,6 +98,7 @@ The immutable reference to the entity that initiated the distributed transaction
 The origin subject MAY be:
 
 **Human User** - Authenticated via:
+
 - OAuth 2.0 / OpenID Connect
 - SAML 2.0
 - Verifiable Credentials (W3C VC)
@@ -95,6 +107,7 @@ The origin subject MAY be:
 - Other identity protocols
 
 **Service/Workload** - Identified via:
+
 - Decentralized Identifiers (DID)
 - SPIFFE ID
 - X.509 certificates
@@ -102,6 +115,7 @@ The origin subject MAY be:
 - Other workload identity mechanisms
 
 **Anonymous Origin**:
+
 - Capability token hash
 - Privacy-preserving identifier
 - Anonymous credential system
@@ -109,6 +123,7 @@ The origin subject MAY be:
 **Critical Invariant**: Regardless of whether `p_0` is human, workload, or anonymous, it MUST NOT change during the transaction. Any attempt to alter `p_0` invalidates the execution chain.
 
 **Examples:**
+
 - Human (OIDC): `p_0 = sub:248289761001`
 - Human (SAML): `p_0 = urn:saml:user:alice@example.com`
 - Workload (SPIFFE): `p_0 = spiffe://trust-domain.com/workload/api`
@@ -139,10 +154,12 @@ Authority MAY derive from:
 **Authority Propagation**: Each subsequent hop *i* operates with `ops_i ⊆ ops_{i-1}` (monotonic restriction). Authority can only decrease or remain constant; it can never expand beyond `ops_0`.
 
 **Critical Distinction**:
+
 - `p_0` (origin subject) = WHO initiated the transaction (immutable)
 - `ops_0` (origin authority) = WHAT operations are authorized (may be restricted at each hop)
 
 **Examples:**
+
 - Human with roles: `ops_0 = {read:/home/alice/*, write:/home/alice/docs/*, execute:/bin/gcc}`
 - Service with role: `ops_0 = {read:/config/*, write:/logs/*, invoke:service-b}`
 - Capability-based: `ops_0 = {execute:contract:0x123, transfer:token:XYZ}`
@@ -159,21 +176,25 @@ An execution hop is NOT a process, service, or container; it is a logical unit o
 An active execution entity responsible for performing computations at hop *i*. An Executor acts within a bounded execution context and participates in causal authority transitions.
 
 Each Executor MUST:
+
 1. **Preserve Origin**: Maintain immutable reference to origin subject `p_0`
 2. **Operate Within Authority**: Execute only operations permitted by `ops_i` (where `ops_i ⊆ ops_0`)
 3. **Demonstrate Continuity**: Provide valid Proof of Continuity (PoC_i) establishing causal derivation from hop *i-1*
 4. **Bind to Environment**: Be verifiably bound to its execution environment
 
 An Executor MAY provide:
+
 - **Proof of Identity (PoI)**: Establishes executor's own identity
 - **Proof of Possession (PoP)**: Demonstrates control over credentials or secrets
 
 **Critical Distinction**:
+
 - **Executor Identity**: WHO is performing computation at hop *i* (the service/workload executing code)
 - **Origin Subject** (`p_0`): WHO initiated the transaction (immutable throughout)
 - **Authority** (`ops_i`): WHAT operations executor may perform (derived from `ops_0`)
 
 PoI and PoP establish executor verification but DO NOT:
+
 - Grant authority beyond `ops_i`
 - Alter origin subject `p_0`
 - Establish execution continuity (requires PoC)
@@ -222,6 +243,7 @@ The correct ops_3 MUST satisfy: ops_3 ⊆ ops_2 = {read:*}
 ### 2.6 Executor Characteristic (EC_i)
 
 A non-transferable property of an Executor at hop *i* that is bound to its execution context. Executor Characteristics include environmental, platform, or runtime attributes such as:
+
 - Trusted Execution Environment (TEE) attestation
 - Container or pod identity
 - Process attributes and security context
@@ -237,6 +259,7 @@ Executor Characteristics are used to validate executor continuity under the Trus
 The ordered, non-forgeable (under Trust Model) history of execution hops and authority derivations that causally led to a given execution state. Provenance forms the immutable foundation for continuity validation and provides complete auditability of authority flow.
 
 Provenance includes:
+
 - Complete chain of execution hops from origin to current state
 - Origin subject `p_0` (immutable throughout)
 - Authority evolution `ops_0 → ops_1 → ... → ops_i`
@@ -249,6 +272,7 @@ Provenance includes:
 A causally linked sequence of execution hops forming a single logical operation across multiple execution contexts. Each hop participates in τ by verifying continuity with its immediate causal predecessor.
 
 **Critical Note**: In PIC, a "transaction" encompasses the **entire distributed execution from origin to completion**, not merely BEGIN/COMMIT database semantics. A transaction may span:
+
 - Multiple services and execution boundaries
 - Multiple administrative domains
 - Hours or days of processing time
@@ -259,6 +283,7 @@ A causally linked sequence of execution hops forming a single logical operation 
 All execution within a single transaction maintains causal continuity under the same origin subject `p_0` and derives authority from the same origin authority set `ops_0`.
 
 **Examples:**
+
 - User clicks button → API Gateway → 5 microservices → Database → Function → Storage
 - User submits document → Message queue → Stream processing → Multiple consumers → Storage
 - User authorizes AI agent → Agent calls API₁ + API₂ + API₃ → Aggregates results
@@ -266,6 +291,7 @@ All execution within a single transaction maintains causal continuity under the 
 ### 2.9 Causal Authority Transition (CAT)
 
 A normative enforcement mechanism that validates Provenance Identity Continuity invariants by:
+
 1. Issuing PIC Causal Challenges (PCC_i)
 2. Verifying Proofs of Continuity (PoC_i)
 3. Deriving successor PIC Causal Authority (PCA_{i+1}) states
@@ -273,6 +299,7 @@ A normative enforcement mechanism that validates Provenance Identity Continuity 
 The CAT is a logical mechanism that enforces continuity and may be implemented in-process, externally, or implicitly by a runtime environment, provided the PIC invariants are preserved.
 
 The CAT ensures:
+
 - **Monotonicity**: `ops_{i+1} ⊆ ops_i` (authority can only decrease or remain constant)
 - **Causal Binding**: Each hop is verifiably linked to its predecessor under the Trust Model
 - **Origin Preservation**: The immutable origin subject `p_0` is maintained throughout the execution chain
@@ -296,6 +323,7 @@ PCA_i MAY include additional dimensions:
 - **Other Dimensions**: Implementation-specific constraints that do not violate PIC invariants
 
 **Key Properties**:
+
 1. **Origin Immutability**: `p_0` does not change across hops
 2. **Authority Monotonicity**: `ops_i ⊆ ops_{i-1}` for all *i*, which implies `ops_i ⊆ ops_0`
 3. **Executor Binding**: Authority is bound to specific executor E_i
@@ -311,6 +339,7 @@ PCA_i is NOT a token, credential, or transferable artifact. It is a state proper
 A freshness and causality challenge issued by the CAT at hop *i* to require a Proof of Continuity (PoC_i) from Executor E_i. The challenge mechanism is RECOMMENDED but not strictly required for all deployments.
 
 **Purpose**:
+
 1. **Freshness Binding**: Prevents replay of continuity proofs outside their intended temporal context
 2. **Revocation Support**: Enables immediate invalidation of compromised executor identities
 
@@ -336,6 +365,7 @@ A PIC Causal Challenge MAY be implemented using:
    - Environment binding + dynamic challenge
 
 **Challenge Structure** (protocol-specific):
+
 - Freshness element (nonce, timestamp, or sequence number) - RECOMMENDED
 - Reference to predecessor state (PCA_{i-1} or its digest)
 - Required continuity constraints
@@ -345,6 +375,7 @@ A PIC Causal Challenge MAY be implemented using:
 **Revocation Support**:
 
 The challenge mechanism SHOULD support executor revocation:
+
 - CAT maintains list of revoked executor identities
 - Challenges to revoked executors are rejected immediately
 - Compromised workload identities can be invalidated without waiting for credential expiry
@@ -373,11 +404,13 @@ If a PIC Causal Challenge (PCC_i) is issued, the PoC_i MUST include a cryptograp
 - **Temporal Validity**: Response is within the challenge's validity window
 
 The specific response mechanism depends on the challenge type:
+
 - **Dynamic Challenge**: Cryptographic signature over challenge nonce + execution state
 - **Static Binding**: Proof of possession of executor credentials + state binding
 - **Hybrid**: Combination of the above
 
 If no challenge is issued (deployment-specific decision), the PoC_i MUST still demonstrate:
+
 - Causal linkage to predecessor state
 - Authority bound satisfaction (`ops_i ⊆ ops_{i-1}`)
 - Origin preservation
@@ -385,6 +418,7 @@ If no challenge is issued (deployment-specific decision), the PoC_i MUST still d
 **Non-Transferability**:
 
 PoC_i cannot be:
+
 - Replayed outside its causal context (prevented by challenge or state binding)
 - Transferred to another execution chain (bound to specific predecessor)
 - Reused after validity period (temporal constraints)
@@ -394,6 +428,7 @@ PoC_i cannot be:
 **Binding Properties**:
 
 PoC_i is bound to:
+
 - Specific execution hop *i*
 - Specific predecessor state (PCA_{i-1})
 - Specific executor E_i (with revocation support if challenge used)
@@ -410,6 +445,7 @@ PoI establishes "who" the executor claims to be but is insufficient to establish
 PoI MAY be used as input to executor verification (to validate identity claims) but does not replace or constitute Proof of Continuity.
 
 PoI DOES NOT:
+
 - Grant authority
 - Establish causal continuity
 - Prevent confused deputy scenarios
@@ -420,6 +456,7 @@ PoI DOES NOT:
 A proof that demonstrates control or possession of an artifact, credential, or secret (e.g., JWT signature, OAuth bearer token, capability token, private key signature).
 
 PoP establishes ownership or control but does not provide:
+
 - Causal continuity with predecessor state
 - Authority derivation from execution origin
 - Prevention of confused deputy scenarios
@@ -442,12 +479,14 @@ This section introduces the architectural components and their relationships wit
 ### 3.1.1 Executor (Untrusted Component)
 
 An **Executor** is an **untrusted** computational entity that performs operations at a specific execution hop. Executors are considered untrusted because:
+
 - They may be compromised
 - They operate in potentially hostile environments
 - They may attempt to exceed their authority
 - They may be subject to confused deputy vulnerabilities
 
 Because Executors are untrusted, they **MUST NOT**:
+
 - Self-assert their own authority
 - Validate their own continuity proofs
 - Expand authority beyond what is inherited
@@ -462,6 +501,7 @@ The **Causal Authority Transition (CAT)**, also referred to as the **Trust Plane
 **Terminology Note**: "CAT" and "Trust Plane" refer to the same logical component. "Trust Plane" emphasizes its role as a trusted authority layer, analogous to how Identity Providers (IdPs) function as trusted identity layers.
 
 The CAT/Trust Plane is trusted because it:
+
 - Enforces PIC invariants independently of Executors
 - Cannot be bypassed by Executors
 - Validates continuity proofs using the Trust Model
@@ -469,6 +509,7 @@ The CAT/Trust Plane is trusted because it:
 - Operates as a neutral validator and generator (no business logic)
 
 **CAT Responsibilities**:
+
 1. Issue PIC Causal Challenges (PCC_i) upon request
 2. Verify Proofs of Continuity (PoC_i) using the Trust Model
 3. Validate Proof of Identity (PoI) from executors
@@ -481,6 +522,7 @@ The CAT/Trust Plane is trusted because it:
 **Implementation Models**:
 
 The CAT MAY be implemented as:
+
 - **Centralized Service**: Single trusted service (e.g., authorization server, API gateway)
 - **Decentralized System**: Distributed ledger, blockchain, or consensus-based network
 - **Federated Model**: Multiple CATs with inter-CAT trust verification
@@ -562,6 +604,7 @@ The following diagram illustrates how authority flows between executors through 
 **Fork Scenario Note**: 
 
 When E_n forks execution to multiple successors (E_{n+1,a}, E_{n+1,b}, etc.):
+
 - E_n requests multiple PCA_{n+1} from CAT (one per successor)
 - Each PCA_{n+1} is bound to **executor characteristics** (not specific executor ID)
 - Executor characteristics define criteria (e.g., "runs in TEE", "in prod namespace")
@@ -754,6 +797,7 @@ CAT implemented as distributed system:
 **Use Cases**: Multi-region, trustless environments, blockchain-based systems
 
 **Implementation Examples**:
+
 - **Blockchain**: Smart contract validates PoC and issues PCA
 - **Distributed Ledger**: Consensus validates transitions
 - **Federated Service Mesh**: Multiple CATs with shared trust
@@ -790,6 +834,7 @@ Multiple CATs across trust domains:
 ```
 
 **Cross-Domain Flow**:
+
 1. E_{n-1} (Domain A) generates PCA_n via CAT_A
 2. E_{n-1} passes PCA_n to E_n (Domain B)
 3. E_n requests CAT_B to validate and generate PCA_{n+1}
@@ -846,6 +891,7 @@ E_{n-1}                    E_n                      E_{n+1}
 ```
 
 **Key Properties**:
+
 1. **Executor initiates** each transition
 2. **Executor receives** PCA_i from predecessor
 3. **Executor generates** PCA_{i+1} via CAT validation
@@ -870,319 +916,562 @@ E_{n-1}                    E_n                      E_{n+1}
 
 ## 4. Normative Data Structures and Processing Logic
 
-[WORK IN PROGRESS]
+This section defines the normative data structures for the PIC Model. The examples provided are **informative and non-normative**. Concrete protocol encodings (JSON, CBOR, Protocol Buffers, etc.) are defined in separate PIC Protocol specifications.
 
 ---
 
-## 5. Adoption and Implementation Considerations
+## 4.1 PIC Causal Authority (PCA)
 
-This section addresses common concerns regarding PIC Model adoption and demonstrates that PIC introduces no fundamental computational overhead beyond existing widely-deployed authorization patterns.
+The PIC Causal Authority (PCA) represents causally derived authority at a specific execution hop. A PCA MUST be signed by the CAT.
+
+### 4.1.1 Structure
+
+A PCA MUST contain:
+
+1. **CAT Signature**: Cryptographic signature by the issuing CAT
+2. **CAT Identifier**: Reference to the CAT that signed this PCA (enables signature verification and key rotation)
+3. **Payload**: The authority data structure
+
+### 4.1.2 Payload Requirements
+
+The PCA payload MUST include:
+
+**Origin Subject (`p_0`)**:
+- Immutable reference to transaction initiator
+- MUST NOT change throughout execution chain
+
+**Authority Set (`ops_i`)**:
+- Operations the executor may perform at this hop
+- MUST satisfy `ops_i ⊆ ops_{i-1}` (monotonicity)
+
+**Executor Binding**:
+- Characteristics that bind authority to executor
+- MUST constrain to specific federation/attributes (NOT "any identity")
+- MAY include: organizational attributes, environmental characteristics, federated identity domain
+
+**Temporal Constraints** (OPTIONAL):
+- MAY be expressed as start time + duration OR absolute time range
+
+**Provenance Reference**:
+- Link to causal chain (hash of previous PCA, ledger reference, etc.)
+
+### 4.1.3 CAT Identifier
+
+The CAT identifier MUST support:
+1. Signature verification (public key retrieval)
+2. Key rotation
+3. Cross-domain federation
+
+Common approaches: Key ID (kid), DID, X.509 certificate, SPIFFE Bundle.
+
+### 4.1.4 Informative Example
+
+```json
+{
+  "cat_signature": "base64url_encoded_signature",
+  "cat_identifier": "https://cat.example.com/v1/keys/key-2024-12",
+  "payload": {
+    "origin_subject": "sub:alice@example.com",
+    "authority_set": [
+      "read:/*",
+      "write:/home/alice/*"
+    ],
+    "executor_binding": {
+      "federation": "spiffe://trust-domain.com",
+      "namespace": "prod",
+      "attributes": {
+        "department": "engineering"
+      }
+    },
+    "temporal": {
+      "start_time": "2025-12-11T10:00:00Z",
+      "duration_seconds": 3600
+    },
+    "provenance": {
+      "previous_pca_hash": "sha256:a3f5b9c7..."
+    },
+    "issued_at": "2025-12-11T10:00:00Z"
+  }
+}
+```
 
 ---
 
-## 5.1 Trust Boundary Separation: Untrusted and Trusted Components
+## 4.2 PIC Causal Challenge (PCC)
 
-**Concern**: "You cannot have trusted components (CAT) interact with untrusted components (Executors) - this creates a security vulnerability."
+The PIC Causal Challenge (PCC) is issued by the CAT to establish freshness and enable revocation. The specific structure is **protocol-dependent** and NOT defined in this specification.
 
-**Response**: This concern fundamentally misunderstands security architecture. **All practical security systems rely on trusted components validating requests from untrusted components.** This is not a weakness; it is the foundation of security architecture.
+### 4.2.1 Requirements
 
-**Universal Pattern in Production Systems**:
+A PCC, if used, MUST provide:
+1. **Freshness**: Prevent replay of continuity proofs
+2. **Revocation Support**: Enable detection of revoked executors
+3. **Binding**: Link challenge to specific transition context
 
-| System | Untrusted Component | Trusted Component | Interaction |
-|--------|-------------------|-------------------|-------------|
-| OAuth 2.0 | Client Application | Authorization Server | Client requests token, AS validates and issues |
-| TLS/SSL | Client | Certificate Authority | Client requests certificate validation |
-| Kerberos | Service | Key Distribution Center (KDC) | Service requests ticket validation |
-| SPIFFE | Workload | SPIFFE Server | Workload requests SVID validation |
-| JWT | API Consumer | Token Issuer | Consumer submits JWT for validation |
-| PIC | Executor | CAT (Trust Plane) | Executor requests PCA validation |
-
-**The CAT-Executor interaction is identical in nature to OAuth Authorization Server validating client requests.** If this pattern were fundamentally insecure, the entire internet would be insecure.
-
-The security property is not "trusted and untrusted cannot interact" but rather:
-- Untrusted components **cannot bypass** trusted validation
-- Untrusted components **cannot forge** trusted signatures
-- Trusted components **enforce invariants** independently
-
-PIC maintains these properties through:
-1. **Cryptographic signatures** (CAT signs PCA, Executor cannot forge)
-2. **Challenge-response** (prevents replay)
-3. **Revocation** (compromised Executors immediately invalidated)
-5. **Monotonicity enforcement** (CAT validates ops_{i+1} ⊆ ops_i)
+PIC Protocol specifications MUST define challenge structure and response mechanism.
 
 ---
 
-## 5.2 Computational Overhead: Token Exchange Equivalence
+## 4.3 Proof of Continuity (PoC)
 
-**Concern**: "PIC requires CAT validation at every hop, introducing unacceptable performance overhead."
+The Proof of Continuity (PoC) is constructed by the Executor to demonstrate valid causal continuation and submitted to the CAT for validation.
 
-**Response**: PIC's computational model is **functionally identical** to OAuth 2.0 Token Exchange (RFC 8693), which is widely deployed in production systems at scale.
+### 4.3.1 Structure
 
-**OAuth 2.0 Token Exchange Flow**:
+A PoC MUST contain:
+
+**Previous PCA**:
+- The PCA received from predecessor (establishes causal state)
+
+**Proposed PCA**:
+- The PCA_{i+1} being requested
+- MUST satisfy:
+  - Same `origin_subject` (p_0 unchanged)
+  - `ops_{i+1} ⊆ ops_i` (monotonicity)
+  - Valid executor binding
+  - Temporal constraints respected
+
+**Executor Proofs**:
+- **Proof of Identity (PoI)**: Executor's identity credential
+- **Proof of Possession (PoP)**: Control over signing key
+
+**Challenge Response** (if PCC issued):
+- Cryptographically valid response to PCC
+
+**Bundle Signature**:
+- Entire PoC MUST be signed by executor (prevents tampering in transit)
+
+### 4.3.2 Informative Example
+
+```json
+{
+  "executor_signature": "base64url_encoded_signature_over_bundle",
+  "bundle": {
+    "previous_pca": {
+      "cat_signature": "...",
+      "cat_identifier": "https://cat.example.com/v1/keys/key-2024-12",
+      "payload": {
+        "origin_subject": "sub:alice@example.com",
+        "authority_set": ["read:/*", "write:/home/alice/*"],
+        "executor_binding": {
+          "federation": "spiffe://trust-domain.com",
+          "namespace": "prod"
+        },
+        "temporal": {
+          "start_time": "2025-12-11T10:00:00Z",
+          "duration_seconds": 3600
+        },
+        "provenance": {
+          "previous_pca_hash": "sha256:..."
+        }
+      }
+    },
+    "proposed_pca": {
+      "payload": {
+        "origin_subject": "sub:alice@example.com",
+        "authority_set": ["read:/*"],
+        "executor_binding": {
+          "federation": "spiffe://trust-domain.com",
+          "namespace": "prod",
+          "attributes": {
+            "service": "backend"
+          }
+        },
+        "temporal": {
+          "start_time": "2025-12-11T10:15:00Z",
+          "duration_seconds": 3600
+        },
+        "provenance": {
+          "previous_pca_hash": "sha256:a3f5b9c7..."
+        }
+      }
+    },
+    "executor_proofs": {
+      "proof_of_identity": {
+        "type": "spiffe_svid",
+        "svid": "spiffe://trust-domain.com/service/backend"
+      },
+      "proof_of_possession": {
+        "type": "ecdsa_signature",
+        "public_key": "base64_encoded_key"
+      }
+    }
+  }
+}
+```
+
+**Key Properties**:
+- `origin_subject`: Unchanged from previous PCA (immutability)
+- `authority_set`: Reduced from previous (monotonicity enforced)
+- `executor_binding`: Constrained to specific federation + namespace
+- `executor_signature`: Prevents tampering during transit
+
+---
+
+## 4.4 Protocol Encodings
+
+This specification does not mandate specific encodings. PIC Protocol specifications MUST define:
+
+1. Serialization format (JSON, CBOR, etc.)
+2. Signature schemes (JOSE, COSE, etc.)
+3. CAT identifier format
+4. Challenge-response mechanism
+5. Wire format (HTTP, gRPC, etc.)
+
+Example protocols: PIC-HTTP, PIC-gRPC, PIC-SPIFFE, PIC-Blockchain.
+
+---
+
+## 5. Implementation Considerations
+
+This section addresses practical deployment considerations and clarifies the relationship between PIC and existing authorization patterns.
+
+---
+
+## 5.1 Trust Architecture Pattern
+
+The PIC Model follows the standard separation-of-concerns pattern used in production authorization systems, where untrusted components submit requests to trusted validation services.
+
+**Standard Pattern in Production Systems**:
+
+| System | Requesting Component | Validation Service | Operation |
+|--------|---------------------|-------------------|-----------|
+| OAuth 2.0 | Client Application | Authorization Server | Token issuance and validation |
+| TLS/SSL | Client | Certificate Authority | Certificate validation |
+| Kerberos | Service | Key Distribution Center | Ticket validation |
+| SPIFFE | Workload | SPIFFE Server | SVID issuance and validation |
+| JWT | Resource Server | Token Issuer | Signature verification |
+| PIC | Executor | CAT (Trust Plane) | Continuity validation and PCA issuance |
+
+The CAT-Executor relationship is functionally equivalent to Authorization Server-Client relationships in OAuth 2.0 and other widely-deployed protocols.
+
+**Security Properties**:
+
+The separation ensures:
+
+1. Requesting components cannot bypass validation
+2. Requesting components cannot forge trusted signatures
+3. Validation services enforce invariants independently
+4. Compromised requesters can be revoked without system-wide credential rotation
+
+PIC maintains these properties through cryptographic signatures (CAT-signed PCA), challenge-response mechanisms (freshness), revocation support (compromised executor invalidation), and monotonicity enforcement (CAT validates ops_{i+1} ⊆ ops_i).
+
+---
+
+## 5.2 Computational Overhead Analysis
+
+The PIC validation process is computationally equivalent to OAuth 2.0 Token Exchange (RFC 8693), a widely-deployed pattern in production environments.
+
+**OAuth 2.0 Token Exchange**:
 
 ```text
 Client                  Authorization Server
   │                            │
-  │ (1) Request token          │
+  │ Request token              │
   ├───────────────────────────▶│
-  │ (2) Validate request       │
-  │     Check credentials      │
-  │     Check policies         │
-  │     Generate token         │
-  │     Sign token             │
+  │ Validate credentials       │
+  │ Evaluate policies          │
+  │ Generate signed token      │
   │◀───────────────────────────┤
-  │ (3) Receive signed token   │
+  │ Receive token              │
 ```
 
-**PIC Causal Authority Transition Flow**:
-```
+**PIC Authority Transition**:
+
+```text
 Executor                CAT
   │                      │
-  │ (1) Request PCC      │
+  │ Request PCC          │
   ├─────────────────────▶│
-  │ (2) Issue PCC        │
+  │ Receive PCC          │
   │◀─────────────────────┤
-  │ (3) Submit PoC       │
+  │ Submit PoC+PoI+PoP   │
   ├─────────────────────▶│
-  │ (4) Validate PoC     │
-  │     Check signature  │
-  │     Check policies   │
-  │     Generate PCA     │
-  │     Sign PCA         │
+  │ Validate proofs      │
+  │ Evaluate policies    │
+  │ Generate signed PCA  │
   │◀─────────────────────┤
-  │ (5) Receive PCA      │
+  │ Receive PCA          │
 ```
 
-**Computational Comparison**:
+**Operation Comparison**:
 
-| Operation | OAuth Token Exchange | PIC CAT Validation |
-|-----------|---------------------|-------------------|
-| Request validation | ✓ | ✓ |
-| Credential verification | ✓ (client credentials) | ✓ (PoI + PoP) |
-| Policy evaluation | ✓ (scopes, audience) | ✓ (PDP consultation) |
-| Token generation | ✓ (JWT creation) | ✓ (PCA creation) |
-| Cryptographic signing | ✓ (JWT signature) | ✓ (PCA signature) |
-| Response delivery | ✓ | ✓ |
+| Operation | OAuth Token Exchange | PIC CAT Validation | Notes |
+|-----------|---------------------|-------------------|-------|
+| Request validation | Required | Required | Standard protocol overhead |
+| Credential verification | Required | Required (PoI+PoP) | Cryptographic operation |
+| Policy evaluation | Required | Required (PDP) | Application-specific logic |
+| Token generation | Required | Required (PCA) | Cryptographic operation |
+| Signature creation | Required | Required | Cryptographic operation |
 
-**Conclusion**: PIC introduces **zero additional computational overhead** compared to OAuth 2.0 Token Exchange. Both require:
-- Cryptographic operations (signing, verification)
-- Policy evaluation
-- Token generation and validation
-
-If OAuth Token Exchange is acceptable for production systems (which it demonstrably is - it powers most modern API ecosystems), then PIC is equally acceptable.
+**Conclusion**: PIC introduces no additional computational operations beyond those already required by OAuth 2.0 Token Exchange. Systems that successfully deploy OAuth at scale can deploy PIC with equivalent performance characteristics.
 
 ---
 
-## 5.3 Validation Frequency: Flexibility vs. Security Trade-off
+## 5.3 Validation Frequency Options
 
-**Concern**: "Requiring validation at every hop is too restrictive and introduces latency."
+PIC does not mandate validation frequency. Implementations MAY choose validation strategies based on their security requirements and threat model, similar to existing authorization protocols.
 
-**Response**: PIC does **not mandate validation at every hop**. Like all authorization systems, PIC allows implementers to make **security-performance trade-offs** based on their threat model.
+### 5.3.1 Validation Strategy: Full Validation
 
-**PIC Validation Strategies**:
+Validate at every hop transition:
 
-### 5.3.1 Full Validation (Maximum Security)
-
-Validate at every hop:
-```
+```text
 E_0 → [CAT] → E_1 → [CAT] → E_2 → [CAT] → E_3
 ```
 
-**When to use**:
-- High-security environments (financial, healthcare, government)
-- Cross-trust-domain transitions
-- Untrusted execution environments
-- Compliance requirements (SOC 2, PCI-DSS, HIPAA)
+**Characteristics**:
 
-**Overhead**: Equivalent to OAuth Token Exchange at each hop
+- Maximum security assurance
+- Equivalent to validating OAuth tokens at every API call
+- Appropriate for: cross-domain transitions, high-security environments, compliance requirements
 
-### 5.3.2 Selective Validation (Balanced)
+**Overhead**: One validation per hop (equivalent to OAuth validation per API call)
 
-Validate only at trust boundaries:
-```
+### 5.3.2 Validation Strategy: Selective Validation
+
+Validate at trust boundary transitions:
+
+```text
 E_0 → [CAT] → E_1 → E_2 → E_3 → [CAT] → E_4
       ↑                           ↑
    Boundary                    Boundary
 ```
 
-**When to use**:
-- Internal microservices (same trust domain)
-- Performance-critical paths
-- Known execution environments
+**Characteristics**:
 
-**Security property**: Hops E_1 → E_2 → E_3 operate without CAT validation, **but PCA_1 remains cryptographically valid and non-forgeable**. Compromise of E_2 cannot expand authority beyond ops_1.
+- Reduced validation overhead within trust domains
+- Equivalent to JWT signature verification at boundaries
+- PCA remains cryptographically valid between validations
+- Appropriate for: internal microservices, performance-critical paths
 
-### 5.3.3 Deferred Validation (Performance-Optimized)
+**Security note**: Hops between validations operate with signed PCA. Authority cannot expand beyond ops_i even without intermediate validation.
 
-Validate asynchronously or in batches:
-```
-E_0 → E_1 → E_2 → E_3
-│                   │
-└───[CAT validates retroactively]
-```
+### 5.3.3 Validation Strategy: Entry-Point Validation
 
-**When to use**:
-- Audit and compliance logging
-- Non-critical operations
-- High-throughput event processing
+Validate once at system entry:
 
-**Security property**: Execution proceeds optimistically; violations detected post-facto for audit and remediation.
-
-### 5.3.4 No Validation (Trust-Based)
-
-Skip validation entirely within trusted zones:
-```
+```text
 E_0 → [CAT] → E_1 → E_2 → E_3 → E_4
       ↑
-   Once at entry
+   Entry point
 ```
 
-**When to use**:
-- Tightly controlled environments (single process, trusted infrastructure)
-- Development/testing
-- Performance-critical legacy systems
+**Characteristics**:
 
-**Security property**: Equivalent to traditional authorization models where tokens are validated once at entry and trusted thereafter.
+- Minimal validation overhead
+- Equivalent to session-based authentication
+- Appropriate for: trusted execution environments, legacy integration, development/testing
+
+**Security note**: Equivalent trust model to traditional authorization where credentials are validated once and trusted thereafter.
+
+### 5.3.4 Comparison to Existing Protocols
+
+PIC provides equivalent flexibility to existing authorization protocols:
+
+| Protocol | Typical Validation Pattern | PIC Equivalent |
+|----------|---------------------------|----------------|
+| OAuth 2.0 | Per API call | Full Validation (5.3.1) |
+| JWT with trusted issuers | At boundary | Selective Validation (5.3.2) |
+| Session cookies | At entry | Entry-Point Validation (5.3.3) |
+| mTLS | Per connection | Selective Validation (5.3.2) |
+
+**Implementation guidance**: Choose validation frequency based on:
+
+- Trust boundaries in your architecture
+- Performance requirements
+- Compliance obligations
+- Threat model
 
 ---
 
-## 5.4 Comparison to Existing Authorization Protocols
+## 5.4 Integration with Existing Systems
 
-**The key insight**: PIC's validation frequency is **no different** from existing authorization protocols. All authorization systems face the same trade-off:
+PIC is designed to augment existing authorization infrastructure rather than replace it. This section provides integration patterns for common authorization systems.
 
-| Protocol | Validation Strategy | PIC Equivalent |
-|----------|-------------------|----------------|
-| **OAuth 2.0** | Validate token at each API call | Full Validation (5.3.1) |
-| **JWT + Trust** | Validate signature once, trust thereafter | Selective Validation (5.3.2) |
-| **API Keys** | Validate key at entry, trust internally | No Validation (5.3.4) |
-| **Session Cookies** | Validate cookie once, session ID trusted | No Validation (5.3.4) |
-| **mTLS** | Validate certificate at connection, trust session | Selective Validation (5.3.2) |
+### 5.4.1 OAuth 2.0 Integration
 
-**PIC provides the same flexibility as existing protocols**, but with **provable security properties** that prevent confused deputy vulnerabilities.
-
-**The choice is yours**:
-- Want maximum security? Validate at every hop (like OAuth validates every API call)
-- Want performance? Validate only at boundaries (like JWT signature verification)
-- Want legacy compatibility? Validate once at entry (like session cookies)
-
-**But here's what PIC guarantees that others don't**:
-- Authority cannot expand (ops_{i+1} ⊆ ops_i is structurally enforced)
-- Confused deputy is impossible (proven in [[1]](#references))
-- Provenance is auditable (complete causal chain maintained)
-
----
-
-## 5.5 Adopting PIC: No Architectural Disruption
-
-**Concern**: "Adopting PIC requires rebuilding our entire authorization infrastructure."
-
-**Response**: False. PIC is designed to **augment existing authorization systems**, not replace them.
-
-**Integration Patterns**:
-
-### 5.5.1 OAuth 2.0 + PIC
-```
-User → OAuth AS → Client
+```text
+User → OAuth AS → JWT (contains p_0, ops_0)
          ↓
-      issues JWT (p_0 = user_id, ops_0 = scopes)
+Client → CAT (validates JWT, derives PCA_1)
          ↓
-Client → CAT (validates JWT, issues PCA_1)
-         ↓
-PCA_1 → Executor_1 → Executor_2 → ...
+PCA_1 → Executor chain
 ```
 
-**Migration**: Replace token validation with CAT validation. OAuth AS becomes origin of authority.
+**Integration approach**:
 
-### 5.5.2 SPIFFE + PIC
-```
+1. OAuth Authorization Server issues JWT with user identity and scopes
+2. CAT validates JWT and derives initial PCA_0 (p_0 = user_id, ops_0 = scopes)
+3. Subsequent hops use PIC validation
+4. OAuth AS remains authoritative for identity and initial authorization
+
+**Migration path**: Replace token validation endpoints with CAT validation while maintaining OAuth for user authentication and initial authorization.
+
+### 5.4.2 SPIFFE Integration
+
+```text
 Workload → SPIFFE Server → SVID
             ↓
-         CAT uses SVID as PoI
+         CAT validates SVID (uses as PoI)
             ↓
-         Issues PCA with SPIFFE ID as p_0
+         Issues PCA (p_0 = SPIFFE ID)
 ```
 
-**Migration**: CAT validates SPIFFE SVIDs. No changes to SPIFFE infrastructure.
+**Integration approach**:
 
-### 5.5.3 API Gateway + PIC
-```
+1. SPIFFE Server issues SVIDs for workload identity
+2. CAT validates SVID as Proof of Identity (PoI)
+3. CAT derives PCA with SPIFFE ID as origin subject
+4. Workload continues to use SPIFFE for identity
+
+**Migration path**: No changes to SPIFFE infrastructure. CAT becomes additional validation layer that consumes SPIFFE identities.
+
+### 5.4.3 API Gateway Integration
+
+```text
 Client → API Gateway (CAT role)
          ↓
       validates credentials
          ↓
-      issues PCA_0
+      derives PCA_0
          ↓
-      forwards to backend services
+      forwards to backend with PCA
 ```
 
-**Migration**: API Gateway becomes CAT. Backend services validate PCA instead of gateway-issued tokens.
+**Integration approach**:
 
-**Key Point**: PIC adapts to **your existing infrastructure**. You choose where to deploy CAT validation based on your security and performance requirements.
+1. API Gateway performs existing authentication
+2. Gateway acts as CAT, deriving initial PCA_0
+3. Backend services validate PCA instead of gateway-issued tokens
+4. Gateway remains single entry point
 
----
-
-## 5.6 Response to "It's Too Complex"
-
-**Concern**: "PIC is more complex than current authorization models."
-
-**Response**: PIC's **conceptual model** is simpler than existing approaches:
-
-**Current Authorization** (confused deputy vulnerable):
-- Token issuance (OAuth, JWT, API keys)
-- Token validation (signatures, expiry, scopes)
-- Ambient authority (services trust tokens blindly)
-- **No provenance** (cannot trace authority origin)
-- **No monotonicity** (tokens can be escalated, reused)
-
-**PIC Model**:
-- Authority issuance (CAT issues PCA)
-- Continuity validation (PoC proves causal link)
-- Explicit derivation (ops_{i+1} ⊆ ops_i enforced)
-- **Complete provenance** (p_0 → hop_1 → hop_2 → ... auditable)
-- **Structural security** (confused deputy impossible by design)
-
-**What PIC adds**:
-1. Causal continuity (PoC)
-2. Monotonic authority (ops_i ⊆ ops_{i-1})
-3. Origin preservation (p_0 immutable)
-
-**What PIC removes**:
-1. Ambient authority vulnerabilities
-2. Token escalation attacks
-3. Confused deputy scenarios
-5. Authority provenance ambiguity
-
-**Complexity vs. Security**: PIC trades **implementation flexibility** (you must validate continuity) for **structural security guarantees** (confused deputy cannot occur). This is the same trade-off as TLS (must perform handshake) or OAuth (must validate tokens).
+**Migration path**: Upgrade gateway to act as CAT. Backend services migrate from token validation to PCA validation incrementally.
 
 ---
 
-## 5.7 Final Rebuttal: The Security Argument
+## 5.5 Deployment Considerations
 
-**If your criticism is**: "PIC forces validation at every hop, this is impractical"
+### 5.5.1 CAT Implementation Options
 
-**Our response is**: No more impractical than OAuth 2.0, which **already requires validation at every API boundary** and is deployed successfully at global scale (Google, Microsoft, AWS, etc.).
+As described in Section 3.1.2, the CAT MAY be implemented as:
 
-**If your criticism is**: "PIC's CAT-Executor interaction is insecure"
+**Centralized Service**:
 
-**Our response is**: Then OAuth Authorization Servers, TLS Certificate Authorities, Kerberos KDCs, and every other trusted validation service in production is also insecure. This criticism rejects the **entire foundation of modern security architecture**.
+- Single authorization service
+- Similar to OAuth Authorization Server deployment
+- Appropriate for: single organization, centralized policy management
 
-**If your criticism is**: "We want performance, not security"
+**Decentralized System**:
 
-**Our response is**: PIC provides the **same performance-security trade-offs** as existing protocols (see Section 5.3). You can skip validation where appropriate - but you cannot escape the consequences of ambient authority vulnerabilities.
+- Distributed consensus (blockchain, distributed ledger)
+- Trust Model verified across nodes
+- Appropriate for: multi-party systems, trustless environments
 
-**The fundamental question is not**:
-- "Is PIC faster than OAuth?" (Answer: Equivalent computational cost)
-- "Is PIC simpler than JWT?" (Answer: Simpler conceptual model, proven security)
-- "Can I skip validation?" (Answer: Yes, same as any protocol)
+**Federated Model**:
 
-**The fundamental question is**:
-- "Do you want to eliminate confused deputy vulnerabilities?"
+- Multiple CATs with inter-CAT trust verification
+- Each domain operates independent CAT
+- Appropriate for: multi-organization systems, cross-domain authorization
 
-If yes → PIC is the **only model** with a formal proof that confused deputy is impossible [[1]](#references).
+### 5.5.2 Performance Optimization
 
-If no → Continue using possession-based models and accept the security risk.
+**Caching**:
 
-**There is no middle ground.** Confused deputy is either possible (PoP) or impossible (PoC). Choose accordingly.
+- PCA validation results MAY be cached within trust boundaries
+- Cache invalidation required on revocation events
+- Similar to JWT validation result caching
+
+**Batching**:
+
+- Multiple PCA requests MAY be batched for validation
+- Reduces round-trips in high-throughput scenarios
+- Similar to token introspection batching in OAuth
+
+**Async Validation**:
+
+- Validation MAY occur asynchronously for audit purposes
+- Execution proceeds optimistically
+- Violations detected post-facto
+- Appropriate for: compliance logging, non-critical paths
+
+---
+
+## 5.6 Security-Performance Trade-offs
+
+Like all authorization systems, PIC requires implementers to balance security and performance based on their threat model.
+
+**Security Properties at Different Validation Frequencies**:
+
+| Property | Full Validation | Selective Validation | Entry Validation |
+|----------|----------------|---------------------|------------------|
+| Confused deputy prevention | ✓ Enforced | ✓ Enforced | ✓ Enforced |
+| Authority monotonicity | ✓ Validated each hop | ✓ Validated at boundaries | ✓ Initial only |
+| Executor revocation | ✓ Immediate | ✓ At next boundary | ✗ Delayed |
+| Audit trail completeness | ✓ Complete | ✓ Boundaries only | ✓ Entry only |
+| Replay attack prevention | ✓ Strong | ✓ Boundary-level | ✓ Entry-level |
+
+**Recommendation**: Validate at trust boundaries as minimum. Full validation provides maximum security assurance but incurs higher overhead.
+
+---
+
+## 5.7 Comparison to Possession-Based Models
+
+The fundamental distinction between PIC (Proof of Continuity) and possession-based models (Proof of Possession):
+
+**Possession-Based (PoP)**:
+
+- Authority derives from artifact possession (token, certificate, key)
+- Artifact can be used by any holder
+- Confused deputy possible when service reuses client credentials
+- No causal relationship to origin
+- Ambient authority
+
+**Continuity-Based (PoC)**:
+
+- Authority derives from execution provenance
+- Authority bound to specific execution context
+- Confused deputy structurally impossible (proven in [[1]](#references))
+- Causal chain to origin maintained
+- Explicit authority derivation
+
+**Security Implication**: PoP models require additional mechanisms (audience restrictions, token binding, etc.) to mitigate confused deputy. PIC eliminates the class of vulnerabilities by construction.
+
+**Performance Implication**: PoC validation is computationally equivalent to PoP validation (both require cryptographic operations and policy evaluation). The difference is in the security guarantees, not computational cost.
+
+---
+
+## 5.8 Adoption Path
+
+Organizations MAY adopt PIC incrementally:
+
+**Phase 1 - Assessment**:
+
+- Identify confused deputy risks in existing systems
+- Map current authorization flows
+- Determine trust boundaries
+
+**Phase 2 - Pilot**:
+
+- Deploy CAT in single trust domain
+- Integrate with existing OAuth/SPIFFE
+- Validate at boundaries only (5.3.2)
+- Measure performance impact
+
+**Phase 3 - Expansion**:
+
+- Extend to additional domains
+- Increase validation frequency in high-security paths
+- Implement revocation mechanisms
+- Complete audit trail integration
+
+**Phase 4 - Full Deployment**:
+
+- System-wide PIC enforcement
+- Deprecated possession-based patterns in critical paths
+- Continuous monitoring and validation
+
+This incremental approach allows organizations to realize PIC security benefits while managing migration risk and maintaining operational continuity.
 
 ---
 
