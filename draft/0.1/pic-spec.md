@@ -511,16 +511,14 @@ This section introduces the architectural components and their relationships wit
 
 ## 3.1 Core Components
 
-### 3.1.1 Executor (Untrusted Component)
+### 3.1.1 Executor
 
-An **Executor** is an **untrusted** computational entity that performs operations at a specific execution hop. Executors are considered untrusted because:
+An **Executor** is a computational entity that performs operations at a specific execution hop. The trust level of an Executor depends on the deployment model:
 
-- They may be compromised
-- They operate in potentially hostile environments
-- They may attempt to exceed their authority
-- They may be subject to confused deputy vulnerabilities
+- In many deployments, Executors are considered **untrusted** because they may be compromised, operate in potentially hostile environments, or be subject to confused deputy vulnerabilities
+- In other deployments (e.g., IoT devices with hardware security, trusted execution environments, Kubernetes clusters with trusted workloads, private networks, service mesh environments such as Istio Ambient Mesh), Executors MAY be considered **trusted** and MAY host the CAT internally
 
-Because Executors are untrusted, they **MUST NOT**:
+Regardless of trust level, Executors **MUST NOT**:
 
 - Self-assert their own authority
 - Validate their own continuity proofs
@@ -531,17 +529,24 @@ Executors **MUST** obtain authority validation through the trusted CAT component
 
 ### 3.1.2 Causal Authority Transition (CAT) / Trust Plane
 
-The **Causal Authority Transition (CAT)**, also referred to as the **Trust Plane**, is a **trusted** enforcement component that validates Provenance Identity Continuity invariants.
+The **Causal Authority Transition (CAT)**, also referred to as the **Trust Plane**, is the enforcement component that validates Provenance Identity Continuity invariants.
 
-**Terminology Note**: "CAT" and "Trust Plane" refer to the same logical component. "Trust Plane" emphasizes its role as a trusted authority layer, analogous to how Identity Providers (IdPs) function as trusted identity layers.
+**Terminology Note**: "CAT" and "Trust Plane" refer to the same logical component. "Trust Plane" emphasizes its role as an authority validation layer, analogous to how Identity Providers (IdPs) function as identity validation layers.
 
-The CAT/Trust Plane is trusted because it:
+The CAT/Trust Plane:
 
-- Enforces PIC invariants independently of Executors
-- Cannot be bypassed by Executors
+- Enforces PIC invariants
 - Validates continuity proofs using the Trust Model
 - Provides cryptographically verifiable decisions
 - Operates as a neutral validator and generator (no business logic)
+
+**Deployment Models**: The CAT MAY be deployed:
+
+- **Externally**: As a separate service from Executors (typical in cloud/microservices where Executors are untrusted)
+- **Internally**: Embedded within a trusted Executor (typical in IoT, TEE-based systems, Kubernetes-internal workloads, private networks, service mesh environments, or other trusted infrastructure)
+- **Hybrid**: External CAT for untrusted Executors, internal CAT for trusted Executors within the same system
+
+The choice of internal vs. external CAT depends on the trust model of the deployment environment, not on inherent properties of PIC.
 
 **CAT Responsibilities**:
 
@@ -619,6 +624,8 @@ The following diagram illustrates how authority flows between executors through 
     └────────────────────────┘
 ```
 
+**Deployment Note**: This diagram shows the CAT as a logically separate component. In deployments with trusted Executors, the CAT MAY be embedded within the Executor itself. The logical flow remains identical; only the deployment boundary changes.
+
 **Key Flow Steps**:
 
 1. **E_n receives PCA_n** from E_{n-1} (direct transfer)
@@ -648,9 +655,9 @@ When E_n forks execution to multiple successors (E_{n+1,a}, E_{n+1,b}, etc.):
 
 ---
 
-## 3.3 Trust Boundaries and Validation Flow
+## 3.3 Validation Flow
 
-The following diagram shows the complete validation flow with PDP integration:
+The following diagram shows the complete validation flow with PDP integration. The separation between Executor and CAT is shown as logical separation; in deployments with trusted Executors, these components MAY be co-located.
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -689,8 +696,8 @@ The following diagram shows the complete validation flow with PDP integration:
                      │
                      ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                    Security Boundary                             │
-│                     (Untrusted Execution)                        │
+│                    Execution Boundary                            │
+│                                                                  │
 │                                                                  │
 │   ┌────────────────────────────────────────────┐                 │
 │   │         Executor E_n (UNTRUSTED)           │                 │
@@ -710,8 +717,8 @@ The following diagram shows the complete validation flow with PDP integration:
                      │
                      ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                    Trust Boundary                                │
-│                   (Trusted Validation)                           │
+│                    Validation Boundary                           │
+│                                                                  │
 │                                                                  │
 │   ┌────────────────────────────────────────────┐                 │
 │   │    CAT / Trust Plane (TRUSTED)             │                 │
@@ -802,7 +809,9 @@ Single CAT service in a trust domain:
 └───────────────────────────────────────────────────────────┘
 ```
 
-**Use Cases**: Single organization, microservices in one domain
+**Use Cases**: Single organization, microservices in one domain, cloud-native applications
+
+**Note**: In trusted environments (e.g., Kubernetes clusters with trusted workloads, TEE-based systems, private networks, service mesh environments such as Istio Ambient Mesh), the CAT MAY be embedded within Executors rather than deployed as a separate service.
 
 ### 3.4.2 Decentralized Trust Plane
 
@@ -939,11 +948,13 @@ E_{n-1}                    E_n                      E_{n+1}
 
 ## 3.6 Separation of Concerns
 
-| Component | Trust Level | Responsibilities | Cannot Do |
-|-----------|-------------|------------------|-----------|
-| **Executor** | Untrusted | - Initiate transitions<br>- Receive PCA_i from predecessor<br>- Request PCC_{i+1} from CAT<br>- Construct PoC_{i+1} + provide PoI + PoP<br>- Receive PCA_{i+1} from CAT<br>- Pass PCA_{i+1} to successor(s)<br>- Execute within ops_i | - Forge PCA signature<br>- Expand authority<br>- Bypass CAT validation<br>- Self-validate continuity<br>- Pass PCA_i (only i+1) |
-| **CAT / Trust Plane** | Trusted | - Issue PCC upon request<br>- Validate PoC using Trust Model<br>- Validate PoI (executor identity)<br>- Validate PoP (credential control)<br>- Enforce monotonicity<br>- Consult PDP for policy<br>- Sign valid PCA_{i+1}<br>- Maintain revocation<br>- Operate as neutral validator | - Be bypassed<br>- Grant authority without valid PoC<br>- Have business logic<br>- Be compromised by executor |
-| **PDP** | Trusted | - Evaluate policies<br>- Provide policy decisions to CAT<br>- Apply contextual constraints | - Issue PCA<br>- Validate PoC<br>- Replace CAT validation |
+| Component | Responsibilities | Cannot Do |
+|-----------|------------------|-----------|
+| **Executor** | - Initiate transitions<br>- Receive PCA_i from predecessor<br>- Request PCC_{i+1} from CAT<br>- Construct PoC_{i+1} + provide PoI + PoP<br>- Receive PCA_{i+1} from CAT<br>- Pass PCA_{i+1} to successor(s)<br>- Execute within ops_i | - Forge PCA signature<br>- Expand authority<br>- Bypass CAT validation<br>- Self-validate continuity (unless CAT is internal)<br>- Pass PCA_i (only i+1) |
+| **CAT / Trust Plane** | - Issue PCC upon request<br>- Validate PoC using Trust Model<br>- Validate PoI (executor identity)<br>- Validate PoP (credential control)<br>- Enforce monotonicity<br>- Consult PDP for policy<br>- Sign valid PCA_{i+1}<br>- Maintain revocation<br>- Operate as neutral validator | - Be bypassed<br>- Grant authority without valid PoC<br>- Have business logic |
+| **PDP** | - Evaluate policies<br>- Provide policy decisions to CAT<br>- Apply contextual constraints | - Issue PCA<br>- Validate PoC<br>- Replace CAT validation |
+
+**Note**: The trust level of each component depends on the deployment model. In untrusted environments, Executors require external CAT validation. In trusted environments (TEE, secure IoT, Kubernetes-internal workloads, private networks, service mesh, trusted infrastructure), Executors MAY host the CAT internally.
 
 **Architectural Principle**: Executors **initiate** transitions and **exchange** PCAs. CAT **validates** and **signs** new PCAs based on cryptographic proof and policy. PDP provides policy decisions. This separation ensures no single untrusted component can compromise authority flow.
 
@@ -1187,9 +1198,11 @@ This section addresses practical deployment considerations and clarifies the rel
 
 ## 5.1 Trust Architecture Pattern
 
-The PIC Model follows the standard separation-of-concerns pattern used in production authorization systems, where untrusted components submit requests to trusted validation services.
+The PIC Model follows separation-of-concerns patterns used in production authorization systems. The specific deployment depends on the trust model of the environment.
 
-**Standard Pattern in Production Systems**:
+**External CAT Pattern** (for untrusted Executors):
+
+In environments where Executors are untrusted, they submit requests to a separate CAT validation service:
 
 | System | Requesting Component | Validation Service | Operation |
 |--------|---------------------|-------------------|-----------|
@@ -1200,7 +1213,12 @@ The PIC Model follows the standard separation-of-concerns pattern used in produc
 | JWT | Resource Server | Token Issuer | Signature verification |
 | PIC | Executor | CAT (Trust Plane) | Continuity validation and PCA issuance |
 
-The CAT-Executor relationship is functionally equivalent to Authorization Server-Client relationships in OAuth 2.0 and other widely-deployed protocols.
+The CAT-Executor relationship in external deployments is functionally equivalent to Authorization Server-Client relationships in OAuth 2.0 and other widely-deployed protocols.
+
+**Internal CAT Pattern** (for trusted Executors):
+
+In environments where Executors are trusted (IoT with hardware security, TEE-based systems, trusted Kubernetes clusters, private networks, service mesh environments such as Istio Ambient Mesh), the CAT MAY be embedded within the Executor.
+This eliminates network round-trips while preserving PIC invariants. The logical validation flow remains identical; only the deployment topology changes.
 
 **Security Properties**:
 
@@ -1268,6 +1286,8 @@ Executor                CAT
 ## 5.3 Validation Frequency Options
 
 PIC does not mandate validation frequency. Implementations MAY choose validation strategies based on their security requirements and threat model, similar to existing authorization protocols.
+
+**Note**: The validation strategies below apply to both external and internal CAT deployments. With internal CAT (embedded in trusted Executors), validation overhead is reduced as no network round-trip is required.
 
 ### 5.3.1 Validation Strategy: Full Validation
 
