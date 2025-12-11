@@ -1346,26 +1346,26 @@ In IoT deployments, devices on a local network MAY form a ring where requests pr
                          User arrives with VC
                                   │
                                   ▼
-                    ┌─────────────────────────────┐
-                    │      IoT Local Network      │
-                    │                             │
+                    ┌────────────────────────────┐
+                    │      IoT Local Network     │
+                    │                            │
                     │   ┌───────┐    ┌───────┐   │
                     │   │Device │───▶│Device │   │
                     │   │  A    │    │  B    │   │
                     │   │ +CAT  │    │ +CAT  │   │
                     │   └───────┘    └───────┘   │
-                    │       ▲            │        │
-                    │       │            ▼        │
+                    │       ▲            │       │
+                    │       │            ▼       │
                     │   ┌───────┐    ┌───────┐   │
                     │   │Device │◀───│Device │   │
                     │   │  D    │    │  C    │   │
                     │   │ +CAT  │    │ +CAT  │   │
                     │   └───────┘    └───────┘   │
-                    │                             │
-                    │   PCA flows in ring         │
-                    │   Local network only        │
-                    │   ZERO cloud round-trips    │
-                    └─────────────────────────────┘
+                    │                            │
+                    │   PCA flows in ring        │
+                    │   Local network only       │
+                    │   ZERO cloud round-trips   │
+                    └────────────────────────────┘
 ```
 
 Each device validates the incoming PCA via its embedded CAT, performs its authorized operation (e.g., sensor read, actuator command), restricts authority if needed, and forwards the new PCA to the next device. The entire ring operates without external IdP calls, achieving low-latency coordination suitable for industrial IoT and smart home scenarios.
