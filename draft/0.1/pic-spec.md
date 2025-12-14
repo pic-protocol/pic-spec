@@ -1687,52 +1687,77 @@ This section catalogs attacks that are **inherent** to token-based systems but a
 
 **Attack Description**:
 
-A confused deputy attack occurs when a service (deputy) with elevated privileges is tricked into performing an action on behalf of a less-privileged client, using the deputy's own authority rather than the client's authority.
+A confused deputy attack occurs when a service (deputy) is tricked into performing an action for the wrong client. The deputy cannot distinguish which client it is actually serving, and uses authority granted by one client to act on behalf of another.
+
+This is the classic problem described by Hardy (1988): a service serving multiple clients becomes "confused" about which client's context applies to a given request.
 
 **Token-Based Systems (VULNERABLE)**:
 
-```
-User (limited authority)
-  │
-  │ Request: "Delete my file: /home/user/doc.txt"
-  ▼
-Service (broad authority: delete:*)
-  │
-  │ Service uses its own token with delete:*
-  │ Attacker manipulates path to: /admin/critical.txt
-  ▼
-Backend executes: DELETE /admin/critical.txt
-  ❌ CONFUSED DEPUTY: Service's authority used, not user's
+```text
+Scenario: Print service serves multiple clients.
+
+1. Alice grants print service access to her file: /alice/secret.txt
+   Print service stores: "alice -> can print /alice/*"
+
+2. Bob (attacker) learns that Alice uses this print service.
+   Bob sends request: "Print /alice/secret.txt"
+
+3. Print service receives Bob's request.
+   Print service checks: "Do I have access to /alice/secret.txt?"
+   Answer: Yes (Alice granted access)
+   
+   Print service prints /alice/secret.txt
+   
+   ❌ CONFUSED DEPUTY: 
+   - Bob asked for the action
+   - Alice's authority was used
+   - Print service couldn't distinguish the two contexts
 ```
 
 **Why Token-Based is Vulnerable**:
-- Service holds token with authority `delete:*`
-- Service uses same token for all operations
-- Backend cannot distinguish "acting for user" from "acting as service"
-- No causal link to user's original authority
+
+- Service accumulates authority from multiple clients
+- Request context (who is asking) is separate from authority context (who granted access)
+- Service cannot bind the request to the correct authority
+- No mechanism to ensure "Alice's authority only usable for Alice's requests"
 
 **PIC Model (IMMUNE)**:
 
-```
-User (ops_0 = {delete:/home/user/*})
-  │
-  │ PCA_0 with ops_0 = {delete:/home/user/*}
-  ▼
-Service (receives PCA_1 with ops_1 ⊆ ops_0)
-  │
-  │ Service requests PCA_2 from CAT
-  │ CAT enforces ops_2 ⊆ ops_1 ⊆ ops_0
-  ▼
-Backend receives PCA_2 with ops_2 = {delete:/home/user/*}
-  ✓ IMMUNE: Backend can only delete within ops_0
-  ✓ Attempt to delete /admin/critical.txt rejected by CAT (ops violation)
+```text
+Scenario: Print service serves multiple clients.
+
+1. Alice initiates print transaction:
+   PCA_0: p_0 = Alice, ops_0 = {print: /alice/*}
+   Print service receives PCA_1 (p_0 = Alice, ops_1 ⊆ ops_0)
+   → Can print /alice/secret.txt ✓
+
+2. Bob initiates his own transaction:
+   PCA_0': p_0 = Bob, ops_0' = {print: /bob/*}
+   Print service receives PCA_1' (p_0 = Bob, ops_1' ⊆ ops_0')
+
+3. Bob attempts confused deputy:
+   Bob's transaction requests: "Print /alice/secret.txt"
+   
+   Print service submits to CAT:
+   - Previous: PCA_1' (p_0 = Bob, ops_1' = {print: /bob/*})
+   - Requested: ops = {print: /alice/secret.txt}
+   
+   CAT validates:
+   ✓ p_0 = Bob (immutable, cannot change)
+   ✗ {print: /alice/secret.txt} ⊄ {print: /bob/*}
+   
+   ❌ REJECTED
+   
+   ✓ IMMUNE: Alice's files unreachable from Bob's transaction
 ```
 
 **Why PIC is Immune**:
-- Authority derived from user's PCA_0, not service's credentials
-- Monotonicity enforced: ops_2 ⊆ ops_1 ⊆ ops_0
-- CAT validates all transitions, prevents authority expansion
-- **Structural impossibility**: Service cannot exceed ops_0
+
+- Each transaction is bound to its origin (p_0 immutable)
+- Authority (ops_0) is set at transaction origin and can only decrease
+- Bob's transaction carries Bob's authority, not Alice's
+- No mechanism exists to "borrow" another client's authority mid-transaction
+- **Structural impossibility**: The confused deputy cannot occur because authority flows causally from origin, not from accumulated grants
 
 **Formal Proof**: See [[1]](#references)
 
