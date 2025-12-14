@@ -1688,77 +1688,79 @@ This section catalogs attacks that are **inherent** to token-based systems but a
 
 **Attack Description**:
 
-A confused deputy attack occurs when a service (deputy) is tricked into performing an action for the wrong client. The deputy cannot distinguish which client it is actually serving, and uses authority granted by one client to act on behalf of another.
+A confused deputy attack occurs when a service (deputy) with elevated privileges uses its own authority on behalf of a less-privileged client. The deputy cannot distinguish which authority context applies to a given request, and mistakenly uses its broader privileges instead of the client's limited authority.
 
-This is the classic problem described by Hardy (1988): a service serving multiple clients becomes "confused" about which client's context applies to a given request.
+This is the classic problem described by Hardy (1988): a compiler service with system-level billing file access is tricked into overwriting system files using its own authority instead of the user's limited authority.
 
 **Token-Based Systems (VULNERABLE)**:
 
 ```text
-Scenario: Print service serves multiple clients.
+Scenario: AI Agent serves multiple users and has broad system access.
 
-1. Alice grants print service access to her file: /alice/secret.txt
-   Print service stores: "alice -> can print /alice/*"
+1. AI Agent has its own service credentials:
+   Agent's token: {read: /*, write: /*, delete: /*}
 
-2. Bob (attacker) learns that Alice uses this print service.
-   Bob sends request: "Print /alice/secret.txt"
+2. Alice connects with limited authority:
+   Alice's token: {read: /alice/notes/*, write: /alice/calendar}
 
-3. Print service receives Bob's request.
-   Print service checks: "Do I have access to /alice/secret.txt?"
-   Answer: Yes (Alice granted access)
+3. Alice requests: "Summarize my notes"
    
-   Print service prints /alice/secret.txt
+4. Agent bug: uses its own token instead of Alice's
+   Agent executes: read /* (using Agent's authority)
+   Agent reads /bob/private/* and /system/config/*
    
-   ❌ CONFUSED DEPUTY: 
-   - Bob asked for the action
-   - Alice's authority was used
-   - Print service couldn't distinguish the two contexts
+   ❌ CONFUSED DEPUTY:
+   - Alice asked for the action
+   - Agent's elevated authority was used
+   - Alice sees data she should never access
 ```
 
 **Why Token-Based is Vulnerable**:
 
-- Service accumulates authority from multiple clients
-- Request context (who is asking) is separate from authority context (who granted access)
-- Service cannot bind the request to the correct authority
-- No mechanism to ensure "Alice's authority only usable for Alice's requests"
+- Service holds its own broad authority PLUS client's limited authority
+- Bug or manipulation causes service to use wrong authority context
+- No binding between request origin and authority used
+- Client can exploit service's elevated privileges
 
 **PIC Model (IMMUNE)**:
 
 ```text
-Scenario: Print service serves multiple clients.
+Scenario: AI Agent serves multiple users.
 
-1. Alice initiates print transaction:
-   PCA_0: p_0 = Alice, ops_0 = {print: /alice/*}
-   Print service receives PCA_1 (p_0 = Alice, ops_1 ⊆ ops_0)
-   → Can print /alice/secret.txt ✓
+1. Alice initiates transaction:
+   PCA_0: p_0 = Alice, ops_0 = {read: /alice/notes/*, write: /alice/calendar}
+   Agent receives PCA_1 (p_0 = Alice, ops_1 ⊆ ops_0)
 
-2. Bob initiates his own transaction:
-   PCA_0': p_0 = Bob, ops_0' = {print: /bob/*}
-   Print service receives PCA_1' (p_0 = Bob, ops_1' ⊆ ops_0')
+2. Alice requests: "Summarize my notes"
 
-3. Bob attempts confused deputy:
-   Bob's transaction requests: "Print /alice/secret.txt"
+3. Agent attempts to read /bob/private/* (bug or attack):
    
-   Print service submits to CAT:
-   - Previous: PCA_1' (p_0 = Bob, ops_1' = {print: /bob/*})
-   - Requested: ops = {print: /alice/secret.txt}
+   Agent submits to CAT:
+   - Previous: PCA_1 (p_0 = Alice, ops_1 = {read: /alice/notes/*})
+   - Requested: ops = {read: /bob/private/*}
    
    CAT validates:
-   ✓ p_0 = Bob (immutable, cannot change)
-   ✗ {print: /alice/secret.txt} ⊄ {print: /bob/*}
+   ✓ p_0 = Alice (immutable)
+   ✗ {read: /bob/private/*} ⊄ {read: /alice/notes/*}
    
    ❌ REJECTED
+
+4. Agent attempts to use "its own" elevated authority:
    
-   ✓ IMMUNE: Alice's files unreachable from Bob's transaction
+   There is no "Agent's authority" in Alice's transaction.
+   Agent can only operate within Alice's ops_0.
+   Agent's service credentials are irrelevant to this transaction.
+   
+   ✓ IMMUNE: Agent cannot exceed Alice's authority boundary
 ```
 
 **Why PIC is Immune**:
 
-- Each transaction is bound to its origin (p_0 immutable)
-- Authority (ops_0) is set at transaction origin and can only decrease
-- Bob's transaction carries Bob's authority, not Alice's
-- No mechanism exists to "borrow" another client's authority mid-transaction
-- **Structural impossibility**: The confused deputy cannot occur because authority flows causally from origin, not from accumulated grants
+- Authority derives from transaction origin (Alice), not from service credentials
+- Agent's own elevated privileges do not exist within Alice's transaction
+- ops_i can only decrease from ops_0, never expand
+- No mechanism exists to "inject" external authority into an existing transaction
+- **Structural impossibility**: The confused deputy cannot occur because authority flows causally from origin, not from service credentials
 
 **Formal Proof**: See [[1]](#references)
 
