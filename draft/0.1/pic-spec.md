@@ -1695,71 +1695,74 @@ This is the classic problem described by Hardy (1988): a compiler service with s
 **Token-Based Systems (VULNERABLE)**:
 
 ```text
-Scenario: AI Agent serves multiple users and has broad system access.
+Scenario: Bob (service) can read /sys/*, Alice (client) cannot.
 
-1. AI Agent has its own service credentials:
-   Agent's token: {read: /*, write: /*, delete: /*}
+Authorities:
+  - Alice: {read: /user/*, write: /user/*}
+  - Bob:   {read: /user/*, write: /user/*, read: /sys/*}
 
-2. Alice connects with limited authority:
-   Alice's token: {read: /alice/notes/*, write: /alice/calendar}
+Bob's logic:
+  if file exists → read, append input, write to new output file
+  else → write input to new output file
 
-3. Alice requests: "Summarize my notes"
+Attack:
+  1. Alice discovers Bob can read /sys/syslog.txt
+  2. Alice sends request: process("/sys/syslog.txt", "my content")
+  3. Bob checks own token: can I read /sys/*? Yes.
+  4. Bob reads /sys/syslog.txt (contains system secrets)
+  5. Bob appends Alice's content, writes to /user/output.txt
+  6. Bob returns /user/output.txt to Alice
+  7. Alice reads output: system secrets exposed
    
-4. Agent bug: uses its own token instead of Alice's
-   Agent executes: read /* (using Agent's authority)
-   Agent reads /bob/private/* and /system/config/*
-   
-   ❌ CONFUSED DEPUTY:
-   - Alice asked for the action
-   - Agent's elevated authority was used
-   - Alice sees data she should never access
+  ❌ CONFUSED DEPUTY:
+  - Alice asked for the action
+  - Bob's elevated {read: /sys/*} was used
+  - Alice obtained data she should never access
 ```
 
 **Why Token-Based is Vulnerable**:
 
 - Service holds its own broad authority PLUS client's limited authority
-- Bug or manipulation causes service to use wrong authority context
+- Malicious input triggers service to use its elevated privileges
 - No binding between request origin and authority used
-- Client can exploit service's elevated privileges
+- Client can exploit service's elevated privileges through crafted input
 
 **PIC Model (IMMUNE)**:
 
 ```text
-Scenario: AI Agent serves multiple users.
+Scenario: Bob (service) can read /sys/*, Alice (client) cannot.
 
 1. Alice initiates transaction:
-   PCA_0: p_0 = Alice, ops_0 = {read: /alice/notes/*, write: /alice/calendar}
-   Agent receives PCA_1 (p_0 = Alice, ops_1 ⊆ ops_0)
+   PCA_0: p_0 = Alice, ops_0 = {read: /user/*, write: /user/*}
+   Bob receives PCA_1 (p_0 = Alice, ops_1 ⊆ ops_0)
 
-2. Alice requests: "Summarize my notes"
+2. Alice sends: process("/sys/syslog.txt", "my content")
 
-3. Agent attempts to read /bob/private/* (bug or attack):
+3. Bob attempts to read /sys/syslog.txt:
    
-   Agent submits to CAT:
-   - Previous: PCA_1 (p_0 = Alice, ops_1 = {read: /alice/notes/*})
-   - Requested: ops = {read: /bob/private/*}
+   Bob submits to CAT:
+   - Previous: PCA_1 (p_0 = Alice, ops_1 = {read: /user/*, write: /user/*})
+   - Requested: ops = {read: /sys/syslog.txt}
    
    CAT validates:
    ✓ p_0 = Alice (immutable)
-   ✗ {read: /bob/private/*} ⊄ {read: /alice/notes/*}
+   ✗ {read: /sys/*} ⊄ {read: /user/*, write: /user/*}
    
-   ❌ REJECTED
+   ❌ REJECTED — read blocked
 
-4. Agent attempts to use "its own" elevated authority:
+4. Bob falls back: file unreadable, creates new output with only Alice's input
+   Bob writes: /user/output.txt containing "my content"
+   Alice receives output with no system secrets
    
-   There is no "Agent's authority" in Alice's transaction.
-   Agent can only operate within Alice's ops_0.
-   Agent's service credentials are irrelevant to this transaction.
-   
-   ✓ IMMUNE: Agent cannot exceed Alice's authority boundary
+   ✓ IMMUNE: Bob's {read: /sys/*} does not exist in Alice's transaction
 ```
 
 **Why PIC is Immune**:
 
 - Authority derives from transaction origin (Alice), not from service credentials
-- Agent's own elevated privileges do not exist within Alice's transaction
+- Bob's elevated privileges ({read: /sys/*}) do not exist within Alice's transaction
 - ops_i can only decrease from ops_0, never expand
-- No mechanism exists to "inject" external authority into an existing transaction
+- Malicious input cannot trigger unauthorized operations
 - **Structural impossibility**: The confused deputy cannot occur because authority flows causally from origin, not from service credentials
 
 **Formal Proof**: See [[1]](#references)
@@ -1774,7 +1777,7 @@ An attacker steals a token (bearer token, session cookie, API key) and reuses it
 
 **Token-Based Systems (VULNERABLE)**:
 
-```
+```text
 Legitimate User
   │ Token: "Bearer abc123..."
   ▼
