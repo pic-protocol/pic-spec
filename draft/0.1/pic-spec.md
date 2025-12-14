@@ -1671,6 +1671,7 @@ The PIC Model operates under the following security assumptions:
 ### 6.1.2 Out of Scope
 
 The following are considered out of scope for this threat model:
+
 - Compromise of the CAT itself (trusted component)
 - Breaking of cryptographic primitives (collision attacks on SHA-256, factoring RSA, etc.)
 - Side-channel attacks on cryptographic implementations
