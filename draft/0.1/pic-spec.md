@@ -983,23 +983,28 @@ A PCA MUST contain:
 The PCA payload MUST include:
 
 **Origin Subject (`p_0`)**:
+
 - Immutable reference to transaction initiator
 - MUST NOT change throughout execution chain
 
 **Authority Set (`ops_i`)**:
+
 - Operations the executor may perform at this hop
 - MUST satisfy `ops_i ⊆ ops_{i-1}` (monotonicity)
 
 **Executor Binding**:
+
 - Characteristics that bind authority to executor
 - MUST constrain to specific federation/attributes (NOT "any identity")
 - MAY include: organizational attributes, environmental characteristics, federated identity domain
 - In proposed PCA, executor attributes MUST be contained within (subset of) previous PCA's executor attributes (cannot add new attributes)
 
 **Temporal Constraints** (OPTIONAL):
+
 - MAY be expressed as start time + duration OR absolute time range
 
 **Provenance Reference**:
+
 - Link to causal chain (hash of previous PCA, ledger reference, etc.)
 
 ### 4.1.3 CAT Identifier
