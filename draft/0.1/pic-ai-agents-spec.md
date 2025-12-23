@@ -1,6 +1,7 @@
 # **PIC AI AGENTS SPEC**
 
 **Version:** 0.1 (Draft)  
+**Status**: Draft – Not a Standard  
 **Date:** 2025-12-06  
 **Source:** https://github.com/pic-protocol/pic-spec/draft/0.1/pic-ai-agents-spec.md
 
