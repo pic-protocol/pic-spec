@@ -11,9 +11,10 @@
 Possession-based authorization systems rely on **Proof of Possession (PoP)**: authority derives from holding an artifact—a token, a certificate, a key.
 This works for a single hop. It fails catastrophically across chains.
 
-**The problem**: Service A holds a token. Service A calls Service B. Service B verifies its own credentials. Service B calls Service C.
-At each hop, the system asks: "Do you possess a valid artifact?" No one asks: Who started this? What were the original bounds? Is this a valid continuation of that origin?
-Each hop restarts trust. Origin is lost. The chain breaks.
+**The problem**: Service A holds a token. *Service A* calls *Service B*. *Service B* obtains a token—its own, exchanged, or delegated. *Service B* calls *Service C*.
+
+At each hop, the system asks: "Do you possess a valid artifact?" The artifact may carry identity. It may carry claims. It may reference the origin. But possession of the artifact is sufficient to exercise authority.
+No one enforces: Can this execution *only* continue within origin bounds? Can authority *only* shrink? Each hop restarts trust on possession, not on causal continuity.
 
 This is why AI agents, microservice meshes, and multi-cloud workflows are structurally vulnerable to Proof of Possession protocols.
 PoP cannot model relationships that survive multiple hops. It verifies artifacts, not continuity.
@@ -22,37 +23,38 @@ PoP cannot model relationships that survive multiple hops. It verifies artifacts
 
 PIC enforces three invariants at every execution hop:
 
-1. **Provenance** — The causal chain is always traceable and auditable. From origin to end, unbroken. If it breaks, execution stops.
+- **Provenance**: The causal chain is always traceable and auditable. From origin to end, unbroken. If it breaks, execution stops.
 
-2. **Identity** — The origin identity (`p_0`) is immutable. It is the source of authority. It cannot change throughout the chain.
+- **Identity**: The origin identity (`p_0`) is immutable. It is the source of authority. It cannot change throughout the chain.
 
-3. **Continuity** — Continuity is proven at every step. Authority can only decrease (`ops_i ⊆ ops_{i-1}`). It never expands.
+- **Continuity**: Continuity is proven at every step. Authority can only decrease (`ops_i ⊆ ops_{i-1}`). It never expands.
 
 Under these invariants, the confused deputy problem is not mitigated—it becomes **structurally inexpressible**.
 As proven in [[1]](#references), PIC eliminates entire attack classes inherent to possession-based models: confused deputy, privilege escalation, token substitution, and ambient authority exploitation.
 
-**Clarification**: The confused deputy is not a bug or misconfiguration. It is a structural vulnerability inherent to Proof of Possession: a privileged service uses its own authority on behalf of a less-privileged caller.
-Under PIC, this cannot happen—not because of careful coding, but because the protocol makes it impossible. Authority derives from the origin, not from the executor's credentials.
+> **Clarification**: The confused deputy is not a bug or misconfiguration.
+> It is a structural vulnerability inherent to Proof of Possession: a privileged service uses its own authority on behalf of a less-privileged caller.
+> Under PIC, this cannot happen—not because of careful coding, but because the protocol makes it impossible.
+> Authority derives from the origin, not from the executor's credentials.
 
-**Proof of Continuity** replaces Proof of Possession as the authorization primitive for distributed systems.
-
-**Note**: This specification uses "cryptographic" as shorthand for "verifiable under a Trust Model."
+**NOTE**: This specification uses "cryptographic" as shorthand for "verifiable under a Trust Model."
 Trust Models MAY be implemented via cryptographic primitives, hardware attestation, distributed consensus, or other mechanisms providing non-repudiable binding.
+
+**Proof of Continuity** replaces Proof of Possession. This is PIC.
 
 ---
 
 ## Table of Contents
 
-1. [Introduction](#1-introduction)  
-2. [Terminology](#2-terminology)  
-3. [Architecture and Components](#3-architecture-and-components)  
-4. [Normative Data Structures and Processing Logic](#4-normative-data-structures-and-processing-logic)  
-5. [Deployment and Adoption Considerations](#5-implementation-considerations)  
+1. [Introduction](#1-introduction)
+2. [Terminology](#2-terminology)
+3. [Architecture and Components](#3-architecture-and-components)
+4. [Normative Data Structures and Processing Logic](#4-normative-data-structures-and-processing-logic)
+5. [Deployment and Adoption Considerations](#5-deployment-and-adoption-considerations)
 6. [Security Considerations](#6-security-considerations)
 
-**Appendices:**  
-A. [Appendix A – Use of Automated Language Assistance](#appendix-a-use-of-automated-language-assistance)  
-B. [Appendix B – Authorship, Attribution, and Derivative Works](#appendix-b-authorship-attribution-and-derivative-works)  
+A. [Use of Automated Language Assistance](#appendix-a--use-of-automated-language-assistance)  
+B. [Authorship, Attribution, and Derivative Works](#appendix-b--authorship-attribution-and-derivative-works)  
 R. [References](#references)  
 
 ---
