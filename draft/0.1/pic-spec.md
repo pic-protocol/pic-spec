@@ -61,6 +61,8 @@ R. [References](#references)
 
 ## 1. Introduction
 
+This section defines the scope, applicability, and conventions used throughout the specification.
+
 ### 1.1 Scope
 
 This specification defines the Provenance Identity Continuity (PIC) Model for distributed execution systems. The specification includes:
@@ -94,6 +96,8 @@ Textual references such as "hop *i*" refer to the execution hop denoted formally
 ---
 
 ## 2. Terminology
+
+This section defines the core concepts and terms used throughout the PIC specification.
 
 ### 2.1 Trust Model
 
@@ -266,7 +270,7 @@ PoP MAY contribute to executor verification. It does not constitute or replace P
 
 PoP-based systems derive authority from artifact possession rather than execution provenance. This makes them vulnerable to confused deputy attacks [[1]](#references).
 
-### 2.15 Authority Scope and Application Logic
+### 2.16 Authority Scope and Application Logic
 
 An Executor MAY hold multiple authorities simultaneously:
 
@@ -911,6 +915,8 @@ Any executor that validates PCA: external APIs, microservices, databases, OS ser
 ---
 
 ## 6. Security Considerations
+
+This section analyzes PIC's security properties, threat model, and attack resistance compared to possession-based systems.
 
 ---
 
