@@ -32,7 +32,7 @@ PIC enforces three invariants at every execution hop:
 Under these invariants, the confused deputy problem is not mitigated—it becomes **structurally inexpressible**.
 As proven in [[1]](#references), PIC eliminates entire attack classes inherent to possession-based models: confused deputy, privilege escalation, token substitution, and ambient authority exploitation.
 
-> **Clarification**: The confused deputy is not a bug or misconfiguration.
+> **CLARIFICATION**: The confused deputy is not a bug or misconfiguration.
 > It is a structural vulnerability inherent to Proof of Possession: a privileged service uses its own authority on behalf of a less-privileged caller.
 > Under PIC, this cannot happen—not because of careful coding, but because the protocol makes it impossible.
 > Authority derives from the origin, not from the executor's credentials.
@@ -251,6 +251,55 @@ A proof that demonstrates control over an artifact, credential, or secret. PoP e
 PoP MAY contribute to executor verification. It does not constitute or replace Proof of Continuity.
 
 PoP-based systems derive authority from artifact possession rather than execution provenance. This makes them vulnerable to confused deputy attacks [[1]](#references).
+
+### 2.15 Authority Scope and Application Logic
+
+An Executor MAY hold multiple authorities simultaneously:
+
+- Its **own authority** (credentials, tokens, service identity)
+- **Delegated authority** via PCA (derived from transaction origin)
+
+These authorities are **orthogonal**. PIC governs only the delegated authority chain.
+
+**What PIC enforces**:
+
+- Operations validated by CAT respect `ops_i ⊆ ops_{i-1}`
+- Origin `p_0` cannot change
+- Authority cannot expand within the transaction
+
+**What PIC does not enforce**:
+
+- How an Executor uses its own authority outside the transaction
+- What intermediate results an Executor generates internally
+- Application logic correctness
+
+**Example**:
+```text
+Bob has:
+  - Own authority: {read: /sys/*}
+  - Received PCA: p_0 = Alice, ops = {read: /user/*}
+
+Scenario A (PIC blocked):
+  Bob requests CAT to read /sys/syslog.txt under Alice's PCA
+  CAT rejects: {read: /sys/*} ⊄ {read: /user/*}
+  ✓ PIC enforced
+
+Scenario B (Application bug):
+  Bob reads /sys/syslog.txt using own authority (outside PCA)
+  Bob includes result in response to Alice
+  PIC not violated—CAT never saw the operation
+  ❌ Application bug: Bob leaked privileged data
+```
+
+**Key Distinction**:
+
+- **Protocol violation**: Attempting unauthorized ops through CAT → blocked
+- **Application bug**: Using own authority to leak data → not PIC's scope
+
+PIC guarantees that **authority flow through CAT** is correct.
+PIC does not prevent an application from misusing its own resources.
+
+> **CLARIFICATION**: If Bob uses privileged data (read with own authority) to construct a response for Alice, this is an application-level bug—not a confused deputy in the PIC sense. The confused deputy occurs when the **protocol** allows authority confusion. PIC makes that structurally impossible. Application logic errors remain the responsibility of the application.
 
 ---
 
