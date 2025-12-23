@@ -976,13 +976,15 @@ This section analyzes PIC's security properties, threat model, and attack resist
 
 ### 6.1 Threat Model
 
-**Trusted**: CAT, Trust Model, Governance
+**Trusted**: Federation Bridge, CAT, Trust Model, Governance
 
 **Untrusted**: Executors, network, execution environments
 
 **Attacker capabilities**: Eavesdropping, tampering, executor compromise, credential theft, replay
 
 **Out of scope**: CAT compromise, cryptographic breaks, side-channels, social engineering
+
+> **NOTE**: If VC Bridge is deployed for cross-federation credential conversion, it MUST also be trusted.
 
 ---
 
@@ -1037,27 +1039,27 @@ Authority bound to origin, Bob's privileges don't exist in Alice's transaction:
 
 Authority scoped to transaction origin:
 
-| Transaction Origin | read /user/* | read /sys/* | write /user/* |
-|--------------------|--------------|-------------|---------------|
-| Bob (own transaction) | ❌ | ✓ | ❌ |
-| Alice (via PCA) | ✓ | ❌ | ✓ |
+| Transaction Origin      | read /user/* | read /sys/* | write /user/* |
+|-------------------------|--------------|-------------|---------------|
+| Bob (own transaction)   | ❌           | ✓           | ❌            |
+| Alice (via PCA)         | ✓            | ❌          | ✓             |
 
 ---
 
 ### 6.3 Attack Comparison Summary
 
-| Attack | Token-Based | PIC | Mechanism |
-|--------|-------------|-----|-----------|
-| **Confused Deputy** | ❌ Vulnerable | ✅ Immune | Authority from origin, not executor |
-| **Token Theft** | ❌ Possession = authority | ✅ Resistant | Executor binding mismatch |
-| **Privilege Escalation** | ❌ No monotonicity | ✅ Immune | `ops_{i+1} ⊆ ops_i` enforced |
-| **Ambient Authority** | ❌ Service uses own token | ✅ Immune | Authority scoped to `ops_0` |
-| **Token Substitution** | ❌ No chain verification | ✅ Immune | PoC binds to previous PCA |
-| **Replay** | ❌ Valid until expiry | ✅ Resistant | Challenge + temporal binding |
-| **Credential Forwarding** | ❌ Unrestricted | ✅ Controlled | CAT validation per hop |
-| **Impersonation** | ❌ Possession = identity | ✅ Resistant | PoI must match binding |
-| **MITM Modification** | ⚠️ Depends on JWT sig | ✅ Immune | Bundle signature required |
-| **Revocation Delay** | ❌ Valid until expiry | ✅ Responsive | Checked at next hop |
+| Attack                   | Token-Based                | PIC            | Mechanism                           |
+|--------------------------|----------------------------|----------------|-------------------------------------|
+| **Confused Deputy**      | ❌ Vulnerable              | ✅ Immune      | Authority from origin, not executor |
+| **Token Theft**          | ❌ Possession = authority  | ✅ Resistant   | Executor binding mismatch           |
+| **Privilege Escalation** | ❌ No monotonicity         | ✅ Immune      | `ops_{i+1} ⊆ ops_i` enforced        |
+| **Ambient Authority**    | ❌ Service uses own token  | ✅ Immune      | Authority scoped to `ops_0`         |
+| **Token Substitution**   | ❌ No chain verification   | ✅ Immune      | PoC binds to previous PCA           |
+| **Replay**               | ❌ Valid until expiry      | ✅ Resistant   | Challenge + temporal binding        |
+| **Credential Forwarding**| ❌ Unrestricted            | ✅ Controlled  | CAT validation per hop              |
+| **Impersonation**        | ❌ Possession = identity   | ✅ Resistant   | PoI must match binding              |
+| **MITM Modification**    | ⚠️ Depends on JWT sig      | ✅ Immune      | Bundle signature required           |
+| **Revocation Delay**     | ❌ Valid until expiry      | ✅ Responsive  | Checked at next hop                 |
 
 **Legend**: ❌ Vulnerable | ⚠️ Depends | ✅ Resistant/Immune
 
@@ -1065,12 +1067,13 @@ Authority scoped to transaction origin:
 
 ### 6.4 Residual Risks
 
-| Risk | Mitigation |
-|------|------------|
-| **CAT Compromise** | HSM/TEE deployment, distributed CAT, monitoring |
-| **Trust Model Weakness** | Battle-tested crypto, agility, post-quantum readiness |
-| **Denial of Service** | Rate limiting, batching, distributed CAT |
-| **Policy Misconfiguration** | Testing, formal verification, least-privilege defaults |
+| Risk                             | Mitigation                                                          |
+|----------------------------------|---------------------------------------------------------------------|
+| **Federation Bridge Compromise** | HSM/TEE deployment, credential validation hardening, monitoring     |
+| **CAT Compromise**               | HSM/TEE deployment, distributed CAT, monitoring                     |
+| **Trust Model Weakness**         | Battle-tested crypto, agility, post-quantum readiness               |
+| **Denial of Service**            | Rate limiting, batching, distributed CAT                            |
+| **Policy Misconfiguration**      | Testing, formal verification, least-privilege defaults              |
 
 ---
 
@@ -1088,13 +1091,13 @@ Authority scoped to transaction origin:
 
 ### 6.6 Formal Security Properties
 
-| Property | Statement |
-|----------|-----------|
-| **Origin Immutability** | ∀i: `p_i = p_0` |
-| **Authority Monotonicity** | ∀i: `ops_i ⊆ ops_{i-1}` |
-| **Confused Deputy Impossibility** | ∀E_i: cannot exercise `ops_j` where `ops_j ⊄ ops_i` |
-| **Causal Provenance** | ∀PCA_i: ∃ chain `PCA_0 → ... → PCA_i` |
-| **Non-Transferability** | ∀PCA_i: bound to E_i, unusable by E_j |
+| Property                         | Statement                                              |
+|----------------------------------|--------------------------------------------------------|
+| **Origin Immutability**          | ∀i: `p_i = p_0`                                        |
+| **Authority Monotonicity**       | ∀i: `ops_i ⊆ ops_{i-1}`                                |
+| **Confused Deputy Impossibility**| ∀E_i: cannot exercise `ops_j` where `ops_j ⊄ ops_i`    |
+| **Causal Provenance**            | ∀PCA_i: ∃ chain `PCA_0 → ... → PCA_i`                  |
+| **Non-Transferability**          | ∀PCA_i: bound to E_i, unusable by E_j                  |
 
 **Formal Proof**: See [[1]](#references)
 
