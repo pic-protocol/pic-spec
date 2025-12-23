@@ -665,8 +665,7 @@ Proof constructed by Executor, submitted to CAT.
       "executor": {
         "federation": "https://trust.example.com",
         "namespace": "prod"
-      },
-      "provenance": { "prev": "sha256:a3f5b9c7...", "hop": 3 }
+      }
     },
     "poi": { "type": "spiffe_svid", "value": "base64..." },
     "pop": { "type": "ecdsa_p256", "value": "base64..." },
