@@ -196,7 +196,21 @@ The CAT ensures:
 The CAT is a logical mechanism.
 It may be implemented in-process, externally, or implicitly by a runtime environment.
 
-### 2.10 PIC Causal Authority (PCA_i)
+### 2.10 Federation Bridge
+
+A component that translates external credentials into PCA_0.
+
+The Federation Bridge:
+
+- Validates external credentials (JWT, SVID, VP, X.509)
+- Derives `p_0` and `ops_0` from credential claims
+- Issues the initial PCA_0 that starts the transaction
+
+Federation Bridge is the **entry point** to PIC. CAT handles **subsequent transitions** (PCA_i → PCA_{i+1}).
+
+> **NOTE**: A single deployment MAY combine Federation Bridge and CAT in one component (e.g., API Gateway).
+
+### 2.11 PIC Causal Authority (PCA_i)
 
 The causally derived authority available to Executor E_i at hop *i*.
 
@@ -212,7 +226,7 @@ PCA_i MAY include temporal, contextual, or resource constraints.
 PCA_i is NOT a token or transferable artifact.
 It is a state property of execution, derived from provenance continuity.
 
-### 2.11 PIC Causal Challenge (PCC_i)
+### 2.12 PIC Causal Challenge (PCC_i)
 
 A freshness challenge issued by the CAT to require a Proof of Continuity from Executor E_i.
 
@@ -224,7 +238,7 @@ Purpose:
 The challenge mechanism is RECOMMENDED but not strictly required.
 Systems without challenges MUST implement alternative replay protection.
 
-### 2.12 Proof of Continuity (PoC_i)
+### 2.13 Proof of Continuity (PoC_i)
 
 A non-forgeable proof produced by Executor E_i demonstrating:
 
@@ -238,13 +252,13 @@ PoC_i is **the fundamental primitive** that distinguishes PIC from possession-ba
 PoC_i cannot be replayed, transferred, reused, or forged.
 It is bound to the specific hop, predecessor, executor, and origin.
 
-### 2.13 Proof of Identity (PoI)
+### 2.14 Proof of Identity (PoI)
 
 A proof that asserts a claimed identity. PoI establishes "who" the executor claims to be. It is insufficient to establish authority continuity.
 
 PoI DOES NOT: grant authority, establish continuity, prevent confused deputy, or satisfy PIC requirements.
 
-### 2.14 Proof of Possession (PoP)
+### 2.15 Proof of Possession (PoP)
 
 A proof that demonstrates control over an artifact, credential, or secret. PoP establishes ownership but does not provide causal continuity, authority derivation from origin, or monotonic restriction.
 
@@ -355,6 +369,20 @@ Governance MAY be implemented via:
 - External policy engines
 
 Governance applies constraints but cannot issue PCA, bypass CAT validation, or expand authority.
+
+#### 3.1.4 Federation Bridge
+
+Translates external credentials into PCA_0.
+
+The Federation Bridge:
+
+- Validates external credentials (JWT, SVID, VP, X.509)
+- Derives `p_0` and `ops_0` from credential claims
+- Issues signed PCA_0
+
+Federation Bridge handles **entry**. CAT handles **transitions**.
+
+> **NOTE**: Federation Bridge and CAT MAY be co-located in a single component.
 
 ---
 
@@ -932,7 +960,7 @@ Alice exploits Bob's elevated authority:
 Authority bound to origin, Bob's privileges don't exist in Alice's transaction:
 
 ```text
-1. Gateway derives PCA_0: p_0 = Alice, ops_0 = {read:/user/*, write:/user/*}
+1. Gateway (as Federation Bridge) issues PCA_0: p_0 = Alice, ops_0 = {read:/user/*, write:/user/*}
 2. Bob receives PCA_1 (p_0 = Alice, ops_1 ⊆ ops_0)
 3. Alice sends: process("/sys/syslog.txt", "my content")
 4. Carol validates: {read:/sys/*} ⊆ {read:/user/*, write:/user/*}? NO
