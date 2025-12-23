@@ -1132,7 +1132,7 @@ This specification consolidates, formalizes, and extends that work under the ste
 
 ### B.1 License and Use
 
-This document is published under the **Creative Commons Attribution 5.0 International (CC BY 5.0)** license.  
+This document is published under the **Creative Commons Attribution 4.0 International (CC BY 4.0)** license.  
 Under this license, copying, redistribution, and adaptation are permitted, **provided that appropriate attribution is given** in accordance with the terms below.
 
 ---
@@ -1209,7 +1209,7 @@ or specifications acquire operational and editorial responsibilities only; they
 do not acquire conceptual authorship of the PIC Model or original authorship of
 the PIC Spec or PIC Protocol designs.
 
-This document is licensed under the Creative Commons Attribution 5.0 International (CC BY 5.0) license (see Section B.1).
+This document is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license (see Section B.1).
 
 **PIC Spec Author:** 
 
@@ -1268,6 +1268,8 @@ IMPLEMENTERS AND USERS ASSUME **ALL RISKS** ASSOCIATED WITH THE USE OF THIS SPEC
 THIS DISCLAIMER SHALL BE GOVERNED BY AND CONSTRUED IN ACCORDANCE WITH APPLICABLE LAW, WITHOUT REGARD TO CONFLICT OF LAW PRINCIPLES.
 
 IF ANY PROVISION OF THIS DISCLAIMER IS HELD TO BE UNENFORCEABLE, THE REMAINING PROVISIONS SHALL CONTINUE IN FULL FORCE AND EFFECT.
+
+THE AUTHORS AND CONTRIBUTORS HAVE NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, PATCHES, OR CORRECTIONS.
 
 ---
 
