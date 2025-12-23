@@ -1,47 +1,50 @@
 # PIC Maintainers
 
-This document lists individuals who may contribute operationally to the
-maintenance of the official PIC repositories.
+This document defines the scope and limits of the *Maintainer* role for the
+official PIC repositories.
 
-Maintainer status indicates trusted involvement in the project, but does not
-guarantee merge rights, review authority, or decision-making power.
+Maintainer status concerns **repository operations only** and does **not**
+create, transfer, modify, or imply:
 
-Authorship of the PIC Model and normative authority are defined exclusively in
-the PIC Spec.
+- authorship or co-authorship of the PIC Model,
+- ownership of the PIC Model or the PIC Specification,
+- normative authority over the PIC Model or the PIC Specification,
+- legal, professional, or operational responsibility for the PIC Model.
 
-## Roles and Responsibilities
+All such matters are defined **exclusively** in the PIC Specification
+(see Appendix B).
+
+---
+
+## Responsibilities
 
 Maintainers MAY:
 
-- contribute changes via pull requests,
-- participate in technical discussions,
-- assist with issue triage and documentation.
+- manage repository operations,
+- review contributions,
+- merge changes,
+- coordinate issues and documentation.
 
-Maintainers are NOT guaranteed:
+Maintainers MAY NOT:
 
-- pull request review rights,
-- merge permissions,
-- editorial authority over the PIC Spec or PIC Protocol documents.
+- alter authorship or attribution,
+- declare or imply canonical status of any document,
+- modify normative authority of the PIC Specification,
+- create obligations, warranties, or liabilities regarding the PIC Model.
 
-Final editorial and normative decisions remain with the Lead Editor.
+Final editorial and normative authority remains with the
+**Specification Steward**, as defined in the PIC Specification.
+
+---
 
 ## Role Assignment and Changes
 
-The following roles are **not self-assignable** and **cannot be modified or
-granted via pull request**:
+Maintainer roles:
 
-- PIC Spec Author
-- PIC Model Author
-- Lead Editor
+- are assigned and modified solely by the Specification Steward,
+- cannot be self-assigned,
+- cannot be transferred,
+- cannot be granted or altered through pull requests.
 
-Any change to these roles MUST be explicitly initiated and approved by the
-current Lead Editor, and MUST NOT contradict the authorship and attribution
-rules defined in the PIC Spec.
-
-Pull requests that attempt to add, modify, or imply these roles through edits
-to documentation, metadata, or repository configuration will be rejected.
-
-## Current Maintainers
-
-- **Nicola Gallo** — Lead Editor
-- <add maintainer via pull request>
+Any attempt to imply otherwise through documentation, repository metadata,
+or project process is invalid.

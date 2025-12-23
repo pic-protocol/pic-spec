@@ -1,5 +1,22 @@
-
 # Contributor Covenant Code of Conduct
+
+## Governance and Enforcement Authority
+
+This project is governed and stewarded by **Nitro Agility S.r.l.**
+
+All Code of Conduct enforcement actions, moderation decisions, and community
+governance activities are carried out by Nitro Agility S.r.l. as the project’s
+maintaining organization.
+
+This Code of Conduct governs community behavior only and does not modify
+authorship, licensing, or normative authority as defined in the PIC
+Specification.
+
+Reports of violations should be submitted to:
+
+**[opensource@nitroagility.com](mailto:opensource@nitroagility.com)**
+
+---
 
 ## Our Pledge
 
@@ -60,7 +77,10 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement.
+reported to the project’s enforcement authority at:
+
+**opensource@nitroagility.com**
+
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
@@ -106,7 +126,7 @@ Violating these terms may lead to a permanent ban.
 ### 4. Permanent Ban
 
 **Community Impact**: Demonstrating a pattern of violation of community
-standards, including sustained inappropriate behavior,  harassment of an
+standards, including sustained inappropriate behavior, harassment of an
 individual, or aggression toward or disparagement of classes of individuals.
 
 **Consequence**: A permanent ban from any sort of public interaction within

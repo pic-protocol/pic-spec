@@ -6,11 +6,11 @@ Thank you for your interest in contributing to the **Provenance Identity Continu
 
 The PIC project is structured across three distinct but related layers:
 
-1. **PIC Model** — the formal theoretical model
-2. **PIC Spec** — the normative specification of the model
+1. **PIC Model** — the formal theoretical model  
+2. **PIC Spec** — the normative specification of the model  
 3. **PIC Protocol** — concrete protocol encodings and interoperability profiles
 
-This document explains **what can be contributed**, **how contributions are handled**, and **how authorship and attribution are preserved**.
+This document explains **what can be contributed**, **how contributions are handled**, and **how authorship, attribution, and responsibility boundaries are preserved**.
 
 ---
 
@@ -22,8 +22,10 @@ The **PIC Model** defines the core theoretical concepts, invariants, and impossi
 (e.g., Provenance Identity Continuity, Proof of Continuity, CAT, PCA).
 
 - The PIC Model is **original theoretical work** introduced by **Nicola Gallo**
-- Authorship of the PIC Model is **historical and immutable**
+- Authorship of the PIC Model is **historical, personal, and immutable**
 - Contributions **do not** confer co-authorship of the PIC Model
+- Nothing in this repository or contribution process transfers, licenses, or assigns
+  any ownership or authorship of the PIC Model
 
 Contributions MAY include:
 
@@ -42,7 +44,8 @@ Contributions MUST NOT:
 
 ### 1.2 PIC Spec (Normative Specification)
 
-The **PIC Spec** formalizes the PIC Model into a normative, RFC-style document.
+The **PIC Spec** formalizes the PIC Model into a normative, RFC-style document and is
+**published, maintained, and stewarded by Nitro Agility S.r.l.**
 
 Contributors MAY submit:
 
@@ -88,7 +91,7 @@ Protocol work **DOES NOT alter** authorship of the PIC Model or the PIC Spec.
 
 ## 2. Authorship vs Contribution (Critical)
 
-**Authorship of the PIC Model is historical and independent of:**
+**Authorship of the PIC Model is personal, historical, and legally independent of:**
 
 - repository ownership
 - organizational governance
@@ -96,13 +99,14 @@ Protocol work **DOES NOT alter** authorship of the PIC Model or the PIC Spec.
 - contribution volume
 - protocol implementations
 
-By contributing, you acknowledge that:
+By contributing, you explicitly acknowledge that:
 
-- **Nicola Gallo** is the original author of the PIC Model
-- contributions apply only to text, examples, review, or protocol material
-- contributions do NOT imply ownership of the model or its invariants
+- **Nicola Gallo** is the original and sole author of the PIC Model
+- your contributions apply only to text, examples, reviews, or protocol material
+- your contributions do **not** imply ownership, co-authorship, endorsement, warranty,
+  or operational responsibility for the PIC Model
 
-Contributors are credited for **their contributions**, not as authors of the PIC Model.
+Contributors are credited for **their contributions only**, not as authors of the PIC Model.
 
 ---
 
@@ -117,6 +121,8 @@ Submitting a pull request:
 - does not grant editorial authority
 - does not change canonicity
 - does not alter attribution rules
+- does not create any legal, operational, or professional obligation for the
+  PIC Model author
 
 ---
 
@@ -138,44 +144,29 @@ subject to the repository license.
 
 ## 5. Use of Automated Language Assistance (LLMs)
 
-Contributors MAY use automated language assistance tools (including large
-language models, spell checkers, or grammar aids) **solely for the purpose of
-improving clarity, structure, grammar, or phrasing** of their contributions.
+Contributors MAY use automated language assistance tools solely for improving clarity,
+structure, grammar, or phrasing.
 
-Such tools are treated as **editorial assistants**, not as sources of ideas,
-theory, or authorship.
+Such tools are treated as **editorial assistants**, not sources of theory, authorship,
+or legal responsibility.
 
-Contributors MUST ensure that:
-
-- all substantive ideas, technical arguments, designs, and interpretations
-  originate from the contributor themselves;
-- no contribution claims novelty, authorship, or conceptual invention
-  attributable to an automated system;
-- use of automated assistance does not obscure or alter the authorship of the
-  PIC Model or its foundational concepts.
-
-Use of automated tools **does not confer co-authorship**, contributor status,
-or attribution to such tools, and **does not affect authorship claims** defined
-by the PIC Spec.
-
-In case of ambiguity, the human contributor submitting the pull request is
-considered fully responsible for the content.
+The human contributor remains fully responsible for submitted content.
 
 ---
 
 ## 6. Contribution Process
 
-1. Fork the repository
-2. Create a feature branch
-3. Make changes with clear, scoped commits
-4. Open a Pull Request
+1. Fork the repository  
+2. Create a feature branch  
+3. Make changes with clear, scoped commits  
+4. Open a Pull Request  
 5. Describe:
    - what the change addresses
    - whether it is editorial, semantic, or protocol-level
    - any impact on PIC invariants
 
 Maintainers may request clarification, revision, or decline changes
-that conflict with the PIC Model or the project scope.
+that conflict with the PIC Model or project scope.
 
 ---
 
@@ -185,20 +176,22 @@ All participants must follow the
 [Code of Conduct](CODE_OF_CONDUCT.md).
 
 Good-faith technical disagreement is welcome.
-Personal attacks, misrepresentation, or authorship disputes are not.
+Personal attacks, misrepresentation, authorship disputes, or attempts to
+reassign responsibility are not.
 
 ---
 
-## 8. Contributor Recognition
+## 8. Contributor Recognition & Governance Context
 
-Accepted contributors MAY be listed in the appropriate
-**Contributors** section of the relevant document (Model, Spec, or Protocol).
+All contributions to this repository are governed by **Nitro Agility S.r.l.**  
+and are incorporated under its stewardship.
 
-Being listed as a contributor:
+Contributions made by employees, associates, contractors, or co-founders of
+Nitro Agility S.r.l. are made **on behalf of Nitro Agility S.r.l.** unless
+explicitly stated otherwise.
 
-- does not imply authorship of the PIC Model
-- does not imply editorial control
-- does not supersede attribution rules
+No contribution creates any personal legal, operational, or professional
+obligation for the PIC Model author.
 
 ---
 
