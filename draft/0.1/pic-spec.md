@@ -708,9 +708,50 @@ PIC validation overhead is at most equivalent to OAuth 2.0 Token Exchange (RFC 8
 
 ### 5.2 Deployment Topologies
 
+#### Federated (Public Internet)
+
+Each organization operates its own Federation Bridge and CAT. Cross-domain trust established dynamically:
+
+```text
+┌─────────────────────────┐           ┌─────────────────────────┐
+│      Organization A     │           │      Organization B     │
+│                         │           │                         │
+│  User → Fed Bridge_A    │           │       Fed Bridge_B      │
+│              │          │           │            │            │
+│              ▼          │           │            ▼            │
+│           PCA_0         │           │         PCA_n           │
+│              │          │           │            │            │
+│        E_1 → E_2 ───────┼───────────┼──────────▶ E_3          │
+│         │     │         │  public   │            │            │
+│        CAT   CAT        │  internet │           CAT           │
+│                         │           │                         │
+│  Trust Plane A          │◀─────────▶│    Trust Plane B        │
+│                         │  dynamic  │                         │
+│                         │federation │                         │
+└─────────────────────────┘           └─────────────────────────┘
+```
+
+**Characteristics**:
+
+- Each organization operates independent Trust Plane
+- Federation Bridges validate cross-domain PCAs via Trust Model verification
+- No shared infrastructure required
+- Dynamic trust establishment (VC exchange, DID resolution, mutual attestation)
+
+**Cross-domain flow**:
+
+1. User authenticates to Organization A
+2. Federation Bridge_A issues PCA_0
+3. Execution crosses to Organization B via public internet
+4. Federation Bridge_B validates PCA_n signature against Trust Plane A
+5. CAT_B issues PCA_{n+1} for local execution
+
+> **NOTE**: Cross-domain PCA validation requires inter-organizational trust agreement (key exchange, VC issuance, or DID-based discovery).
+
 #### Network-Internal (Trusted Zone)
 
 Federation Bridge at entry, embedded CAT for internal transitions:
+
 ```text
                          ENTRY (once)
 User → OAuth/OIDC → JWT → Federation Bridge issues PCA_0
@@ -733,6 +774,7 @@ User → OAuth/OIDC → JWT → Federation Bridge issues PCA_0
 #### Embedded (Shared Memory)
 
 PCA transitions via memory copy, zero network overhead:
+
 ```text
 ┌─────────────────────────────────────┐
 │       Embedded Device / IoT         │
@@ -750,6 +792,7 @@ PCA transitions via memory copy, zero network overhead:
 #### IoT Ring (Local Network)
 
 User presents VC, Federation Bridge issues PCA_0, PCA flows device-to-device:
+
 ```text
                      User arrives with VC
                               │
@@ -798,6 +841,7 @@ User presents VC, Federation Bridge issues PCA_0, PCA flows device-to-device:
 #### OAuth 2.0
 
 Federation Bridge validates JWT and issues PCA_0:
+
 ```text
 User → OAuth AS → JWT → Federation Bridge issues PCA_0 → Executor chain
 ```
@@ -805,6 +849,7 @@ User → OAuth AS → JWT → Federation Bridge issues PCA_0 → Executor chain
 #### SPIFFE
 
 Federation Bridge validates SVID and issues PCA:
+
 ```text
 Workload → SPIFFE Server → SVID → Federation Bridge issues PCA_0 → Executor chain
 ```
@@ -812,37 +857,45 @@ Workload → SPIFFE Server → SVID → Federation Bridge issues PCA_0 → Execu
 #### DID / Verifiable Credentials
 
 Federation Bridge validates VP and issues PCA_0:
+
 ```text
 User → Wallet → VP → Federation Bridge issues PCA_0 → Executor chain
 ```
 
 #### Cross-Federation: SPIFFE to VC
 
-Workload exchanges SVID for VC via Federation Bridge, then presents VC to another domain:
+Workload exchanges SVID for VC via VC Bridge, then presents VC to Federation Bridge in another domain:
+
 ```text
 ┌──────────────────────────────────────────────────────────┐
 │                                                          │
-│  Workload      Federation Bridge    Federation Bridge    │
+│  Workload         VC Bridge         Federation Bridge    │
 │  (Domain A)      (Domain A)           (Domain B)         │
 │     │                  │                   │             │
 │     │───── SVID ──────▶│                   │             │
 │     │                  │                   │             │
-│     │                  │ converts to VC    │             │
+│     │                  │ issues VC         │             │
 │     │                  │                   │             │
 │     │◀───── VC ────────│                   │             │
 │     │                  │                   │             │
 │     │─────────────── VC (as PoI) ─────────▶│             │
 │     │                  │                   │             │
-│     │                  │         validates, issues PCA   │
+│     │                  │      validates VC, issues PCA   │
 │     │                  │                   │             │
 │     │◀─────────────── PCA ─────────────────│             │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
 ```
 
+**Components**:
+
+- **VC Bridge**: Converts identity credentials (SVID, JWT, X.509) into portable VCs
+- **Federation Bridge**: Validates VCs (or other credentials) and issues PCA_0
+
 #### API Gateway
 
 Gateway acts as Federation Bridge, issues PCA_0, forwards to backend:
+
 ```text
 Client → API Gateway (acts as Federation Bridge) → PCA_0 → Backend services
 ```
@@ -879,6 +932,7 @@ Client → API Gateway (acts as Federation Bridge) → PCA_0 → Backend service
 No new concepts. AI agents are executors. Tools are executors. PIC applies unchanged.
 
 Agent calls tools, tools call APIs, authority only decreases:
+
 ```text
 Alice (Human User)
   │
