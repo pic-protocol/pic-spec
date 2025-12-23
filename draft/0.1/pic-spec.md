@@ -1215,7 +1215,7 @@ This document is licensed under the Creative Commons Attribution 5.0 Internation
 
 The following individuals have contributed to the specification text, reviews, examples, or discussions. Contribution does not imply authorship of the PIC Model.
 
-- <add your name here via pull request>  
+- 'add your name here via pull request'
 
 ### B.7 Relationship to PIC Protocol Specifications
 
