@@ -421,7 +421,7 @@ Typical for microservices, cloud-native applications.
 └─────────────────────────────────────────┘
        │           │           │
        ▼           ▼           ▼
-      E_n        E_n         E_n
+      E_n         E_n         E_n
 ```
 
 Distributed validation.
