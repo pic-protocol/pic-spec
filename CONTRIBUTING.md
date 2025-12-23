@@ -187,8 +187,9 @@ All contributions to this repository are governed by **Nitro Agility S.r.l.**
 and are incorporated under its stewardship.
 
 Contributions made by employees, associates, contractors, or co-founders of
-Nitro Agility S.r.l. — **regardless of the GitHub account used** — are made 
-**on behalf of Nitro Agility S.r.l.** unless explicitly stated otherwise.
+Nitro Agility S.r.l. — **regardless of the account (e.g., GitHub), platform, 
+signing keys, or method used** — are made **on behalf of Nitro Agility S.r.l.** 
+unless explicitly stated otherwise.
 
 No contribution creates any personal legal, operational, or professional
 obligation for the PIC Model author.
