@@ -544,27 +544,30 @@ Examples are **informative**. Protocol encodings are defined in separate PIC Pro
 
 ### 4.1 PIC Causal Authority (PCA)
 
-Authority state at execution hop *i*. MUST be signed by CAT.
+Authority state at execution hop *i*.
+
+- PCA_0 MUST be signed by Federation Bridge
+- PCA_{i>0} MUST be signed by CAT
 
 **Structure**:
 
-| Field        | Required  | Description                                               |
-|--------------|-----------|-----------------------------------------------------------|
-| `cat_id`     | MUST      | CAT identifier (for signature verification, key rotation) |
-| `cat_sig`    | MUST      | CAT signature over payload                                |
-| `p_0`        | MUST      | Origin principal (immutable)                              |
-| `ops`        | MUST      | Authority set (`ops_i ⊆ ops_{i-1}`)                       |
-| `executor`   | MUST      | Executor binding (federation, attributes)                 |
-| `provenance` | MUST      | Reference to previous PCA                                 |
-| `temporal`   | MAY       | Time constraints                                          |
-| `context`    | MAY       | Additional constraints                                    |
+| Field       | Required | Description                                                 |
+|-------------|----------|-------------------------------------------------------------|
+| `issuer_id` | MUST     | Issuer identifier (Federation Bridge or CAT)                |
+| `issuer_sig`| MUST     | Issuer signature over payload                               |
+| `p_0`       | MUST     | Origin principal (immutable)                                |
+| `ops`       | MUST     | Authority set (`ops_i ⊆ ops_{i-1}`)                         |
+| `executor`  | MUST     | Executor binding (federation, attributes)                   |
+| `provenance`| MUST     | Reference to previous PCA (null for PCA_0)                  |
+| `temporal`  | MAY      | Time constraints                                            |
+| `context`   | MAY      | Additional constraints                                      |
 
 **Example**:
 
 ```json
 {
-  "cat_id": "https://cat.example.com/keys/2024-12",
-  "cat_sig": "base64url...",
+  "issuer_id": "https://federation-bridge.example.com/keys/2024-12",
+  "issuer_sig": "base64url...",
   "payload": {
     "p_0": "https://idp.example.com/users/alice",
     "ops": ["read:/user/*", "write:/user/*"],
@@ -573,8 +576,8 @@ Authority state at execution hop *i*. MUST be signed by CAT.
       "namespace": "prod"
     },
     "provenance": {
-      "prev": "sha256:a3f5b9c7...",
-      "hop": 2
+      "prev": null,
+      "hop": 0
     },
     "temporal": {
       "iat": "2025-12-11T10:00:00Z",
@@ -583,6 +586,9 @@ Authority state at execution hop *i*. MUST be signed by CAT.
   }
 }
 ```
+
+> **NOTE**: `issuer_id` identifies either Federation Bridge (for PCA_0) or CAT (for PCA_{i>0}).
+> In deployments where Federation Bridge and CAT are co-located, they MAY share the same identifier.
 
 ---
 
@@ -627,8 +633,8 @@ Proof constructed by Executor, submitted to CAT.
   "sig": "base64url...",
   "bundle": {
     "prev_pca": {
-      "cat_id": "https://cat.example.com/keys/2024-12",
-      "cat_sig": "base64url...",
+      "issuer_id": "https://cat.example.com/keys/2024-12",
+      "issuer_sig": "base64url...",
       "payload": {
         "p_0": "https://idp.example.com/users/alice",
         "ops": ["read:/user/*", "write:/user/*"],
