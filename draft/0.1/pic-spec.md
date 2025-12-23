@@ -97,397 +97,160 @@ Textual references such as "hop *i*" refer to the execution hop denoted formally
 
 ### 2.1 Trust Model
 
-A verifiable mechanism for establishing non-repudiable binding between execution states. A Trust Model MUST provide:
+A verifiable mechanism for establishing non-repudiable binding between execution states.
+
+A Trust Model MUST provide:
 
 1. **Non-Forgeability**: Bindings cannot be fabricated, replayed, or transferred outside their causal context
 2. **Causal Verification**: A successor state can be proven to derive from its predecessor
 3. **Freshness**: Bindings are temporally bound to prevent replay attacks
 
-Trust Models MAY be implemented via:
+Trust Models MAY be implemented via cryptographic primitives, hardware attestation, distributed consensus, or other mechanisms satisfying these requirements.
 
-- Cryptographic primitives (signatures, MACs, hash chains)
-- Hardware security modules (TPM, TEE, SGX)
-- Distributed consensus mechanisms (blockchain, DAG)
-- Zero-knowledge proof systems
-- Quantum-resistant schemes
-- Other mechanisms satisfying the three requirements
+> **IMPLEMENTATION NOTE**: Systems implementing PIC MUST specify which Trust Model they employ.
 
-**Implementation Note**: Systems implementing PIC MUST specify which Trust Model they employ and demonstrate it satisfies the three requirements above.
+### 2.2 Provenance Principal (p_0)
 
-### 2.2 Origin Principal (p_0)
+The immutable reference to the entity that initiated the transaction.
+It serves as the provenance anchor from which all authority derives.
 
-The immutable reference to the entity that initiated the distributed transaction. The origin principal MUST remain constant throughout the entire execution chain and serves as the provenance anchor.
+The provenance principal MAY be human, workload, or anonymous.
+It MUST NOT change during the transaction.
+Any attempt to alter `p_0` invalidates the execution chain.
 
-The origin principal MAY be:
+### 2.3 Provenance Authority Set (ops_0)
 
-**Human User** - Authenticated via:
+The initial authority under which the transaction executes.
+It defines the complete set of operations available at the start of the execution chain.
 
-- OAuth 2.0 / OpenID Connect
-- SAML 2.0
-- Verifiable Credentials (W3C VC)
-- WebAuthn / FIDO2
-- Certificate-based authentication
-- Other identity protocols
-
-**Service/Workload** - Identified via:
-
-- Decentralized Identifiers (DID)
-- SPIFFE ID
-- X.509 certificates
-- Service identity systems
-- Other workload identity mechanisms
-
-**Anonymous Origin**:
-
-- Capability token hash
-- Privacy-preserving identifier
-- Anonymous credential system
-
-**Critical Invariant**: Regardless of whether `p_0` is human, workload, or anonymous, it MUST NOT change during the transaction. Any attempt to alter `p_0` invalidates the execution chain.
-
-**Examples:**
-
-- Human (OIDC): `p_0 = sub:248289761001`
-- Human (SAML): `p_0 = urn:saml:user:alice@example.com`
-- Workload (SPIFFE): `p_0 = spiffe://trust-domain.com/workload/api`
-- Workload (DID): `p_0 = did:web:api.example.com`
-- Anonymous: `p_0 = cap:sha256:a3f5b9...`
-
-### 2.3 Origin Authority Set (ops_0)
-
-The initial authority under which the transaction executes at its origin. The origin authority set defines the complete set of operations available at the start of the execution chain.
-
-Authority MAY derive from:
-
-1. **Identity-Based Grants**: Permissions associated with the origin principal's identity
-   - User roles and permissions (RBAC)
-   - User attributes (ABAC)
-   - Group memberships
-   - Organizational roles
-
-2. **Capability-Based Grants**: Authority conveyed through capability tokens
-   - Capability tokens
-   - Delegated credentials
-   - Ambient authority
-
-3. **Hybrid Models**: Combinations of the above
-   - Identity-based roles intersected with capability constraints
-   - Contextual restriction of role-based grants
-
-**Authority Propagation**: Each subsequent hop *i* operates with `ops_i ⊆ ops_{i-1}` (monotonic restriction). Authority can only decrease or remain constant; it can never expand beyond `ops_0`.
+Each subsequent hop *i* operates with `ops_i ⊆ ops_{i-1}` (monotonic restriction).
+Authority can only decrease or remain constant; it can never expand beyond `ops_0`.
 
 **Critical Distinction**:
 
-- `p_0` (origin principal) = WHO initiated the transaction (immutable)
-- `ops_0` (origin authority) = WHAT operations are authorized (may be restricted at each hop)
-
-**Examples:**
-
-- Human with roles: `ops_0 = {read:/home/alice/*, write:/home/alice/docs/*, execute:/bin/gcc}`
-- Service with role: `ops_0 = {read:/config/*, write:/logs/*, invoke:service-b}`
-- Capability-based: `ops_0 = {execute:contract:0x123, transfer:token:XYZ}`
-- Hybrid: `ops_0 = role_grants(p_0) ∩ capability_grants(token)`
+- `p_0` = WHO initiated the transaction (immutable)
+- `ops_0` = WHAT operations are authorized (may be restricted at each hop)
 
 ### 2.4 Execution Hop (Hop_i)
 
-A discrete execution step within a distributed transaction, representing a single bounded execution context in which an Executor operates. An execution hop forms the minimal unit of causal progression in PIC and is uniquely positioned in the provenance chain by its immediate causal predecessor and successor.
+A discrete execution step within a transaction.
+It represents a single bounded execution context and forms the minimal unit of causal progression in PIC.
 
-An execution hop is NOT a process, service, or container; it is a logical unit of execution whose validity is determined solely by its position in the provenance chain.
+An execution hop is NOT a process, service, or container.
+It is a logical unit whose validity is determined solely by its position in the provenance chain.
 
 ### 2.5 Executor (E_i)
 
-An active execution entity responsible for performing computations at hop *i*. An Executor acts within a bounded execution context and participates in causal authority transitions.
+An active entity responsible for performing computations at hop *i*.
 
 Each Executor MUST:
 
-1. **Preserve Origin**: Maintain immutable reference to origin principal `p_0`
-2. **Operate Within Authority**: Execute only operations permitted by `ops_i` (where `ops_i ⊆ ops_0`)
-3. **Demonstrate Continuity**: Provide valid Proof of Continuity (PoC_i) establishing causal derivation from hop *i-1*
-4. **Bind to Environment**: Be verifiably bound to its execution environment
+1. **Preserve Origin**: Maintain immutable reference to `p_0`
+2. **Operate Within Authority**: Execute only operations permitted by `ops_i`
+3. **Demonstrate Continuity**: Provide valid Proof of Continuity (PoC_i)
+4. **Bind to Environment**: Be verifiably bound to its execution context
 
-An Executor MAY provide:
+An Executor MAY provide Proof of Identity (PoI) or Proof of Possession (PoP).
+These establish executor verification but DO NOT grant authority, alter `p_0`, or establish continuity.
 
-- **Proof of Identity (PoI)**: Establishes executor's own identity
-- **Proof of Possession (PoP)**: Demonstrates control over credentials or secrets
-
-**Critical Distinction**:
-
-- **Executor Identity**: WHO is performing computation at hop *i* (the service/workload executing code)
-- **Origin Principal** (`p_0`): WHO initiated the transaction (immutable throughout)
-- **Authority** (`ops_i`): WHAT operations executor may perform (derived from `ops_0`)
-
-PoI and PoP establish executor verification but DO NOT:
-
-- Grant authority beyond `ops_i`
-- Alter origin principal `p_0`
-- Establish execution continuity (requires PoC)
-- Satisfy PIC requirements
-
-Authority in PIC derives from causal execution state and provenance, not from executor identity or credential possession.
-
-**Example Flow:**
-
-```text
-Origin: p_0 = alice@example.com (human via OIDC)
-        ops_0 = {read:*, write:/home/alice/*}
-
-Hop 1: E_1 = spiffe://trust/api-gateway
-       ops_1 = {read:*, write:/home/alice/*}
-       (inherits full ops_0)
-       
-Hop 2: E_2 = spiffe://trust/backend  
-       ops_2 = {read:*}
-       (restricted: removed write authority)
-       
-Hop 3: E_3 = did:web:processor.example.com
-       ops_3 = {read:*}
-       (MUST be ⊆ ops_2, cannot expand back to include write)
-
-Throughout: p_0 = alice@example.com (immutable)
-Monotonicity: ops_3 ⊆ ops_2 ⊆ ops_1 ⊆ ops_0
-```
-
-**Counter-Example (Invalid):**
-
-```text
-Origin: ops_0 = {read:*, write:/home/alice/*}
-
-Hop 1: ops_1 = {read:*, write:/home/alice/*}
-Hop 2: ops_2 = {read:*}  (restricted)
-Hop 3: ops_3 = {read:*, write:/home/alice/public/*}  ❌ INVALID
-
-Violation: ops_3 ⊄ ops_2
-Reason: Once write authority is removed at hop 2, it cannot be 
-        reintroduced at hop 3, even for a subset of resources.
-        
-The correct ops_3 MUST satisfy: ops_3 ⊆ ops_2 = {read:*}
-```
+Authority derives from causal execution state, not from executor identity or credential possession.
 
 ### 2.6 Executor Characteristic (EC_i)
 
-A non-transferable property of an Executor at hop *i* that is bound to its execution context. Executor Characteristics include environmental, platform, or runtime attributes such as:
+A non-transferable property of an Executor bound to its execution context: TEE attestation, container identity, hardware measurements, network location, runtime namespace.
 
-- Trusted Execution Environment (TEE) attestation
-- Container or pod identity
-- Process attributes and security context
-- Hardware platform measurements (TPM, secure boot state)
-- Network location or zone
-- Deployment region or availability zone
-- Runtime namespace and labels
-
-Executor Characteristics are used to validate executor continuity under the Trust Model. They do not constitute identity, authority, or decisions by themselves, but provide verifiable context for continuity validation.
+Executor Characteristics validate executor context, not authority.
+They are inputs to continuity validation, not substitutes for it.
 
 ### 2.7 Provenance (P)
 
-The ordered, non-forgeable (under Trust Model) history of execution hops and authority derivations that causally led to a given execution state. Provenance forms the immutable foundation for continuity validation and provides complete auditability of authority flow.
+The ordered, non-forgeable history of execution hops and authority derivations that causally led to a given execution state.
 
-Provenance includes:
+Provenance includes: the complete chain from origin to current state, immutable `p_0`, authority evolution `ops_0 → ops_1 → ... → ops_i`, and contextual metadata.
 
-- Complete chain of execution hops from origin to current state
-- Origin principal `p_0` (immutable throughout)
-- Authority evolution `ops_0 → ops_1 → ... → ops_i`
-- Executor identities at each hop (if disclosed)
-- Timestamps and temporal constraints
-- Contextual metadata
+### 2.8 Transaction (τ)
 
-### 2.8 Distributed Transaction (τ)
+A causally linked sequence of execution hops forming a single logical operation.
 
-A causally linked sequence of execution hops forming a single logical operation across multiple execution contexts. Each hop participates in τ by verifying continuity with its immediate causal predecessor.
+In PIC, a "transaction" encompasses the entire execution from origin to completion—not merely database BEGIN/COMMIT semantics.
+A transaction may span multiple services, administrative domains, hours of processing, or asynchronous flows.
 
-**Critical Note**: In PIC, a "transaction" encompasses the **entire distributed execution from origin to completion**, not merely BEGIN/COMMIT database semantics. A transaction may span:
-
-- Multiple services and execution boundaries
-- Multiple administrative domains
-- Hours or days of processing time
-- Asynchronous event-driven flows (Kafka streams, message queues)
-- AI agent orchestrations with multiple API calls
-- Human-initiated workflows across multiple systems
-
-All execution within a single transaction maintains causal continuity under the same origin principal `p_0` and derives authority from the same origin authority set `ops_0`.
-
-**Examples:**
-
-- User clicks button → API Gateway → 5 microservices → Database → Function → Storage
-- User submits document → Message queue → Stream processing → Multiple consumers → Storage
-- User authorizes AI agent → Agent calls API₁ + API₂ + API₃ → Aggregates results
+All execution within a single transaction maintains causal continuity under the same `p_0` and derives authority from `ops_0`.
 
 ### 2.9 Causal Authority Transition (CAT)
 
-A normative enforcement mechanism that validates Provenance Identity Continuity invariants by:
+The enforcement mechanism that validates PIC invariants.
 
-1. Issuing PIC Causal Challenges (PCC_i)
-2. Verifying Proofs of Continuity (PoC_i)
-3. Deriving successor PIC Causal Authority (PCA_{i+1}) states
+The CAT:
 
-The CAT is a logical mechanism that enforces continuity and may be implemented in-process, externally, or implicitly by a runtime environment, provided the PIC invariants are preserved.
+1. Issues PIC Causal Challenges (PCC_i)
+2. Verifies Proofs of Continuity (PoC_i)
+3. Derives successor authority states (PCA_{i+1})
 
 The CAT ensures:
 
-- **Monotonicity**: `ops_{i+1} ⊆ ops_i` (authority can only decrease or remain constant)
-- **Causal Binding**: Each hop is verifiably linked to its predecessor under the Trust Model
-- **Origin Preservation**: The immutable origin principal `p_0` is maintained throughout the execution chain
+- **Monotonicity**: `ops_{i+1} ⊆ ops_i`
+- **Causal Binding**: Each hop is verifiably linked to its predecessor
+- **Origin Preservation**: `p_0` is maintained throughout
+
+The CAT is a logical mechanism.
+It may be implemented in-process, externally, or implicitly by a runtime environment.
 
 ### 2.10 PIC Causal Authority (PCA_i)
 
-The causally derived authority available to Executor E_i at hop *i*. PIC Causal Authority represents execution-bound capability and is neither possessed as an artifact nor transferable outside the execution chain.
+The causally derived authority available to Executor E_i at hop *i*.
 
 PCA_i MUST include:
 
-1. **Origin Principal** (`p_0`): Immutable reference to transaction initiator (human, workload, or anonymous)
-2. **Authority Set** (`ops_i ⊆ ops_0`): Operations the executor may perform at hop *i*
-3. **Executor Binding**: Verifiable binding to the specific executor E_i that guarantees the executor cannot be arbitrarily replaced or impersonated
-4. **Provenance**: Reference to the complete causal chain from `p_0` to hop *i*
+1. **Origin Principal** (`p_0`): Immutable reference to transaction initiator
+2. **Authority Set** (`ops_i`): Operations permitted at hop *i*, where `ops_i ⊆ ops_0`
+3. **Executor Binding**: Verifiable binding to E_i
+4. **Provenance**: Reference to the causal chain from `p_0` to hop *i*
 
-PCA_i MAY include additional dimensions:
+PCA_i MAY include temporal, contextual, or resource constraints.
 
-- **Temporal Constraints**: Time-bound validity conditions (e.g., not-before, expiration timestamps, maximum duration)
-- **Contextual Constraints**: Environmental or situational restrictions (e.g., network zones, deployment environments, execution contexts)
-- **Resource Constraints**: Limits on resource consumption or scope
-- **Other Dimensions**: Implementation-specific constraints that do not violate PIC invariants
-
-**Key Properties**:
-
-1. **Origin Immutability**: `p_0` does not change across hops
-2. **Authority Monotonicity**: `ops_i ⊆ ops_{i-1}` for all *i*, which implies `ops_i ⊆ ops_0`
-3. **Executor Binding**: Authority is bound to specific executor E_i
-4. **Causal Derivation**: PCA_i provably derives from PCA_{i-1} under Trust Model
-5. **Non-Transferability**: PCA_i is bound to hop *i* and cannot be used outside its causal context
-
-**Critical Note**: The executor binding ensures that authority cannot be exercised by arbitrary entities. The specific mechanism for executor binding is Trust Model dependent but MUST prevent unauthorized executor substitution.
-
-PCA_i is NOT a token, credential, or transferable artifact. It is a state property of the execution at hop *i*, derived from provenance continuity.
+PCA_i is NOT a token or transferable artifact.
+It is a state property of execution, derived from provenance continuity.
 
 ### 2.11 PIC Causal Challenge (PCC_i)
 
-A freshness and causality challenge issued by the CAT at hop *i* to require a Proof of Continuity (PoC_i) from Executor E_i. The challenge mechanism is RECOMMENDED but not strictly required for all deployments.
+A freshness challenge issued by the CAT to require a Proof of Continuity from Executor E_i.
 
-**Purpose**:
+Purpose:
 
-1. **Freshness Binding**: Prevents replay of continuity proofs outside their intended temporal context
-2. **Revocation Support**: Enables immediate invalidation of compromised executor identities
+1. **Freshness Binding**: Prevents replay of continuity proofs
+2. **Revocation Support**: Enables immediate invalidation of compromised executors
 
-**Challenge Types**:
-
-A PIC Causal Challenge MAY be implemented using:
-
-1. **Dynamic Challenge-Response** (RECOMMENDED):
-   - Fresh cryptographic nonce
-   - Timestamp with validity window
-   - Challenge derived from current execution state
-   - Random challenge value requiring cryptographic response
-
-2. **Static Executor Binding**:
-   - Executor identity (SPIFFE ID, DID)
-   - Shared secret bound to executor
-   - Pre-established executor credentials
-   - Environment-specific identifiers
-
-3. **Hybrid Approaches**:
-   - Executor identity + fresh nonce
-   - Static credentials + timestamp validation
-   - Environment binding + dynamic challenge
-
-**Challenge Structure** (protocol-specific):
-
-- Freshness element (nonce, timestamp, or sequence number) - RECOMMENDED
-- Reference to predecessor state (PCA_{i-1} or its digest)
-- Required continuity constraints
-- Expected authority bounds
-- Executor validation requirements
-
-**Revocation Support**:
-
-The challenge mechanism SHOULD support executor revocation:
-
-- CAT maintains list of revoked executor identities
-- Challenges to revoked executors are rejected immediately
-- Compromised workload identities can be invalidated without waiting for credential expiry
-- Revocation can occur at any point in the execution chain
-
-**Implementation Note**: While the challenge mechanism is optional, its absence reduces protection against replay attacks, compromised executor detection, and temporal validity enforcement. Systems operating without challenge mechanisms MUST implement alternative controls to address these risks.
+The challenge mechanism is RECOMMENDED but not strictly required.
+Systems without challenges MUST implement alternative replay protection.
 
 ### 2.12 Proof of Continuity (PoC_i)
 
-A non-forgeable proof (under the Trust Model) produced by Executor E_i at hop *i* that demonstrates:
+A non-forgeable proof produced by Executor E_i demonstrating:
 
 1. **Valid Causal Continuation**: Execution at hop *i* derives from hop *i-1*
-2. **Authority Bounds**: Operations requested at hop *i* satisfy `ops_i ⊆ ops_{i-1}`
-3. **Executor Requirements**: Executor satisfies continuity constraints (environment, characteristics)
-4. **Origin Preservation**: Origin principal `p_0` is maintained unchanged
-5. **Challenge Response** (if PCC_i issued): Cryptographically valid response to PCC_i
+2. **Authority Bounds**: `ops_i ⊆ ops_{i-1}`
+3. **Origin Preservation**: `p_0` is unchanged
+4. **Challenge Response** (if issued): Valid response to PCC_i
 
 PoC_i is **the fundamental primitive** that distinguishes PIC from possession-based models.
 
-**Challenge Response Requirements**:
-
-If a PIC Causal Challenge (PCC_i) is issued, the PoC_i MUST include a cryptographically valid response to PCC_i demonstrating:
-
-- **Freshness**: Response is bound to the specific challenge (cannot be replayed)
-- **Executor Binding**: Executor demonstrates authorized identity (not revoked)
-- **Temporal Validity**: Response is within the challenge's validity window
-
-The specific response mechanism depends on the challenge type:
-
-- **Dynamic Challenge**: Cryptographic signature over challenge nonce + execution state
-- **Static Binding**: Proof of possession of executor credentials + state binding
-- **Hybrid**: Combination of the above
-
-If no challenge is issued (deployment-specific decision), the PoC_i MUST still demonstrate:
-
-- Causal linkage to predecessor state
-- Authority bound satisfaction (`ops_i ⊆ ops_{i-1}`)
-- Origin preservation
-
-**Non-Transferability**:
-
-PoC_i cannot be:
-
-- Replayed outside its causal context (prevented by challenge or state binding)
-- Transferred to another execution chain (bound to specific predecessor)
-- Reused after validity period (temporal constraints)
-- Forged without detection (Trust Model guarantees)
-- Used by revoked executors (challenge mechanism rejects revoked identities)
-
-**Binding Properties**:
-
-PoC_i is bound to:
-
-- Specific execution hop *i*
-- Specific predecessor state (PCA_{i-1})
-- Specific executor E_i (with revocation support if challenge used)
-- Specific challenge PCC_i (if issued)
-- Immutable origin `p_0`
-- Temporal validity window (if enforced)
+PoC_i cannot be replayed, transferred, reused, or forged.
+It is bound to the specific hop, predecessor, executor, and origin.
 
 ### 2.13 Proof of Identity (PoI)
 
-A proof that asserts or validates a claimed identity, typically by demonstrating control over an identifying artifact (e.g., DID signature verification, SPIFFE SVID validation, X.509 certificate chain verification).
+A proof that asserts a claimed identity. PoI establishes "who" the executor claims to be. It is insufficient to establish authority continuity.
 
-PoI establishes "who" the executor claims to be but is insufficient to establish authority continuity in PIC-compliant execution models.
-
-PoI MAY be used as input to executor verification (to validate identity claims) but does not replace or constitute Proof of Continuity.
-
-PoI DOES NOT:
-
-- Grant authority
-- Establish causal continuity
-- Prevent confused deputy scenarios
-- Satisfy PIC requirements
+PoI DOES NOT: grant authority, establish continuity, prevent confused deputy, or satisfy PIC requirements.
 
 ### 2.14 Proof of Possession (PoP)
 
-A proof that demonstrates control or possession of an artifact, credential, or secret (e.g., JWT signature, OAuth bearer token, capability token, private key signature).
+A proof that demonstrates control over an artifact, credential, or secret. PoP establishes ownership but does not provide causal continuity, authority derivation from origin, or monotonic restriction.
 
-PoP establishes ownership or control but does not provide:
+PoP MAY contribute to executor verification. It does not constitute or replace Proof of Continuity.
 
-- Causal continuity with predecessor state
-- Authority derivation from execution origin
-- Prevention of confused deputy scenarios
-- Monotonic authority restriction
-
-In PIC, PoP MAY contribute to executor verification (e.g., proving control over a signing key) but does not constitute or replace Proof of Continuity.
-
-PoP-based systems are fundamentally distinct from PIC: they derive authority from artifact possession rather than execution provenance, making them vulnerable to confused deputy attacks as proven in [[1]](#references).
+PoP-based systems derive authority from artifact possession rather than execution provenance. This makes them vulnerable to confused deputy attacks [[1]](#references).
 
 ---
 
