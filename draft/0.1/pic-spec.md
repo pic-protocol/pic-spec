@@ -282,7 +282,7 @@ Executors **MUST** obtain authority validation through the trusted CAT component
 
 The **Causal Authority Transition (CAT)**, also referred to as the **Trust Plane**, is the enforcement component that validates Provenance Identity Continuity invariants.
 
-**Terminology Note**: "CAT" and "Trust Plane" refer to the same logical component. "Trust Plane" emphasizes its role as an authority validation layer, analogous to how Identity Providers (IdPs) function as identity validation layers.
+> **TERMINOLOGY**: "CAT" and "Trust Plane" refer to the same logical component. "Trust Plane" emphasizes its role as an authority validation layer, analogous to how Identity Providers (IdPs) function as identity validation layers.
 
 The CAT/Trust Plane:
 
@@ -375,7 +375,7 @@ The following diagram illustrates how authority flows between executors through 
     └────────────────────────┘
 ```
 
-**Deployment Note**: This diagram shows the CAT as a logically separate component. In deployments with trusted Executors, the CAT MAY be embedded within the Executor itself. The logical flow remains identical; only the deployment boundary changes.
+> **DEPLOYMENT**: This diagram shows the CAT as a logically separate component. In deployments with trusted Executors, the CAT MAY be embedded within the Executor itself. The logical flow remains identical; only the deployment boundary changes.
 
 **Key Flow Steps**:
 
@@ -562,7 +562,7 @@ Single CAT service in a trust domain:
 
 **Use Cases**: Single organization, microservices in one domain, cloud-native applications
 
-**Note**: In trusted environments (e.g., Kubernetes clusters with trusted workloads, TEE-based systems, private networks, service mesh environments such as Istio Ambient Mesh), the CAT MAY be embedded within Executors rather than deployed as a separate service.
+> **NOTE**: In trusted environments (e.g., Kubernetes clusters with trusted workloads, TEE-based systems, private networks, service mesh environments such as Istio Ambient Mesh), the CAT MAY be embedded within Executors rather than deployed as a separate service.
 
 ### 3.4.2 Decentralized Trust Plane
 
@@ -705,7 +705,7 @@ E_{n-1}                    E_n                      E_{n+1}
 | **CAT / Trust Plane** | - Issue PCC upon request<br>- Validate PoC using Trust Model<br>- Validate PoI (executor identity)<br>- Validate PoP (credential control)<br>- Enforce monotonicity<br>- Consult PDP for policy<br>- Sign valid PCA_{i+1}<br>- Maintain revocation<br>- Operate as neutral validator | - Be bypassed<br>- Grant authority without valid PoC<br>- Have business logic |
 | **PDP** | - Evaluate policies<br>- Provide policy decisions to CAT<br>- Apply contextual constraints | - Issue PCA<br>- Validate PoC<br>- Replace CAT validation |
 
-**Note**: The trust level of each component depends on the deployment model. In untrusted environments, Executors require external CAT validation. In trusted environments (TEE, secure IoT, Kubernetes-internal workloads, private networks, service mesh, trusted infrastructure), Executors MAY host the CAT internally.
+> **NOTE**: The trust level of each component depends on the deployment model. In untrusted environments, Executors require external CAT validation. In trusted environments (TEE, secure IoT, Kubernetes-internal workloads, private networks, service mesh, trusted infrastructure), Executors MAY host the CAT internally.
 
 **Architectural Principle**: Executors **initiate** transitions and **exchange** PCAs. CAT **validates** and **signs** new PCAs based on cryptographic proof and policy. PDP provides policy decisions. This separation ensures no single untrusted component can compromise authority flow.
 
@@ -1132,7 +1132,7 @@ Each device validates the incoming PCA via its embedded CAT, performs its author
 
 PIC does not mandate validation frequency. Implementations MAY choose validation strategies based on their security requirements and threat model, similar to existing authorization protocols.
 
-**Note**: The validation strategies below apply to both external and internal CAT deployments. With internal CAT (embedded in trusted Executors), validation overhead is reduced as no network round-trip is required.
+> **NOTE**: The validation strategies below apply to both external and internal CAT deployments. With internal CAT (embedded in trusted Executors), validation overhead is reduced as no network round-trip is required.
 
 ### 5.3.1 Validation Strategy: Full Validation
 
@@ -1167,7 +1167,7 @@ E_0 → [CAT] → E_1 → E_2 → E_3 → [CAT] → E_4
 - PCA remains cryptographically valid between validations
 - Appropriate for: internal microservices, performance-critical paths
 
-**Security note**: Hops between validations operate with signed PCA. Authority cannot expand beyond ops_i even without intermediate validation.
+> **SECURITY NOTE**: Hops between validations operate with signed PCA. Authority cannot expand beyond ops_i even without intermediate validation.
 
 ### 5.3.3 Validation Strategy: Entry-Point Validation
 
@@ -1185,7 +1185,7 @@ E_0 → [CAT] → E_1 → E_2 → E_3 → E_4
 - Equivalent to session-based authentication
 - Appropriate for: trusted execution environments, legacy integration, development/testing
 
-**Security note**: Equivalent trust model to traditional authorization where credentials are validated once and trusted thereafter.
+> **SECURITY NOTE**: Equivalent trust model to traditional authorization where credentials are validated once and trusted thereafter.
 
 ### 5.3.4 Comparison to Existing Protocols
 
