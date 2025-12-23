@@ -55,6 +55,7 @@ Trust Models MAY be implemented via cryptographic primitives, hardware attestati
 
 A. [Use of Automated Language Assistance](#appendix-a--use-of-automated-language-assistance)  
 B. [Authorship, Attribution, and Derivative Works](#appendix-b--authorship-attribution-and-derivative-works)  
+C. [Disclaimer and Limitation of Liability](#appendix-c--disclaimer-and-limitation-of-liability)  
 R. [References](#references)  
 
 ---
@@ -1249,6 +1250,16 @@ Model author and consistent with this appendix.
 
 This clause applies regardless of hosting platform, repository ownership,
 governance structure, or maintainer roles.
+
+## Appendix C. Disclaimer and Limitation of Liability
+
+THIS SPECIFICATION IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NONINFRINGEMENT.
+
+IN NO EVENT SHALL THE AUTHORS, CONTRIBUTORS, ACKNOWLEDGED INDIVIDUALS, OR COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL, OR PUNITIVE DAMAGES (INCLUDING BUT NOT LIMITED TO PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, LOSS OF USE, DATA, OR PROFITS, OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SPECIFICATION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Implementers and users assume all risk associated with use of this specification and any implementations derived from it.
+
+If any provision of this disclaimer is held to be unenforceable, the remaining provisions shall continue in full force and effect.
 
 ---
 
