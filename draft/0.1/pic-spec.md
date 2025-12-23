@@ -460,7 +460,6 @@ Logical flow unchanged; deployment boundary collapsed.
 | **CAT** | Validate PoC, enforce monotonicity, sign PCA | Be bypassed, grant authority without PoC |
 | **Governance** | Evaluate policies, apply constraints, revoke | Issue PCA, replace CAT validation, expand authority |
 
-
 Executors **initiate** and **exchange**. CAT **validates** and **signs**. Governance **constrains**.
 
 No single untrusted component can compromise authority flow.
@@ -502,238 +501,149 @@ Governance decides **whether** execution may continue.
 
 ---
 
-## 4. Normative Data Structures and Processing Logic
+## 4. Data Structures
 
-This section defines the normative data structures for the PIC Model. The examples provided are **informative and non-normative**. Concrete protocol encodings (JSON, CBOR, Protocol Buffers, etc.) are defined in separate PIC Protocol specifications.
+This section defines normative data structures for PIC.
+Examples are **informative**. Protocol encodings are defined in separate PIC Protocol specifications.
+
+> **NOTE**: Identifiers in examples use HTTPS URLs for neutrality.
+> PIC is identifier-agnostic. Implementations MAY use DIDs, URNs, SPIFFE IDs, X.509 subjects, or any identifier scheme that satisfies the Trust Model requirements.
+> Concrete identifier formats are defined in PIC Protocol specifications.
 
 ---
 
-## 4.1 PIC Causal Authority (PCA)
+### 4.1 PIC Causal Authority (PCA)
 
-The PIC Causal Authority (PCA) represents causally derived authority at a specific execution hop. A PCA MUST be signed by the CAT.
+Authority state at execution hop *i*. MUST be signed by CAT.
 
-### 4.1.1 Structure
+**Structure**:
 
-A PCA MUST contain:
+| Field        | Required  | Description                                               |
+|--------------|-----------|-----------------------------------------------------------|
+| `cat_id`     | MUST      | CAT identifier (for signature verification, key rotation) |
+| `cat_sig`    | MUST      | CAT signature over payload                                |
+| `p_0`        | MUST      | Origin principal (immutable)                              |
+| `ops`        | MUST      | Authority set (`ops_i ⊆ ops_{i-1}`)                       |
+| `executor`   | MUST      | Executor binding (federation, attributes)                 |
+| `provenance` | MUST      | Reference to previous PCA                                 |
+| `temporal`   | MAY       | Time constraints                                          |
+| `context`    | MAY       | Additional constraints                                    |
 
-1. **CAT Signature**: Cryptographic signature by the issuing CAT
-2. **CAT Identifier**: Reference to the CAT that signed this PCA (enables signature verification and key rotation)
-3. **Payload**: The authority data structure
-
-### 4.1.2 Payload Requirements
-
-The PCA payload MUST include:
-
-**Origin Principal (`p_0`)**:
-
-- Immutable reference to transaction initiator
-- MUST NOT change throughout execution chain
-
-**Authority Set (`ops_i`)**:
-
-- Operations the executor may perform at this hop
-- MUST satisfy `ops_i ⊆ ops_{i-1}` (monotonicity)
-
-**Executor Binding**:
-
-- Characteristics that bind authority to executor
-- MUST constrain to specific federation/attributes (NOT "any identity")
-- MAY include: organizational attributes, environmental characteristics, federated identity domain
-- In proposed PCA, executor attributes MUST be contained within (subset of) previous PCA's executor attributes (cannot add new attributes)
-
-**Temporal Constraints** (OPTIONAL):
-
-- MAY be expressed as start time + duration OR absolute time range
-
-**Provenance Reference**:
-
-- Link to causal chain (hash of previous PCA, ledger reference, etc.)
-
-### 4.1.3 CAT Identifier
-
-The CAT identifier MUST support:
-
-1. Signature verification (public key retrieval)
-2. Key rotation
-3. Cross-domain federation
-
-Common approaches: Key ID (kid), DID, X.509 certificate, SPIFFE Bundle.
-
-### 4.1.4 Informative Example
+**Example**:
 
 ```json
 {
-  "cat_signature": "base64url_encoded_signature",
-  "cat_identifier": "https://cat.example.com/v1/keys/key-2024-12",
+  "cat_id": "https://cat.example.com/keys/2024-12",
+  "cat_sig": "base64url...",
   "payload": {
-    "origin_principal": "sub:alice@example.com",
-    "authority_set": [
-      "read:/*",
-      "write:/home/alice/*"
-    ],
-    "executor_binding": {
-      "federation": "spiffe://trust-domain.com",
-      "namespace": "prod",
-      "attributes": {
-        "department": "engineering",
-        "security_level": "high"
-      }
-    },
-    "temporal": {
-      "start_time": "2025-12-11T10:00:00Z",
-      "duration_seconds": 3600
+    "p_0": "https://idp.example.com/users/alice",
+    "ops": ["read:/user/*", "write:/user/*"],
+    "executor": {
+      "federation": "https://trust.example.com",
+      "namespace": "prod"
     },
     "provenance": {
-      "previous_pca_hash": "sha256:a3f5b9c7...",
-      "hop_index": 3
+      "prev": "sha256:a3f5b9c7...",
+      "hop": 2
     },
-    "issued_at": "2025-12-11T10:00:00Z"
-  }
-}
-```
-
----
-
-## 4.2 PIC Causal Challenge (PCC)
-
-The PIC Causal Challenge (PCC) is issued by the CAT to establish freshness and enable revocation. The specific structure is **protocol-dependent** and NOT defined in this specification.
-
-### 4.2.1 Requirements
-
-A PCC, if used, MUST provide:
-1. **Freshness**: Prevent replay of continuity proofs
-2. **Revocation Support**: Enable detection of revoked executors
-3. **Binding**: Link challenge to specific transition context
-
-PIC Protocol specifications MUST define challenge structure and response mechanism.
-
----
-
-## 4.3 Proof of Continuity (PoC)
-
-The Proof of Continuity (PoC) is constructed by the Executor to demonstrate valid causal continuation and submitted to the CAT for validation.
-
-### 4.3.1 Structure
-
-A PoC MUST contain:
-
-**Previous PCA**:
-- The PCA received from predecessor (establishes causal state)
-
-**Proposed PCA**:
-- The PCA_{i+1} being requested
-- MUST satisfy:
-  - Same `origin_principal` (p_0 unchanged)
-  - `ops_{i+1} ⊆ ops_i` (monotonicity)
-  - Executor attributes MUST be subset of previous executor attributes (cannot add new attributes)
-  - Temporal constraints respected
-
-**Executor Proofs**:
-- **Proof of Identity (PoI)**: Executor's identity credential (type + base64-encoded value)
-- **Proof of Possession (PoP)**: Control over signing key (type + base64-encoded value)
-
-**Challenge Response** (if PCC issued):
-- Cryptographically valid response to PCC (type + base64-encoded value)
-
-**Bundle Signature**:
-- Entire PoC MUST be signed by executor (prevents tampering in transit)
-
-### 4.3.2 Informative Example
-
-```json
-{
-  "executor_signature": "base64url_encoded_signature_over_bundle",
-  "bundle": {
-    "previous_pca": {
-      "cat_signature": "...",
-      "cat_identifier": "https://cat.example.com/v1/keys/key-2024-12",
-      "payload": {
-        "origin_principal": "sub:alice@example.com",
-        "authority_set": ["read:/*", "write:/home/alice/*"],
-        "executor_binding": {
-          "federation": "spiffe://trust-domain.com",
-          "namespace": "prod",
-          "attributes": {
-            "department": "engineering",
-            "security_level": "high",
-            "team": "platform"
-          }
-        },
-        "temporal": {
-          "start_time": "2025-12-11T10:00:00Z",
-          "duration_seconds": 3600
-        },
-        "provenance": {
-          "previous_pca_hash": "sha256:...",
-          "hop_index": 2
-        }
-      }
-    },
-    "proposed_pca": {
-      "payload": {
-        "origin_principal": "sub:alice@example.com",
-        "authority_set": ["read:/*"],
-        "executor_binding": {
-          "federation": "spiffe://trust-domain.com",
-          "namespace": "prod",
-          "attributes": {
-            "department": "engineering",
-            "security_level": "high"
-          }
-        },
-        "temporal": {
-          "start_time": "2025-12-11T10:15:00Z",
-          "duration_seconds": 3600
-        },
-        "provenance": {
-          "previous_pca_hash": "sha256:a3f5b9c7...",
-          "hop_index": 3
-        }
-      }
-    },
-    "executor_proofs": {
-      "proof_of_identity": {
-        "type": "spiffe_svid",
-        "value": "base64_encoded_proof"
-      },
-      "proof_of_possession": {
-        "type": "ecdsa_signature",
-        "value": "base64_encoded_proof"
-      }
-    },
-    "challenge_response": {
-      "type": "hmac_sha256",
-      "value": "base64_encoded_response"
+    "temporal": {
+      "iat": "2025-12-11T10:00:00Z",
+      "exp": "2025-12-11T11:00:00Z"
     }
   }
 }
 ```
 
-**Key Properties**:
-- `origin_principal`: Unchanged from previous PCA (immutability)
-- `authority_set`: Reduced from `["read:/*", "write:/home/alice/*"]` to `["read:/*"]` (monotonicity enforced)
-- `executor_binding.attributes`: Reduced from `{"department": "engineering", "security_level": "high", "team": "platform"}` to `{"department": "engineering", "security_level": "high"}` (attribute monotonicity - removed "team" attribute, cannot add new ones)
-- `executor_proofs`: Opaque base64-encoded values with type hints (CAT interprets based on protocol)
-- `challenge_response`: Opaque base64-encoded response with type hint (CAT validates based on challenge type)
-- `executor_signature`: Prevents tampering during transit
-- `hop_index`: Incremented from 2 to 3 (provenance tracking)
+---
+
+### 4.2 PIC Causal Challenge (PCC)
+
+Freshness challenge issued by CAT. Structure is **protocol-specific**.
+
+A PCC MUST provide:
+
+1. **Freshness**: Prevent replay
+2. **Binding**: Link to transition context
+3. **Revocation**: Enable detection of revoked executors
 
 ---
 
-## 4.4 Protocol Encodings
+### 4.3 Proof of Continuity (PoC)
 
-This specification does not mandate specific encodings. PIC Protocol specifications MUST define:
+Proof constructed by Executor, submitted to CAT.
 
-1. Serialization format (JSON, CBOR, etc.)
-2. Signature schemes (JOSE, COSE, etc.)
+**Structure**:
+
+| Field      | Required  | Description                                |
+|------------|-----------|--------------------------------------------|
+| `prev_pca` | MUST      | PCA received from predecessor              |
+| `proposed` | MUST      | Proposed PCA for next hop                  |
+| `poi`      | MUST      | Proof of Identity (type + base64 value)    |
+| `pop`      | MUST      | Proof of Possession (type + base64 value)  |
+| `challenge`| IF ISSUED | Response to PCC                            |
+| `sig`      | MUST      | Executor signature over bundle             |
+
+**Validation rules for `proposed`**:
+
+- `p_0` unchanged
+- `ops_{i+1} ⊆ ops_i`
+- `executor` attributes ⊆ previous attributes
+- Temporal constraints respected
+
+**Example**:
+
+```json
+{
+  "sig": "base64url...",
+  "bundle": {
+    "prev_pca": {
+      "cat_id": "https://cat.example.com/keys/2024-12",
+      "cat_sig": "base64url...",
+      "payload": {
+        "p_0": "https://idp.example.com/users/alice",
+        "ops": ["read:/user/*", "write:/user/*"],
+        "executor": {
+          "federation": "https://trust.example.com",
+          "namespace": "prod"
+        },
+        "provenance": { "prev": "sha256:...", "hop": 2 }
+      }
+    },
+    "proposed": {
+      "p_0": "https://idp.example.com/users/alice",
+      "ops": ["read:/user/*"],
+      "executor": {
+        "federation": "https://trust.example.com",
+        "namespace": "prod"
+      },
+      "provenance": { "prev": "sha256:a3f5b9c7...", "hop": 3 }
+    },
+    "poi": { "type": "spiffe_svid", "value": "base64..." },
+    "pop": { "type": "ecdsa_p256", "value": "base64..." },
+    "challenge": { "type": "nonce", "value": "base64..." }
+  }
+}
+```
+
+**Key properties**:
+
+- `p_0`: Unchanged (immutability)
+- `ops`: Reduced from `["read:/user/*", "write:/user/*"]` to `["read:/user/*"]` (monotonicity)
+- `poi`, `pop`, `challenge`: Opaque base64 values with type hints
+- `sig`: Prevents tampering in transit
+
+---
+
+### 4.4 Protocol Encodings
+
+This specification does not mandate encodings. PIC Protocol specifications MUST define:
+
+1. Serialization (JSON, CBOR, etc.)
+2. Signatures (JOSE, COSE, etc.)
 3. CAT identifier format
 4. Challenge-response mechanism
 5. Wire format (HTTP, gRPC, etc.)
-6. Proof formats (PoI, PoP encoding and validation)
-
-Example protocols: PIC-HTTP, PIC-gRPC, PIC-SPIFFE, PIC-Blockchain.
-
----
+6. PoI/PoP validation rules
 
 ---
 
