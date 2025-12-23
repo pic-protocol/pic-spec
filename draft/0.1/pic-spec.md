@@ -292,8 +292,8 @@ The CAT:
 The CAT MAY be deployed externally, embedded in trusted Executors, or federated across domains.
 The deployment model depends on trust boundaries, not on PIC itself.
 
-**CRITICAL PROPERTY**: The CAT has no application logic—only validation and generation.
-Validation of PoI and PoP formats (e.g., Verifiable Credentials, OAuth tokens, SPIFFE SVIDs) is protocol-specific and defined in separate PIC Protocol specifications.
+> **CRITICAL PROPERTY**: The CAT has no application logic—only validation and generation.
+> Validation of PoI and PoP formats (e.g., Verifiable Credentials, OAuth tokens, SPIFFE SVIDs) is protocol-specific and defined in separate PIC Protocol specifications.
 
 ---
 
