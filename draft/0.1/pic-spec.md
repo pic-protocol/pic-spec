@@ -50,7 +50,7 @@ Trust Models MAY be implemented via cryptographic primitives, hardware attestati
 2. [Terminology](#2-terminology)
 3. [Architecture and Components](#3-architecture-and-components)
 4. [Normative Data Structures and Processing Logic](#4-normative-data-structures-and-processing-logic)
-5. [Deployment and Adoption Considerations](#5-deployment-and-adoption-considerations)
+5. [Deployment and Adoption](#5-deployment-and-adoption-considerations)
 6. [Security Considerations](#6-security-considerations)
 
 A. [Use of Automated Language Assistance](#appendix-a--use-of-automated-language-assistance)  
@@ -67,7 +67,7 @@ This specification defines the Provenance Identity Continuity (PIC) Model for di
 
 1. **Formal Model**: Causal invariants and execution semantics that MUST hold for any execution to be considered PIC-compliant
 2. **Architecture and Components**: Reference architecture defining the separation between untrusted execution (Executors) and trusted validation (CAT/Trust Plane)
-3. **Deployment and Adoption Considerations**: Deployment patterns, integration strategies, and performance trade-offs for practical adoption
+3. **Deployment and Adoption**: Deployment patterns, integration strategies, and performance trade-offs for practical adoption
 
 The PIC Model establishes a foundational execution model that eliminates confused deputy conditions by construction. While the specification provides reference architecture and implementation guidance, it does not mandate specific protocol encodings, wire formats, or cryptographic primitives. These are defined in separate PIC Protocol specifications.
 
@@ -78,7 +78,7 @@ The PIC Model establishes a foundational execution model that eliminates confuse
 **Normative vs. Informative**:
 
 - Sections 1-3 define **normative** requirements (terminology, architecture, invariants)
-- Sections 4-6 provide **informative** guidance (data model examples, deployment and adoption considerations)
+- Sections 4-6 provide **informative** guidance (data model examples, Deployment and Adoption)
 - Appendices provide **informative** context (authorship, references)
 
 ### 1.2 Normative Language
@@ -274,6 +274,7 @@ These authorities are **orthogonal**. PIC governs only the delegated authority c
 - Application logic correctness
 
 **Example**:
+
 ```text
 Bob has:
   - Own authority: {read: /sys/*}
@@ -299,7 +300,8 @@ Scenario B (Application bug):
 PIC guarantees that **authority flow through CAT** is correct.
 PIC does not prevent an application from misusing its own resources.
 
-> **CLARIFICATION**: If Bob uses privileged data (read with own authority) to construct a response for Alice, this is an application-level bug—not a confused deputy in the PIC sense. The confused deputy occurs when the **protocol** allows authority confusion. PIC makes that structurally impossible. Application logic errors remain the responsibility of the application.
+> **CLARIFICATION**: If Bob uses privileged data (read with own authority) to construct a response for Alice, this is an application-level bug—not a confused deputy in the PIC sense.
+> The confused deputy occurs when the **protocol** allows authority confusion. PIC makes that structurally impossible. Application logic errors remain the responsibility of the application.
 
 ---
 
@@ -454,11 +456,11 @@ Logical flow unchanged; deployment boundary collapsed.
 
 ### 3.4 Separation of Concerns
 
-| Component | Does | Cannot Do |
-|-----------|------|-----------|
-| **Executor** | Initiate transitions, construct PoC, execute within ops_i | Forge PCA, expand authority, bypass CAT |
-| **CAT** | Validate PoC, enforce monotonicity, sign PCA | Be bypassed, grant authority without PoC |
-| **Governance** | Evaluate policies, apply constraints, revoke | Issue PCA, replace CAT validation, expand authority |
+| Component       | Does                                                      | Cannot Do                                            |
+|-----------------|-----------------------------------------------------------|------------------------------------------------------|
+| **Executor**    | Initiate transitions, construct PoC, execute within ops_i | Forge PCA, expand authority, bypass CAT              |
+| **CAT**         | Validate PoC, enforce monotonicity, sign PCA              | Be bypassed, grant authority without PoC             |
+| **Governance**  | Evaluate policies, apply constraints, revoke              | Issue PCA, replace CAT validation, expand authority  |
 
 Executors **initiate** and **exchange**. CAT **validates** and **signs**. Governance **constrains**.
 
@@ -479,10 +481,10 @@ PIC defines what **can never happen**: authority expansion, origin substitution,
 
 **Governance** defines what **is currently permitted**: revocation, policy changes, emergency stops, pre-authorization requirements.
 
-| Layer | Responsibility | Characteristic |
-|----------------|----------------|----------------|
-| **PIC**        | Structural continuity | Mandatory, invariant |
-| **Governance** | Policy decisions | Optional, cacheable, authority-reducing |
+| Layer          | Responsibility        | Characteristic                          |
+|----------------|-----------------------|-----------------------------------------|
+| **PIC**        | Structural continuity | Mandatory, invariant                    |
+| **Governance** | Policy decisions      | Optional, cacheable, authority-reducing |
 
 Governance sits **above** PIC:
 
@@ -647,1166 +649,360 @@ This specification does not mandate encodings. PIC Protocol specifications MUST 
 
 ---
 
-## 5. Deployment and Adoption Considerations
+## 5. Deployment and Adoption
 
-This section addresses practical deployment considerations and clarifies the relationship between PIC and existing authorization patterns.
-
----
-
-## 5.1 Trust Architecture Pattern
-
-The PIC Model follows separation-of-concerns patterns used in production authorization systems. The specific deployment depends on the trust model of the environment.
-
-**External CAT Pattern** (for untrusted Executors):
-
-In environments where Executors are untrusted, they submit requests to a separate CAT validation service:
-
-| System | Requesting Component | Validation Service | Operation |
-|--------|---------------------|-------------------|-----------|
-| OAuth 2.0 | Client Application | Authorization Server | Token issuance and validation |
-| TLS/SSL | Client | Certificate Authority | Certificate validation |
-| Kerberos | Service | Key Distribution Center | Ticket validation |
-| SPIFFE | Workload | SPIFFE Server | SVID issuance and validation |
-| JWT | Resource Server | Token Issuer | Signature verification |
-| PIC | Executor | CAT (Trust Plane) | Continuity validation and PCA issuance |
-
-The CAT-Executor relationship in external deployments is functionally equivalent to Authorization Server-Client relationships in OAuth 2.0 and other widely-deployed protocols.
-
-**Internal CAT Pattern** (for trusted Executors):
-
-In environments where Executors are trusted (IoT with hardware security, TEE-based systems, trusted Kubernetes clusters, private networks, service mesh environments such as Istio Ambient Mesh), the CAT MAY be embedded within the Executor.
-This eliminates network round-trips while preserving PIC invariants. The logical validation flow remains identical; only the deployment topology changes.
-
-**Security Properties**:
-
-The separation ensures:
-
-1. Requesting components cannot bypass validation
-2. Requesting components cannot forge trusted signatures
-3. Validation services enforce invariants independently
-4. Compromised requesters can be revoked without system-wide credential rotation
-
-PIC maintains these properties through cryptographic signatures (CAT-signed PCA), challenge-response mechanisms (freshness), revocation support (compromised executor invalidation), and monotonicity enforcement (CAT validates ops_{i+1} ⊆ ops_i).
+This section addresses deployment topologies, integration with existing authorization systems, validation strategies, and adoption considerations.
 
 ---
 
-## 5.2 Computational Overhead Analysis
+### 5.1 Computational Overhead
 
-The PIC validation process is computationally equivalent to OAuth 2.0 Token Exchange (RFC 8693), a widely-deployed pattern in production environments.
+PIC validation overhead is at most equivalent to OAuth 2.0 Token Exchange (RFC 8693). Embedded CAT deployments (shared memory, TEE) eliminate network round-trips entirely:
 
-**OAuth 2.0 Token Exchange**:
+| Operation               | OAuth Token Exchange | PIC CAT Validation    |
+|-------------------------|----------------------|-----------------------|
+| Request validation      | Required             | Required              |
+| Credential verification | Required             | Required (PoI+PoP)    |
+| Policy evaluation       | Required             | Required (Governance) |
+| Signature creation      | Required             | Required              |
 
+---
+
+### 5.2 Deployment Topologies
+
+#### Network-Internal (Trusted Zone)
+
+Federation Bridge at entry, embedded CAT for internal transitions:
 ```text
-Client                  Authorization Server
-  │                            │
-  │ Request token              │
-  ├───────────────────────────▶│
-  │ Validate credentials       │
-  │ Evaluate policies          │
-  │ Generate signed token      │
-  │◀───────────────────────────┤
-  │ Receive token              │
+                         ENTRY (once)
+User → OAuth/OIDC → JWT → Federation Bridge issues PCA_0
+                                   │
+                         ──────────┼──────────────────
+                                   │  INTERNAL
+                                   ▼
+                         ┌─────────────────────────┐
+                         │  Trusted Zone (K8s/TEE) │
+                         │                         │
+                         │  E_1 ──→ E_2 ──→ E_3    │
+                         │   │      │      │       │
+                         │  CAT    CAT    CAT      │
+                         │      (embedded)         │
+                         │                         │
+                         │ ZERO external IdP calls │
+                         └─────────────────────────┘
 ```
 
-**PIC Authority Transition**:
+#### Embedded (Shared Memory)
 
+PCA transitions via memory copy, zero network overhead:
 ```text
-Executor                CAT
-  │                      │
-  │ Request PCC          │
-  ├─────────────────────▶│
-  │ Receive PCC          │
-  │◀─────────────────────┤
-  │ Submit PoC+PoI+PoP   │
-  ├─────────────────────▶│
-  │ Validate proofs      │
-  │ Evaluate policies    │
-  │ Generate signed PCA  │
-  │◀─────────────────────┤
-  │ Receive PCA          │
+┌─────────────────────────────────────┐
+│       Embedded Device / IoT         │
+│                                     │
+│  ┌─────┐   ┌─────┐   ┌─────┐        │
+│  │ E_1 │──▶│ E_2 │──▶│ E_3 │        │
+│  │+CAT │   │+CAT │   │+CAT │        │
+│  └─────┘   └─────┘   └─────┘        │
+│      │         │         │          │
+│      └─────────┴─────────┘          │
+│         Shared Memory / Bus         │
+└─────────────────────────────────────┘
 ```
 
-**Operation Comparison**:
+#### IoT Ring (Local Network)
 
-| Operation | OAuth Token Exchange | PIC CAT Validation | Notes |
-|-----------|---------------------|-------------------|-------|
-| Request validation | Required | Required | Standard protocol overhead |
-| Credential verification | Required | Required (PoI+PoP) | Cryptographic operation |
-| Policy evaluation | Required | Required (PDP) | Application-specific logic |
-| Token generation | Required | Required (PCA) | Cryptographic operation |
-| Signature creation | Required | Required | Cryptographic operation |
-
-**Conclusion**: PIC introduces no additional computational operations beyond those already required by OAuth 2.0 Token Exchange. Systems that successfully deploy OAuth at scale can deploy PIC with equivalent performance characteristics.
-
----
-
-### 5.2.1 Performance in Trusted Environments (Network-Internal)
-
-When deploying PIC with internal CAT in trusted network environments, authority transitions remain within the trusted zone but still traverse the network stack between nodes:
-
+User presents VC, Federation Bridge issues PCA_0, PCA flows device-to-device:
 ```text
-                    ENTRY (once)
-User → OAuth/OIDC → JWT → CAT derives PCA_0
+                     User arrives with VC
                               │
-                    ──────────┼────────────────────────
-                              │  INTERNAL (trusted network)
                               ▼
-                    ┌─────────────────────────────────┐
-                    │   Trusted Zone (K8s/Mesh/TEE)   │
-                    │                                 │
-                    │   E_1 ──→ E_2 ──→ E_3 ──→ E_4   │
-                    │     │       │       │       │   │
-                    │    CAT     CAT     CAT     CAT  │
-                    │ (embedded)(embedded)(embedded)  │
-                    │                                 │
-                    │   Internal network only         │
-                    │   ZERO external IdP calls       │
-                    │   Low-latency node-to-node      │
-                    └─────────────────────────────────┘
+                       Federation Bridge
+                       issues PCA_0
+                              │
+                              ▼
+                ┌────────────────────────────┐
+                │      IoT Local Network     │
+                │                            │
+                │   ┌───────┐    ┌───────┐   │
+                │   │Device │───▶│Device │   │
+                │   │  A    │    │  B    │   │
+                │   │ +CAT  │    │ +CAT  │   │
+                │   └───────┘    └───────┘   │
+                │       ▲            │       │
+                │       │            ▼       │
+                │   ┌───────┐    ┌───────┐   │
+                │   │Device │◀───│Device │   │
+                │   │  D    │    │  C    │   │
+                │   │ +CAT  │    │ +CAT  │   │
+                │   └───────┘    └───────┘   │
+                │                            │
+                │   ZERO cloud round-trips   │
+                └────────────────────────────┘
 ```
-
-With external CAT or Token Exchange, each hop requires a network round-trip to an external IdP. With internal CAT in a trusted zone, validation stays within the local network, eliminating external dependencies while preserving all PIC security guarantees.
 
 ---
 
-### 5.2.2 Performance in Embedded Environments (Shared Memory)
+### 5.3 Validation Strategies
 
-In IoT devices or embedded systems, multiple executors MAY share memory or communicate via local bus, enabling PCA transitions with zero network overhead:
+| Strategy                 | Pattern                                         | Use Case                    |
+|--------------------------|-------------------------------------------------|-----------------------------|
+| **Full** *(RECOMMENDED)* | `E_0 → [CAT] → E_1 → [CAT] → E_2 → [CAT] → E_3` | Cross-domain, high-security |
+| **Selective**            | `E_0 → [CAT] → E_1 → E_2 → [CAT] → E_3`         | Trust boundaries only       |
+| **Edge**                 | `[CAT] → E_0 → E_1 → E_2 → [CAT]`               | Entry + exit validation     |
+| **Entry-Point**          | `[CAT] → E_0 → E_1 → E_2 → E_3`                 | Trusted environments        |
 
-```text
-┌─────────────────────────────────────────────────┐
-│           Embedded Device / IoT Node            │
-│                                                 │
-│   ┌───────┐    ┌───────┐    ┌───────┐           │
-│   │ E_1   │───▶│ E_2   │───▶│ E_3   │           │
-│   │ +CAT  │    │ +CAT  │    │ +CAT  │           │
-│   └───────┘    └───────┘    └───────┘           │
-│       │            │            │               │
-│       └────────────┴────────────┘               │
-│              Shared Memory / Bus                │
-│                                                 │
-│   PCA transitions: memory copy only             │
-│   ZERO serialization overhead                   │
-│   ZERO network stack                            │
-└─────────────────────────────────────────────────┘
-```
-
-In this deployment, PCA structures are passed directly via shared memory or hardware bus. Validation occurs in-process within each executor's embedded CAT, achieving minimal latency suitable for real-time and resource-constrained environments.
+> **NOTE**: Between validations, PCA remains cryptographically signed—authority cannot expand.
 
 ---
 
-### 5.2.2 Performance in IoT Ring (Local Network)
+### 5.4 Integration Patterns
 
-In IoT deployments, devices on a local network MAY form a ring where requests propagate device-to-device. A user presenting a Verifiable Credential (VC) initiates the chain, and each device performs its operation before passing the PCA to the next:
+#### OAuth 2.0
 
+Federation Bridge validates JWT and issues PCA_0:
 ```text
-                         User arrives with VC
-                                  │
-                                  ▼
-                    ┌────────────────────────────┐
-                    │      IoT Local Network     │
-                    │                            │
-                    │   ┌───────┐    ┌───────┐   │
-                    │   │Device │───▶│Device │   │
-                    │   │  A    │    │  B    │   │
-                    │   │ +CAT  │    │ +CAT  │   │
-                    │   └───────┘    └───────┘   │
-                    │       ▲            │       │
-                    │       │            ▼       │
-                    │   ┌───────┐    ┌───────┐   │
-                    │   │Device │◀───│Device │   │
-                    │   │  D    │    │  C    │   │
-                    │   │ +CAT  │    │ +CAT  │   │
-                    │   └───────┘    └───────┘   │
-                    │                            │
-                    │   PCA flows in ring        │
-                    │   Local network only       │
-                    │   ZERO cloud round-trips   │
-                    └────────────────────────────┘
+User → OAuth AS → JWT → Federation Bridge issues PCA_0 → Executor chain
 ```
 
-Each device validates the incoming PCA via its embedded CAT, performs its authorized operation (e.g., sensor read, actuator command), restricts authority if needed, and forwards the new PCA to the next device. The entire ring operates without external IdP calls, achieving low-latency coordination suitable for industrial IoT and smart home scenarios.
+#### SPIFFE
+
+Federation Bridge validates SVID and issues PCA:
+```text
+Workload → SPIFFE Server → SVID → Federation Bridge issues PCA_0 → Executor chain
+```
+
+#### DID / Verifiable Credentials
+
+Federation Bridge validates VP and issues PCA_0:
+```text
+User → Wallet → VP → Federation Bridge issues PCA_0 → Executor chain
+```
+
+#### Cross-Federation: SPIFFE to VC
+
+Workload exchanges SVID for VC via Federation Bridge, then presents VC to another domain:
+```text
+┌──────────────────────────────────────────────────────────┐
+│                                                          │
+│  Workload      Federation Bridge    Federation Bridge    │
+│  (Domain A)      (Domain A)           (Domain B)         │
+│     │                  │                   │             │
+│     │───── SVID ──────▶│                   │             │
+│     │                  │                   │             │
+│     │                  │ converts to VC    │             │
+│     │                  │                   │             │
+│     │◀───── VC ────────│                   │             │
+│     │                  │                   │             │
+│     │─────────────── VC (as PoI) ─────────▶│             │
+│     │                  │                   │             │
+│     │                  │         validates, issues PCA   │
+│     │                  │                   │             │
+│     │◀─────────────── PCA ─────────────────│             │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+#### API Gateway
+
+Gateway acts as Federation Bridge, issues PCA_0, forwards to backend:
+```text
+Client → API Gateway (acts as Federation Bridge) → PCA_0 → Backend services
+```
 
 ---
 
-## 5.3 Validation Frequency Options
+### 5.4.1 Identity Mapping Summary
 
-PIC does not mandate validation frequency. Implementations MAY choose validation strategies based on their security requirements and threat model, similar to existing authorization protocols.
+| Source             | p_0 derivation    | ops_0 derivation       | PoI format  |
+|--------------------|-------------------|------------------------|-------------|
+| OAuth/OIDC         | `sub` claim       | `scope` claim          | JWT         |
+| SPIFFE             | SPIFFE ID         | Trust domain policy    | SVID        |
+| DID/VC             | DID URI           | VC claims              | VP          |
+| X.509              | Subject DN        | Certificate extensions | Certificate |
+| Cross-Federation   | Original p_0      | VC claims              | VC          |
 
-> **NOTE**: The validation strategies below apply to both external and internal CAT deployments. With internal CAT (embedded in trusted Executors), validation overhead is reduced as no network round-trip is required.
-
-### 5.3.1 Validation Strategy: Full Validation
-
-Validate at every hop transition:
-
-```text
-E_0 → [CAT] → E_1 → [CAT] → E_2 → [CAT] → E_3
-```
-
-**Characteristics**:
-
-- Maximum security assurance
-- Equivalent to validating OAuth tokens at every API call
-- Appropriate for: cross-domain transitions, high-security environments, compliance requirements
-
-**Overhead**: One validation per hop (equivalent to OAuth validation per API call)
-
-### 5.3.2 Validation Strategy: Selective Validation
-
-Validate at trust boundary transitions:
-
-```text
-E_0 → [CAT] → E_1 → E_2 → E_3 → [CAT] → E_4
-      ↑                           ↑
-   Boundary                    Boundary
-```
-
-**Characteristics**:
-
-- Reduced validation overhead within trust domains
-- Equivalent to JWT signature verification at boundaries
-- PCA remains cryptographically valid between validations
-- Appropriate for: internal microservices, performance-critical paths
-
-> **SECURITY NOTE**: Hops between validations operate with signed PCA. Authority cannot expand beyond ops_i even without intermediate validation.
-
-### 5.3.3 Validation Strategy: Entry-Point Validation
-
-Validate once at system entry:
-
-```text
-E_0 → [CAT] → E_1 → E_2 → E_3 → E_4
-      ↑
-   Entry point
-```
-
-**Characteristics**:
-
-- Minimal validation overhead
-- Equivalent to session-based authentication
-- Appropriate for: trusted execution environments, legacy integration, development/testing
-
-> **SECURITY NOTE**: Equivalent trust model to traditional authorization where credentials are validated once and trusted thereafter.
-
-### 5.3.4 Comparison to Existing Protocols
-
-PIC provides equivalent flexibility to existing authorization protocols:
-
-| Protocol | Typical Validation Pattern | PIC Equivalent |
-|----------|---------------------------|----------------|
-| OAuth 2.0 | Per API call | Full Validation (5.3.1) |
-| JWT with trusted issuers | At boundary | Selective Validation (5.3.2) |
-| Session cookies | At entry | Entry-Point Validation (5.3.3) |
-| mTLS | Per connection | Selective Validation (5.3.2) |
-
-**Implementation guidance**: Choose validation frequency based on:
-
-- Trust boundaries in your architecture
-- Performance requirements
-- Compliance obligations
-- Threat model
+> **NOTE**: Regardless of source, PIC invariants apply: `p_0` immutable, `ops_i ⊆ ops_{i-1}`.
 
 ---
 
-## 5.4 Integration with Existing Systems
+### 5.5 Adoption Path
 
-PIC is designed to augment existing authorization infrastructure rather than replace it. This section provides integration patterns for common authorization systems.
+| Phase          | Actions                                                                             |
+|----------------|-------------------------------------------------------------------------------------|
+| **Assessment** | Identify confused deputy risks, map authorization flows, determine trust boundaries |
+| **Pilot**      | Deploy Federation Bridge, integrate with OAuth/SPIFFE, validate at boundaries       |
+| **Expansion**  | Extend to additional domains, increase validation frequency, implement revocation   |
+| **Full**       | System-wide PIC enforcement, deprecate possession-based patterns                    |
 
-### 5.4.1 OAuth 2.0 Integration
+---
 
+### 5.6 AI Agents and Tool Orchestration
+
+No new concepts. AI agents are executors. Tools are executors. PIC applies unchanged.
+
+Agent calls tools, tools call APIs, authority only decreases:
 ```text
-User → OAuth AS → JWT (contains p_0, ops_0)
-         ↓
-Client → CAT (validates JWT, derives PCA_1)
-         ↓
-PCA_1 → Executor chain
+Alice (Human User)
+  │
+  │  PCA_0 (p_0 = Alice, ops_0) via Federation Bridge
+  ▼
+AI Agent A
+  │
+  │  PCA_1 ⊆ PCA_0
+  ├──────────────────▶ Tool / API
+  │
+  │  PCA_2 ⊆ PCA_0
+  └──────────────────▶ AI Agent B
+                          │
+                          │  PCA_3 ⊆ PCA_2
+                          └────────▶ Tool / API
 ```
 
-**Integration approach**:
+**What is a Tool?**
 
-1. OAuth Authorization Server issues JWT with user identity and scopes
-2. CAT validates JWT and derives initial PCA_0 (p_0 = user_id, ops_0 = scopes)
-3. Subsequent hops use PIC validation
-4. OAuth AS remains authoritative for identity and initial authorization
+Any executor that validates PCA: external APIs, microservices, databases, OS services, cloud services, other AI agents.
 
-**Migration path**: Replace token validation endpoints with CAT validation while maintaining OAuth for user authentication and initial authorization.
+**Why this matters**:
 
-### 5.4.2 SPIFFE Integration
+| Traditional AI Agents        | PIC AI Agents                 |
+|------------------------------|-------------------------------|
+| Execute with own credentials | Execute within user's `ops_0` |
+| Ambient authority            | No independent authority      |
+| Confused deputy possible     | Confused deputy impossible    |
+| No origin traceability       | `p_0` immutable throughout    |
 
-```text
-Workload → SPIFFE Server → SVID
-            ↓
-         CAT validates SVID (uses as PoI)
-            ↓
-         Issues PCA (p_0 = SPIFFE ID)
-```
-
-**Integration approach**:
-
-1. SPIFFE Server issues SVIDs for workload identity
-2. CAT validates SVID as Proof of Identity (PoI)
-3. CAT derives PCA with SPIFFE ID as origin principal
-4. Workload continues to use SPIFFE for identity
-
-**Migration path**: No changes to SPIFFE infrastructure. CAT becomes additional validation layer that consumes SPIFFE identities.
-
-### 5.4.3 API Gateway Integration
-
-```text
-Client → API Gateway (CAT role)
-         ↓
-      validates credentials
-         ↓
-      derives PCA_0
-         ↓
-      forwards to backend with PCA
-```
-
-**Integration approach**:
-
-1. API Gateway performs existing authentication
-2. Gateway acts as CAT, deriving initial PCA_0
-3. Backend services validate PCA instead of gateway-issued tokens
-4. Gateway remains single entry point
-
-**Migration path**: Upgrade gateway to act as CAT. Backend services migrate from token validation to PCA validation incrementally.
+> **MENTAL MODEL**: AI agents are executors in a PIC transaction graph.
+> If an API call is safe under PIC, an AI agent calling that API is equally safe.
 
 ---
-
-## 5.5 Deployment Considerations
-
-### 5.5.1 CAT Implementation Options
-
-As described in Section 3.1.2, the CAT MAY be implemented as:
-
-**Centralized Service**:
-
-- Single authorization service
-- Similar to OAuth Authorization Server deployment
-- Appropriate for: single organization, centralized policy management
-
-**Decentralized System**:
-
-- Distributed consensus (blockchain, distributed ledger)
-- Trust Model verified across nodes
-- Appropriate for: multi-party systems, trustless environments
-
-**Federated Model**:
-
-- Multiple CATs with inter-CAT trust verification
-- Each domain operates independent CAT
-- Appropriate for: multi-organization systems, cross-domain authorization
-
-### 5.5.2 Performance Optimization
-
-**Caching**:
-
-- PCA validation results MAY be cached within trust boundaries
-- Cache invalidation required on revocation events
-- Similar to JWT validation result caching
-
-**Batching**:
-
-- Multiple PCA requests MAY be batched for validation
-- Reduces round-trips in high-throughput scenarios
-- Similar to token introspection batching in OAuth
-
-**Async Validation**:
-
-- Validation MAY occur asynchronously for audit purposes
-- Execution proceeds optimistically
-- Violations detected post-facto
-- Appropriate for: compliance logging, non-critical paths
-
----
-
-## 5.6 Security-Performance Trade-offs
-
-Like all authorization systems, PIC requires implementers to balance security and performance based on their threat model.
-
-**Security Properties at Different Validation Frequencies**:
-
-| Property | Full Validation | Selective Validation | Entry Validation |
-|----------|----------------|---------------------|------------------|
-| Confused deputy prevention | ✓ Enforced | ✓ Enforced | ✓ Enforced |
-| Authority monotonicity | ✓ Validated each hop | ✓ Validated at boundaries | ✓ Initial only |
-| Executor revocation | ✓ Immediate | ✓ At next boundary | ✗ Delayed |
-| Audit trail completeness | ✓ Complete | ✓ Boundaries only | ✓ Entry only |
-| Replay attack prevention | ✓ Strong | ✓ Boundary-level | ✓ Entry-level |
-
-**Recommendation**: Validate at trust boundaries as minimum. Full validation provides maximum security assurance but incurs higher overhead.
-
----
-
-## 5.7 Comparison to Possession-Based Models
-
-The fundamental distinction between PIC (Proof of Continuity) and possession-based models (Proof of Possession):
-
-**Possession-Based (PoP)**:
-
-- Authority derives from artifact possession (token, certificate, key)
-- Artifact can be used by any holder
-- Confused deputy possible when service reuses client credentials
-- No causal relationship to origin
-- Ambient authority
-
-**Continuity-Based (PoC)**:
-
-- Authority derives from execution provenance
-- Authority bound to specific execution context
-- Confused deputy structurally impossible (proven in [[1]](#references))
-- Causal chain to origin maintained
-- Explicit authority derivation
-
-**Security Implication**: PoP models require additional mechanisms (audience restrictions, token binding, etc.) to mitigate confused deputy. PIC eliminates the class of vulnerabilities by construction.
-
-**Performance Implication**: PoC validation is computationally equivalent to PoP validation (both require cryptographic operations and policy evaluation). The difference is in the security guarantees, not computational cost.
-
----
-
-## 5.8 Adoption Path
-
-Organizations MAY adopt PIC incrementally:
-
-**Phase 1 - Assessment**:
-
-- Identify confused deputy risks in existing systems
-- Map current authorization flows
-- Determine trust boundaries
-
-**Phase 2 - Pilot**:
-
-- Deploy CAT in single trust domain
-- Integrate with existing OAuth/SPIFFE
-- Validate at boundaries only (5.3.2)
-- Measure performance impact
-
-**Phase 3 - Expansion**:
-
-- Extend to additional domains
-- Increase validation frequency in high-security paths
-- Implement revocation mechanisms
-- Complete audit trail integration
-
-**Phase 4 - Full Deployment**:
-
-- System-wide PIC enforcement
-- Deprecated possession-based patterns in critical paths
-- Continuous monitoring and validation
-
-This incremental approach allows organizations to realize PIC security benefits while managing migration risk and maintaining operational continuity.
 
 ## 6. Security Considerations
 
-This section analyzes the security properties of the PIC Model and compares its attack resistance to possession-based (token-based) authorization systems. The analysis demonstrates how PIC's continuity-based approach eliminates entire classes of attacks that are inherent to token possession models.
+---
+
+### 6.1 Threat Model
+
+**Trusted**: CAT, Trust Model, Governance
+
+**Untrusted**: Executors, network, execution environments
+
+**Attacker capabilities**: Eavesdropping, tampering, executor compromise, credential theft, replay
+
+**Out of scope**: CAT compromise, cryptographic breaks, side-channels, social engineering
 
 ---
 
-## 6.1 Threat Model
+### 6.2 Confused Deputy Attack
 
-### 6.1.1 Assumptions
+The classic problem (Hardy, 1988): a privileged service uses its own authority on behalf of a less-privileged client.
 
-The PIC Model operates under the following security assumptions:
-
-**Trusted Components**:
-- The CAT (Trust Plane) is trusted and operates correctly
-- The Trust Model (cryptographic primitives, TEE, consensus, etc.) provides non-forgeable bindings
-- The Policy Decision Point (PDP) enforces policies correctly
-
-**Untrusted Components**:
-- Executors are untrusted and may be compromised
-- Network communication may be intercepted (man-in-the-middle)
-- Execution environments may be hostile
-
-**Attacker Capabilities**:
-- Network eavesdropping (passive attack)
-- Network tampering (active attack)
-- Executor compromise (malicious or vulnerable service)
-- Credential theft (stolen keys, tokens, certificates)
-- Replay attacks (captured messages reused)
-
-### 6.1.2 Out of Scope
-
-The following are considered out of scope for this threat model:
-
-- Compromise of the CAT itself (trusted component)
-- Breaking of cryptographic primitives (collision attacks on SHA-256, factoring RSA, etc.)
-- Side-channel attacks on cryptographic implementations
-- Social engineering attacks on end users
-- Physical attacks on hardware security modules
-
----
-
-## 6.2 Attacks Prevented by PIC
-
-This section catalogs attacks that are **inherent** to token-based systems but are **structurally impossible** in PIC-compliant systems.
-
-### 6.2.1 Confused Deputy Attack
-
-**Attack Description**:
-
-A confused deputy attack occurs when a service (deputy) with elevated privileges uses its own authority on behalf of a less-privileged client. The deputy cannot distinguish which authority context applies to a given request, and mistakenly uses its broader privileges instead of the client's limited authority.
-
-This is the classic problem described by Hardy (1988): a compiler service with system-level billing file access is tricked into overwriting system files using its own authority instead of the user's limited authority.
-
-**Token-Based Systems (VULNERABLE)**:
+**Scenario**: Alice (client) cannot read `/sys/*`. Bob (archive service) can.
 
 ```text
-Scenario: Bob (service) can read /sys/*, Alice (client) cannot.
-
-Authorities:
-  - Alice: {read: /user/*, write: /user/*}
-  - Bob:   {read: /user/*, write: /user/*, read: /sys/*}
-
-Bob's logic:
-  if file exists → read, append input, write to new output file
-  else → write input to new output file
-
-Attack:
-  1. Alice discovers Bob can read /sys/syslog.txt
-  2. Alice sends request: process("/sys/syslog.txt", "my content")
-  3. Bob checks own token: can I read /sys/*? Yes.
-  4. Bob reads /sys/syslog.txt (contains system secrets)
-  5. Bob appends Alice's content, writes to /user/output.txt
-  6. Bob returns /user/output.txt to Alice
-  7. Alice reads output: system secrets exposed
-   
-  ❌ CONFUSED DEPUTY:
-  - Alice asked for the action
-  - Bob's elevated {read: /sys/*} was used
-  - Alice obtained data she should never access
+┌───────────────────────────────────────────────────────────────┐
+│                         Actors                                │
+├───────────────────────────────────────────────────────────────┤
+│  Alice (Human User)                                           │
+│    Authority (via OAuth): {read:/user/*, write:/user/*}       │
+│                                                               │
+│  Bob (Archive Service)                                        │
+│    Own authority: {read:/sys/*, write:/sys/*}                 │
+│                                                               │
+│  Carol (Storage Service)                                      │
+│    Executes ALL file operations strictly based on PCA         │
+└───────────────────────────────────────────────────────────────┘
 ```
 
-**Why Token-Based is Vulnerable**:
+**Token-Based (VULNERABLE)**:
 
-- Service holds its own broad authority PLUS client's limited authority
-- Malicious input triggers service to use its elevated privileges
-- No binding between request origin and authority used
-- Client can exploit service's elevated privileges through crafted input
+Alice exploits Bob's elevated authority:
+
+```text
+1. Alice sends: process("/sys/syslog.txt", "my content")
+2. Bob uses OWN credentials to call Carol
+3. Carol checks Bob's token: can read /sys/*? Yes.
+4. Carol reads /sys/syslog.txt (system secrets)
+5. Alice receives output containing system secrets
+
+❌ CONFUSED DEPUTY
+```
 
 **PIC Model (IMMUNE)**:
 
+Authority bound to origin, Bob's privileges don't exist in Alice's transaction:
+
 ```text
-Scenario: Bob (service) can read /sys/*, Alice (client) cannot.
+1. Gateway derives PCA_0: p_0 = Alice, ops_0 = {read:/user/*, write:/user/*}
+2. Bob receives PCA_1 (p_0 = Alice, ops_1 ⊆ ops_0)
+3. Alice sends: process("/sys/syslog.txt", "my content")
+4. Carol validates: {read:/sys/*} ⊆ {read:/user/*, write:/user/*}? NO
+5. Read blocked. Alice receives only her own content.
 
-1. Alice initiates transaction:
-   PCA_0: p_0 = Alice, ops_0 = {read: /user/*, write: /user/*}
-   Bob receives PCA_1 (p_0 = Alice, ops_1 ⊆ ops_0)
-
-2. Alice sends: process("/sys/syslog.txt", "my content")
-
-3. Bob attempts to read /sys/syslog.txt:
-   
-   Bob submits to CAT:
-   - Previous: PCA_1 (p_0 = Alice, ops_1 = {read: /user/*, write: /user/*})
-   - Requested: ops = {read: /sys/syslog.txt}
-   
-   CAT validates:
-   ✓ p_0 = Alice (immutable)
-   ✗ {read: /sys/*} ⊄ {read: /user/*, write: /user/*}
-   
-   ❌ REJECTED — read blocked
-
-4. Bob falls back: file unreadable, creates new output with only Alice's input
-   Bob writes: /user/output.txt containing "my content"
-   Alice receives output with no system secrets
-   
-   ✓ IMMUNE: Bob's {read: /sys/*} does not exist in Alice's transaction
+✓ IMMUNE
 ```
 
-**Why PIC is Immune**:
+Authority scoped to transaction origin:
 
-- Authority derives from transaction origin (Alice), not from service credentials
-- Bob's elevated privileges ({read: /sys/*}) do not exist within Alice's transaction
-- ops_i can only decrease from ops_0, never expand
-- Malicious input cannot trigger unauthorized operations
-- **Structural impossibility**: The confused deputy cannot occur because authority flows causally from origin, not from service credentials
+| Transaction Origin | read /user/* | read /sys/* | write /user/* |
+|--------------------|--------------|-------------|---------------|
+| Bob (own transaction) | ❌ | ✓ | ❌ |
+| Alice (via PCA) | ✓ | ❌ | ✓ |
+
+---
+
+### 6.3 Attack Comparison Summary
+
+| Attack | Token-Based | PIC | Mechanism |
+|--------|-------------|-----|-----------|
+| **Confused Deputy** | ❌ Vulnerable | ✅ Immune | Authority from origin, not executor |
+| **Token Theft** | ❌ Possession = authority | ✅ Resistant | Executor binding mismatch |
+| **Privilege Escalation** | ❌ No monotonicity | ✅ Immune | `ops_{i+1} ⊆ ops_i` enforced |
+| **Ambient Authority** | ❌ Service uses own token | ✅ Immune | Authority scoped to `ops_0` |
+| **Token Substitution** | ❌ No chain verification | ✅ Immune | PoC binds to previous PCA |
+| **Replay** | ❌ Valid until expiry | ✅ Resistant | Challenge + temporal binding |
+| **Credential Forwarding** | ❌ Unrestricted | ✅ Controlled | CAT validation per hop |
+| **Impersonation** | ❌ Possession = identity | ✅ Resistant | PoI must match binding |
+| **MITM Modification** | ⚠️ Depends on JWT sig | ✅ Immune | Bundle signature required |
+| **Revocation Delay** | ❌ Valid until expiry | ✅ Responsive | Checked at next hop |
+
+**Legend**: ❌ Vulnerable | ⚠️ Depends | ✅ Resistant/Immune
+
+---
+
+### 6.4 Residual Risks
+
+| Risk | Mitigation |
+|------|------------|
+| **CAT Compromise** | HSM/TEE deployment, distributed CAT, monitoring |
+| **Trust Model Weakness** | Battle-tested crypto, agility, post-quantum readiness |
+| **Denial of Service** | Rate limiting, batching, distributed CAT |
+| **Policy Misconfiguration** | Testing, formal verification, least-privilege defaults |
+
+---
+
+### 6.5 Security Design Principles
+
+1. **Least Privilege**: Authority monotonically decreases
+2. **Separation of Concerns**: Untrusted execution / trusted validation
+3. **Defense in Depth**: PoC + PoI + PoP + Governance
+4. **Fail-Safe Defaults**: Rejected unless authorized
+5. **Complete Mediation**: CAT validates every transition
+6. **Audit Trail**: Complete provenance tracking
+7. **Revocation**: Immediate at next hop
+
+---
+
+### 6.6 Formal Security Properties
+
+| Property | Statement |
+|----------|-----------|
+| **Origin Immutability** | ∀i: `p_i = p_0` |
+| **Authority Monotonicity** | ∀i: `ops_i ⊆ ops_{i-1}` |
+| **Confused Deputy Impossibility** | ∀E_i: cannot exercise `ops_j` where `ops_j ⊄ ops_i` |
+| **Causal Provenance** | ∀PCA_i: ∃ chain `PCA_0 → ... → PCA_i` |
+| **Non-Transferability** | ∀PCA_i: bound to E_i, unusable by E_j |
 
 **Formal Proof**: See [[1]](#references)
-
----
-
-### 6.2.2 Token Theft and Reuse
-
-**Attack Description**:
-
-An attacker steals a token (bearer token, session cookie, API key) and reuses it to impersonate the legitimate holder.
-
-**Token-Based Systems (VULNERABLE)**:
-
-```text
-Legitimate User
-  │ Token: "Bearer abc123..."
-  ▼
-[Network Intercept]
-  │
-Attacker steals token
-  │ Reuses: "Bearer abc123..."
-  ▼
-Service accepts token
-  ❌ IMPERSONATION SUCCESS
-```
-
-**Why Token-Based is Vulnerable**:
-- Token validity independent of execution context
-- Possession = authority (bearer token)
-- No binding to specific execution flow
-- Token usable anywhere, by anyone
-
-**PIC Model (RESISTANT)**:
-
-```
-Executor E_n (has PCA_n)
-  │
-[Attacker intercepts PCA_n]
-  │
-Attacker attempts to use PCA_n
-  │ Submits to CAT for PCA_{n+1}
-  ▼
-CAT validation:
-  ✓ Validates PoI (attacker's identity)
-  ✓ Validates PoP (attacker's credentials)
-  ❌ REJECTED: Executor binding mismatch
-  ❌ REJECTED: PoI doesn't match PCA_n's executor binding
-```
-
-**Why PIC is Resistant**:
-- PCA bound to executor characteristics (federation, namespace, attributes)
-- Attacker's PoI won't match expected executor binding
-- Challenge-response (if used) requires attacker's credentials
-- **Cannot reuse PCA outside its execution context**
-
-**Additional Protection (with PCC)**:
-- Fresh challenge prevents replay
-- Challenge response requires executor's signing key
-- Stolen PCA unusable without executor's private key
-
----
-
-### 6.2.3 Privilege Escalation
-
-**Attack Description**:
-
-A service with limited authority escalates to higher privileges by manipulating tokens or exploiting validation gaps.
-
-**Token-Based Systems (VULNERABLE)**:
-
-```
-Service A (token: read:*)
-  │
-  │ Calls Service B (token: write:*)
-  │ Service B's token leaked to A
-  ▼
-Service A uses Service B's token
-  │ Now has write:* authority
-  ▼
-Backend executes write operation
-  ❌ PRIVILEGE ESCALATION
-```
-
-**Why Token-Based is Vulnerable**:
-- No enforcement of authority monotonicity
-- Token validity independent of caller chain
-- Service can acquire higher-privilege tokens
-- No structural guarantee against expansion
-
-**PIC Model (IMMUNE)**:
-
-```
-Service A (PCA_1 with ops_1 = {read:*})
-  │
-  │ Requests PCA_2 from CAT
-  │ Proposes ops_2 = {write:*}
-  ▼
-CAT validation:
-  ✓ Checks ops_2 ⊆ ops_1
-  ❌ REJECTED: {write:*} ⊄ {read:*}
-```
-
-**Why PIC is Immune**:
-- **Monotonicity enforced**: ops_{i+1} ⊆ ops_i for all transitions
-- CAT validates every authority transition
-- Impossible to expand authority beyond ops_0
-- **Structural guarantee**: authority can only decrease or remain constant
-
----
-
-### 6.2.4 Ambient Authority Exploitation
-
-**Attack Description**:
-
-A service holds broad ambient authority (e.g., "admin" token) and an attacker exploits this to perform unauthorized operations by tricking the service into acting on malicious input.
-
-**Token-Based Systems (VULNERABLE)**:
-
-```
-Service (token: admin, authority: *)
-  │
-  │ Attacker sends: "Process file: /etc/passwd"
-  ▼
-Service uses admin token
-  │ Executes: READ /etc/passwd
-  ▼
-Backend accepts (token has authority)
-  ❌ AMBIENT AUTHORITY EXPLOITED
-```
-
-**Why Token-Based is Vulnerable**:
-- Service holds single token with broad authority
-- All operations use same token regardless of origin
-- No differentiation between legitimate and malicious requests
-- Authority not scoped to original request
-
-**PIC Model (IMMUNE)**:
-
-```
-User request (ops_0 = {read:/home/user/*})
-  │
-  │ PCA_0 with ops_0
-  ▼
-Service (receives PCA_1 with ops_1 = {read:/home/user/*})
-  │
-  │ Attacker manipulates input: "/etc/passwd"
-  │ Service requests ops_2 = {read:/etc/passwd}
-  ▼
-CAT validation:
-  ✓ Checks ops_2 ⊆ ops_1
-  ❌ REJECTED: {read:/etc/passwd} ⊄ {read:/home/user/*}
-```
-
-**Why PIC is Immune**:
-- Authority scoped to origin request (ops_0)
-- Service cannot escape user's authority bounds
-- CAT enforces monotonicity at every hop
-- **No ambient authority**: every operation traceable to ops_0
-
----
-
-### 6.2.5 Token Substitution Attack
-
-**Attack Description**:
-
-A malicious service substitutes the client's token with its own higher-privilege token to gain unauthorized access.
-
-**Token-Based Systems (VULNERABLE)**:
-
-```
-Client (token_client: read:/data/*)
-  │
-  │ Sends: token_client
-  ▼
-Malicious Service
-  │ Substitutes with token_service: read:*, write:*
-  ▼
-Backend receives token_service
-  │ Executes write operation
-  ▼
-  ❌ TOKEN SUBSTITUTION SUCCESS
-```
-
-**Why Token-Based is Vulnerable**:
-- No binding between tokens in a call chain
-- Backend trusts any valid token
-- No way to verify token derivation
-- Service can replace client's token arbitrarily
-
-**PIC Model (IMMUNE)**:
-
-```
-Client (PCA_0 with ops_0 = {read:/data/*})
-  │
-  │ Passes PCA_1 to service
-  ▼
-Malicious Service
-  │ Attempts to substitute with higher-authority PCA
-  │ Requests PCA_2 with ops_2 = {read:*, write:*}
-  ▼
-CAT validation:
-  ✓ Checks PCA_1 signature
-  ✓ Verifies PoC_2 references PCA_1
-  ✓ Checks ops_2 ⊆ ops_1
-  ❌ REJECTED: {read:*, write:*} ⊄ {read:/data/*}
-```
-
-**Why PIC is Immune**:
-
-- PoC cryptographically binds to previous PCA
-- CAT verifies causal chain (PCA_2 must derive from PCA_1)
-- Monotonicity prevents authority expansion
-- **Substitution detected**: PoC validation fails if PCA not in chain
-
----
-
-### 6.2.6 Replay Attack
-
-**Attack Description**:
-
-An attacker captures a valid token and replays it later to gain unauthorized access.
-
-**Token-Based Systems (VULNERABLE)**:
-
-```
-Legitimate request: "Bearer token123"
-  │
-[Attacker captures token]
-  │
-Attacker replays: "Bearer token123"
-  │ (hours/days later)
-  ▼
-Service accepts token (still valid)
-  ❌ REPLAY SUCCESS
-```
-
-**Why Token-Based is Vulnerable**:
-- Long-lived tokens remain valid until expiry
-- No binding to specific execution context
-- No freshness mechanism (unless explicitly added)
-- Token can be reused indefinitely within validity period
-
-**PIC Model (RESISTANT)**:
-
-**With PCC (Challenge-Response)**:
-
-```
-Executor requests PCC_i from CAT
-  │
-CAT issues fresh challenge (nonce, timestamp)
-  │
-Executor constructs PoC_i with challenge response
-  │
-[Attacker captures PoC_i]
-  │
-Attacker attempts replay
-  ▼
-CAT validation:
-  ✓ Checks challenge response
-  ❌ REJECTED: Challenge expired or already used
-```
-
-**Without PCC (Temporal Binding)**:
-
-```
-PCA_i contains temporal constraints (start_time + duration)
-  │
-[Attacker captures PCA_i]
-  │
-Attacker attempts replay (after validity period)
-  ▼
-CAT validation:
-  ✓ Checks temporal constraints
-  ❌ REJECTED: PCA expired
-```
-
-**Why PIC is Resistant**:
-- Challenge-response prevents replay (fresh nonce per transition)
-- Temporal constraints limit validity window
-- Executor binding prevents use by wrong executor
-- **Replay detection**: CAT tracks used challenges
-
----
-
-### 6.2.7 Credential Forwarding Attack
-
-**Attack Description**:
-
-A service forwards the client's credentials to another service, allowing unauthorized lateral movement.
-
-**Token-Based Systems (VULNERABLE)**:
-
-```
-Client → Service A (forwards client token)
-           │
-           └→ Service B (uses client token)
-                │
-                └→ Service C (uses same token)
-                     │
-                     └→ Any service in infrastructure
-  ❌ UNRESTRICTED FORWARDING
-```
-
-**Why Token-Based is Vulnerable**:
-- Single token usable across entire infrastructure
-- No restriction on token propagation
-- No visibility into execution chain
-- "Token sprawl": credentials spread uncontrollably
-
-**PIC Model (CONTROLLED)**:
-
-```
-Client (PCA_0)
-  │
-  ├→ Service A (receives PCA_1, requests PCA_2 from CAT)
-      │
-      ├→ Service B (receives PCA_2, requests PCA_3 from CAT)
-          │
-          ├→ Service C (receives PCA_3, requests PCA_4 from CAT)
-
-Every transition validated by CAT:
-  ✓ ops_i monotonically decreasing
-  ✓ Executor binding validated
-  ✓ Complete provenance tracked
-```
-
-**Why PIC is Controlled**:
-- Each hop requires CAT validation
-- Authority monotonically decreases (ops_i ⊆ ops_{i-1})
-- Complete audit trail of all transitions
-- **Controlled propagation**: no unrestricted forwarding
-
----
-
-### 6.2.8 Cross-Service Impersonation
-
-**Attack Description**:
-
-Service A impersonates Service B by reusing Service B's token.
-
-**Token-Based Systems (VULNERABLE)**:
-
-```
-Service B (token_B: high privileges)
-  │ Token leaked/stolen
-  │
-Service A acquires token_B
-  │ Uses token_B to impersonate Service B
-  ▼
-Backend accepts token_B
-  ❌ IMPERSONATION: Service A acts as Service B
-```
-
-**Why Token-Based is Vulnerable**:
-- Token validity independent of holder identity
-- Possession = identity (bearer token)
-- No binding between token and service identity
-- Anyone with token can impersonate
-
-**PIC Model (RESISTANT)**:
-
-```
-Service B (PCA_B with executor_binding for Service B)
-  │
-Service A attempts to use PCA_B
-  │ Submits PoC with Service A's PoI
-  ▼
-CAT validation:
-  ✓ Validates PoI (Service A's identity)
-  ✓ Checks executor_binding in PCA_B
-  ❌ REJECTED: Service A's PoI doesn't match PCA_B's executor_binding
-```
-
-**Why PIC is Resistant**:
-- PCA bound to executor characteristics
-- PoI must match executor_binding
-- Service A cannot provide Service B's PoI
-- **Impersonation prevented**: identity verification required
-
----
-
-### 6.2.9 Man-in-the-Middle Token Modification
-
-**Attack Description**:
-
-An attacker intercepts communication and modifies tokens to escalate privileges.
-
-**Token-Based Systems (VULNERABLE)**:
-
-```
-Client → Service
-  │ Token: {user: alice, role: user}
-  │
-[MITM intercepts]
-  │ Modifies to: {user: alice, role: admin}
-  │ (if token not cryptographically protected)
-  ▼
-Service accepts modified token
-  ❌ PRIVILEGE ESCALATION via MITM
-```
-
-**Why Token-Based is Vulnerable** (without signatures):
-- Tokens may be transmitted without integrity protection
-- JSON Web Tokens (JWT) without signatures (alg: none)
-- Modification undetected if no cryptographic binding
-
-**PIC Model (IMMUNE)**:
-
-```
-Executor → CAT
-  │ PoC bundle signed by executor
-  │
-[MITM intercepts and modifies]
-  │ Changes proposed_pca.ops to higher authority
-  │
-CAT validation:
-  ✓ Verifies executor_signature on bundle
-  ❌ REJECTED: Signature invalid (bundle modified)
-```
-
-**Why PIC is Immune**:
-- All PoC bundles signed by executor
-- CAT verifies signature before processing
-- Modification breaks signature
-- **Tampering detection**: cryptographic integrity guaranteed
-
----
-
-### 6.2.10 Revocation Delay Exploitation
-
-**Attack Description**:
-
-A compromised service continues operating with valid token despite being revoked, due to long token lifetime or lack of revocation checking.
-
-**Token-Based Systems (VULNERABLE)**:
-
-```
-Service compromised at t=0
-  │ Token valid until t=3600 (1 hour)
-  │
-Administrator revokes service at t=10
-  │
-Service continues using token until t=3600
-  │ Performs malicious operations
-  ▼
-  ❌ REVOCATION INEFFECTIVE (50-minute window)
-```
-
-**Why Token-Based is Vulnerable**:
-- Long-lived tokens remain valid until expiry
-- Revocation requires token blacklist (often not checked)
-- No active verification at each operation
-- Gap between revocation and expiry
-
-**PIC Model (RESPONSIVE)**:
-
-```
-Service compromised at t=0
-  │ Has PCA_i
-  │
-Administrator revokes service at t=10
-  │ Updates CAT revocation list
-  │
-Service requests PCA_{i+1} at t=11
-  │ Submits PoC with PoI
-  ▼
-CAT validation:
-  ✓ Validates PoI (service identity)
-  ✓ Checks revocation list
-  ❌ REJECTED: Service revoked
-```
-
-**Why PIC is Responsive**:
-- Revocation checked at every CAT validation
-- Compromised service blocked immediately at next transition
-- No reliance on token expiry
-- **Immediate effect**: revocation enforced within one hop
-
----
-
-## 6.3 Attack Comparison Summary
-
-| Attack Vector | Token-Based | PIC Model | Mitigation Mechanism |
-|---------------|-------------|-----------|---------------------|
-| **Confused Deputy** | ❌ Vulnerable | ✅ Immune | Monotonicity + CAT validation |
-| **Token Theft** | ❌ Vulnerable | ✅ Resistant | Executor binding + PoI/PoP |
-| **Privilege Escalation** | ❌ Vulnerable | ✅ Immune | Structural monotonicity |
-| **Ambient Authority** | ❌ Vulnerable | ✅ Immune | Scoped authority from ops_0 |
-| **Token Substitution** | ❌ Vulnerable | ✅ Immune | Causal chain verification |
-| **Replay Attack** | ❌ Vulnerable | ✅ Resistant | Challenge-response + temporal binding |
-| **Credential Forwarding** | ❌ Uncontrolled | ✅ Controlled | CAT validation per hop |
-| **Cross-Service Impersonation** | ❌ Vulnerable | ✅ Resistant | Executor binding enforcement |
-| **MITM Modification** | ⚠️ Depends on JWT sig | ✅ Immune | Bundle signature required |
-| **Revocation Delay** | ❌ Vulnerable | ✅ Responsive | Real-time revocation check |
-
-**Legend**:
-- ❌ **Vulnerable**: Attack succeeds with standard deployment
-- ⚠️ **Depends**: Vulnerable unless additional measures taken
-- ✅ **Resistant**: Attack very difficult but theoretically possible
-- ✅ **Immune**: Attack structurally impossible
-
----
-
-## 6.4 Residual Risks and Limitations
-
-While PIC eliminates many attack classes, certain risks remain:
-
-### 6.4.1 CAT Compromise
-
-**Risk**: If the CAT itself is compromised, all security guarantees are void.
-
-**Mitigation Strategies**:
-- Deploy CAT in hardened environment (HSM, TEE)
-- Use distributed CAT with consensus (no single point of failure)
-- Implement CAT auditing and monitoring
-- Federated CAT with cross-verification
-
-### 6.4.2 Trust Model Vulnerabilities
-
-**Risk**: Weaknesses in the underlying Trust Model (e.g., broken cryptographic primitives) undermine PIC guarantees.
-
-**Mitigation Strategies**:
-- Use battle-tested cryptographic libraries
-- Regular security audits
-- Crypto-agility (support for algorithm upgrades)
-- Post-quantum readiness
-
-### 6.4.3 Side-Channel Attacks
-
-**Risk**: Timing attacks, cache attacks, or other side-channels may leak sensitive information.
-
-**Mitigation**: Implementation-specific hardening (out of scope for this specification).
-
-### 6.4.4 Denial of Service
-
-**Risk**: Attacker floods CAT with validation requests, causing DoS.
-
-**Mitigation Strategies**:
-- Rate limiting per executor
-- Batch validation
-- Distributed CAT with load balancing
-- Challenge-response to prevent request amplification
-
-### 6.4.5 Policy Bypass
-
-**Risk**: Misconfigured PDP policies allow unauthorized operations.
-
-**Mitigation**: Policy testing, formal verification, least-privilege defaults (out of scope for PIC specification).
-
----
-
-## 6.5 Security Design Principles
-
-The PIC Model follows these security design principles:
-
-1. **Least Privilege**: Authority monotonically decreases (ops_i ⊆ ops_{i-1})
-2. **Separation of Concerns**: Untrusted execution (Executors) separated from trusted validation (CAT)
-3. **Defense in Depth**: Multiple validation layers (PoC + PoI + PoP + PDP)
-4. **Fail-Safe Defaults**: Operations rejected unless explicitly authorized
-5. **Complete Mediation**: CAT validates every authority transition
-6. **Open Design**: Security does not rely on secrecy of PIC mechanisms
-7. **Audit Trail**: Complete provenance tracking for forensics
-8. **Revocation**: Compromised executors immediately invalidated
-
----
-
-## 6.6 Formal Security Properties
-
-The PIC Model provides the following formally verifiable properties:
-
-**Property 1 (Origin Immutability)**:
-For all hops i in transaction τ: `p_i = p_0`
-
-**Property 2 (Authority Monotonicity)**:
-For all hops i in transaction τ: `ops_i ⊆ ops_{i-1}`
-
-**Property 3 (Confused Deputy Impossibility)**:
-For all executors E_i: E_i cannot exercise authority ops_j where ops_j ⊄ ops_i
-
-**Property 4 (Causal Provenance)**:
-For all PCA_i: There exists a verifiable chain PCA_0 → PCA_1 → ... → PCA_i
-
-**Property 5 (Non-Transferability)**:
-For all PCA_i: PCA_i is bound to executor E_i and cannot be used by E_j where j ≠ i
-
-**Formal Proof**: See [[1]](#references) for complete proofs of these properties.
 
 ---
 
