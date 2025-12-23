@@ -8,54 +8,36 @@
 
 ## Abstract
 
-This specification defines the **Provenance Identity Continuity (PIC) Model**, an execution model for distributed systems that eliminates the confused deputy problem and entire classes of authorization vulnerabilities through verifiable causal continuity rather than artifact possession.
+Possession-based authorization systems rely on **Proof of Possession (PoP)**: authority derives from holding an artifact—a token, a certificate, a key.
+This works for a single hop. It fails catastrophically across chains.
 
-Unlike capability-based systems that provide delegatable objects for process-to-process authority transfer, PIC enforces **execution continuity** across complete distributed transactions—from origin to completion—spanning multiple services, clouds, and administrative domains. Where capabilities enable controlled delegation within bounded contexts, PIC maintains authority invariants across unbounded distributed executions: API gateways calling microservices, event streams processing through Kafka pipelines, AI agents orchestrating multiple API calls, or serverless functions chaining across cloud providers.
+**The problem**: Service A holds a token. Service A calls Service B. Service B verifies its own credentials. Service B calls Service C.
+At each hop, the system asks: "Do you possess a valid artifact?" No one asks: Who started this? What were the original bounds? Is this a valid continuation of that origin?
+Each hop restarts trust. Origin is lost. The chain breaks.
 
-The PIC Model makes entire families of authorization bugs **structurally inexpressible** within a transaction by enforcing four invariants at every execution hop:
+This is why AI agents, microservice meshes, and multi-cloud workflows are structurally vulnerable to Proof of Possession protocols.
+PoP cannot model relationships that survive multiple hops. It verifies artifacts, not continuity.
 
-1. **Origin Immutability**: The initiating subject (`p_0`) remains constant throughout the transaction
-2. **Authority Monotonicity**: Authority can only decrease or remain constant (`ops_i ⊆ ops_{i-1}`)
-3. **Causal Binding**: Each hop is verifiably linked to its predecessor via a Trust Model
-4. **Continuity Validation**: Transitions satisfy executor continuity requirements
+**The solution**: This specification defines the **Provenance Identity Continuity (PIC) Model**, which replaces the question "what do you possess?" with "can you prove you can continue this chain?"
 
-**Distributed Coordination**: These invariants enable PIC to provide authorization semantics for distributed coordination patterns. PIC functions as an authorization layer for orchestration engines (Temporal, Apache Airflow, Step Functions), choreography systems (event-driven architectures, saga patterns), and agent frameworks (LangChain, AutoGPT, multi-agent systems). Where traditional authorization models require each service to independently verify credentials—creating coordination complexity and confused deputy risks—PIC provides a unified authority chain that flows through the entire coordination graph. An orchestrator receiving `PCA_n` can delegate to multiple workers, each receiving `PCA_{n+1}` with appropriately scoped authority, all traceable to the same `p_0` and subject to `ops_0` bounds.
+PIC enforces three invariants at every execution hop:
 
-**Impact**: This authorization model was previously impossible to implement: no existing system can maintain origin immutability and authority monotonicity across arbitrary distributed executions spanning multiple clouds, orchestration engines, and administrative domains. PIC provides the first formal framework where a user action in System A causally constrains execution in System Z through 100 intermediate hops, with mathematical guarantees that authority cannot expand and the confused deputy problem cannot occur.
+1. **Provenance** — The causal chain is always traceable and auditable. From origin to end, unbroken. If it breaks, execution stops.
 
-A **transaction** in PIC encompasses the entire distributed execution from user initiation to completion, not merely database BEGIN/COMMIT semantics. A single transaction may span:
+2. **Identity** — The origin identity (`p_0`) is immutable. It is the source of authority. It cannot change throughout the chain.
 
-- Hundreds of execution hops across microservices, message queues, and serverless functions
-- Multiple administrative domains and cloud providers
-- Hours or days of asynchronous processing
-- Event-driven flows (Kafka streams, message buses)
-- AI agent orchestrations calling multiple external APIs
-- Human-initiated workflows across heterogeneous systems
+3. **Continuity** — Continuity is proven at every step. Authority can only decrease (`ops_i ⊆ ops_{i-1}`). It never expands.
 
-**Example transaction**:
+Under these invariants, the confused deputy problem is not mitigated—it becomes **structurally inexpressible**.
+As proven in [[1]](#references), PIC eliminates entire attack classes inherent to possession-based models: confused deputy, privilege escalation, token substitution, and ambient authority exploitation.
 
-```
-User → API Gateway → microservice → Kafka → Stream processor → microservice
-  → Lambda functions → Multiple APIs → S3 storage
-(100+ hops, 3 clouds, 1 authority chain, 1 p_0, monotonic ops)
-```
+**Clarification**: The confused deputy is not a bug or misconfiguration. It is a structural vulnerability inherent to Proof of Possession: a privileged service uses its own authority on behalf of a less-privileged caller.
+Under PIC, this cannot happen—not because of careful coding, but because the protocol makes it impossible. Authority derives from the origin, not from the executor's credentials.
 
-**AI agent example**:
+**Proof of Continuity** replaces Proof of Possession as the authorization primitive for distributed systems.
 
-```
-User authorizes AI agent (ops_0 = {read:calendar, send:email, call:weather_api})
-  → Agent orchestrates:
-      → Calendar API (ops_1 = {read:calendar})
-      → Weather API (ops_2 = {call:weather_api})
-      → Email API (ops_3 = {send:email})
-All three API calls operate within ops_0, enforced by CAT validation
-```
-
-The origin subject (`p_0`) may be a human user (authenticated via OAuth, SAML, OIDC, VC), a service/workload (identified via DID, SPIFFE, X.509), or anonymous (capability-based). The origin authority (`ops_0`) may derive from identity-based grants, capability tokens, or hybrid models.
-
-As proven in "Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem" [[1]](#references), the confused deputy problem is structurally impossible in PIC-compliant systems—it cannot be formulated, not merely prevented. By making authority derivation dependent on execution provenance rather than credential possession, PIC eliminates confused deputy, privilege escalation, token substitution, ambient authority exploitation, and other attack classes that are inherent to possession-based authorization models.
-
-**Trust Model Note**: This specification uses "cryptographic" as shorthand for "based on a Trust Model." Trust Models MAY be implemented via cryptographic primitives, hardware attestation, distributed consensus, or other mechanisms providing non-repudiable binding. The specific Trust Model is implementation-specific.
+**Note**: This specification uses "cryptographic" as shorthand for "verifiable under a Trust Model."
+Trust Models MAY be implemented via cryptographic primitives, hardware attestation, distributed consensus, or other mechanisms providing non-repudiable binding.
 
 ---
 
@@ -126,11 +108,11 @@ Trust Models MAY be implemented via:
 
 **Implementation Note**: Systems implementing PIC MUST specify which Trust Model they employ and demonstrate it satisfies the three requirements above.
 
-### 2.2 Origin Subject (p_0)
+### 2.2 Origin Principal (p_0)
 
-The immutable reference to the entity that initiated the distributed transaction. The origin subject MUST remain constant throughout the entire execution chain and serves as the provenance anchor.
+The immutable reference to the entity that initiated the distributed transaction. The origin principal MUST remain constant throughout the entire execution chain and serves as the provenance anchor.
 
-The origin subject MAY be:
+The origin principal MAY be:
 
 **Human User** - Authenticated via:
 
@@ -171,7 +153,7 @@ The initial authority under which the transaction executes at its origin. The or
 
 Authority MAY derive from:
 
-1. **Identity-Based Grants**: Permissions associated with the origin subject's identity
+1. **Identity-Based Grants**: Permissions associated with the origin principal's identity
    - User roles and permissions (RBAC)
    - User attributes (ABAC)
    - Group memberships
@@ -190,7 +172,7 @@ Authority MAY derive from:
 
 **Critical Distinction**:
 
-- `p_0` (origin subject) = WHO initiated the transaction (immutable)
+- `p_0` (origin principal) = WHO initiated the transaction (immutable)
 - `ops_0` (origin authority) = WHAT operations are authorized (may be restricted at each hop)
 
 **Examples:**
@@ -212,7 +194,7 @@ An active execution entity responsible for performing computations at hop *i*. A
 
 Each Executor MUST:
 
-1. **Preserve Origin**: Maintain immutable reference to origin subject `p_0`
+1. **Preserve Origin**: Maintain immutable reference to origin principal `p_0`
 2. **Operate Within Authority**: Execute only operations permitted by `ops_i` (where `ops_i ⊆ ops_0`)
 3. **Demonstrate Continuity**: Provide valid Proof of Continuity (PoC_i) establishing causal derivation from hop *i-1*
 4. **Bind to Environment**: Be verifiably bound to its execution environment
@@ -225,13 +207,13 @@ An Executor MAY provide:
 **Critical Distinction**:
 
 - **Executor Identity**: WHO is performing computation at hop *i* (the service/workload executing code)
-- **Origin Subject** (`p_0`): WHO initiated the transaction (immutable throughout)
+- **Origin Principal** (`p_0`): WHO initiated the transaction (immutable throughout)
 - **Authority** (`ops_i`): WHAT operations executor may perform (derived from `ops_0`)
 
 PoI and PoP establish executor verification but DO NOT:
 
 - Grant authority beyond `ops_i`
-- Alter origin subject `p_0`
+- Alter origin principal `p_0`
 - Establish execution continuity (requires PoC)
 - Satisfy PIC requirements
 
@@ -296,7 +278,7 @@ The ordered, non-forgeable (under Trust Model) history of execution hops and aut
 Provenance includes:
 
 - Complete chain of execution hops from origin to current state
-- Origin subject `p_0` (immutable throughout)
+- Origin principal `p_0` (immutable throughout)
 - Authority evolution `ops_0 → ops_1 → ... → ops_i`
 - Executor identities at each hop (if disclosed)
 - Timestamps and temporal constraints
@@ -315,7 +297,7 @@ A causally linked sequence of execution hops forming a single logical operation 
 - AI agent orchestrations with multiple API calls
 - Human-initiated workflows across multiple systems
 
-All execution within a single transaction maintains causal continuity under the same origin subject `p_0` and derives authority from the same origin authority set `ops_0`.
+All execution within a single transaction maintains causal continuity under the same origin principal `p_0` and derives authority from the same origin authority set `ops_0`.
 
 **Examples:**
 
@@ -337,7 +319,7 @@ The CAT ensures:
 
 - **Monotonicity**: `ops_{i+1} ⊆ ops_i` (authority can only decrease or remain constant)
 - **Causal Binding**: Each hop is verifiably linked to its predecessor under the Trust Model
-- **Origin Preservation**: The immutable origin subject `p_0` is maintained throughout the execution chain
+- **Origin Preservation**: The immutable origin principal `p_0` is maintained throughout the execution chain
 
 ### 2.10 PIC Causal Authority (PCA_i)
 
@@ -345,7 +327,7 @@ The causally derived authority available to Executor E_i at hop *i*. PIC Causal 
 
 PCA_i MUST include:
 
-1. **Origin Subject** (`p_0`): Immutable reference to transaction initiator (human, workload, or anonymous)
+1. **Origin Principal** (`p_0`): Immutable reference to transaction initiator (human, workload, or anonymous)
 2. **Authority Set** (`ops_i ⊆ ops_0`): Operations the executor may perform at hop *i*
 3. **Executor Binding**: Verifiable binding to the specific executor E_i that guarantees the executor cannot be arbitrarily replaced or impersonated
 4. **Provenance**: Reference to the complete causal chain from `p_0` to hop *i*
@@ -425,7 +407,7 @@ A non-forgeable proof (under the Trust Model) produced by Executor E_i at hop *i
 1. **Valid Causal Continuation**: Execution at hop *i* derives from hop *i-1*
 2. **Authority Bounds**: Operations requested at hop *i* satisfy `ops_i ⊆ ops_{i-1}`
 3. **Executor Requirements**: Executor satisfies continuity constraints (environment, characteristics)
-4. **Origin Preservation**: Origin subject `p_0` is maintained unchanged
+4. **Origin Preservation**: Origin principal `p_0` is maintained unchanged
 5. **Challenge Response** (if PCC_i issued): Cryptographically valid response to PCC_i
 
 PoC_i is **the fundamental primitive** that distinguishes PIC from possession-based models.
@@ -515,7 +497,7 @@ This section introduces the architectural components and their relationships wit
 
 An **Executor** is a computational entity that performs operations at a specific execution hop. The trust level of an Executor depends on the deployment model:
 
-- In many deployments, Executors are considered **untrusted** because they may be compromised, operate in potentially hostile environments, or be subject to confused deputy vulnerabilities
+- In many deployments, Executors are considered **untrusted** because they may be compromised, operate in potentially hostile environments, or be principal to confused deputy vulnerabilities
 - In other deployments (e.g., IoT devices with hardware security, trusted execution environments, Kubernetes clusters with trusted workloads, private networks, service mesh environments such as Istio Ambient Mesh), Executors MAY be considered **trusted** and MAY host the CAT internally
 
 Regardless of trust level, Executors **MUST NOT**:
@@ -982,7 +964,7 @@ A PCA MUST contain:
 
 The PCA payload MUST include:
 
-**Origin Subject (`p_0`)**:
+**Origin Principal (`p_0`)**:
 
 - Immutable reference to transaction initiator
 - MUST NOT change throughout execution chain
@@ -1024,7 +1006,7 @@ Common approaches: Key ID (kid), DID, X.509 certificate, SPIFFE Bundle.
   "cat_signature": "base64url_encoded_signature",
   "cat_identifier": "https://cat.example.com/v1/keys/key-2024-12",
   "payload": {
-    "origin_subject": "sub:alice@example.com",
+    "origin_principal": "sub:alice@example.com",
     "authority_set": [
       "read:/*",
       "write:/home/alice/*"
@@ -1081,7 +1063,7 @@ A PoC MUST contain:
 **Proposed PCA**:
 - The PCA_{i+1} being requested
 - MUST satisfy:
-  - Same `origin_subject` (p_0 unchanged)
+  - Same `origin_principal` (p_0 unchanged)
   - `ops_{i+1} ⊆ ops_i` (monotonicity)
   - Executor attributes MUST be subset of previous executor attributes (cannot add new attributes)
   - Temporal constraints respected
@@ -1106,7 +1088,7 @@ A PoC MUST contain:
       "cat_signature": "...",
       "cat_identifier": "https://cat.example.com/v1/keys/key-2024-12",
       "payload": {
-        "origin_subject": "sub:alice@example.com",
+        "origin_principal": "sub:alice@example.com",
         "authority_set": ["read:/*", "write:/home/alice/*"],
         "executor_binding": {
           "federation": "spiffe://trust-domain.com",
@@ -1129,7 +1111,7 @@ A PoC MUST contain:
     },
     "proposed_pca": {
       "payload": {
-        "origin_subject": "sub:alice@example.com",
+        "origin_principal": "sub:alice@example.com",
         "authority_set": ["read:/*"],
         "executor_binding": {
           "federation": "spiffe://trust-domain.com",
@@ -1168,7 +1150,7 @@ A PoC MUST contain:
 ```
 
 **Key Properties**:
-- `origin_subject`: Unchanged from previous PCA (immutability)
+- `origin_principal`: Unchanged from previous PCA (immutability)
 - `authority_set`: Reduced from `["read:/*", "write:/home/alice/*"]` to `["read:/*"]` (monotonicity enforced)
 - `executor_binding.attributes`: Reduced from `{"department": "engineering", "security_level": "high", "team": "platform"}` to `{"department": "engineering", "security_level": "high"}` (attribute monotonicity - removed "team" attribute, cannot add new ones)
 - `executor_proofs`: Opaque base64-encoded values with type hints (CAT interprets based on protocol)
@@ -1493,7 +1475,7 @@ Workload → SPIFFE Server → SVID
 
 1. SPIFFE Server issues SVIDs for workload identity
 2. CAT validates SVID as Proof of Identity (PoI)
-3. CAT derives PCA with SPIFFE ID as origin subject
+3. CAT derives PCA with SPIFFE ID as origin principal
 4. Workload continues to use SPIFFE for identity
 
 **Migration path**: No changes to SPIFFE infrastructure. CAT becomes additional validation layer that consumes SPIFFE identities.
@@ -1977,6 +1959,7 @@ CAT validation:
 ```
 
 **Why PIC is Immune**:
+
 - PoC cryptographically binds to previous PCA
 - CAT verifies causal chain (PCA_2 must derive from PCA_1)
 - Monotonicity prevents authority expansion
