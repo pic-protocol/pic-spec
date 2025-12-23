@@ -256,15 +256,16 @@ PoP-based systems derive authority from artifact possession rather than executio
 
 ## 3. Architecture and Components
 
+The PIC Model separates **untrusted execution** (Executors) from **trusted validation** (CAT).
+This separation is fundamental to preventing confused deputy scenarios.
+
 ---
 
-## 3.1 Core Components
+### 3.1 Core Components
 
-This section introduces the architectural components and their relationships within the Provenance Identity Continuity (PIC) Model. The PIC Model separates **untrusted execution** (where computations occur) from **trusted authority verification** (where continuity is validated). This separation is fundamental to preventing confused deputy scenarios.
+#### 3.1.1 Executor
 
-### 3.1.1 Executor
-
-An **Executor** is a computational entity that performs operations at a specific execution hop.
+A computational entity that performs operations at a specific execution hop.
 
 Executors MAY be trusted or untrusted depending on deployment.
 Regardless of trust level, Executors **MUST NOT**:
@@ -272,417 +273,183 @@ Regardless of trust level, Executors **MUST NOT**:
 - Self-assert authority
 - Validate their own continuity proofs
 - Expand authority beyond what is inherited
-- Bypass causal validation
 
 Executors **MUST** obtain authority validation through the CAT.
 
-### 3.1.2 Causal Authority Transition (CAT) / Trust Plane
+#### 3.1.2 Causal Authority Transition (CAT) / Trust Plane
 
-The **CAT** (also called **Trust Plane**) is the enforcement component that validates PIC invariants.
+The enforcement component that validates PIC invariants.
 
 The CAT:
 
+- MAY issue challenges (PCC_i) for freshness
 - Validates Proofs of Continuity (PoC_i)
 - Enforces monotonicity (`ops_{i+1} ⊆ ops_i`)
-- Issues challenges (PCC_i) for freshness
 - Generates signed authority states (PCA_{i+1})
-- Maintains revocation lists
-- Consults Policy Decision Points (PDP)
-
-The CAT MAY be deployed externally, embedded in trusted Executors, or federated across domains.
-The deployment model depends on trust boundaries, not on PIC itself.
+- MAY maintain revocation lists
+- MAY consult Governance for policy constraints
 
 > **CRITICAL PROPERTY**: The CAT has no application logic—only validation and generation.
-> Validation of PoI and PoP formats (e.g., Verifiable Credentials, OAuth tokens, SPIFFE SVIDs) is protocol-specific and defined in separate PIC Protocol specifications.
+> Validation of PoI and PoP formats is protocol-specific.
+
+#### 3.1.3 Governance
+
+An external layer that defines what is **currently permitted**.
+
+Governance MAY be implemented via:
+
+- Policy Decision Points (PDP)
+- Pre-authorization artifacts (e.g., Verifiable Credentials)
+- Revocation lists or status registries
+- External policy engines
+
+Governance applies constraints but cannot issue PCA, bypass CAT validation, or expand authority.
 
 ---
 
-## 3.2 Authority Flow Between Hops
-
-The following diagram illustrates how authority flows between executors through CAT validation:
+### 3.2 Authority Flow
 
 ```text
-                ┌───────────────────────────┐
-                │   Execution Hop_{n-1}     │
-                │                           │
-                │   Executor E_{n-1}        │
-                │   operates with PCA_{n-1} │
-                └───────────┬───────────────┘
-                            │
-                            │ E_{n-1} passes PCA_n
-                            │ to E_n (after generating
-                            │ PCA_n via CAT)
-                            ▼
-    ┌──────────────────────────────────────────────────┐
-    │              Execution Hop_n                     │
-    │                                                  │
-    │   ┌──────────────┐                               │    ┌─────────────┐
-    │   │   Executor   │ (1) Request PCC_{n+1}         │    │     CAT     │
-    │   │      E_n     │  ────────────────────────────▶│    │ (Trust      │
-    │   │              │                               │    │  Plane)     │
-    │   │  Received    │ (2) Receive PCC_{n+1}         │    │             │
-    │   │  PCA_n       │  ◀────────────────────────────│    │  Neutral    │
-    │   │  from E_{n-1}│                               │    │  Validator  │
-    │   │              │ (3) Submit PoC_{n+1}          │    │             │
-    │   │              │     + PoI + PoP               │    │             │
-    │   │              │  ────────────────────────────▶│───▶│   Consults  │
-    │   │              │                               │    │     PDP     │
-    │   │              │ (4) Receive PCA_{n+1}         │    │             │
-    │   │              │     (if valid)                │    │  Validates  │
-    │   │              │  ◀────────────────────────────│    │  & Signs    │
-    │   └──────┬───────┘                               │    └─────────────┘
-    │          │                                       │
-    │          │  (5) Execute with PCA_n               │
-    │          │  (6) Pass PCA_{n+1} to E_{n+1}        │
-    │          │      or multiple E_{n+1,a}, E_{n+1,b} │
-    │          │      (fork scenario)                  │
-    └──────────┼───────────────────────────────────────┘
-               │
-               │ E_n passes PCA_{n+1} to successor(s)
-               ▼
-    ┌────────────────────────┐
-    │  Execution Hop_{n+1}   │
-    │                        │
-    │  Executor E_{n+1}      │
-    │  receives PCA_{n+1}    │
-    │  (or multiple          │
-    │   executors in fork)   │
-    └────────────────────────┘
+E_{n-1}                         E_n                          E_{n+1}
+   │                             │                              │
+   │  ──── PCA_n ──────────────▶ │                              │
+   │                             │                              │
+   │                             │ (1) Request PCC_{n+1}        │
+   │                             ├────────────▶ CAT             │
+   │                             │ (2) Receive PCC_{n+1}        │
+   │                             │◀────────────                 │
+   │                             │ (3) Submit PoC + PoI + PoP   │
+   │                             ├────────────▶ CAT ──▶ Gov     │
+   │                             │ (4) Receive PCA_{n+1}        │
+   │                             │◀────────────                 │
+   │                             │                              │
+   │                             │  ──── PCA_{n+1} ───────────▶ │
 ```
 
-> **DEPLOYMENT**: This diagram shows the CAT as a logically separate component. In deployments with trusted Executors, the CAT MAY be embedded within the Executor itself. The logical flow remains identical; only the deployment boundary changes.
+**Flow**:
 
-**Key Flow Steps**:
-
-1. **E_n receives PCA_n** from E_{n-1} (direct transfer)
-2. **E_n initiates transition**: Requests PCC_{n+1} from CAT to generate authority for next hop
-3. **CAT issues PCC_{n+1}**: Challenge for freshness and binding
-4. **E_n constructs PoC_{n+1}**: Proves continuity from PCA_n, includes PoI (executor identity) and PoP (credential control)
-5. **CAT validates**:
-   - Verifies PoC_{n+1} against PCA_n using Trust Model
-   - Validates PoI (executor identity legitimate)
-   - Validates PoP (executor controls credentials)
-   - Checks `ops_{n+1} ⊆ ops_n` (monotonicity)
-   - Consults PDP for policy constraints
-   - Verifies E_n not revoked
-6. **CAT generates PCA_{n+1}**: If all validations succeed, signs and issues PCA_{n+1}
-7. **E_n receives PCA_{n+1}**: Can now pass to successor(s)
-8. **E_n passes PCA_{n+1}**: To E_{n+1} or multiple successors (fork scenario)
-
-**Fork Scenario Note**: 
-
-When E_n forks execution to multiple successors (E_{n+1,a}, E_{n+1,b}, etc.):
-
-- E_n requests multiple PCA_{n+1} from CAT (one per successor)
-- Each PCA_{n+1} is bound to **executor characteristics** (not specific executor ID)
-- Executor characteristics define criteria (e.g., "runs in TEE", "in prod namespace")
-- This preserves monotonicity: specific executor IDs would prevent further transitions
-- Each successor independently validates with CAT using its own characteristics
+1. E_n receives PCA_n from predecessor
+2. E_n requests challenge (PCC_{n+1}) from CAT
+3. E_n constructs PoC_{n+1} (proving continuity) with PoI and PoP (proving executor identity and credential control)
+4. CAT validates all proofs under Trust Model, enforces monotonicity, MAY consult Governance
+5. CAT generates and signs PCA_{n+1}
+6. E_n executes with PCA_n, passes PCA_{n+1} to successor(s)
 
 ---
 
-## 3.3 Validation Flow
+### 3.3 Deployment Models
 
-The following diagram shows the complete validation flow with PDP integration. The separation between Executor and CAT is shown as logical separation; in deployments with trusted Executors, these components MAY be co-located.
+The CAT MAY be deployed in different configurations depending on trust boundaries.
+
+#### Centralized
 
 ```text
-┌──────────────────────────────────────────────────────────────────┐
-│                    Security Boundary                             │
-│                     (Untrusted Execution)                        │
-│                                                                  │
-│   ┌────────────────────────────────────────────┐                 │
-│   │         Executor E_n (UNTRUSTED)           │                 │
-│   │                                            │                 │
-│   │  State:                                    │                 │
-│   │  - Has PCA_n (received from E_{n-1})       │                 │
-│   │  - Needs PCA_{n+1} for successor           │                 │
-│   │  - Cannot self-validate                    │                 │
-│   │  - Initiates transition                    │                 │
-│   └────────────────┬───────────────────────────┘                 │
-│                    │                                             │
-│                    │ (1) Request PCC_{n+1}                       │
-│                    │                                             │
-└────────────────────┼─────────────────────────────────────────────┘
-                     │
-                     ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                    Trust Boundary                                │
-│                   (Trusted Validation)                           │
-│                                                                  │
-│   ┌────────────────────────────────────────────┐                 │
-│   │    CAT / Trust Plane (TRUSTED)             │                 │
-│   │         Neutral Validator                  │                 │
-│   │                                            │                 │
-│   │  - Issues PCC_{n+1} (challenge)            │                 │
-│   └────────────────┬───────────────────────────┘                 │
-│                    │                                             │
-│                    │ (2) Issue PCC_{n+1}                         │
-│                    │                                             │
-└────────────────────┼─────────────────────────────────────────────┘
-                     │
-                     ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                    Execution Boundary                            │
-│                                                                  │
-│                                                                  │
-│   ┌────────────────────────────────────────────┐                 │
-│   │         Executor E_n (UNTRUSTED)           │                 │
-│   │                                            │                 │
-│   │  - Constructs PoC_{n+1}:                   │                 │
-│   │    * References PCA_n                      │                 │
-│   │    * Proves ops_{n+1} ⊆ ops_n              │                 │
-│   │    * Maintains p_0 unchanged               │                 │
-│   │    * Challenge response                    │                 │
-│   │  - Provides PoI (executor identity)        │                 │
-│   │  - Provides PoP (credential control)       │                 │
-│   └────────────────┬───────────────────────────┘                 │
-│                    │                                             │
-│                    │ (3) Submit PoC_{n+1} + PoI + PoP            │
-│                    │                                             │
-└────────────────────┼─────────────────────────────────────────────┘
-                     │
-                     ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                    Validation Boundary                           │
-│                                                                  │
-│                                                                  │
-│   ┌────────────────────────────────────────────┐                 │
-│   │    CAT / Trust Plane (TRUSTED)             │                 │
-│   │                                            │     ┌─────────┐ │
-│   │  Validates:                                │     │   PDP   │ │
-│   │  ✓ PoC_{n+1} using Trust Model             │────▶│ (Policy │ │
-│   │  ✓ PoI (executor identity)                 │     │Decision │ │
-│   │  ✓ PoP (credential control)                │     │ Point)  │ │
-│   │  ✓ PCA_n signature                         │◀────│         │ │
-│   │  ✓ ops_{n+1} ⊆ ops_n                       │     └─────────┘ │
-│   │  ✓ p_0 unchanged                           │                 │
-│   │  ✓ Challenge response                      │                 │
-│   │  ✓ E_n not revoked                         │                 │
-│   │  ✓ Policy constraints (via PDP)            │                 │
-│   │                                            │                 │
-│   │  If all valid: Generates & signs PCA_{n+1} │                 │
-│   └────────────────┬───────────────────────────┘                 │
-│                    │                                             │
-│                    │ (4) Issue signed PCA_{n+1}                  │
-│                    │                                             │
-└────────────────────┼─────────────────────────────────────────────┘
-                     │
-                     ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                    Security Boundary                             │
-│                     (Untrusted Execution)                        │
-│                                                                  │
-│   ┌────────────────────────────────────────────┐                 │
-│   │         Executor E_n (UNTRUSTED)           │                 │
-│   │                                            │                 │
-│   │  - Receives signed PCA_{n+1} from CAT      │                 │
-│   │  - Executes operations with PCA_n          │                 │
-│   │  - Passes PCA_{n+1} to E_{n+1}             │                 │
-│   │    (or multiple successors if fork)        │                 │
-│   └────────────────────────────────────────────┘                 │
-│                                                                  │
-└──────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│              Trust Domain               │
+│                                         │
+│   E_{n-1} ───▶ E_n ───▶ E_{n+1}         │
+│      │          │          │            │
+│      └──────────┼──────────┘            │
+│                 ▼                       │
+│         ┌─────────────┐                 │
+│         │     CAT     │                 │
+│         └─────────────┘                 │
+└─────────────────────────────────────────┘
 ```
 
-**Critical Properties**:
+Single CAT service.
+Typical for microservices, cloud-native applications.
 
-1. **Executor Initiates**: E_n starts the process, not CAT
-2. **CAT is Neutral**: No business logic, only validates and generates
-3. **PDP Integration**: Policy decisions are separate concern
-4. **Multi-proof Validation**: PoC + PoI + PoP all validated
-5. **Trust Model Verification**: Signatures validated cryptographically
-6. **Monotonicity Enforced**: ops_{n+1} ⊆ ops_n checked
-7. **Revocation Checked**: Executor not in revocation list
+#### Decentralized
+
+```text
+┌─────────────────────────────────────────┐
+│        Decentralized Trust Plane        │
+│                                         │
+│   CAT_A ◀────▶ CAT_B ◀────▶ CAT_C       │
+│     │           │           │           │
+│  Consensus / Ledger / Blockchain        │
+└─────────────────────────────────────────┘
+       │           │           │
+       ▼           ▼           ▼
+      E_n        E_n         E_n
+```
+
+Distributed validation.
+Typical for trustless environments, blockchain systems.
+
+#### Federated
+
+```text
+┌─────────────────┐     ┌─────────────────┐
+│  Trust Domain A │     │  Trust Domain B │
+│                 │     │                 │
+│  E_{n-1} ──PCA_n┼─────┼─▶ E_n           │
+│     │           │     │     │           │
+│     ▼           │     │     ▼           │
+│   CAT_A ◀───────┼─────┼──▶ CAT_B        │
+│                 │ Trust Model           │
+└─────────────────┘ Verification          │
+                        └─────────────────┘
+```
+
+Cross-domain execution.
+CAT_B verifies PCA_n using CAT_A's Trust Model.
+
+#### Embedded
+
+CAT hosted within trusted Executors (TEE, IoT, service mesh).
+Logical flow unchanged; deployment boundary collapsed.
 
 ---
 
-## 3.4 Trust Plane Deployment Models
+### 3.4 Separation of Concerns
 
-### 3.4.1 Centralized Trust Plane
+| Component | Does | Cannot Do |
+|-----------|------|-----------|
+| **Executor** | Initiate transitions, construct PoC, execute within ops_i | Forge PCA, expand authority, bypass CAT |
+| **CAT** | Validate PoC, enforce monotonicity, sign PCA | Be bypassed, grant authority without PoC |
+| **Governance** | Evaluate policies, apply constraints, revoke | Issue PCA, replace CAT validation, expand authority |
 
-Single CAT service in a trust domain:
 
-```text
-┌───────────────────────────────────────────────────────────┐
-│                     Trust Domain                          │
-│                                                           │
-│  ┌──────────┐    ┌──────────┐    ┌──────────┐             │
-│  │Executor  │───▶│Executor  │───▶│Executor  │             │
-│  │  E_{n-1} │    │   E_n    │    │  E_{n+1} │             │
-│  │          │    │          │    │          │             │
-│  │Has       │    │Receives  │    │Receives  │             │
-│  │PCA_{n-1} │    │PCA_n     │    │PCA_{n+1} │             │
-│  │          │    │          │    │          │             │
-│  │Generates │    │Generates │    │Generates │             │
-│  │PCA_n  ───┼───▶│PCA_{n+1}─┼───▶│PCA_{n+2} │             │
-│  └────┬─────┘    └────┬─────┘    └────┬─────┘             │
-│       │               │               │                   │
-│       │  via CAT      │  via CAT      │  via CAT          │
-│       │               │               │                   │
-│       └───────────────┼───────────────┘                   │
-│                       │                                   │
-│                       ▼                                   │
-│         ┌──────────────────────────────┐                  │
-│         │   Centralized Trust Plane    │                  │
-│         │          (CAT)               │                  │
-│         │                              │                  │
-│         │  - Validates PoC + PoI + PoP │                  │
-│         │  - Consults PDP              │                  │
-│         │  - Signs PCA                 │                  │
-│         │  - Maintains revocation      │                  │
-│         └──────────────────────────────┘                  │
-│                                                           │
-└───────────────────────────────────────────────────────────┘
-```
+Executors **initiate** and **exchange**. CAT **validates** and **signs**. Governance **constrains**.
 
-**Use Cases**: Single organization, microservices in one domain, cloud-native applications
-
-> **NOTE**: In trusted environments (e.g., Kubernetes clusters with trusted workloads, TEE-based systems, private networks, service mesh environments such as Istio Ambient Mesh), the CAT MAY be embedded within Executors rather than deployed as a separate service.
-
-### 3.4.2 Decentralized Trust Plane
-
-CAT implemented as distributed system:
-
-```text
-┌───────────────────────────────────────────────────────┐
-│              Decentralized Trust Plane                │
-│                                                       │
-│    ┌─────────┐      ┌─────────┐      ┌─────────┐      │
-│    │ CAT     │◀────▶│ CAT     │◀────▶│ CAT     │      │
-│    │ Node A  │      │ Node B  │      │ Node C  │      │
-│    └────┬────┘      └────┬────┘      └────┬────┘      │
-│         │                │                │           │
-│    Consensus / Distributed Ledger / Blockchain        │
-│         │                │                │           │
-└─────────┼────────────────┼────────────────┼───────────┘
-          │                │                │
-          ▼                ▼                ▼
-     ┌────────┐       ┌────────┐       ┌────────┐
-     │  E_n   │       │  E_n   │       │  E_n   │
-     │(Region │       │(Region │       │(Region │
-     │   A)   │       │   B)   │       │   C)   │
-     └────────┘       └────────┘       └────────┘
-```
-
-**Use Cases**: Multi-region, trustless environments, blockchain-based systems
-
-**Implementation Examples**:
-
-- **Blockchain**: Smart contract validates PoC and issues PCA
-- **Distributed Ledger**: Consensus validates transitions
-- **Federated Service Mesh**: Multiple CATs with shared trust
-
-### 3.4.3 Federated Trust Planes (Cross-Domain)
-
-Multiple CATs across trust domains:
-
-```text
-┌──────────────────────────────┐       ┌──────────────────────────────┐
-│      Trust Domain A          │       │      Trust Domain B          │
-│                              │       │                              │
-│  ┌──────────┐                │       │                ┌──────────┐  │
-│  │Executor  │ PCA_n          │       │      PCA_{n+1} │Executor  │  │
-│  │  E_{n-1} │────────────────┼───────┼───────────────▶│   E_n    │  │
-│  │          │                │       │                │          │  │
-│  │Has       │                │       │                │Receives  │  │
-│  │PCA_{n-1} │                │       │                │PCA_n     │  │
-│  └────┬─────┘                │       │                └────┬─────┘  │
-│       │                      │       │                     │        │
-│       │ Generate PCA_n       │       │       Generate PCA_{n+1}     │
-│       ▼                      │       │                     ▼        │
-│  ┌─────────────┐             │       │             ┌─────────────┐  │
-│  │Trust Plane  │             │       │             │Trust Plane  │  │
-│  │   (CAT_A)   │◀────────────┼───────┼────────────▶│   (CAT_B)   │  │
-│  │             │ Trust Model │       │ Trust Model │             │  │
-│  │             │ Verification│       │ Verification│             │  │
-│  └─────────────┘             │       │             └─────────────┘  │
-│                              │       │                              │
-└──────────────────────────────┘       └──────────────────────────────┘
-                                  
-        Inter-CAT Trust Model Verification
-        (DID Document, SPIFFE Bundle, etc.)
-```
-
-**Cross-Domain Flow**:
-
-1. E_{n-1} (Domain A) generates PCA_n via CAT_A
-2. E_{n-1} passes PCA_n to E_n (Domain B)
-3. E_n requests CAT_B to validate and generate PCA_{n+1}
-4. CAT_B verifies PCA_n signature using CAT_A's Trust Model
-5. CAT_B validates PoC_{n+1} and generates PCA_{n+1}
+No single untrusted component can compromise authority flow.
 
 ---
 
-## 3.5 Execution Flow Summary
+### 3.5 PIC and Governance
 
-```text
-E_{n-1}                    E_n                      E_{n+1}
-(has PCA_{n-1})       (receives PCA_n)         (receives PCA_{n+1})
-  │                         │                          │
-  │ (1) Request PCC_n       │                          │
-  ├─────────▶ CAT           │                          │
-  │ (2) Receive PCC_n       │                          │
-  │◀─────────               │                          │
-  │ (3) Submit PoC_n        │                          │
-  │    + PoI + PoP          │                          │
-  ├─────────▶ CAT───▶PDP    │                          │
-  │ (4) Receive PCA_n       │                          │
-  │◀─────────               │                          │
-  │                         │                          │
-  │ PCA_n                   │                          │
-  ├────────────────────────▶│                          │
-  │                         │                          │
-  │                         │ (1) Request PCC_{n+1}    │
-  │                         ├─────────▶ CAT            │
-  │                         │ (2) Receive PCC_{n+1}    │
-  │                         │◀─────────                │
-  │                         │ (3) Submit PoC_{n+1}     │
-  │                         │    + PoI + PoP           │
-  │                         ├─────────▶ CAT───▶PDP     │
-  │                         │ (4) Receive PCA_{n+1}    │
-  │                         │◀─────────                │
-  │                         │                          │
-  │                         │ Execute with PCA_n       │
-  │                         │                          │
-  │                         │ PCA_{n+1}                │
-  │                         ├─────────────────────────▶│
-  │                         │                          │
-  │                         │                          │ (1) Request PCC_{n+2}
-  │                         │                          ├────────▶ CAT
-  │                         │                          │ (2) Receive PCC_{n+2}
-  │                         │                          │◀────────
-  │                         │                          │ (3) Submit PoC_{n+2}
-  │                         │                          │    + PoI + PoP
-  │                         │                          ├────────▶ CAT───▶PDP
-  │                         │                          │ (4) Receive PCA_{n+2}
-  │                         │                          │◀────────
-  │                         │                          │
-  │                         │                          │ Execute with PCA_{n+1}
-```
+PIC enforces **structural invariants**:
 
-**Key Properties**:
+- Origin immutability (`p_0` unchanged)
+- Authority monotonicity (`ops_{i+1} ⊆ ops_i`)
+- Executor continuity (valid PoC)
+- Temporal and contextual bounds
 
-1. **Executor initiates** each transition
-2. **Executor receives** PCA_i from predecessor
-3. **Executor generates** PCA_{i+1} via CAT validation
-4. **Executor passes** PCA_{i+1} to successor(s)
-5. **CAT validates** PoC + PoI + PoP
-6. **CAT consults PDP** for policy
-7. **Monotonicity enforced** (ops_{i+1} ⊆ ops_i)
+PIC defines what **can never happen**: authority expansion, origin substitution, continuity forgery.
 
----
+**Governance** defines what **is currently permitted**: revocation, policy changes, emergency stops, pre-authorization requirements.
 
-## 3.6 Separation of Concerns
+| Layer | Responsibility | Characteristic |
+|----------------|----------------|----------------|
+| **PIC**        | Structural continuity | Mandatory, invariant |
+| **Governance** | Policy decisions | Optional, cacheable, authority-reducing |
 
-| Component | Responsibilities | Cannot Do |
-|-----------|------------------|-----------|
-| **Executor** | - Initiate transitions<br>- Receive PCA_i from predecessor<br>- Request PCC_{i+1} from CAT<br>- Construct PoC_{i+1} + provide PoI + PoP<br>- Receive PCA_{i+1} from CAT<br>- Pass PCA_{i+1} to successor(s)<br>- Execute within ops_i | - Forge PCA signature<br>- Expand authority<br>- Bypass CAT validation<br>- Self-validate continuity (unless CAT is internal)<br>- Pass PCA_i (only i+1) |
-| **CAT / Trust Plane** | - Issue PCC upon request<br>- Validate PoC using Trust Model<br>- Validate PoI (executor identity)<br>- Validate PoP (credential control)<br>- Enforce monotonicity<br>- Consult PDP for policy<br>- Sign valid PCA_{i+1}<br>- Maintain revocation<br>- Operate as neutral validator | - Be bypassed<br>- Grant authority without valid PoC<br>- Have business logic |
-| **PDP** | - Evaluate policies<br>- Provide policy decisions to CAT<br>- Apply contextual constraints | - Issue PCA<br>- Validate PoC<br>- Replace CAT validation |
+Governance sits **above** PIC:
 
-> **NOTE**: The trust level of each component depends on the deployment model. In untrusted environments, Executors require external CAT validation. In trusted environments (TEE, secure IoT, Kubernetes-internal workloads, private networks, service mesh, trusted infrastructure), Executors MAY host the CAT internally.
+- Governance MAY require pre-authorization before accepting a PoC
+- Governance MAY terminate executions via revocation
+- Governance MAY deny future continuations based on policy changes
 
-**Architectural Principle**: Executors **initiate** transitions and **exchange** PCAs. CAT **validates** and **signs** new PCAs based on cryptographic proof and policy. PDP provides policy decisions. This separation ensures no single untrusted component can compromise authority flow.
+These are governance decisions, not continuity violations.
+PIC guarantees that **if** execution continues, it respects the invariants.
+Governance decides **whether** execution may continue.
+
+> **KEY DISTINCTION**: Continuity is structural and mandatory.
+> Governance is policy and optional.
+> Governance artifacts do not grant authority or reconstruct continuity—they gate execution.
+> CAT validates PIC invariants; Governance constrains permissions.
 
 ---
 
