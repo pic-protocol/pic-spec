@@ -256,69 +256,44 @@ PoP-based systems derive authority from artifact possession rather than executio
 
 ## 3. Architecture and Components
 
-This section introduces the architectural components and their relationships within the Provenance Identity Continuity (PIC) Model. The PIC Model separates **untrusted execution** (where computations occur) from **trusted authority verification** (where continuity is validated). This separation is fundamental to preventing confused deputy scenarios.
-
 ---
 
 ## 3.1 Core Components
 
+This section introduces the architectural components and their relationships within the Provenance Identity Continuity (PIC) Model. The PIC Model separates **untrusted execution** (where computations occur) from **trusted authority verification** (where continuity is validated). This separation is fundamental to preventing confused deputy scenarios.
+
 ### 3.1.1 Executor
 
-An **Executor** is a computational entity that performs operations at a specific execution hop. The trust level of an Executor depends on the deployment model:
+An **Executor** is a computational entity that performs operations at a specific execution hop.
 
-- In many deployments, Executors are considered **untrusted** because they may be compromised, operate in potentially hostile environments, or be principal to confused deputy vulnerabilities
-- In other deployments (e.g., IoT devices with hardware security, trusted execution environments, Kubernetes clusters with trusted workloads, private networks, service mesh environments such as Istio Ambient Mesh), Executors MAY be considered **trusted** and MAY host the CAT internally
-
+Executors MAY be trusted or untrusted depending on deployment.
 Regardless of trust level, Executors **MUST NOT**:
 
-- Self-assert their own authority
+- Self-assert authority
 - Validate their own continuity proofs
 - Expand authority beyond what is inherited
 - Bypass causal validation
 
-Executors **MUST** obtain authority validation through the trusted CAT component.
+Executors **MUST** obtain authority validation through the CAT.
 
 ### 3.1.2 Causal Authority Transition (CAT) / Trust Plane
 
-The **Causal Authority Transition (CAT)**, also referred to as the **Trust Plane**, is the enforcement component that validates Provenance Identity Continuity invariants.
+The **CAT** (also called **Trust Plane**) is the enforcement component that validates PIC invariants.
 
-> **TERMINOLOGY**: "CAT" and "Trust Plane" refer to the same logical component. "Trust Plane" emphasizes its role as an authority validation layer, analogous to how Identity Providers (IdPs) function as identity validation layers.
+The CAT:
 
-The CAT/Trust Plane:
+- Validates Proofs of Continuity (PoC_i)
+- Enforces monotonicity (`ops_{i+1} ⊆ ops_i`)
+- Issues challenges (PCC_i) for freshness
+- Generates signed authority states (PCA_{i+1})
+- Maintains revocation lists
+- Consults Policy Decision Points (PDP)
 
-- Enforces PIC invariants
-- Validates continuity proofs using the Trust Model
-- Provides cryptographically verifiable decisions
-- Operates as a neutral validator and generator (no business logic)
+The CAT MAY be deployed externally, embedded in trusted Executors, or federated across domains.
+The deployment model depends on trust boundaries, not on PIC itself.
 
-**Deployment Models**: The CAT MAY be deployed:
-
-- **Externally**: As a separate service from Executors (typical in cloud/microservices where Executors are untrusted)
-- **Internally**: Embedded within a trusted Executor (typical in IoT, TEE-based systems, Kubernetes-internal workloads, private networks, service mesh environments, or other trusted infrastructure)
-- **Hybrid**: External CAT for untrusted Executors, internal CAT for trusted Executors within the same system
-
-The choice of internal vs. external CAT depends on the trust model of the deployment environment, not on inherent properties of PIC.
-
-**CAT Responsibilities**:
-
-1. Issue PIC Causal Challenges (PCC_i) upon request
-2. Verify Proofs of Continuity (PoC_i) using the Trust Model
-3. Validate Proof of Identity (PoI) from executors
-4. Validate Proof of Possession (PoP) from executors
-5. Validate authority monotonicity (`ops_{i+1} ⊆ ops_i`)
-6. Consult Policy Decision Point (PDP) for authority constraints
-7. Maintain executor revocation lists
-8. Generate and sign valid PCA_{i+1} if all validations succeed
-
-**Implementation Models**:
-
-The CAT MAY be implemented as:
-
-- **Centralized Service**: Single trusted service (e.g., authorization server, API gateway)
-- **Decentralized System**: Distributed ledger, blockchain, or consensus-based network
-- **Federated Model**: Multiple CATs with inter-CAT trust verification
-
-**Critical Property**: The CAT operates in a **separate trust boundary** from Executors and acts as a **neutral validator** - it has no business logic, only validation and generation logic.
+**CRITICAL PROPERTY**: The CAT has no application logic—only validation and generation.
+Validation of PoI and PoP formats (e.g., Verifiable Credentials, OAuth tokens, SPIFFE SVIDs) is protocol-specific and defined in separate PIC Protocol specifications.
 
 ---
 
