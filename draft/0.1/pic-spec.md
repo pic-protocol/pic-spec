@@ -214,7 +214,13 @@ Federation Bridge is the **entry point** to PIC. CAT handles **subsequent transi
 
 > **NOTE**: A single deployment MAY combine Federation Bridge and CAT in one component (e.g., API Gateway).
 
-### 2.11 PIC Causal Authority (PCA_i)
+### 2.11 VC Bridge
+
+A component that converts identity credentials (SVID, JWT, X.509) into portable Verifiable Credentials for cross-federation scenarios.
+
+VC Bridge is NOT a Federation Bridge. It does not issue PCA—it issues VCs that can be presented to a Federation Bridge in another domain.
+
+### 2.12 PIC Causal Authority (PCA_i)
 
 The causally derived authority available to Executor E_i at hop *i*.
 
@@ -230,7 +236,7 @@ PCA_i MAY include temporal, contextual, or resource constraints.
 PCA_i is NOT a token or transferable artifact.
 It is a state property of execution, derived from provenance continuity.
 
-### 2.12 PIC Causal Challenge (PCC_i)
+### 2.13 PIC Causal Challenge (PCC_i)
 
 A freshness challenge issued by the CAT to require a Proof of Continuity from Executor E_i.
 
@@ -242,7 +248,7 @@ Purpose:
 The challenge mechanism is RECOMMENDED but not strictly required.
 Systems without challenges MUST implement alternative replay protection.
 
-### 2.13 Proof of Continuity (PoC_i)
+### 2.14 Proof of Continuity (PoC_i)
 
 A non-forgeable proof produced by Executor E_i demonstrating:
 
@@ -256,13 +262,13 @@ PoC_i is **the fundamental primitive** that distinguishes PIC from possession-ba
 PoC_i cannot be replayed, transferred, reused, or forged.
 It is bound to the specific hop, predecessor, executor, and origin.
 
-### 2.14 Proof of Identity (PoI)
+### 2.15 Proof of Identity (PoI)
 
 A proof that asserts a claimed identity. PoI establishes "who" the executor claims to be. It is insufficient to establish authority continuity.
 
 PoI DOES NOT: grant authority, establish continuity, prevent confused deputy, or satisfy PIC requirements.
 
-### 2.15 Proof of Possession (PoP)
+### 2.16 Proof of Possession (PoP)
 
 A proof that demonstrates control over an artifact, credential, or secret. PoP establishes ownership but does not provide causal continuity, authority derivation from origin, or monotonic restriction.
 
@@ -270,7 +276,7 @@ PoP MAY contribute to executor verification. It does not constitute or replace P
 
 PoP-based systems derive authority from artifact possession rather than execution provenance. This makes them vulnerable to confused deputy attacks [[1]](#references).
 
-### 2.16 Authority Scope and Application Logic
+### 2.17 Authority Scope and Application Logic
 
 An Executor MAY hold multiple authorities simultaneously:
 
