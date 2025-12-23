@@ -71,6 +71,10 @@ This specification defines the Provenance Identity Continuity (PIC) Model for di
 
 The PIC Model establishes a foundational execution model that eliminates confused deputy conditions by construction. While the specification provides reference architecture and implementation guidance, it does not mandate specific protocol encodings, wire formats, or cryptographic primitives. These are defined in separate PIC Protocol specifications.
 
+> **Applicability**: PIC is not limited to distributed systems.
+> The model applies wherever execution crosses trust boundaries: microservices, OS kernels, process isolation, browser sandboxes, embedded systems, smart contracts, AI agent orchestration.
+> Any system with causal execution chains can enforce PIC invariants.
+
 **Normative vs. Informative**:
 
 - Sections 1-3 define **normative** requirements (terminology, architecture, invariants)
