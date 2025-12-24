@@ -846,11 +846,11 @@ E_{n-1}                              E_n                              E_{n+1}
     "executor": {
       "id": { "service": "service-b" },
       "public_key": "...",
-      "key_type": "...",
-      "prev_executor": {
-        "public_key": "...",
-        "key_type": "..."
-      }
+      "key_type": "..."
+    },
+    "prev_executor": {
+      "public_key": "...",
+      "key_type": "..."
     },
     "provenance": { "prev": "sha256:...", "hop": 2 }
   }
