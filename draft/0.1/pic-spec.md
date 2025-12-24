@@ -1559,9 +1559,9 @@ MUST be directed exclusively to the **Specification Steward (Nitro Agility S.r.l
 Any reference to the **original theoretical PIC Model** is made solely in its capacity as an **academic work of authorship**.  
 The PIC Model is provided **for scholarly and informational purposes only**, and **creates no warranty, duty of care, or legal obligation of any kind** toward any third party.
 
-**No claim, dispute, or legal action** arising from any specification, implementation, deployment, product, service, security outcome, or commercial use **may be directed to the PIC Model author**, whether framed in contract, tort, negligence, strict liability, misrepresentation, or any other theory of liability.
+To the **maximum extent permitted by applicable law**, the PIC Model author **disclaims all liability** for any claim, loss, or damages arising from any specification, implementation, deployment, product, service, security outcome, or commercial use that references or relies on this specification or the PIC Model, **whether framed in contract, tort, negligence, strict liability, or any other theory of liability**.
 
-All such claims, if any, must be directed exclusively to the **Specification Steward** and/or the relevant **implementer or operator**.
+Accordingly, responsibility for any such claims rests with the **Specification Steward** and/or the relevant **implementer or operator**, as applicable.
 
 Acknowledged individuals are explicitly excluded from **all** such claims.
 

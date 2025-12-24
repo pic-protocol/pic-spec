@@ -25,6 +25,7 @@ By treating authority as an explicit, execution-bound relation rather than a tra
 A. [Use of Automated Language Assistance](#appendix-a--use-of-automated-language-assistance)  
 B. [Authorship, Stewardship, Attribution, and Derivative Works](#appendix-b--authorship-stewardship-attribution-and-derivative-works)
 C. [Disclaimer and Limitation of Liability](#appendix-c--disclaimer-and-limitation-of-liability)  
+D. [Acknowledgements](#appendix-d--acknowledgements)  
 
 ---
 
@@ -287,6 +288,59 @@ To the maximum extent permitted by applicable law, **Nicola Gallo** disclaims al
 
 The PIC Model author’s role is strictly limited to authorship of academic publications referenced by this specification.  
 All operational, legal, and commercial responsibility for this specification rests with the **Specification Steward (Nitro Agility S.r.l.)**, and for implementations with their respective **implementers/operators**.
+
+---
+
+## Appendix D. Acknowledgements
+
+The PIC Model author thanks the following individuals for discussions and feedback during the development of the theoretical framework.
+
+### D.1 Acknowledged Individuals
+
+- **Alan Karp** — for rigorous analysis and critical feedback on authority propagation semantics that helped stress-test the theoretical model's formal properties.
+
+### D.2 Scope and Limitations of Acknowledgement
+
+Acknowledgement in this appendix:
+
+1. **Recognizes informal contribution** to early-stage theoretical discussions only
+2. **Does NOT imply**:
+   - co-authorship of the PIC Model
+   - co-authorship of this PIC Specification
+   - contribution to the PIC Specification text, structure, or normative content
+   - endorsement of the PIC Model, PIC Specification, or any implementation
+   - affiliation with the Specification Steward (Nitro Agility S.r.l.)
+   - any ongoing involvement or advisory role
+3. **Does NOT create**:
+   - any legal, contractual, or fiduciary relationship
+   - any responsibility for errors, omissions, or defects in the PIC Model or PIC Specification
+   - any liability for implementations, deployments, or uses of this specification
+   - any obligation to provide support, maintenance, or updates
+
+### D.3 Disclaimer for Acknowledged Individuals
+
+ACKNOWLEDGED INDIVIDUALS ARE RECOGNIZED SOLELY FOR INFORMAL DISCUSSIONS RELATED TO THE THEORETICAL PIC MODEL.
+
+THEY BEAR **NO RESPONSIBILITY** FOR:
+
+- the correctness, completeness, or security of the PIC Model,
+- the content, accuracy, or fitness of this PIC Specification,
+- any implementation, deployment, or use based on this specification,
+- any claims, damages, or liabilities arising from the PIC Model or PIC Specification.
+
+ACKNOWLEDGEMENT IS **INFORMATIONAL ONLY** AND SHALL NOT BE CONSTRUED AS CREATING ANY LEGAL OBLIGATION, WARRANTY, OR LIABILITY ON THE PART OF ACKNOWLEDGED INDIVIDUALS.
+
+Any claims, disputes, or legal actions related to the **PIC Specification** or any implementation, deployment, or use thereof  
+MUST be directed exclusively to the **Specification Steward (Nitro Agility S.r.l.)**.
+
+Any reference to the **original theoretical PIC Model** is made solely in its capacity as an **academic work of authorship**.  
+The PIC Model is provided **for scholarly and informational purposes only**, and **creates no warranty, duty of care, or legal obligation of any kind** toward any third party.
+
+To the **maximum extent permitted by applicable law**, the PIC Model author **disclaims all liability** for any claim, loss, or damages arising from any specification, implementation, deployment, product, service, security outcome, or commercial use that references or relies on this specification or the PIC Model, **whether framed in contract, tort, negligence, strict liability, or any other theory of liability**.
+
+Accordingly, responsibility for any such claims rests with the **Specification Steward** and/or the relevant **implementer or operator**, as applicable.
+
+Acknowledged individuals are explicitly excluded from **all** such claims.
 
 ---
 
