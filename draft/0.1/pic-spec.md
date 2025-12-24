@@ -53,8 +53,9 @@ Trust Models MAY be implemented via cryptographic primitives, hardware attestati
 2. [Terminology](#2-terminology)
 3. [Architecture and Components](#3-architecture-and-components)
 4. [Normative Data Structures and Processing Logic](#4-normative-data-structures-and-processing-logic)
-5. [Deployment and Adoption](#5-deployment-and-adoption-considerations)
-6. [Security Considerations](#6-security-considerations)
+5. [Request Binding and Interception Protection](#5-request-binding-and-interception-protection)
+6. [Deployment and Adoption](#6-deployment-and-adoption-considerations)
+7. [Security Considerations](#7-security-considerations)
 
 A. [Use of Automated Language Assistance](#appendix-a--use-of-automated-language-assistance)  
 B. [Authorship, Stewardship, Attribution, and Derivative Works](#appendix-b--authorship-stewardship-attribution-and-derivative-works)
@@ -317,7 +318,7 @@ Scenario B (Application bug):
   Bob reads /sys/syslog.txt using own authority (outside PCA)
   Bob includes result in response to Alice
   PIC not violated—CAT never saw the operation
-  ❌ Application bug: Bob leaked privileged data
+  ✗ Application bug: Bob leaked privileged data
 ```
 
 **Key Distinction**:
@@ -586,12 +587,14 @@ Authority state at execution hop *i*.
     "p_0": "https://idp.example.com/users/alice",
     "ops": ["read:/user/*", "write:/user/*"],
     "executor": {
-      "federation": "https://trust.example.com",
-      "namespace": "prod"
-    },
-    "provenance": {
-      "prev": null,
-      "hop": 0
+      "id": {
+        "federation": "https://trust.example.com",
+        "namespace": "prod",
+        "service": "api-gateway"
+      },
+      "public_key": "base64url...",
+      "key_type": "ES256",
+      "prev_public_key": "base64url-key-of-api-gateway..."
     },
     "temporal": {
       "iat": "2025-12-11T10:00:00Z",
@@ -653,8 +656,13 @@ Proof constructed by Executor, submitted to CAT.
         "p_0": "https://idp.example.com/users/alice",
         "ops": ["read:/user/*", "write:/user/*"],
         "executor": {
-          "federation": "https://trust.example.com",
-          "namespace": "prod"
+          "id": {
+            "federation": "https://trust.example.com",
+            "namespace": "prod",
+            "service": "service-a"
+          },
+          "public_key": "base64url-key-of-service-a...",
+          "key_type": "ES256"
         },
         "provenance": { "prev": "sha256:...", "hop": 2 }
       }
@@ -663,9 +671,15 @@ Proof constructed by Executor, submitted to CAT.
       "p_0": "https://idp.example.com/users/alice",
       "ops": ["read:/user/*"],
       "executor": {
-        "federation": "https://trust.example.com",
-        "namespace": "prod"
-      }
+        "id": {
+          "federation": "https://trust.example.com",
+          "namespace": "prod",
+          "service": "service-b"
+        },
+        "public_key": "base64url-key-of-service-b...",
+        "key_type": "ES256"
+      },
+      "provenance": { "prev": "sha256:a3f5b9c7...", "hop": 3 }
     },
     "poi": { "type": "spiffe_svid", "value": "base64..." },
     "pop": { "type": "ecdsa_p256", "value": "base64..." },
@@ -696,13 +710,178 @@ This specification does not mandate encodings. PIC Protocol specifications MUST 
 
 ---
 
-## 5. Deployment and Adoption
+## 5. Transport, Communication, and Request Binding
+
+This section defines transport and request binding requirements for PIC implementations.
+
+> **INFORMATIVE**: Examples and mechanisms are non-normative. Concrete algorithms and encodings are defined in PIC Protocol specifications.
+
+---
+
+### 5.1 Overview
+
+PIC requires two complementary protection layers:
+
+| Layer              | Purpose                              | Requirement |
+|--------------------|--------------------------------------|-------------|
+| **Transport**      | Channel confidentiality & integrity  | RECOMMENDED |
+| **Request Binding**| Authority chain binding              | REQUIRED    |
+
+Request binding is REQUIRED regardless of transport security.
+
+---
+
+### 5.2 Transport Security (INFORMATIVE)
+
+Implementations SHOULD use secure transport (mTLS, encrypted messaging).
+
+> **NOTE**: Without transport encryption, payload content may be visible. Request binding still prevents tampering and impersonation.
+
+---
+
+### 5.3 Request Binding (REQUIRED)
+
+Every request MUST be cryptographically signed by the sending executor.
+
+#### 5.3.1 Executor Key Binding
+
+Each PCA binds the executor to a key pair for request signing:
+
+| Field           | Description                                          |
+|-----------------|------------------------------------------------------|
+| `public_key`    | This executor's public key (for signing)             |
+| `key_type`      | Algorithm identifier                                 |
+| `prev_executor` | Predecessor's key material (null for PCA_0)          |
+
+**Key chain across hops**:
+
+```text
+PCA_0:  public_key = K_0,  prev_executor = null
+PCA_1:  public_key = K_1,  prev_executor.public_key = K_0
+PCA_2:  public_key = K_2,  prev_executor.public_key = K_1
+  ...
+PCA_n:  public_key = K_n,  prev_executor.public_key = K_{n-1}
+```
+
+#### 5.3.2 Signature Requirements
+
+| Element     | Purpose                    | Requirement |
+|-------------|----------------------------|-------------|
+| `payload`   | Prevents tampering         | MUST        |
+| `pca` hash  | Binds to authority chain   | MUST        |
+| `timestamp` | Freshness validation       | MUST        |
+| `nonce`     | Replay protection          | SHOULD      |
+
+#### 5.3.3 Verification
+
+```text
+1. Extract prev_executor from PCA
+2. Verify signature using prev_executor.public_key
+3. Check timestamp freshness
+4. If valid → accept; if invalid → reject
+```
+
+---
+
+### 5.4 Communication Flow (INFORMATIVE)
+
+```text
+E_{n-1}                              E_n                              E_{n+1}
+   │                                  │                                  │
+   │  ── signed_request + PCA_n ────▶ │                                  │
+   │                                  │                                  │
+   │                    (1) Verify signature (prev_executor)             │
+   │                    (2) Validate PCA_n                               │
+   │                    (3) Process request                              │
+   │                                  │                                  │
+   │                                  │  ── signed_request + PCA_{n+1} ─▶│
+   │                                  │                                  │
+   │                                  │         (1) Verify signature     │
+   │                                  │         (2) Validate PCA_{n+1}   │
+   │                                  │         (3) Process request      │
+```
+
+---
+
+### 5.5 Security Comparison
+
+| System             | Request Binding | Chain Binding | Interception Protection |
+|--------------------|-----------------|---------------|-------------------------|
+| OAuth (bearer)     | ✗ None          | ✗ None        | ✗ Vulnerable            |
+| OAuth + DPoP       | ✓ Token↔Key     | ✗ None        | ◐ Single hop            |
+| mTLS only          | ✗ None          | ✗ None        | ◐ Transport only        |
+| Macaroons          | ◐ Caveats       | ◐ Partial     | ◐ Partial               |
+| **PIC**            | ✓ Signature     | ✓ Full chain  | ✓ End-to-end            |
+| **PIC + mTLS**     | ✓ Signature     | ✓ Full chain  | ✓✓ Defense in depth     |
+
+**Legend**: ✗ None | ◐ Partial | ✓ Full
+
+---
+
+### 5.6 Interception Attack Protection
+
+**Scenario**: Attacker intercepts PCA_n
+
+```text
+1. Attacker intercepts PCA_n in transit
+2. Attacker creates malicious request with intercepted PCA_n
+3. Recipient extracts prev_executor.public_key from PCA_n
+4. Recipient verifies signature → Attacker lacks private key → FAILS
+5. Request REJECTED
+
+✓ PCA possession insufficient without private key
+```
+
+---
+
+### 5.7 PCA Key Binding Example (INFORMATIVE)
+
+```json
+{
+  "issuer_id": "https://cat.example.com",
+  "issuer_sig": "...",
+  "payload": {
+    "p_0": "https://idp.example.com/users/alice",
+    "ops": ["read:/user/*"],
+    "executor": {
+      "id": { "service": "service-b" },
+      "public_key": "...",
+      "key_type": "...",
+      "prev_executor": {
+        "public_key": "...",
+        "key_type": "..."
+      }
+    },
+    "provenance": { "prev": "sha256:...", "hop": 2 }
+  }
+}
+```
+
+---
+
+### 5.8 Summary
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                    PIC Security Layers                      │
+├─────────────────────────────────────────────────────────────┤
+│  Layer 3: Authority Chain    p_0 immutable, ops monotonic   │
+│  Layer 2: Request Binding    Signature over payload + PCA   │
+│  Layer 1: Transport          mTLS / Encrypted (optional)    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+> **DEFENSE IN DEPTH**: Each layer provides independent protection.
+
+---
+
+## 6. Deployment and Adoption
 
 This section addresses deployment topologies, integration with existing authorization systems, validation strategies, and adoption considerations.
 
 ---
 
-### 5.1 Computational Overhead
+### 6.1 Computational Overhead
 
 PIC validation overhead is at most equivalent to OAuth 2.0 Token Exchange (RFC 8693). Embedded CAT deployments (shared memory, TEE) eliminate network round-trips entirely:
 
@@ -715,7 +894,7 @@ PIC validation overhead is at most equivalent to OAuth 2.0 Token Exchange (RFC 8
 
 ---
 
-### 5.2 Deployment Topologies
+### 6.2 Deployment Topologies
 
 #### Federated (Public Internet)
 
@@ -832,7 +1011,7 @@ User presents VC, Federation Bridge issues PCA_0, PCA flows device-to-device:
 
 ---
 
-### 5.3 Validation Strategies
+### 6.3 Validation Strategies
 
 | Strategy                 | Pattern                                         | Use Case                    |
 |--------------------------|-------------------------------------------------|-----------------------------|
@@ -845,7 +1024,7 @@ User presents VC, Federation Bridge issues PCA_0, PCA flows device-to-device:
 
 ---
 
-### 5.4 Integration Patterns
+### 6.4 Integration Patterns
 
 #### OAuth 2.0
 
@@ -911,7 +1090,7 @@ Client → API Gateway (acts as Federation Bridge) → PCA_0 → Backend service
 
 ---
 
-### 5.4.1 Identity Mapping Summary
+### 6.4.1 Identity Mapping Summary
 
 | Source             | p_0 derivation    | ops_0 derivation       | PoI format  |
 |--------------------|-------------------|------------------------|-------------|
@@ -925,7 +1104,7 @@ Client → API Gateway (acts as Federation Bridge) → PCA_0 → Backend service
 
 ---
 
-### 5.5 Adoption Path
+### 6.5 Adoption Path
 
 | Phase          | Actions                                                                             |
 |----------------|-------------------------------------------------------------------------------------|
@@ -936,7 +1115,7 @@ Client → API Gateway (acts as Federation Bridge) → PCA_0 → Backend service
 
 ---
 
-### 5.6 AI Agents and Tool Orchestration
+### 6.6 AI Agents and Tool Orchestration
 
 No new concepts. AI agents are executors. Tools are executors. PIC applies unchanged.
 
@@ -977,13 +1156,13 @@ Any executor that validates PCA: external APIs, microservices, databases, OS ser
 
 ---
 
-## 6. Security Considerations
+## 7. Security Considerations
 
 This section analyzes PIC's security properties, threat model, and attack resistance compared to possession-based systems.
 
 ---
 
-### 6.1 Threat Model
+### 7.1 Threat Model
 
 **Trusted**: Federation Bridge, CAT, Trust Model, Governance
 
@@ -997,7 +1176,7 @@ This section analyzes PIC's security properties, threat model, and attack resist
 
 ---
 
-### 6.2 Confused Deputy Attack
+### 7.2 Confused Deputy Attack
 
 The classic problem (Hardy, 1988): a privileged service uses its own authority on behalf of a less-privileged client.
 
@@ -1029,7 +1208,7 @@ Alice exploits Bob's elevated authority:
 4. Carol reads /sys/syslog.txt (system secrets)
 5. Alice receives output containing system secrets
 
-❌ CONFUSED DEPUTY
+✗ CONFUSED DEPUTY
 ```
 
 **PIC Model (IMMUNE)**:
@@ -1050,31 +1229,31 @@ Authority scoped to transaction origin:
 
 | Transaction Origin      | read /user/* | read /sys/* | write /user/* |
 |-------------------------|--------------|-------------|---------------|
-| Bob (own transaction)   | ❌           | ✓           | ❌            |
-| Alice (via PCA)         | ✓            | ❌          | ✓             |
+| Bob (own transaction)   | ✗           | ✓           | ✗            |
+| Alice (via PCA)         | ✓            | ✗          | ✓             |
 
 ---
 
-### 6.3 Attack Comparison Summary
+### 7.3 Attack Comparison Summary
 
 | Attack                   | Token-Based                | PIC            | Mechanism                           |
 |--------------------------|----------------------------|----------------|-------------------------------------|
-| **Confused Deputy**      | ❌ Vulnerable              | ✅ Immune      | Authority from origin, not executor |
-| **Token Theft**          | ❌ Possession = authority  | ✅ Resistant   | Executor binding mismatch           |
-| **Privilege Escalation** | ❌ No monotonicity         | ✅ Immune      | `ops_{i+1} ⊆ ops_i` enforced        |
-| **Ambient Authority**    | ❌ Service uses own token  | ✅ Immune      | Authority scoped to `ops_0`         |
-| **Token Substitution**   | ❌ No chain verification   | ✅ Immune      | PoC binds to previous PCA           |
-| **Replay**               | ❌ Valid until expiry      | ✅ Resistant   | Challenge + temporal binding        |
-| **Credential Forwarding**| ❌ Unrestricted            | ✅ Controlled  | CAT validation per hop              |
-| **Impersonation**        | ❌ Possession = identity   | ✅ Resistant   | PoI must match binding              |
-| **MITM Modification**    | ⚠️ Depends on JWT sig      | ✅ Immune      | Bundle signature required           |
-| **Revocation Delay**     | ❌ Valid until expiry      | ✅ Responsive  | Checked at next hop                 |
+| **Confused Deputy**      | ✗ Vulnerable              | ✓ Immune      | Authority from origin, not executor |
+| **Token Theft**          | ✗ Possession = authority  | ✓ Resistant   | Executor binding mismatch           |
+| **Privilege Escalation** | ✗ No monotonicity         | ✓ Immune      | `ops_{i+1} ⊆ ops_i` enforced        |
+| **Ambient Authority**    | ✗ Service uses own token  | ✓ Immune      | Authority scoped to `ops_0`         |
+| **Token Substitution**   | ✗ No chain verification   | ✓ Immune      | PoC binds to previous PCA           |
+| **Replay**               | ✗ Valid until expiry      | ✓ Resistant   | Challenge + temporal binding        |
+| **Credential Forwarding**| ✗ Unrestricted            | ✓ Controlled  | CAT validation per hop              |
+| **Impersonation**        | ✗ Possession = identity   | ✓ Resistant   | PoI must match binding              |
+| **MITM Modification**    | ⚠️ Depends on JWT sig      | ✓ Immune      | Bundle signature required           |
+| **Revocation Delay**     | ✗ Valid until expiry      | ✓ Responsive  | Checked at next hop                 |
 
-**Legend**: ❌ Vulnerable | ⚠️ Depends | ✅ Resistant/Immune
+**Legend**: ✗ Vulnerable | ⚠️ Depends | ✓ Resistant/Immune
 
 ---
 
-### 6.4 Residual Risks
+### 7.4 Residual Risks
 
 | Risk                             | Mitigation                                                          |
 |----------------------------------|---------------------------------------------------------------------|
@@ -1086,7 +1265,7 @@ Authority scoped to transaction origin:
 
 ---
 
-### 6.5 Security Design Principles
+### 7.5 Security Design Principles
 
 1. **Least Privilege**: Authority monotonically decreases
 2. **Separation of Concerns**: Untrusted execution / trusted validation
@@ -1098,7 +1277,7 @@ Authority scoped to transaction origin:
 
 ---
 
-### 6.6 Formal Security Properties
+### 7.6 Formal Security Properties
 
 | Property                         | Statement                                              |
 |----------------------------------|--------------------------------------------------------|
