@@ -257,15 +257,36 @@ THIS SPECIFICATION DOES NOT CONSTITUTE LEGAL, SECURITY, OR PROFESSIONAL ADVICE.
 
 ### Responsibility and Legal Context
 
-This specification is published and maintained by **Nitro Agility S.r.l.** as the Specification Steward.
+This specification is published and maintained by **Nitro Agility S.r.l.** as the **Specification Steward**.
 
-Nothing in this document creates a contractual relationship between individual contributors and users of this specification.
+Nothing in this document creates a contractual relationship between any **individual contributor** and any user of this specification.  
+No duty of care is assumed or created by publication of this document.
 
-### Legal Context Regarding Claims
+To the **maximum extent permitted by applicable law**, any claims, disputes, or legal actions arising from:
 
-To the extent permitted by applicable law, claims, disputes, or actions arising from the use of this specification, the PIC Model, or any implementation should be addressed to the **Specification Steward** in relation to the specification’s publication and maintenance activities.
+- the use of this specification,
+- any claim of conformance, compatibility, or derivation from PIC,
+- any implementation, deployment, product, or service that references or relies on this specification,
 
-Nothing in this document shall be interpreted as creating personal operational responsibility for the PIC Model author, whose role is limited to authorship of the underlying theoretical framework and its referenced publications.
+should be directed to the **Specification Steward (Nitro Agility S.r.l.)** and/or the relevant **implementer**, as applicable.
+
+For avoidance of doubt, implementers and operators remain solely responsible for their own implementations, deployments, products, services, security, and compliance claims.
+
+### Exclusion of Personal Liability (PIC Model Author)
+
+**Nicola Gallo**, as the author of the underlying **PIC Model** (theoretical framework), is recognized solely for **academic authorship** of that theoretical work.
+
+This recognition does **not**:
+
+- create any personal liability for this specification or its use,
+- create any warranty, support, maintenance, or professional services obligation,
+- create any contractual, fiduciary, advisory, or professional relationship with users,
+- constitute endorsement of this specification or of any implementation or deployment.
+
+To the maximum extent permitted by applicable law, **Nicola Gallo** disclaims all liability for any loss or damages arising from the use of this specification or from any implementation, deployment, product, or service based on it.
+
+The PIC Model author’s role is strictly limited to authorship of academic publications referenced by this specification.  
+All operational, legal, and commercial responsibility for this specification rests with the **Specification Steward (Nitro Agility S.r.l.)**, and for implementations with their respective **implementers/operators**.
 
 ---
 

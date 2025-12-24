@@ -58,8 +58,9 @@ Trust Models MAY be implemented via cryptographic primitives, hardware attestati
 7. [Security Considerations](#7-security-considerations)
 
 A. [Use of Automated Language Assistance](#appendix-a--use-of-automated-language-assistance)  
-B. [Authorship, Stewardship, Attribution, and Derivative Works](#appendix-b--authorship-stewardship-attribution-and-derivative-works)
+B. [Authorship, Stewardship, Attribution, and Derivative Works](#appendix-b--authorship-stewardship-attribution-and-derivative-works)  
 C. [Disclaimer and Limitation of Liability](#appendix-c--disclaimer-and-limitation-of-liability)  
+D. [Acknowledgements](#appendix-d--acknowledgements)  
 R. [References](#references)  
 
 ---
@@ -1480,15 +1481,85 @@ THIS SPECIFICATION DOES NOT CONSTITUTE LEGAL, SECURITY, OR PROFESSIONAL ADVICE.
 
 ### Responsibility and Legal Context
 
-This specification is published and maintained by **Nitro Agility S.r.l.** as the Specification Steward.
+This specification is published and maintained by **Nitro Agility S.r.l.** as the **Specification Steward**.
 
-Nothing in this document creates a contractual relationship between individual contributors and users of this specification.
+Nothing in this document creates a contractual relationship between any **individual contributor** and any user of this specification.  
+No duty of care is assumed or created by publication of this document.
 
-### Legal Context Regarding Claims
+To the **maximum extent permitted by applicable law**, any claims, disputes, or legal actions arising from:
 
-To the extent permitted by applicable law, claims, disputes, or actions arising from the use of this specification, the PIC Model, or any implementation should be addressed to the **Specification Steward** in relation to the specification’s publication and maintenance activities.
+- the use of this specification,
+- any claim of conformance, compatibility, or derivation from PIC,
+- any implementation, deployment, product, or service that references or relies on this specification,
 
-Nothing in this document shall be interpreted as creating personal operational responsibility for the PIC Model author, whose role is limited to authorship of the underlying theoretical framework and its referenced publications.
+should be directed to the **Specification Steward (Nitro Agility S.r.l.)** and/or the relevant **implementer**, as applicable.
+
+For avoidance of doubt, implementers and operators remain solely responsible for their own implementations, deployments, products, services, security, and compliance claims.
+
+### Exclusion of Personal Liability (PIC Model Author)
+
+**Nicola Gallo**, as the author of the underlying **PIC Model** (theoretical framework), is recognized solely for **academic authorship** of that theoretical work.
+
+This recognition does **not**:
+
+- create any personal liability for this specification or its use,
+- create any warranty, support, maintenance, or professional services obligation,
+- create any contractual, fiduciary, advisory, or professional relationship with users,
+- constitute endorsement of this specification or of any implementation or deployment.
+
+To the maximum extent permitted by applicable law, **Nicola Gallo** disclaims all liability for any loss or damages arising from the use of this specification or from any implementation, deployment, product, or service based on it.
+
+The PIC Model author’s role is strictly limited to authorship of academic publications referenced by this specification.  
+All operational, legal, and commercial responsibility for this specification rests with the **Specification Steward (Nitro Agility S.r.l.)**, and for implementations with their respective **implementers/operators**.
+
+---
+
+## Appendix D. Acknowledgements
+
+The PIC Model author thanks the following individuals for discussions and feedback during the development of the theoretical framework.
+
+### D.1 Acknowledged Individuals
+
+- **Alan Karp** — for rigorous analysis and critical feedback on authority propagation semantics that helped stress-test the theoretical model's formal properties.
+
+### D.2 Scope and Limitations of Acknowledgement
+
+Acknowledgement in this appendix:
+
+1. **Recognizes informal contribution** to early-stage theoretical discussions only
+2. **Does NOT imply**:
+   - co-authorship of the PIC Model
+   - co-authorship of this PIC Specification
+   - contribution to the PIC Specification text, structure, or normative content
+   - endorsement of the PIC Model, PIC Specification, or any implementation
+   - affiliation with the Specification Steward (Nitro Agility S.r.l.)
+   - any ongoing involvement or advisory role
+3. **Does NOT create**:
+   - any legal, contractual, or fiduciary relationship
+   - any responsibility for errors, omissions, or defects in the PIC Model or PIC Specification
+   - any liability for implementations, deployments, or uses of this specification
+   - any obligation to provide support, maintenance, or updates
+
+### D.3 Disclaimer for Acknowledged Individuals
+
+ACKNOWLEDGED INDIVIDUALS ARE RECOGNIZED SOLELY FOR INFORMAL DISCUSSIONS RELATED TO THE THEORETICAL PIC MODEL.
+
+THEY BEAR **NO RESPONSIBILITY** FOR:
+
+- the correctness, completeness, or security of the PIC Model,
+- the content, accuracy, or fitness of this PIC Specification,
+- any implementation, deployment, or use based on this specification,
+- any claims, damages, or liabilities arising from the PIC Model or PIC Specification.
+
+ACKNOWLEDGEMENT IS **INFORMATIONAL ONLY** AND SHALL NOT BE CONSTRUED AS CREATING ANY LEGAL OBLIGATION, WARRANTY, OR LIABILITY ON THE PART OF ACKNOWLEDGED INDIVIDUALS.
+
+Any claims, disputes, or legal actions related to the **PIC Specification** or any implementation, deployment, or use thereof  
+MUST be directed exclusively to the **Specification Steward (Nitro Agility S.r.l.)**.
+
+Any claims strictly limited to the **original theoretical PIC Model** as an academic work of authorship  
+remain attributable to the PIC Model author **solely in that academic context** and **not** in connection with any specification, implementation, product, service, or deployment.
+
+Acknowledged individuals are explicitly excluded from **all** such claims.
 
 ---
 
