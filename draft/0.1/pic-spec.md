@@ -1556,8 +1556,12 @@ ACKNOWLEDGEMENT IS **INFORMATIONAL ONLY** AND SHALL NOT BE CONSTRUED AS CREATING
 Any claims, disputes, or legal actions related to the **PIC Specification** or any implementation, deployment, or use thereof  
 MUST be directed exclusively to the **Specification Steward (Nitro Agility S.r.l.)**.
 
-Any claims strictly limited to the **original theoretical PIC Model** as an academic work of authorship  
-remain attributable to the PIC Model author **solely in that academic context** and **not** in connection with any specification, implementation, product, service, or deployment.
+Any reference to the **original theoretical PIC Model** is made solely in its capacity as an **academic work of authorship**.  
+The PIC Model is provided **for scholarly and informational purposes only**, and **creates no warranty, duty of care, or legal obligation of any kind** toward any third party.
+
+**No claim, dispute, or legal action** arising from any specification, implementation, deployment, product, service, security outcome, or commercial use **may be directed to the PIC Model author**, whether framed in contract, tort, negligence, strict liability, misrepresentation, or any other theory of liability.
+
+All such claims, if any, must be directed exclusively to the **Specification Steward** and/or the relevant **implementer or operator**.
 
 Acknowledged individuals are explicitly excluded from **all** such claims.
 
