@@ -1229,8 +1229,8 @@ Authority scoped to transaction origin:
 
 | Transaction Origin      | read /user/* | read /sys/* | write /user/* |
 |-------------------------|--------------|-------------|---------------|
-| Bob (own transaction)   | ✗           | ✓           | ✗            |
-| Alice (via PCA)         | ✓            | ✗          | ✓             |
+| Bob (own transaction)   | ✗            | ✓           | ✗             |
+| Alice (via PCA)         | ✓            | ✗           | ✓             |
 
 ---
 
@@ -1238,18 +1238,18 @@ Authority scoped to transaction origin:
 
 | Attack                   | Token-Based                | PIC            | Mechanism                           |
 |--------------------------|----------------------------|----------------|-------------------------------------|
-| **Confused Deputy**      | ✗ Vulnerable              | ✓ Immune      | Authority from origin, not executor |
-| **Token Theft**          | ✗ Possession = authority  | ✓ Resistant   | Executor binding mismatch           |
-| **Privilege Escalation** | ✗ No monotonicity         | ✓ Immune      | `ops_{i+1} ⊆ ops_i` enforced        |
-| **Ambient Authority**    | ✗ Service uses own token  | ✓ Immune      | Authority scoped to `ops_0`         |
-| **Token Substitution**   | ✗ No chain verification   | ✓ Immune      | PoC binds to previous PCA           |
-| **Replay**               | ✗ Valid until expiry      | ✓ Resistant   | Challenge + temporal binding        |
-| **Credential Forwarding**| ✗ Unrestricted            | ✓ Controlled  | CAT validation per hop              |
-| **Impersonation**        | ✗ Possession = identity   | ✓ Resistant   | PoI must match binding              |
-| **MITM Modification**    | ⚠️ Depends on JWT sig      | ✓ Immune      | Bundle signature required           |
-| **Revocation Delay**     | ✗ Valid until expiry      | ✓ Responsive  | Checked at next hop                 |
+| **Confused Deputy**      | ✗ Vulnerable               | ✓ Immune       | Authority from origin, not executor |
+| **Token Theft**          | ✗ Possession = authority   | ✓ Resistant    | Executor binding mismatch           |
+| **Privilege Escalation** | ✗ No monotonicity          | ✓ Immune       | `ops_{i+1} ⊆ ops_i` enforced        |
+| **Ambient Authority**    | ✗ Service uses own token   | ✓ Immune       | Authority scoped to `ops_0`         |
+| **Token Substitution**   | ✗ No chain verification    | ✓ Immune       | PoC binds to previous PCA           |
+| **Replay**               | ✗ Valid until expiry       | ✓ Resistant    | Challenge + temporal binding        |
+| **Credential Forwarding**| ✗ Unrestricted             | ✓ Controlled   | CAT validation per hop              |
+| **Impersonation**        | ✗ Possession = identity    | ✓ Resistant    | PoI must match binding              |
+| **MITM Modification**    | △ Depends on JWT sig       | ✓ Immune       | Bundle signature required           |
+| **Revocation Delay**     | ✗ Valid until expiry       | ✓ Responsive   | Checked at next hop                 |
 
-**Legend**: ✗ Vulnerable | ⚠️ Depends | ✓ Resistant/Immune
+**Legend**: ✗ Vulnerable | △ Depends | ✓ Resistant/Immune
 
 ---
 
