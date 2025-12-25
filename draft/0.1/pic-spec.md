@@ -693,6 +693,10 @@ The following JSON illustrates one possible encoding. This structure is non-norm
 }
 ```
 
+> **NOTE**: In this example, `prev_pca` is shown expanded for clarity.  
+> PIC Protocol specifications MAY define compact representations  
+> (e.g., base64-encoded signed structure or hash reference).
+
 **Key properties**:
 
 - `p_0`: Unchanged (immutability)
