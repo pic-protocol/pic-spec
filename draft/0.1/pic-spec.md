@@ -920,7 +920,7 @@ Each organization operates its own Federation Bridge and CAT. Cross-domain trust
 │              ▼          │           │            ▼            │
 │           PCA_0         │           │         PCA_n           │
 │              │          │           │            │            │
-│        E_1 → E_2 ───────┼───────────┼──────────▶ E_3          │
+│        E_1 → E_2 ───────┼───────────┼─────────▶ E_3           │
 │         │     │         │  public   │            │            │
 │        CAT   CAT        │  internet │           CAT           │
 │                         │           │                         │
