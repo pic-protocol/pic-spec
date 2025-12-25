@@ -626,14 +626,15 @@ Proof constructed by Executor, submitted to CAT.
 
 **Required Characteristics**:
 
-| Characteristic   | Requirement | Description                                |
-|------------------|-------------|--------------------------------------------|
-| `prev_pca`       | MUST        | PCA received from predecessor              |
-| `proposed`       | MUST        | Proposed authority for next hop            |
-| `poi`            | MUST        | Proof of Identity (type + value)           |
-| `pop`            | MUST        | Proof of Possession (type + value)         |
-| `challenge`      | IF ISSUED   | Response to PCC                            |
-| `signature`      | MUST        | Executor signature over bundle             |
+| Characteristic       | Requirement | Description                                |
+|----------------------|-------------|--------------------------------------------|
+| `prev_pca`           | MUST        | PCA received from predecessor              |
+| `proposed`           | MUST        | Proposed authority for next hop            |
+| `issuer`             | MUST        | Executor authentication                    |
+| `issuer.poi`         | MUST        | Proof of Identity (type + value)           |
+| `issuer.pop`         | MUST        | Proof of Possession (type + value)         |
+| `issuer.challenge`   | IF ISSUED   | Response to PCC                            |
+| `signature`          | MUST        | Executor signature over bundle             |
 
 > **NOTE**: Concrete field names and encodings are defined in PIC Protocol specifications.
 
@@ -686,9 +687,11 @@ The following JSON illustrates one possible encoding. This structure is non-norm
       },
       "provenance": "..."
     },
-    "poi": { "type": "...", "value": "..." },
-    "pop": { "type": "...", "value": "..." },
-    "challenge": { "type": "...", "value": "..." }
+    "issuer": {
+      "poi": { "type": "...", "value": "..." },
+      "pop": { "type": "...", "value": "..." },
+      "challenge": { "type": "...", "value": "..." }
+    }
   }
 }
 ```
@@ -700,7 +703,7 @@ The following JSON illustrates one possible encoding. This structure is non-norm
 
 - `p_0`: Unchanged (immutability)
 - `ops`: Reduced from `["read:/user/*", "write:/user/*"]` to `["read:/user/*"]` (monotonicity)
-- `poi`, `pop`, `challenge`: Opaque values with type hints
+- `issuer`: Contains executor authentication proofs
 - `signature`: Prevents tampering in transit
 
 ---
