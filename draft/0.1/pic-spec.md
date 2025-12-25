@@ -590,13 +590,12 @@ The following JSON illustrates one possible encoding. This structure is non-norm
   "issuer": "...",
   "signature": "...",
   "payload": {
-    "p_0": "...",
+    "p_0": "https://idp.example.com/users/alice",
     "ops": ["read:/user/*", "write:/user/*"],
     "executor": {
       "binding": {
         "federation": "https://trust.example.com",
-        "namespace": "prod",
-        "service": "api-gateway"
+        "namespace": "nomad"
       },
       "key_material": {
         "public_key": "base64url...",
@@ -604,8 +603,14 @@ The following JSON illustrates one possible encoding. This structure is non-norm
       }
     },
     "prev_executor": null,
-    "provenance": "...",
-    "temporal": "..."
+    "provenance": {
+      "prev": null,
+      "hop": 0
+    },
+    "temporal": {
+      "iat": "2025-12-11T10:00:00Z",
+      "exp": "2025-12-11T11:00:00Z"
+    }
   }
 }
 ```
@@ -661,13 +666,12 @@ The following JSON illustrates one possible encoding. This structure is non-norm
       "issuer": "...",
       "signature": "...",
       "payload": {
-        "p_0": "...",
+        "p_0": "https://idp.example.com/users/alice",
         "ops": ["read:/user/*", "write:/user/*"],
         "executor": {
           "binding": {
             "federation": "https://trust.example.com",
-            "namespace": "prod",
-            "service": "service-a"
+            "namespace": "nomad"
           },
           "key_material": {
             "public_key": "base64url...",
@@ -680,24 +684,29 @@ The following JSON illustrates one possible encoding. This structure is non-norm
             "alg": "ES256"
           }
         },
-        "provenance": "..."
+        "provenance": {
+          "prev": "sha256:a3f5b9c7...",
+          "hop": 1
+        }
       }
     },
     "proposed": {
-      "p_0": "...",
+      "p_0": "https://idp.example.com/users/alice",
       "ops": ["read:/user/*"],
       "executor": {
         "binding": {
           "federation": "https://trust.example.com",
-          "namespace": "prod",
-          "service": "service-b"
+          "namespace": "nomad"
         },
         "key_material": {
           "public_key": "base64url...",
           "alg": "ES256"
         }
       },
-      "provenance": "..."
+      "provenance": {
+        "prev": "sha256:b4e6c8d9...",
+        "hop": 2
+      }
     },
     "issuer": {
       "poi": { "type": "...", "value": "..." },
@@ -863,13 +872,12 @@ E_{n-1}                              E_n                              E_{n+1}
   "issuer": "...",
   "signature": "...",
   "payload": {
-    "p_0": "...",
+    "p_0": "https://idp.example.com/users/alice",
     "ops": ["read:/user/*"],
     "executor": {
       "binding": {
         "federation": "https://trust.example.com",
-        "namespace": "prod",
-        "service": "service-b"
+        "namespace": "nomad"
       },
       "key_material": {
         "public_key": "...",
@@ -882,7 +890,10 @@ E_{n-1}                              E_n                              E_{n+1}
         "alg": "..."
       }
     },
-    "provenance": "..."
+    "provenance": {
+      "prev": "sha256:b4e6c8d9...",
+      "hop": 2
+    }
   }
 }
 ```
