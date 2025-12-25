@@ -593,7 +593,11 @@ The following JSON illustrates one possible encoding. This structure is non-norm
     "p_0": "...",
     "ops": ["read:/user/*", "write:/user/*"],
     "executor": {
-      "binding": "...",
+      "binding": {
+        "federation": "https://trust.example.com",
+        "namespace": "prod",
+        "service": "api-gateway"
+      },
       "key_material": {
         "public_key": "base64url...",
         "alg": "ES256"
@@ -660,7 +664,11 @@ The following JSON illustrates one possible encoding. This structure is non-norm
         "p_0": "...",
         "ops": ["read:/user/*", "write:/user/*"],
         "executor": {
-          "binding": "...",
+          "binding": {
+            "federation": "https://trust.example.com",
+            "namespace": "prod",
+            "service": "service-a"
+          },
           "key_material": {
             "public_key": "base64url...",
             "alg": "ES256"
@@ -679,7 +687,11 @@ The following JSON illustrates one possible encoding. This structure is non-norm
       "p_0": "...",
       "ops": ["read:/user/*"],
       "executor": {
-        "binding": "...",
+        "binding": {
+          "federation": "https://trust.example.com",
+          "namespace": "prod",
+          "service": "service-b"
+        },
         "key_material": {
           "public_key": "base64url...",
           "alg": "ES256"
@@ -854,7 +866,11 @@ E_{n-1}                              E_n                              E_{n+1}
     "p_0": "...",
     "ops": ["read:/user/*"],
     "executor": {
-      "binding": "...",
+      "binding": {
+        "federation": "https://trust.example.com",
+        "namespace": "prod",
+        "service": "service-b"
+      },
       "key_material": {
         "public_key": "...",
         "alg": "..."
