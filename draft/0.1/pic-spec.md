@@ -565,48 +565,46 @@ Authority state at execution hop *i*.
 - PCA_0 MUST be signed by Federation Bridge
 - PCA_{i>0} MUST be signed by CAT
 
-**Structure**:
+**Required Characteristics**:
 
-| Field       | Required | Description                                                 |
-|-------------|----------|-------------------------------------------------------------|
-| `issuer_id` | MUST     | Issuer identifier (Federation Bridge or CAT)                |
-| `issuer_sig`| MUST     | Issuer signature over payload                               |
-| `p_0`       | MUST     | Origin principal (immutable)                                |
-| `ops`       | MUST     | Authority set (`ops_i ⊆ ops_{i-1}`)                         |
-| `executor`  | MUST     | Executor binding (federation, attributes)                   |
-| `provenance`| MUST     | Reference to previous PCA (null for PCA_0)                  |
-| `temporal`  | MAY      | Time constraints                                            |
-| `context`   | MAY      | Additional constraints                                      |
+| Characteristic   | Requirement | Description                                              |
+|------------------|-------------|----------------------------------------------------------|
+| `issuer`         | MUST        | Identifier of signing entity (Federation Bridge or CAT)  |
+| `signature`      | MUST        | Cryptographic signature over authority state             |
+| `p_0`            | MUST        | Immutable reference to origin principal                  |
+| `ops`            | MUST        | Operation set (`ops_i ⊆ ops_{i-1}`)                      |
+| `executor`       | MUST        | Binding and key material for executing entity            |
+| `prev_executor`  | MUST        | Key material of predecessor (null for PCA_0)             |
+| `provenance`     | MUST        | Reference to causal chain                                |
+| `temporal`       | MAY         | Time constraints (issuance, expiration)                  |
+| `context`        | MAY         | Additional constraints                                   |
 
-**Example**:
+> **NOTE**: Concrete field names, encodings, and serialization formats are defined in PIC Protocol specifications.
+
+**Example (INFORMATIVE)**:
+
+The following JSON illustrates one possible encoding. This structure is non-normative.
 
 ```json
 {
-  "issuer_id": "https://federation-bridge.example.com/keys/2024-12",
-  "issuer_sig": "base64url...",
+  "issuer": "...",
+  "signature": "...",
   "payload": {
-    "p_0": "https://idp.example.com/users/alice",
+    "p_0": "...",
     "ops": ["read:/user/*", "write:/user/*"],
     "executor": {
-      "id": {
-        "federation": "https://trust.example.com",
-        "namespace": "prod",
-        "service": "api-gateway"
-      },
-      "public_key": "base64url...",
-      "key_type": "ES256",
-      "prev_public_key": "base64url-key-of-api-gateway..."
+      "binding": "...",
+      "key_material": {
+        "public_key": "base64url...",
+        "alg": "ES256"
+      }
     },
-    "temporal": {
-      "iat": "2025-12-11T10:00:00Z",
-      "exp": "2025-12-11T11:00:00Z"
-    }
+    "prev_executor": null,
+    "provenance": "...",
+    "temporal": "..."
   }
 }
 ```
-
-> **NOTE**: `issuer_id` identifies either Federation Bridge (for PCA_0) or CAT (for PCA_{i>0}).
-> In deployments where Federation Bridge and CAT are co-located, they MAY share the same identifier.
 
 ---
 
@@ -626,16 +624,18 @@ A PCC MUST provide:
 
 Proof constructed by Executor, submitted to CAT.
 
-**Structure**:
+**Required Characteristics**:
 
-| Field      | Required  | Description                                |
-|------------|-----------|--------------------------------------------|
-| `prev_pca` | MUST      | PCA received from predecessor              |
-| `proposed` | MUST      | Proposed PCA for next hop                  |
-| `poi`      | MUST      | Proof of Identity (type + base64 value)    |
-| `pop`      | MUST      | Proof of Possession (type + base64 value)  |
-| `challenge`| IF ISSUED | Response to PCC                            |
-| `sig`      | MUST      | Executor signature over bundle             |
+| Characteristic   | Requirement | Description                                |
+|------------------|-------------|--------------------------------------------|
+| `prev_pca`       | MUST        | PCA received from predecessor              |
+| `proposed`       | MUST        | Proposed authority for next hop            |
+| `poi`            | MUST        | Proof of Identity (type + value)           |
+| `pop`            | MUST        | Proof of Possession (type + value)         |
+| `challenge`      | IF ISSUED   | Response to PCC                            |
+| `signature`      | MUST        | Executor signature over bundle             |
+
+> **NOTE**: Concrete field names and encodings are defined in PIC Protocol specifications.
 
 **Validation rules for `proposed`**:
 
@@ -644,47 +644,51 @@ Proof constructed by Executor, submitted to CAT.
 - `executor` attributes ⊆ previous attributes
 - Temporal constraints respected
 
-**Example**:
+**Example (INFORMATIVE)**:
+
+The following JSON illustrates one possible encoding. This structure is non-normative.
 
 ```json
 {
-  "sig": "base64url...",
+  "signature": "base64url...",
   "bundle": {
     "prev_pca": {
-      "issuer_id": "https://cat.example.com/keys/2024-12",
-      "issuer_sig": "base64url...",
+      "issuer": "...",
+      "signature": "...",
       "payload": {
-        "p_0": "https://idp.example.com/users/alice",
+        "p_0": "...",
         "ops": ["read:/user/*", "write:/user/*"],
         "executor": {
-          "id": {
-            "federation": "https://trust.example.com",
-            "namespace": "prod",
-            "service": "service-a"
-          },
-          "public_key": "base64url-key-of-service-a...",
-          "key_type": "ES256"
+          "binding": "...",
+          "key_material": {
+            "public_key": "base64url...",
+            "alg": "ES256"
+          }
         },
-        "provenance": { "prev": "sha256:...", "hop": 2 }
+        "prev_executor": {
+          "key_material": {
+            "public_key": "base64url...",
+            "alg": "ES256"
+          }
+        },
+        "provenance": "..."
       }
     },
     "proposed": {
-      "p_0": "https://idp.example.com/users/alice",
+      "p_0": "...",
       "ops": ["read:/user/*"],
       "executor": {
-        "id": {
-          "federation": "https://trust.example.com",
-          "namespace": "prod",
-          "service": "service-b"
-        },
-        "public_key": "base64url-key-of-service-b...",
-        "key_type": "ES256"
+        "binding": "...",
+        "key_material": {
+          "public_key": "base64url...",
+          "alg": "ES256"
+        }
       },
-      "provenance": { "prev": "sha256:a3f5b9c7...", "hop": 3 }
+      "provenance": "..."
     },
-    "poi": { "type": "spiffe_svid", "value": "base64..." },
-    "pop": { "type": "ecdsa_p256", "value": "base64..." },
-    "challenge": { "type": "nonce", "value": "base64..." }
+    "poi": { "type": "...", "value": "..." },
+    "pop": { "type": "...", "value": "..." },
+    "challenge": { "type": "...", "value": "..." }
   }
 }
 ```
@@ -693,8 +697,8 @@ Proof constructed by Executor, submitted to CAT.
 
 - `p_0`: Unchanged (immutability)
 - `ops`: Reduced from `["read:/user/*", "write:/user/*"]` to `["read:/user/*"]` (monotonicity)
-- `poi`, `pop`, `challenge`: Opaque base64 values with type hints
-- `sig`: Prevents tampering in transit
+- `poi`, `pop`, `challenge`: Opaque values with type hints
+- `signature`: Prevents tampering in transit
 
 ---
 
@@ -746,22 +750,21 @@ Every request MUST be cryptographically signed by the sending executor.
 
 #### 5.3.1 Executor Key Binding
 
-Each PCA binds the executor to a key pair for request signing:
+Each PCA binds the executor to key material for request signing:
 
-| Field           | Description                                          |
-|-----------------|------------------------------------------------------|
-| `public_key`    | This executor's public key (for signing)             |
-| `key_type`      | Algorithm identifier                                 |
-| `prev_executor` | Predecessor's key material (null for PCA_0)          |
+| Characteristic   | Description                                          |
+|------------------|------------------------------------------------------|
+| `executor`       | Binding + key material for this executor             |
+| `prev_executor`  | Key material of predecessor (null for PCA_0)         |
 
 **Key chain across hops**:
 
 ```text
-PCA_0:  public_key = K_0,  prev_executor = null
-PCA_1:  public_key = K_1,  prev_executor.public_key = K_0
-PCA_2:  public_key = K_2,  prev_executor.public_key = K_1
+PCA_0:  executor.key_material = K_0,  prev_executor = null
+PCA_1:  executor.key_material = K_1,  prev_executor.key_material = K_0
+PCA_2:  executor.key_material = K_2,  prev_executor.key_material = K_1
   ...
-PCA_n:  public_key = K_n,  prev_executor.public_key = K_{n-1}
+PCA_n:  executor.key_material = K_n,  prev_executor.key_material = K_{n-1}
 ```
 
 #### 5.3.2 Signature Requirements
@@ -776,8 +779,8 @@ PCA_n:  public_key = K_n,  prev_executor.public_key = K_{n-1}
 #### 5.3.3 Verification
 
 ```text
-1. Extract prev_executor from PCA
-2. Verify signature using prev_executor.public_key
+1. Extract prev_executor.key_material from PCA
+2. Verify signature using prev_executor.key_material.public_key
 3. Check timestamp freshness
 4. If valid → accept; if invalid → reject
 ```
@@ -791,7 +794,7 @@ E_{n-1}                              E_n                              E_{n+1}
    │                                  │                                  │
    │  ── signed_request + PCA_n ────▶ │                                  │
    │                                  │                                  │
-   │                    (1) Verify signature (prev_executor)             │
+   │                    (1) Verify signature (prev_executor.key_material)│
    │                    (2) Validate PCA_n                               │
    │                    (3) Process request                              │
    │                                  │                                  │
@@ -826,7 +829,7 @@ E_{n-1}                              E_n                              E_{n+1}
 ```text
 1. Attacker intercepts PCA_n in transit
 2. Attacker creates malicious request with intercepted PCA_n
-3. Recipient extracts prev_executor.public_key from PCA_n
+3. Recipient extracts prev_executor.key_material from PCA_n
 4. Recipient verifies signature → Attacker lacks private key → FAILS
 5. Request REJECTED
 
@@ -839,21 +842,25 @@ E_{n-1}                              E_n                              E_{n+1}
 
 ```json
 {
-  "issuer_id": "https://cat.example.com",
-  "issuer_sig": "...",
+  "issuer": "...",
+  "signature": "...",
   "payload": {
-    "p_0": "https://idp.example.com/users/alice",
+    "p_0": "...",
     "ops": ["read:/user/*"],
     "executor": {
-      "id": { "service": "service-b" },
-      "public_key": "...",
-      "key_type": "..."
+      "binding": "...",
+      "key_material": {
+        "public_key": "...",
+        "alg": "..."
+      }
     },
     "prev_executor": {
-      "public_key": "...",
-      "key_type": "..."
+      "key_material": {
+        "public_key": "...",
+        "alg": "..."
+      }
     },
-    "provenance": { "prev": "sha256:...", "hop": 2 }
+    "provenance": "..."
   }
 }
 ```
@@ -1329,7 +1336,7 @@ Primary references for the PIC Model include:
 
 This document (the **PIC Specification**) is authored, developed, published, maintained, and stewarded by:
 
-**Nitro Agility S.r.l.** (the “Specification Steward”)
+**Nitro Agility S.r.l.** (the "Specification Steward")
 
 All normative text of this PIC Specification — including structure, terminology, requirements, examples, editorial content, and all subsequent edits incorporated into the canonical version — is produced and maintained under the stewardship of Nitro Agility S.r.l.
 
@@ -1368,13 +1375,13 @@ A compliant reference MUST acknowledge both roles.
 
 **Example attribution (acceptable):**
 
-> “Based on the Provenance Identity Continuity (PIC) Model created by Nicola Gallo.  
-> Conforms to the PIC Specification published and maintained by Nitro Agility S.r.l.”
+> "Based on the Provenance Identity Continuity (PIC) Model created by Nicola Gallo.  
+> Conforms to the PIC Specification published and maintained by Nitro Agility S.r.l."
 
 Attribution MUST NOT:
 
 - omit the PIC Model author when referencing the PIC Model, or
-- attribute the PIC Model’s foundational concepts and proofs to parties other than its author, or
+- attribute the PIC Model's foundational concepts and proofs to parties other than its author, or
 - represent a fork or derivative as the canonical PIC Specification without Steward designation.
 
 ---
@@ -1391,7 +1398,7 @@ Derivative works (modified specifications, extensions, profiles, or adaptations)
 Implementations (software libraries, SDKs, middleware, gateways, services):
 
 - MAY claim authorship of the implementation code,
-- MUST NOT claim authorship of the PIC Model’s foundational concepts, invariants, or proofs.
+- MUST NOT claim authorship of the PIC Model's foundational concepts, invariants, or proofs.
 
 ---
 
@@ -1399,7 +1406,7 @@ Implementations (software libraries, SDKs, middleware, gateways, services):
 
 #### B.7.1 PIC Spec Contributors
 
-“PIC Spec Contributors” are individuals or organizations that contribute text, reviews, examples, or discussion to the PIC Specification repositories.
+"PIC Spec Contributors" are individuals or organizations that contribute text, reviews, examples, or discussion to the PIC Specification repositories.
 
 Contributions by **Nicola Gallo**, **Antonio Radesca**, and **any other employee, associate, contractor, or co-founder of Nitro Agility S.r.l.** to the PIC Specification are made **on behalf of Nitro Agility S.r.l.**, and **not in a personal capacity**. All such contributions are incorporated as part of the Nitro Agility–stewarded specification.
 
@@ -1414,7 +1421,7 @@ The Specification Steward (Nitro Agility S.r.l.) retains full editorial and gove
 
 #### B.7.2 External Contributors
 
-External contributors (i.e., contributors not acting on behalf of Nitro Agility S.r.l.) contribute on an “as-is” basis.
+External contributors (i.e., contributors not acting on behalf of Nitro Agility S.r.l.) contribute on an "as-is" basis.
 
 External contributors:
 
@@ -1509,7 +1516,7 @@ This recognition does **not**:
 
 To the maximum extent permitted by applicable law, **Nicola Gallo** disclaims all liability for any loss or damages arising from the use of this specification or from any implementation, deployment, product, or service based on it.
 
-The PIC Model author’s role is strictly limited to authorship of academic publications referenced by this specification.  
+The PIC Model author's role is strictly limited to authorship of academic publications referenced by this specification.  
 All operational, legal, and commercial responsibility for this specification rests with the **Specification Steward (Nitro Agility S.r.l.)**, and for implementations with their respective **implementers/operators**.
 
 ---
@@ -1572,3 +1579,4 @@ Acknowledged individuals are explicitly excluded from **all** such claims.
 - [1] Gallo, N. (2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. [doi.org/10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
 - [2] Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems (0.1-draft)*. Zenodo. [doi.org/10.5281/zenodo.17777421](https://doi.org/10.5281/zenodo.17777421)
 - [3] Gallo, N. (2025). *Authority is a Continuous System. (0.1-draft)*. Zenodo. [doi.org/10.5281/zenodo.17860199](https://doi.org/10.5281/zenodo.17860199)
+- 
