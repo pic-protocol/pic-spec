@@ -596,9 +596,9 @@ The following JSON illustrates one possible encoding. This structure is non-norm
   "issuer": "https://federation.example.com",
   "signature": "base64url...",
   "payload": {
-    "hop": 0,
     "p_0": "https://idp.example.com/users/alice",
     "ops": ["read:/user/*", "write:/user/*"],
+    "hop": 0,
     "executor": {
       "binding": {
         "federation": "https://trust.example.com",
@@ -627,9 +627,9 @@ The following JSON illustrates one possible encoding. This structure is non-norm
   "issuer": "https://cat.example.com",
   "signature": "base64url...",
   "payload": {
-    "hop": 2,
     "p_0": "https://idp.example.com/users/alice",
     "ops": ["read:/user/*"],
+    "hop": 2,
     "executor": {
       "binding": {
         "federation": "https://trust.example.com",
@@ -730,9 +730,9 @@ The following JSON illustrates one possible encoding. This structure is non-norm
       "issuer": "https://cat.example.com",
       "signature": "base64url...",
       "payload": {
-        "hop": 1,
         "p_0": "https://idp.example.com/users/alice",
         "ops": ["read:/user/*", "write:/user/*"],
+        "hop": 1,
         "executor": {
           "binding": {
             "federation": "https://trust.example.com",
@@ -964,9 +964,9 @@ E_{n-1}                              E_n                              E_{n+1}
   "issuer": "https://cat.example.com",
   "signature": "base64url...",
   "payload": {
-    "hop": 2,
     "p_0": "https://idp.example.com/users/alice",
     "ops": ["read:/user/*"],
+    "hop": 2,
     "executor": {
       "binding": {
         "federation": "https://trust.example.com",
