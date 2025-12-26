@@ -549,11 +549,13 @@ Governance decides **whether** execution may continue.
 
 ## 4. Data Structures
 
-This section defines normative data structures for PIC.
+This section defines data structures for PIC.
 Examples are **informative**. Protocol encodings are defined in separate PIC Protocol specifications.
 
-> **NOTE**: Identifiers in examples use HTTPS URLs for neutrality.
-> PIC is identifier-agnostic. Implementations MAY use DIDs, URNs, SPIFFE IDs, X.509 subjects, or any identifier scheme that satisfies the Trust Model requirements.
+> **NOTE**: This section is **informative**. Field names, JSON structures, and table requirements describe recommended characteristics for interoperable implementations. They are not normative requirements of the PIC Model. Concrete field names, encodings, and serialization formats are defined in PIC Protocol specifications.
+
+> **NOTE**: Identifiers in examples use HTTPS URLs for neutrality.  
+> PIC is identifier-agnostic. Implementations MAY use DIDs, URNs, SPIFFE IDs, X.509 subjects, or any identifier scheme that satisfies the Trust Model requirements.  
 > Concrete identifier formats are defined in PIC Protocol specifications.
 
 ---
@@ -565,23 +567,23 @@ Authority state at execution hop *i*.
 - PCA_0 MUST be signed by Federation Bridge
 - PCA_{i>0} MUST be signed by CAT
 
-**Required Characteristics**:
+**Recommended Characteristics**:
 
 | Characteristic                | Requirement | Description                                              |
 |-------------------------------|-------------|----------------------------------------------------------|
-| `issuer`                      | MUST        | Identifier of signing entity (Federation Bridge or CAT)  |
-| `signature`                   | MUST        | Cryptographic signature over payload                     |
-| `hop`                         | MUST        | Position in causal chain (0 for PCA_0)                   |
-| `p_0`                         | MUST        | Immutable reference to origin principal                  |
-| `ops`                         | MUST        | Operation set (`ops_i ⊆ ops_{i-1}`)                      |
-| `executor`                    | MUST        | Binding for executing entity                             |
-| `executor.binding`            | MUST        | Executor identity (federation, namespace, service)       |
-| `provenance`                  | MUST        | Causal chain reference (null for PCA_0)                  |
-| `provenance.cat`              | MUST        | Predecessor PCA issuer, signature, and key               |
-| `provenance.executor`         | MUST        | Predecessor executor issuer, signature, and key          |
-| `constraints`                 | MAY         | Bounds on PCA validity                                   |
-| `constraints.temporal`        | MAY         | Time constraints (iat, exp, nbf)                         |
-| `constraints.environment`     | MAY         | Contextual constraints                                   |
+| `issuer`                      | Required    | Identifier of signing entity (Federation Bridge or CAT)  |
+| `signature`                   | Required    | Cryptographic signature over payload                     |
+| `hop`                         | Required    | Position in causal chain (0 for PCA_0)                   |
+| `p_0`                         | Required    | Immutable reference to origin principal                  |
+| `ops`                         | Required    | Operation set (`ops_i ⊆ ops_{i-1}`)                      |
+| `executor`                    | Required    | Binding for executing entity                             |
+| `executor.binding`            | Required    | Executor identity (federation, namespace, service)       |
+| `provenance`                  | Required    | Causal chain reference (null for PCA_0)                  |
+| `provenance.cat`              | Required    | Predecessor PCA issuer, signature, and key               |
+| `provenance.executor`         | Required    | Predecessor executor issuer, signature, and key          |
+| `constraints`                 | Optional    | Bounds on PCA validity                                   |
+| `constraints.temporal`        | Optional    | Time constraints (iat, exp, nbf)                         |
+| `constraints.environment`     | Optional    | Contextual constraints                                   |
 
 > **NOTE**: Concrete field names, encodings, and serialization formats are defined in PIC Protocol specifications.
 
@@ -690,22 +692,22 @@ A PCC MUST provide:
 
 Proof constructed by Executor, submitted to CAT.
 
-**Required Characteristics**:
+**Recommended Characteristics**:
 
 | Characteristic              | Requirement | Description                                       |
 |-----------------------------|-------------|---------------------------------------------------|
-| `issuer`                    | MUST        | Identifier of signing executor (e.g., SPIFFE ID)  |
-| `signature`                 | MUST        | Executor signature over bundle                    |
-| `predecessor`               | MUST        | Full PCA received from predecessor                |
-| `successor`                 | MUST        | Proposed authority for next hop                   |
-| `successor.ops`             | MUST        | Requested operations (⊆ predecessor.ops)          |
-| `successor.executor`        | MAY         | Next executor binding (if known)                  |
-| `successor.constraints`     | MAY         | Restricted constraints (⊆ predecessor.constraints)|
-| `proof`                     | MUST        | Executor authentication                           |
-| `proof.poi`                 | MUST        | Proof of Identity (type + value)                  |
-| `proof.pop`                 | MUST        | Proof of Possession (type + value)                |
-| `proof.key_material`        | MUST        | Public key for signature verification             |
-| `proof.challenge`           | IF ISSUED   | Response to PCC                                   |
+| `issuer`                    | Required    | Identifier of signing executor (e.g., SPIFFE ID)  |
+| `signature`                 | Required    | Executor signature over bundle                    |
+| `predecessor`               | Required    | Full PCA received from predecessor                |
+| `successor`                 | Required    | Proposed authority for next hop                   |
+| `successor.ops`             | Required    | Requested operations (⊆ predecessor.ops)          |
+| `successor.executor`        | Optional    | Next executor binding (if known)                  |
+| `successor.constraints`     | Optional    | Restricted constraints (⊆ predecessor.constraints)|
+| `proof`                     | Required    | Executor authentication                           |
+| `proof.poi`                 | Required    | Proof of Identity (type + value)                  |
+| `proof.pop`                 | Required    | Proof of Possession (type + value)                |
+| `proof.key_material`        | Required    | Public key for signature verification             |
+| `proof.challenge`           | If issued   | Response to PCC                                   |
 
 > **NOTE**: Concrete field names and encodings are defined in PIC Protocol specifications.
 
