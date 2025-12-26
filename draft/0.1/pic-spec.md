@@ -567,53 +567,110 @@ Authority state at execution hop *i*.
 
 **Required Characteristics**:
 
-| Characteristic   | Requirement | Description                                              |
-|------------------|-------------|----------------------------------------------------------|
-| `issuer`         | MUST        | Identifier of signing entity (Federation Bridge or CAT)  |
-| `signature`      | MUST        | Cryptographic signature over authority state             |
-| `p_0`            | MUST        | Immutable reference to origin principal                  |
-| `ops`            | MUST        | Operation set (`ops_i ⊆ ops_{i-1}`)                      |
-| `executor`       | MUST        | Binding and key material for executing entity            |
-| `prev_executor`  | MUST        | Key material of predecessor (null for PCA_0)             |
-| `provenance`     | MUST        | Reference to causal chain                                |
-| `temporal`       | MAY         | Time constraints (issuance, expiration)                  |
-| `context`        | MAY         | Additional constraints                                   |
+| Characteristic                | Requirement | Description                                              |
+|-------------------------------|-------------|----------------------------------------------------------|
+| `issuer`                      | MUST        | Identifier of signing entity (Federation Bridge or CAT)  |
+| `signature`                   | MUST        | Cryptographic signature over payload                     |
+| `hop`                         | MUST        | Position in causal chain (0 for PCA_0)                   |
+| `p_0`                         | MUST        | Immutable reference to origin principal                  |
+| `ops`                         | MUST        | Operation set (`ops_i ⊆ ops_{i-1}`)                      |
+| `executor`                    | MUST        | Binding for executing entity                             |
+| `executor.binding`            | MUST        | Executor identity (federation, namespace, service)       |
+| `provenance`                  | MUST        | Causal chain reference (null for PCA_0)                  |
+| `provenance.cat`              | MUST        | Predecessor PCA issuer, signature, and key               |
+| `provenance.executor`         | MUST        | Predecessor executor issuer, signature, and key          |
+| `constraints`                 | MAY         | Bounds on PCA validity                                   |
+| `constraints.temporal`        | MAY         | Time constraints (iat, exp, nbf)                         |
+| `constraints.environment`     | MAY         | Contextual constraints                                   |
 
 > **NOTE**: Concrete field names, encodings, and serialization formats are defined in PIC Protocol specifications.
 
-**Example (INFORMATIVE)**:
+**Example PCA_0 (INFORMATIVE)**:
 
 The following JSON illustrates one possible encoding. This structure is non-normative.
 
 ```json
 {
-  "issuer": "...",
-  "signature": "...",
+  "issuer": "https://federation.example.com",
+  "signature": "base64url...",
   "payload": {
+    "hop": 0,
     "p_0": "https://idp.example.com/users/alice",
     "ops": ["read:/user/*", "write:/user/*"],
     "executor": {
       "binding": {
         "federation": "https://trust.example.com",
-        "namespace": "nomad"
-      },
-      "key_material": {
-        "public_key": "base64url...",
-        "alg": "ES256"
+        "namespace": "prod",
+        "service": "api-gateway"
       }
     },
-    "prev_executor": null,
-    "provenance": {
-      "prev": null,
-      "hop": 0
-    },
-    "temporal": {
-      "iat": "2025-12-11T10:00:00Z",
-      "exp": "2025-12-11T11:00:00Z"
+    "provenance": null,
+    "constraints": {
+      "temporal": {
+        "iat": "2025-12-11T10:00:00Z",
+        "exp": "2025-12-11T11:00:00Z"
+      },
+      "environment": {
+        "regions": ["eu-west-1"]
+      }
     }
   }
 }
 ```
+
+**Example PCA_n (INFORMATIVE)**:
+
+```json
+{
+  "issuer": "https://cat.example.com",
+  "signature": "base64url...",
+  "payload": {
+    "hop": 2,
+    "p_0": "https://idp.example.com/users/alice",
+    "ops": ["read:/user/*"],
+    "executor": {
+      "binding": {
+        "federation": "https://trust.example.com",
+        "namespace": "prod",
+        "service": "service-a"
+      }
+    },
+    "provenance": {
+      "cat": {
+        "issuer": "https://cat.example.com",
+        "signature": "base64url...",
+        "key": {
+          "public_key": "base64url...",
+          "alg": "ES256"
+        }
+      },
+      "executor": {
+        "issuer": "spiffe://trust.example.com/ns/prod/sa/api-gateway",
+        "signature": "base64url...",
+        "key": {
+          "public_key": "base64url...",
+          "alg": "ES256"
+        }
+      }
+    },
+    "constraints": {
+      "temporal": {
+        "iat": "2025-12-11T10:00:00Z",
+        "exp": "2025-12-11T11:00:00Z"
+      }
+    }
+  }
+}
+```
+
+**Key properties**:
+
+- `hop`: Position in causal chain (immutable per PCA)
+- `p_0`: Unchanged throughout chain (immutability)
+- `ops`: Monotonically restricted (`ops_i ⊆ ops_{i-1}`)
+- `provenance.cat`: Verifies predecessor PCA was legitimately issued
+- `provenance.executor`: Verifies PoC was signed by authorized executor
+- `constraints`: Monotonically restricted (⊆ predecessor constraints)
 
 ---
 
@@ -635,24 +692,28 @@ Proof constructed by Executor, submitted to CAT.
 
 **Required Characteristics**:
 
-| Characteristic       | Requirement | Description                                |
-|----------------------|-------------|--------------------------------------------|
-| `prev_pca`           | MUST        | PCA received from predecessor              |
-| `proposed`           | MUST        | Proposed authority for next hop            |
-| `issuer`             | MUST        | Executor authentication                    |
-| `issuer.poi`         | MUST        | Proof of Identity (type + value)           |
-| `issuer.pop`         | MUST        | Proof of Possession (type + value)         |
-| `issuer.challenge`   | IF ISSUED   | Response to PCC                            |
-| `signature`          | MUST        | Executor signature over bundle             |
+| Characteristic              | Requirement | Description                                       |
+|-----------------------------|-------------|---------------------------------------------------|
+| `issuer`                    | MUST        | Identifier of signing executor (e.g., SPIFFE ID)  |
+| `signature`                 | MUST        | Executor signature over bundle                    |
+| `predecessor`               | MUST        | Full PCA received from predecessor                |
+| `successor`                 | MUST        | Proposed authority for next hop                   |
+| `successor.ops`             | MUST        | Requested operations (⊆ predecessor.ops)          |
+| `successor.executor`        | MAY         | Next executor binding (if known)                  |
+| `successor.constraints`     | MAY         | Restricted constraints (⊆ predecessor.constraints)|
+| `proof`                     | MUST        | Executor authentication                           |
+| `proof.poi`                 | MUST        | Proof of Identity (type + value)                  |
+| `proof.pop`                 | MUST        | Proof of Possession (type + value)                |
+| `proof.key_material`        | MUST        | Public key for signature verification             |
+| `proof.challenge`           | IF ISSUED   | Response to PCC                                   |
 
 > **NOTE**: Concrete field names and encodings are defined in PIC Protocol specifications.
 
-**Validation rules for `proposed`**:
+**Validation rules for `successor`**:
 
-- `p_0` unchanged
 - `ops_{i+1} ⊆ ops_i`
-- `executor` attributes ⊆ previous attributes
-- Temporal constraints respected
+- `constraints_{i+1} ⊆ constraints_i` (temporal: exp ≤ prev.exp, nbf ≥ prev.nbf)
+- `executor.binding` attributes ⊆ predecessor binding scope
 
 **Example (INFORMATIVE)**:
 
@@ -660,71 +721,86 @@ The following JSON illustrates one possible encoding. This structure is non-norm
 
 ```json
 {
+  "issuer": "spiffe://trust.example.com/ns/prod/sa/service-a",
   "signature": "base64url...",
   "bundle": {
-    "prev_pca": {
-      "issuer": "...",
-      "signature": "...",
+    "predecessor": {
+      "issuer": "https://cat.example.com",
+      "signature": "base64url...",
       "payload": {
+        "hop": 1,
         "p_0": "https://idp.example.com/users/alice",
         "ops": ["read:/user/*", "write:/user/*"],
         "executor": {
           "binding": {
             "federation": "https://trust.example.com",
-            "namespace": "nomad"
-          },
-          "key_material": {
-            "public_key": "base64url...",
-            "alg": "ES256"
-          }
-        },
-        "prev_executor": {
-          "key_material": {
-            "public_key": "base64url...",
-            "alg": "ES256"
+            "namespace": "prod",
+            "service": "service-a"
           }
         },
         "provenance": {
-          "prev": "sha256:a3f5b9c7...",
-          "hop": 1
+          "cat": {
+            "issuer": "https://federation.example.com",
+            "signature": "base64url...",
+            "key": {
+              "public_key": "base64url...",
+              "alg": "ES256"
+            }
+          },
+          "executor": {
+            "issuer": "spiffe://trust.example.com/ns/prod/sa/api-gateway",
+            "signature": "base64url...",
+            "key": {
+              "public_key": "base64url...",
+              "alg": "ES256"
+            }
+          }
+        },
+        "constraints": {
+          "temporal": {
+            "iat": "2025-12-11T10:00:00Z",
+            "exp": "2025-12-11T11:00:00Z"
+          }
         }
       }
     },
-    "proposed": {
-      "p_0": "https://idp.example.com/users/alice",
+    "successor": {
       "ops": ["read:/user/*"],
       "executor": {
         "binding": {
           "federation": "https://trust.example.com",
-          "namespace": "nomad"
-        },
-        "key_material": {
-          "public_key": "base64url...",
-          "alg": "ES256"
+          "namespace": "prod"
         }
       },
-      "provenance": {
-        "prev": "sha256:b4e6c8d9...",
-        "hop": 2
+      "constraints": {
+        "temporal": {
+          "exp": "2025-12-11T10:30:00Z"
+        }
       }
     },
-    "issuer": {
-      "poi": { "type": "...", "value": "..." },
-      "pop": { "type": "...", "value": "..." },
-      "challenge": { "type": "...", "value": "..." }
+    "proof": {
+      "poi": { "type": "spiffe_svid", "value": "base64url..." },
+      "pop": { "type": "signature", "value": "base64url..." },
+      "challenge": { "type": "nonce", "value": "base64url..." },
+      "key_material": {
+        "public_key": "base64url...",
+        "alg": "ES256"
+      }
     }
   }
 }
 ```
 
-> **NOTE**: In this example, `prev_pca` is shown expanded for clarity.  
+> **NOTE**: In this example, `predecessor` is shown expanded for clarity.  
 > PIC Protocol specifications MAY define compact representations (e.g., base64-encoded signed structure or hash reference).
 
 **Key properties**:
 
-- `p_0`: Unchanged (immutability)
-- `ops`: Reduced from `["read:/user/*", "write:/user/*"]` to `["read:/user/*"]` (monotonicity)
-- `issuer`: Contains executor authentication proofs
+- `issuer`: Identifies who is signing this PoC
+- `predecessor`: Complete PCA for chain verification
+- `successor.ops`: Reduced from `["read:/user/*", "write:/user/*"]` to `["read:/user/*"]` (monotonicity)
+- `successor.constraints`: Reduced expiration (10:30 < 11:00)
+- `proof.key_material`: Public key to verify PoC signature
 - `signature`: Prevents tampering in transit
 
 ---
@@ -777,22 +853,36 @@ Every request MUST be cryptographically signed by the sending executor.
 
 #### 5.3.1 Executor Key Binding
 
-Each PCA binds the executor to key material for request signing:
+Executor keys are declared in PoC and recorded in PCA provenance for chain verification:
 
-| Characteristic   | Description                                          |
-|------------------|------------------------------------------------------|
-| `executor`       | Binding + key material for this executor             |
-| `prev_executor`  | Key material of predecessor (null for PCA_0)         |
+| Location                      | Description                                          |
+|-------------------------------|------------------------------------------------------|
+| `PoC.proof.key_material`      | Executor's public key for PoC signature verification |
+| `PCA.provenance.executor.key` | Recorded from PoC for future chain verification      |
 
 **Key chain across hops**:
 
 ```text
-PCA_0:  executor.key_material = K_0,  prev_executor = null
-PCA_1:  executor.key_material = K_1,  prev_executor.key_material = K_0
-PCA_2:  executor.key_material = K_2,  prev_executor.key_material = K_1
+PCA_0:  provenance = null (origin)
+        
+PoC_1:  proof.key_material = K_0 (executor signs PoC)
+        
+PCA_1:  provenance.executor.key = K_0 (recorded from PoC_1)
+        
+PoC_2:  proof.key_material = K_1 (next executor signs PoC)
+        CAT verifies: K_1 matches authorized executor
+        
+PCA_2:  provenance.executor.key = K_1 (recorded from PoC_2)
   ...
-PCA_n:  executor.key_material = K_n,  prev_executor.key_material = K_{n-1}
 ```
+
+**Verification flow**:
+
+1. Executor receives PCA_n
+2. Executor creates PoC with `proof.key_material`
+3. CAT verifies PoC signature using `proof.key_material`
+4. CAT verifies executor identity matches `proof.poi`
+5. CAT creates PCA_{n+1} with `provenance.executor.key` = `proof.key_material`
 
 #### 5.3.2 Signature Requirements
 
@@ -806,8 +896,8 @@ PCA_n:  executor.key_material = K_n,  prev_executor.key_material = K_{n-1}
 #### 5.3.3 Verification
 
 ```text
-1. Extract prev_executor.key_material from PCA
-2. Verify signature using prev_executor.key_material.public_key
+1. Extract provenance.executor.key from PCA
+2. Verify signature using provenance.executor.key.public_key
 3. Check timestamp freshness
 4. If valid → accept; if invalid → reject
 ```
@@ -821,7 +911,7 @@ E_{n-1}                              E_n                              E_{n+1}
    │                                  │                                  │
    │  ── signed_request + PCA_n ────▶ │                                  │
    │                                  │                                  │
-   │                    (1) Verify signature (prev_executor.key_material)│
+   │                    (1) Verify signature (provenance.executor.key).  │
    │                    (2) Validate PCA_n                               │
    │                    (3) Process request                              │
    │                                  │                                  │
@@ -856,7 +946,7 @@ E_{n-1}                              E_n                              E_{n+1}
 ```text
 1. Attacker intercepts PCA_n in transit
 2. Attacker creates malicious request with intercepted PCA_n
-3. Recipient extracts prev_executor.key_material from PCA_n
+3. Recipient extracts provenance.executor.key from PCA_n
 4. Recipient verifies signature → Attacker lacks private key → FAILS
 5. Request REJECTED
 
@@ -869,34 +959,52 @@ E_{n-1}                              E_n                              E_{n+1}
 
 ```json
 {
-  "issuer": "...",
-  "signature": "...",
+  "issuer": "https://cat.example.com",
+  "signature": "base64url...",
   "payload": {
+    "hop": 2,
     "p_0": "https://idp.example.com/users/alice",
     "ops": ["read:/user/*"],
     "executor": {
       "binding": {
         "federation": "https://trust.example.com",
-        "namespace": "nomad"
-      },
-      "key_material": {
-        "public_key": "...",
-        "alg": "..."
-      }
-    },
-    "prev_executor": {
-      "key_material": {
-        "public_key": "...",
-        "alg": "..."
+        "namespace": "prod",
+        "service": "service-b"
       }
     },
     "provenance": {
-      "prev": "sha256:b4e6c8d9...",
-      "hop": 2
+      "cat": {
+        "issuer": "https://cat.example.com",
+        "signature": "base64url...",
+        "key": {
+          "public_key": "base64url...",
+          "alg": "ES256"
+        }
+      },
+      "executor": {
+        "issuer": "spiffe://trust.example.com/ns/prod/sa/service-a",
+        "signature": "base64url...",
+        "key": {
+          "public_key": "base64url...",
+          "alg": "ES256"
+        }
+      }
+    },
+    "constraints": {
+      "temporal": {
+        "iat": "2025-12-11T10:00:00Z",
+        "exp": "2025-12-11T10:30:00Z"
+      }
     }
   }
 }
 ```
+
+**Verification**:
+
+- `provenance.cat` → verifies PCA_1 was legitimately signed
+- `provenance.executor` → verifies PoC_2 was signed by service-a
+- `signature` → verifies this PCA_2 is authentic
 
 ---
 
