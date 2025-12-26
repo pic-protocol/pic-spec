@@ -890,10 +890,10 @@ PCA_2:  provenance.executor.key = K_1 (recorded from PoC_2)
 
 | Element     | Purpose                    | Requirement |
 |-------------|----------------------------|-------------|
-| `payload`   | Prevents tampering         | MUST        |
-| `pca` hash  | Binds to authority chain   | MUST        |
-| `timestamp` | Freshness validation       | MUST        |
-| `nonce`     | Replay protection          | SHOULD      |
+| `payload`   | Prevents tampering         | Required    |
+| `pca` hash  | Binds to authority chain   | Required    |
+| `timestamp` | Freshness validation       | Required    |
+| `nonce`     | Replay protection          | Recommended |
 
 #### 5.3.3 Verification
 
