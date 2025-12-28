@@ -52,9 +52,9 @@ Trust Models MAY be implemented via cryptographic primitives, hardware attestati
 1. [Introduction](#1-introduction)
 2. [Terminology](#2-terminology)
 3. [Architecture and Components](#3-architecture-and-components)
-4. [Normative Data Structures and Processing Logic](#4-normative-data-structures-and-processing-logic)
-5. [Request Binding and Interception Protection](#5-request-binding-and-interception-protection)
-6. [Deployment and Adoption](#6-deployment-and-adoption-considerations)
+4. [Data Structures](#4-data-structures)
+5. [Transport, Communication, and Request Binding](#5-transport-communication-and-request-binding)
+6. [Deployment and Adoption](#6-deployment-and-adoption)
 7. [Security Considerations](#7-security-considerations)
 
 A. [Use of Automated Language Assistance](#appendix-a--use-of-automated-language-assistance)  
@@ -160,7 +160,7 @@ Each Executor MUST:
 3. **Demonstrate Continuity**: Provide valid Proof of Continuity (PoC_i)
 4. **Bind to Environment**: Be verifiably bound to its execution context
 
-An Executor MAY provide Proof of Identity (PoI) or Proof of Possession (PoP).
+An Executor MAY provide Executor Attestations (EA) with associated Proof of Possession (PoP).
 These establish executor verification but DO NOT grant authority, alter `p_0`, or establish continuity.
 
 Authority derives from causal execution state, not from executor identity or credential possession.
@@ -268,19 +268,45 @@ PoC_i is **the fundamental primitive** that distinguishes PIC from possession-ba
 PoC_i cannot be replayed, transferred, reused, or forged.
 It is bound to the specific hop, predecessor, executor, and origin.
 
-### 2.15 Proof of Identity (PoI)
+### 2.15 Executor Attestation (EA)
 
-A proof that asserts a claimed identity. PoI establishes "who" the executor claims to be. It is insufficient to establish authority continuity.
+A verifiable document that attests properties of an Executor: identity, environment, or capabilities.
 
-PoI DOES NOT: grant authority, establish continuity, prevent confused deputy, or satisfy PIC requirements.
+Executor Attestations MAY include:
+
+- **Identity credentials**: SPIFFE SVID, X.509 certificate, DID document
+- **Verifiable presentations**: VP containing one or more VCs
+- **Environment attestations**: TEE quotes, hardware measurements
+
+Each Executor Attestation:
+
+1. Contains or references the public key bound to the attested property
+2. MAY require Proof of Possession to demonstrate control
+3. Is validated by the CAT according to its type
+
+Executor Attestations establish "who" or "what" the executor is.
+They DO NOT: grant authority, establish continuity, prevent confused deputy, or satisfy PIC requirements alone.
+
+> **NOTE**: The public key for signature verification is extracted from the attestation credential itself.
+> No separate `key_material` field is required.
 
 ### 2.16 Proof of Possession (PoP)
 
-A proof that demonstrates control over an artifact, credential, or secret. PoP establishes ownership but does not provide causal continuity, authority derivation from origin, or monotonic restriction.
+A proof that demonstrates control over a credential presented in an Executor Attestation.
 
-PoP MAY contribute to executor verification. It does not constitute or replace Proof of Continuity.
+PoP is **per-attestation**: each attestation that requires holder binding includes its own proof of possession.
 
-PoP-based systems derive authority from artifact possession rather than execution provenance. This makes them vulnerable to confused deputy attacks [[1]](#references).
+| Attestation Type | PoP Required? | Mechanism                              |
+|------------------|---------------|----------------------------------------|
+| SPIFFE SVID      | Yes           | Signature with certificate private key |
+| VP (holder-bound)| No            | VP signature is implicit PoP           |
+| TEE Quote        | No            | Hardware-bound, non-transferable       |
+| JWT + DPoP       | Yes           | DPoP proof                             |
+| Bearer token     | No            | No binding (insecure)                  |
+
+PoP MUST sign contextual data (protected header + payload) to prevent replay and rebinding attacks.
+
+PoP establishes credential control but does not provide causal continuity, authority derivation from origin, or monotonic restriction.
 
 ### 2.17 Authority Scope and Application Logic
 
@@ -320,6 +346,7 @@ Scenario B (Application bug):
   Bob includes result in response to Alice
   PIC not violated—CAT never saw the operation
   ✗ Application bug: Bob leaked privileged data
+
 ```
 
 **Key Distinction**:
@@ -371,7 +398,7 @@ The CAT:
 - MAY consult Governance for policy constraints
 
 > **CRITICAL PROPERTY**: The CAT has no application logic—only validation and generation.
-> Validation of PoI and PoP formats is protocol-specific.
+> Validation of Executor Attestation and PoP formats is protocol-specific.
 
 #### 3.1.3 Governance
 
@@ -413,19 +440,20 @@ E_{n-1}                         E_n                          E_{n+1}
    │                             ├────────────▶ CAT             │
    │                             │ (2) Receive PCC_{n+1}        │
    │                             │◀────────────                 │
-   │                             │ (3) Submit PoC + PoI + PoP   │
+   │                             │ (3) Submit PoC + EA + PoP    │
    │                             ├────────────▶ CAT ──▶ Gov     │
    │                             │ (4) Receive PCA_{n+1}        │
    │                             │◀────────────                 │
    │                             │                              │
    │                             │  ──── PCA_{n+1} ───────────▶ │
+
 ```
 
 **Flow**:
 
 1. E_n receives PCA_n from predecessor
 2. E_n requests challenge (PCC_{n+1}) from CAT
-3. E_n constructs PoC_{n+1} (proving continuity) with PoI and PoP (proving executor identity and credential control)
+3. E_n constructs PoC_{n+1} (proving continuity) with Executor Attestations and per-attestation PoP
 4. CAT validates all proofs under Trust Model, enforces monotonicity, MAY consult Governance
 5. CAT generates and signs PCA_{n+1}
 6. E_n executes with PCA_n, passes PCA_{n+1} to successor(s)
@@ -450,6 +478,7 @@ The CAT MAY be deployed in different configurations depending on trust boundarie
 │          │     CAT     │                │
 │          └─────────────┘                │
 └─────────────────────────────────────────┘
+
 ```
 
 Single CAT service.
@@ -468,6 +497,7 @@ Typical for microservices, cloud-native applications.
        │           │           │
        ▼           ▼           ▼
       E_n         E_n         E_n
+
 ```
 
 Distributed validation.
@@ -486,6 +516,7 @@ Typical for trustless environments, blockchain systems.
 │                 │ Trust Model           │
 └─────────────────┘ Verification          │
                         └─────────────────┘
+
 ```
 
 Cross-domain execution.
@@ -500,11 +531,11 @@ Logical flow unchanged; deployment boundary collapsed.
 
 ### 3.4 Separation of Concerns
 
-| Component       | Does                                                      | Cannot Do                                            |
-|-----------------|-----------------------------------------------------------|------------------------------------------------------|
-| **Executor**    | Initiate transitions, construct PoC, execute within ops_i | Forge PCA, expand authority, bypass CAT              |
-| **CAT**         | Validate PoC, enforce monotonicity, sign PCA              | Be bypassed, grant authority without PoC             |
-| **Governance**  | Evaluate policies, apply constraints, revoke              | Issue PCA, replace CAT validation, expand authority  |
+| Component      | Does                                                       | Cannot Do                                           |
+|----------------|------------------------------------------------------------|-----------------------------------------------------|
+| **Executor**   | Initiate transitions, construct PoC, execute within ops_i  | Forge PCA, expand authority, bypass CAT             |
+| **CAT**        | Validate PoC, enforce monotonicity, sign PCA               | Be bypassed, grant authority without PoC            |
+| **Governance** | Evaluate policies, apply constraints, revoke               | Issue PCA, replace CAT validation, expand authority |
 
 Executors **initiate** and **exchange**. CAT **validates** and **signs**. Governance **constrains**.
 
@@ -569,21 +600,22 @@ Authority state at execution hop *i*.
 
 **Recommended Characteristics**:
 
-| Characteristic                | Requirement | Description                                              |
-|-------------------------------|-------------|----------------------------------------------------------|
-| `issuer`                      | Required    | Identifier of signing entity (Federation Bridge or CAT)  |
-| `signature`                   | Required    | Cryptographic signature over payload                     |
-| `hop`                         | Required    | Position in causal chain (0 for PCA_0)                   |
-| `p_0`                         | Required    | Immutable reference to origin principal                  |
-| `ops`                         | Required    | Operation set (`ops_i ⊆ ops_{i-1}`)                      |
-| `executor`                    | Required    | Binding for executing entity                             |
-| `executor.binding`            | Required    | Executor identity (federation, namespace, service)       |
-| `provenance`                  | Required    | Causal chain reference (null for PCA_0)                  |
-| `provenance.cat`              | Required    | Predecessor PCA issuer, signature, and key               |
-| `provenance.executor`         | Required    | Predecessor executor issuer, signature, and key          |
-| `constraints`                 | Optional    | Bounds on PCA validity                                   |
-| `constraints.temporal`        | Optional    | Time constraints (iat, exp, nbf)                         |
-| `constraints.environment`     | Optional    | Contextual constraints                                   |
+| Characteristic             | Requirement | Description                                             |
+|----------------------------|-------------|---------------------------------------------------------|
+| `alg`                      | Required    | Signature algorithm (in protected header)               |
+| `kid`                      | Required    | Key identifier of signing entity (Federation Bridge or CAT) |
+| `signature`                | Required    | Cryptographic signature over payload                    |
+| `hop`                      | Required    | Position in causal chain (0 for PCA_0)                  |
+| `p_0`                      | Required    | Immutable reference to origin principal                 |
+| `ops`                      | Required    | Operation set (`ops_i ⊆ ops_{i-1}`)                     |
+| `executor`                 | Required    | Binding for executing entity                            |
+| `executor.binding`         | Required    | Executor identity (federation, namespace, service)      |
+| `provenance`               | Required    | Causal chain reference (null for PCA_0)                 |
+| `provenance.cat`           | Required    | Predecessor PCA kid and signature                       |
+| `provenance.executor`      | Required    | Predecessor executor kid and signature                  |
+| `constraints`              | Optional    | Bounds on PCA validity                                  |
+| `constraints.temporal`     | Optional    | Time constraints (iat, exp, nbf)                        |
+| `constraints.environment`  | Optional    | Contextual constraints                                  |
 
 > **NOTE**: Concrete field names, encodings, and serialization formats are defined in PIC Protocol specifications.
 
@@ -593,8 +625,10 @@ The following JSON illustrates one possible encoding. This structure is non-norm
 
 ```json
 {
-  "issuer": "https://federation.example.com",
-  "signature": "base64url...",
+  "protected": {
+    "alg": "EdDSA",
+    "kid": "https://federation.example.com/keys/1"
+  },
   "payload": {
     "hop": 0,
     "p_0": "https://idp.example.com/users/alice",
@@ -616,16 +650,20 @@ The following JSON illustrates one possible encoding. This structure is non-norm
         "regions": ["eu-west-1"]
       }
     }
-  }
+  },
+  "signature": "base64url..."
 }
+
 ```
 
 **Example PCA_n (INFORMATIVE)**:
 
 ```json
 {
-  "issuer": "https://cat.example.com",
-  "signature": "base64url...",
+  "protected": {
+    "alg": "EdDSA",
+    "kid": "https://cat.example.com/keys/1"
+  },
   "payload": {
     "hop": 2,
     "p_0": "https://idp.example.com/users/alice",
@@ -639,20 +677,12 @@ The following JSON illustrates one possible encoding. This structure is non-norm
     },
     "provenance": {
       "cat": {
-        "issuer": "https://cat.example.com",
-        "signature": "base64url...",
-        "key": {
-          "public_key": "base64url...",
-          "alg": "ES256"
-        }
+        "kid": "https://cat.example.com/keys/1",
+        "signature": "base64url..."
       },
       "executor": {
-        "issuer": "spiffe://trust.example.com/ns/prod/sa/api-gateway",
-        "signature": "base64url...",
-        "key": {
-          "public_key": "base64url...",
-          "alg": "ES256"
-        }
+        "kid": "spiffe://trust.example.com/ns/prod/sa/api-gateway",
+        "signature": "base64url..."
       }
     },
     "constraints": {
@@ -661,8 +691,10 @@ The following JSON illustrates one possible encoding. This structure is non-norm
         "exp": "2025-12-11T11:00:00Z"
       }
     }
-  }
+  },
+  "signature": "base64url..."
 }
+
 ```
 
 **Key properties**:
@@ -692,24 +724,29 @@ A PCC MUST provide:
 
 Proof constructed by Executor, submitted to CAT.
 
+PoC uses COSE_Sign1 structure with challenge in the protected header.
+
 **Recommended Characteristics**:
 
-| Characteristic              | Requirement | Description                                       |
-|-----------------------------|-------------|---------------------------------------------------|
-| `issuer`                    | Required    | Identifier of signing executor (e.g., SPIFFE ID)  |
-| `signature`                 | Required    | Executor signature over bundle                    |
-| `predecessor`               | Required    | Full PCA received from predecessor                |
-| `successor`                 | Required    | Proposed authority for next hop                   |
-| `successor.ops`             | Required    | Requested operations (⊆ predecessor.ops)          |
-| `successor.executor`        | Optional    | Next executor binding (if known)                  |
-| `successor.constraints`     | Optional    | Restricted constraints (⊆ predecessor.constraints)|
-| `proof`                     | Required    | Executor authentication                           |
-| `proof.poi`                 | Required    | Proof of Identity (type + value)                  |
-| `proof.pop`                 | Required    | Proof of Possession (type + value)                |
-| `proof.key_material`        | Required    | Public key for signature verification             |
-| `proof.challenge`           | If issued   | Response to PCC                                   |
+| Characteristic                | Location         | Requirement | Description                                        |
+|-------------------------------|------------------|-------------|----------------------------------------------------|
+| `alg`                         | Protected header | Required    | Signature algorithm (e.g., EdDSA, ES256)           |
+| `kid`                         | Protected header | Required    | Key identifier (SPIFFE ID, DID, URL, fingerprint)  |
+| `challenge`                   | Protected header | If issued   | Response to PCC (nonce from CAT)                   |
+| `predecessor`                 | Payload          | Required    | Full PCA received from predecessor                 |
+| `successor`                   | Payload          | Required    | Proposed authority for next hop                    |
+| `successor.ops`               | Payload          | Required    | Requested operations (⊆ predecessor.ops)           |
+| `successor.executor`          | Payload          | Optional    | Next executor binding (if known)                   |
+| `successor.constraints`       | Payload          | Optional    | Restricted constraints (⊆ predecessor.constraints) |
+| `attestations`                | Payload          | Required    | Executor Attestations array                        |
+| `attestations[].type`         | Payload          | Required    | Attestation type (spiffe_svid, vp, tee_quote, etc) |
+| `attestations[].credential`   | Payload          | Required    | The credential (contains public key)               |
+| `attestations[].pop`          | Payload          | If required | Proof of Possession for this attestation           |
+| `signature`                   | COSE structure   | Required    | Signature over protected header + payload          |
 
 > **NOTE**: Concrete field names and encodings are defined in PIC Protocol specifications.
+
+**PoP binding**: Each `attestations[].pop` MUST sign `hash(protected_header + payload)` to bind the attestation to this specific PoC context. This prevents detachment and rebinding attacks.
 
 **Validation rules for `successor`**:
 
@@ -719,16 +756,21 @@ Proof constructed by Executor, submitted to CAT.
 
 **Example (INFORMATIVE)**:
 
-The following JSON illustrates one possible encoding. This structure is non-normative.
+The following illustrates one possible COSE_Sign1 encoding. This structure is non-normative.
 
 ```json
 {
-  "issuer": "spiffe://trust.example.com/ns/prod/sa/service-a",
-  "signature": "base64url...",
-  "bundle": {
+  "protected": {
+    "alg": "EdDSA",
+    "kid": "spiffe://trust.example.com/ns/prod/sa/service-a",
+    "challenge": "abc123..."
+  },
+  "payload": {
     "predecessor": {
-      "issuer": "https://cat.example.com",
-      "signature": "base64url...",
+      "protected": {
+        "alg": "EdDSA",
+        "kid": "https://cat.example.com/keys/1"
+      },
       "payload": {
         "hop": 1,
         "p_0": "https://idp.example.com/users/alice",
@@ -742,20 +784,12 @@ The following JSON illustrates one possible encoding. This structure is non-norm
         },
         "provenance": {
           "cat": {
-            "issuer": "https://federation.example.com",
-            "signature": "base64url...",
-            "key": {
-              "public_key": "base64url...",
-              "alg": "ES256"
-            }
+            "kid": "https://federation.example.com/keys/1",
+            "signature": "base64url..."
           },
           "executor": {
-            "issuer": "spiffe://trust.example.com/ns/prod/sa/api-gateway",
-            "signature": "base64url...",
-            "key": {
-              "public_key": "base64url...",
-              "alg": "ES256"
-            }
+            "kid": "spiffe://trust.example.com/ns/prod/sa/api-gateway",
+            "signature": "base64url..."
           }
         },
         "constraints": {
@@ -764,7 +798,8 @@ The following JSON illustrates one possible encoding. This structure is non-norm
             "exp": "2025-12-11T11:00:00Z"
           }
         }
-      }
+      },
+      "signature": "base64url..."
     },
     "successor": {
       "ops": ["read:/user/*"],
@@ -780,17 +815,25 @@ The following JSON illustrates one possible encoding. This structure is non-norm
         }
       }
     },
-    "proof": {
-      "poi": { "type": "spiffe_svid", "value": "base64url..." },
-      "pop": { "type": "signature", "value": "base64url..." },
-      "challenge": { "type": "nonce", "value": "base64url..." },
-      "key_material": {
-        "public_key": "base64url...",
-        "alg": "ES256"
+    "attestations": [
+      {
+        "type": "spiffe_svid",
+        "credential": "base64url<X.509 certificate>...",
+        "pop": "base64url<signature over hash(protected+payload)>..."
+      },
+      {
+        "type": "vp",
+        "credential": "base64url<Verifiable Presentation>..."
+      },
+      {
+        "type": "tee_quote",
+        "credential": "base64url<SGX/TDX quote>..."
       }
-    }
-  }
+    ]
+  },
+  "signature": "base64url..."
 }
+
 ```
 
 > **NOTE**: In this example, `predecessor` is shown expanded for clarity.  
@@ -798,12 +841,30 @@ The following JSON illustrates one possible encoding. This structure is non-norm
 
 **Key properties**:
 
-- `issuer`: Identifies who is signing this PoC
-- `predecessor`: Complete PCA for chain verification
-- `successor.ops`: Reduced from `["read:/user/*", "write:/user/*"]` to `["read:/user/*"]` (monotonicity)
-- `successor.constraints`: Reduced expiration (10:30 < 11:00)
-- `proof.key_material`: Public key to verify PoC signature
-- `signature`: Prevents tampering in transit
+- `protected.kid`: Identifies which key verifies the PoC signature (resolved from attestation)
+- `protected.challenge`: Freshness binding, covered by signature
+- `attestations[]`: Multiple attestations supported (identity, environment, capabilities)
+- `attestations[].pop`: Per-attestation proof of possession, signs full context
+- `attestations[].credential`: Contains public key for PoP verification
+- `signature`: COSE signature over `protected || payload`, proves possession of key identified by `kid`
+
+**CAT Verification Flow**:
+
+```text
+1. Parse protected header, extract kid and challenge
+2. Locate attestation matching kid
+3. Extract public key from attestation.credential
+4. Verify PoC signature using extracted public key
+5. For each attestation requiring PoP:
+   a. Compute context_hash = hash(protected || payload)
+   b. Extract public key from attestation.credential
+   c. Verify attestation.pop against context_hash
+6. Validate predecessor PCA signature
+7. Enforce monotonicity: successor.ops ⊆ predecessor.ops
+8. If challenge issued: verify protected.challenge matches PCC
+9. If all valid → issue PCA_{i+1}
+
+```
 
 ---
 
@@ -816,7 +877,7 @@ This specification does not mandate encodings. PIC Protocol specifications MUST 
 3. CAT identifier format
 4. Challenge-response mechanism
 5. Wire format (HTTP, gRPC, etc.)
-6. PoI/PoP validation rules
+6. Executor Attestation and PoP validation rules
 
 ---
 
@@ -832,10 +893,10 @@ This section defines transport and request binding requirements for PIC implemen
 
 PIC requires two complementary protection layers:
 
-| Layer              | Purpose                              | Requirement |
-|--------------------|--------------------------------------|-------------|
-| **Transport**      | Channel confidentiality & integrity  | RECOMMENDED |
-| **Request Binding**| Authority chain binding              | REQUIRED    |
+| Layer             | Purpose                             | Requirement |
+|-------------------|-------------------------------------|-------------|
+| **Transport**     | Channel confidentiality & integrity | RECOMMENDED |
+| **Request Binding**| Authority chain binding            | REQUIRED    |
 
 Request binding is REQUIRED regardless of transport security.
 
@@ -855,53 +916,60 @@ Every request MUST be cryptographically signed by the sending executor.
 
 #### 5.3.1 Executor Key Binding
 
-Executor keys are declared in PoC and recorded in PCA provenance for chain verification:
+Executor keys are declared in PoC attestations and recorded in PCA provenance for chain verification:
 
-| Location                      | Description                                          |
-|-------------------------------|------------------------------------------------------|
-| `PoC.proof.key_material`      | Executor's public key for PoC signature verification |
-| `PCA.provenance.executor.key` | Recorded from PoC for future chain verification      |
+| Location                          | Description                                    |
+|-----------------------------------|------------------------------------------------|
+| `PoC.protected.kid`               | Identifies signing key (SPIFFE ID, DID, etc.)  |
+| `PoC.attestations[].credential`   | Contains public key for verification           |
+| `PCA.provenance.executor.kid`     | Recorded from PoC for future chain verification|
 
 **Key chain across hops**:
 
 ```text
 PCA_0:  provenance = null (origin)
         
-PoC_1:  proof.key_material = K_0 (executor signs PoC)
+PoC_1:  protected.kid = "spiffe://...service-a"
+        attestations[0].credential contains K_0
         
-PCA_1:  provenance.executor.key = K_0 (recorded from PoC_1)
+PCA_1:  provenance.executor.kid = "spiffe://...service-a"
         
-PoC_2:  proof.key_material = K_1 (next executor signs PoC)
+PoC_2:  protected.kid = "spiffe://...service-b"
+        attestations[0].credential contains K_1
         CAT verifies: K_1 matches authorized executor
         
-PCA_2:  provenance.executor.key = K_1 (recorded from PoC_2)
+PCA_2:  provenance.executor.kid = "spiffe://...service-b"
   ...
+
 ```
 
 **Verification flow**:
 
 1. Executor receives PCA_n
-2. Executor creates PoC with `proof.key_material`
-3. CAT verifies PoC signature using `proof.key_material`
-4. CAT verifies executor identity matches `proof.poi`
-5. CAT creates PCA_{n+1} with `provenance.executor.key` = `proof.key_material`
+2. Executor creates PoC with `protected.kid` and matching attestation
+3. CAT extracts public key from attestation credential
+4. CAT verifies PoC signature using extracted public key
+5. CAT verifies attestation PoP (if required) against `hash(protected + payload)`
+6. CAT creates PCA_{n+1} with `provenance.executor.kid` from PoC
 
 #### 5.3.2 Signature Requirements
 
-| Element     | Purpose                    | Requirement |
-|-------------|----------------------------|-------------|
-| `payload`   | Prevents tampering         | Required    |
-| `pca` hash  | Binds to authority chain   | Required    |
-| `timestamp` | Freshness validation       | Required    |
-| `nonce`     | Replay protection          | Recommended |
+| Element     | Purpose                  | Requirement |
+|-------------|--------------------------|-------------|
+| `payload`   | Prevents tampering       | Required    |
+| `pca` hash  | Binds to authority chain | Required    |
+| `timestamp` | Freshness validation     | Required    |
+| `nonce`     | Replay protection        | Recommended |
 
 #### 5.3.3 Verification
 
 ```text
-1. Extract provenance.executor.key from PCA
-2. Verify signature using provenance.executor.key.public_key
-3. Check timestamp freshness
-4. If valid → accept; if invalid → reject
+1. Extract provenance.executor.kid from PCA
+2. Resolve public key from kid (via attestation or key resolution)
+3. Verify signature using public key
+4. Check timestamp freshness
+5. If valid → accept; if invalid → reject
+
 ```
 
 ---
@@ -913,7 +981,7 @@ E_{n-1}                              E_n                              E_{n+1}
    │                                  │                                  │
    │  ── signed_request + PCA_n ────▶ │                                  │
    │                                  │                                  │
-   │                    (1) Verify signature (provenance.executor.key).  │
+   │                    (1) Verify signature (provenance.executor.kid).  │
    │                    (2) Validate PCA_n                               │
    │                    (3) Process request                              │
    │                                  │                                  │
@@ -922,20 +990,21 @@ E_{n-1}                              E_n                              E_{n+1}
    │                                  │         (1) Verify signature     │
    │                                  │         (2) Validate PCA_{n+1}   │
    │                                  │         (3) Process request      │
+
 ```
 
 ---
 
 ### 5.5 Security Comparison
 
-| System             | Request Binding | Chain Binding | Interception Protection |
-|--------------------|-----------------|---------------|-------------------------|
-| OAuth (bearer)     | ✗ None          | ✗ None        | ✗ Vulnerable            |
-| OAuth + DPoP       | ✓ Token↔Key     | ✗ None        | ◐ Single hop            |
-| mTLS only          | ✗ None          | ✗ None        | ◐ Transport only        |
-| Macaroons          | ◐ Caveats       | ◐ Partial     | ◐ Partial               |
-| **PIC**            | ✓ Signature     | ✓ Full chain  | ✓ End-to-end            |
-| **PIC + mTLS**     | ✓ Signature     | ✓ Full chain  | ✓✓ Defense in depth     |
+| System         | Request Binding | Chain Binding | Interception Protection |
+|----------------|-----------------|---------------|-------------------------|
+| OAuth (bearer) | ✗ None          | ✗ None        | ✗ Vulnerable            |
+| OAuth + DPoP   | ✓ Token↔Key     | ✗ None        | ◐ Single hop            |
+| mTLS only      | ✗ None          | ✗ None        | ◐ Transport only        |
+| Macaroons      | ◐ Caveats       | ◐ Partial     | ◐ Partial               |
+| **PIC**        | ✓ Signature     | ✓ Full chain  | ✓ End-to-end            |
+| **PIC + mTLS** | ✓ Signature     | ✓ Full chain  | ✓✓ Defense in depth     |
 
 **Legend**: ✗ None | ◐ Partial | ✓ Full
 
@@ -948,11 +1017,12 @@ E_{n-1}                              E_n                              E_{n+1}
 ```text
 1. Attacker intercepts PCA_n in transit
 2. Attacker creates malicious request with intercepted PCA_n
-3. Recipient extracts provenance.executor.key from PCA_n
+3. Recipient extracts provenance.executor.kid from PCA_n
 4. Recipient verifies signature → Attacker lacks private key → FAILS
 5. Request REJECTED
 
 ✓ PCA possession insufficient without private key
+
 ```
 
 ---
@@ -961,8 +1031,10 @@ E_{n-1}                              E_n                              E_{n+1}
 
 ```json
 {
-  "issuer": "https://cat.example.com",
-  "signature": "base64url...",
+  "protected": {
+    "alg": "EdDSA",
+    "kid": "https://cat.example.com/keys/1"
+  },
   "payload": {
     "hop": 2,
     "p_0": "https://idp.example.com/users/alice",
@@ -976,20 +1048,12 @@ E_{n-1}                              E_n                              E_{n+1}
     },
     "provenance": {
       "cat": {
-        "issuer": "https://cat.example.com",
-        "signature": "base64url...",
-        "key": {
-          "public_key": "base64url...",
-          "alg": "ES256"
-        }
+        "kid": "https://cat.example.com/keys/1",
+        "signature": "base64url..."
       },
       "executor": {
-        "issuer": "spiffe://trust.example.com/ns/prod/sa/service-a",
-        "signature": "base64url...",
-        "key": {
-          "public_key": "base64url...",
-          "alg": "ES256"
-        }
+        "kid": "spiffe://trust.example.com/ns/prod/sa/service-a",
+        "signature": "base64url..."
       }
     },
     "constraints": {
@@ -998,8 +1062,10 @@ E_{n-1}                              E_n                              E_{n+1}
         "exp": "2025-12-11T10:30:00Z"
       }
     }
-  }
+  },
+  "signature": "base64url..."
 }
+
 ```
 
 **Verification**:
@@ -1020,6 +1086,7 @@ E_{n-1}                              E_n                              E_{n+1}
 │  Layer 2: Request Binding    Signature over payload + PCA   │
 │  Layer 1: Transport          mTLS / Encrypted (optional)    │
 └─────────────────────────────────────────────────────────────┘
+
 ```
 
 > **DEFENSE IN DEPTH**: Each layer provides independent protection.
@@ -1039,7 +1106,7 @@ PIC validation overhead is at most equivalent to OAuth 2.0 Token Exchange (RFC 8
 | Operation               | OAuth Token Exchange | PIC CAT Validation    |
 |-------------------------|----------------------|-----------------------|
 | Request validation      | Required             | Required              |
-| Credential verification | Required             | Required (PoI+PoP)    |
+| Credential verification | Required             | Required (EA+PoP)     |
 | Policy evaluation       | Required             | Required (Governance) |
 | Signature creation      | Required             | Required              |
 
@@ -1068,6 +1135,7 @@ Each organization operates its own Federation Bridge and CAT. Cross-domain trust
 │                         │  dynamic  │                         │
 │                         │federation │                         │
 └─────────────────────────┘           └─────────────────────────┘
+
 ```
 
 **Characteristics**:
@@ -1108,6 +1176,7 @@ User → OAuth/OIDC → JWT → Federation Bridge issues PCA_0
                          │                         │
                          │ ZERO external IdP calls │
                          └─────────────────────────┘
+
 ```
 
 #### Embedded (Shared Memory)
@@ -1126,6 +1195,7 @@ PCA transitions via memory copy, zero network overhead:
 │      └─────────┴─────────┘          │
 │         Shared Memory / Bus         │
 └─────────────────────────────────────┘
+
 ```
 
 #### IoT Ring (Local Network)
@@ -1158,6 +1228,7 @@ User presents VC, Federation Bridge issues PCA_0, PCA flows device-to-device:
                 │                            │
                 │   ZERO cloud round-trips   │
                 └────────────────────────────┘
+
 ```
 
 ---
@@ -1183,6 +1254,7 @@ Federation Bridge validates JWT and issues PCA_0:
 
 ```text
 User → OAuth AS → JWT → Federation Bridge issues PCA_0 → Executor chain
+
 ```
 
 #### SPIFFE
@@ -1191,6 +1263,7 @@ Federation Bridge validates SVID and issues PCA:
 
 ```text
 Workload → SPIFFE Server → SVID → Federation Bridge issues PCA_0 → Executor chain
+
 ```
 
 #### DID / Verifiable Credentials
@@ -1199,6 +1272,7 @@ Federation Bridge validates VP and issues PCA_0:
 
 ```text
 User → Wallet → VP → Federation Bridge issues PCA_0 → Executor chain
+
 ```
 
 #### Cross-Federation: SPIFFE to VC
@@ -1217,13 +1291,14 @@ Workload exchanges SVID for VC via VC Bridge, then presents VC to Federation Bri
 │     │                  │                   │             │
 │     │◀───── VC ────────│                   │             │
 │     │                  │                   │             │
-│     │─────────────── VC (as PoI) ─────────▶│             │
+│     │─────────────── VC (as EA) ──────────▶│             │
 │     │                  │                   │             │
 │     │                  │      validates VC, issues PCA   │
 │     │                  │                   │             │
 │     │◀─────────────── PCA ─────────────────│             │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
+
 ```
 
 **Components**:
@@ -1237,19 +1312,20 @@ Gateway acts as Federation Bridge, issues PCA_0, forwards to backend:
 
 ```text
 Client → API Gateway (acts as Federation Bridge) → PCA_0 → Backend services
+
 ```
 
 ---
 
 ### 6.4.1 Identity Mapping Summary
 
-| Source             | p_0 derivation    | ops_0 derivation       | PoI format  |
-|--------------------|-------------------|------------------------|-------------|
-| OAuth/OIDC         | `sub` claim       | `scope` claim          | JWT         |
-| SPIFFE             | SPIFFE ID         | Trust domain policy    | SVID        |
-| DID/VC             | DID URI           | VC claims              | VP          |
-| X.509              | Subject DN        | Certificate extensions | Certificate |
-| Cross-Federation   | Original p_0      | VC claims              | VC          |
+| Source           | p_0 derivation | ops_0 derivation       | EA format   |
+|------------------|----------------|------------------------|-------------|
+| OAuth/OIDC       | `sub` claim    | `scope` claim          | JWT         |
+| SPIFFE           | SPIFFE ID      | Trust domain policy    | SVID        |
+| DID/VC           | DID URI        | VC claims              | VP          |
+| X.509            | Subject DN     | Certificate extensions | Certificate |
+| Cross-Federation | Original p_0   | VC claims              | VC          |
 
 > **NOTE**: Regardless of source, PIC invariants apply: `p_0` immutable, `ops_i ⊆ ops_{i-1}`.
 
@@ -1287,6 +1363,7 @@ AI Agent A
                           │
                           │  PCA_3 ⊆ PCA_2
                           └────────▶ Tool / API
+
 ```
 
 **What is a Tool?**
@@ -1346,6 +1423,7 @@ The classic problem (Hardy, 1988): a privileged service uses its own authority o
 │  Carol (Storage Service)                                      │
 │    Executes ALL file operations strictly based on PCA         │
 └───────────────────────────────────────────────────────────────┘
+
 ```
 
 **Token-Based (VULNERABLE)**:
@@ -1360,6 +1438,7 @@ Alice exploits Bob's elevated authority:
 5. Alice receives output containing system secrets
 
 ✗ CONFUSED DEPUTY
+
 ```
 
 **PIC Model (IMMUNE)**:
@@ -1374,31 +1453,32 @@ Authority bound to origin, Bob's privileges don't exist in Alice's transaction:
 5. Read blocked. Alice receives only her own content.
 
 ✓ IMMUNE
+
 ```
 
 Authority scoped to transaction origin:
 
-| Transaction Origin      | read /user/* | read /sys/* | write /user/* |
-|-------------------------|--------------|-------------|---------------|
-| Bob (own transaction)   | ✗            | ✓           | ✗             |
-| Alice (via PCA)         | ✓            | ✗           | ✓             |
+| Transaction Origin    | read /user/* | read /sys/* | write /user/* |
+|-----------------------|--------------|-------------|---------------|
+| Bob (own transaction) | ✗            | ✓           | ✗             |
+| Alice (via PCA)       | ✓            | ✗           | ✓             |
 
 ---
 
 ### 7.3 Attack Comparison Summary
 
-| Attack                   | Token-Based                | PIC            | Mechanism                           |
-|--------------------------|----------------------------|----------------|-------------------------------------|
-| **Confused Deputy**      | ✗ Vulnerable               | ✓ Immune       | Authority from origin, not executor |
-| **Token Theft**          | ✗ Possession = authority   | ✓ Resistant    | Executor binding mismatch           |
-| **Privilege Escalation** | ✗ No monotonicity          | ✓ Immune       | `ops_{i+1} ⊆ ops_i` enforced        |
-| **Ambient Authority**    | ✗ Service uses own token   | ✓ Immune       | Authority scoped to `ops_0`         |
-| **Token Substitution**   | ✗ No chain verification    | ✓ Immune       | PoC binds to previous PCA           |
-| **Replay**               | ✗ Valid until expiry       | ✓ Resistant    | Challenge + temporal binding        |
-| **Credential Forwarding**| ✗ Unrestricted             | ✓ Controlled   | CAT validation per hop              |
-| **Impersonation**        | ✗ Possession = identity    | ✓ Resistant    | PoI must match binding              |
-| **MITM Modification**    | △ Depends on JWT sig       | ✓ Immune       | Bundle signature required           |
-| **Revocation Delay**     | ✗ Valid until expiry       | ✓ Responsive   | Checked at next hop                 |
+| Attack                    | Token-Based              | PIC          | Mechanism                           |
+|---------------------------|--------------------------|--------------|-------------------------------------|
+| **Confused Deputy**       | ✗ Vulnerable             | ✓ Immune     | Authority from origin, not executor |
+| **Token Theft**           | ✗ Possession = authority | ✓ Resistant  | Executor binding mismatch           |
+| **Privilege Escalation**  | ✗ No monotonicity        | ✓ Immune     | `ops_{i+1} ⊆ ops_i` enforced        |
+| **Ambient Authority**     | ✗ Service uses own token | ✓ Immune     | Authority scoped to `ops_0`         |
+| **Token Substitution**    | ✗ No chain verification  | ✓ Immune     | PoC binds to previous PCA           |
+| **Replay**                | ✗ Valid until expiry     | ✓ Resistant  | Challenge + temporal binding        |
+| **Credential Forwarding** | ✗ Unrestricted           | ✓ Controlled | CAT validation per hop              |
+| **Impersonation**         | ✗ Possession = identity  | ✓ Resistant  | EA must match binding               |
+| **MITM Modification**     | △ Depends on JWT sig     | ✓ Immune     | Bundle signature required           |
+| **Revocation Delay**      | ✗ Valid until expiry     | ✓ Responsive | Checked at next hop                 |
 
 **Legend**: ✗ Vulnerable | △ Depends | ✓ Resistant/Immune
 
@@ -1406,13 +1486,13 @@ Authority scoped to transaction origin:
 
 ### 7.4 Residual Risks
 
-| Risk                             | Mitigation                                                          |
-|----------------------------------|---------------------------------------------------------------------|
-| **Federation Bridge Compromise** | HSM/TEE deployment, credential validation hardening, monitoring     |
-| **CAT Compromise**               | HSM/TEE deployment, distributed CAT, monitoring                     |
-| **Trust Model Weakness**         | Battle-tested crypto, agility, post-quantum readiness               |
-| **Denial of Service**            | Rate limiting, batching, distributed CAT                            |
-| **Policy Misconfiguration**      | Testing, formal verification, least-privilege defaults              |
+| Risk                             | Mitigation                                                      |
+|----------------------------------|-----------------------------------------------------------------|
+| **Federation Bridge Compromise** | HSM/TEE deployment, credential validation hardening, monitoring |
+| **CAT Compromise**               | HSM/TEE deployment, distributed CAT, monitoring                 |
+| **Trust Model Weakness**         | Battle-tested crypto, agility, post-quantum readiness           |
+| **Denial of Service**            | Rate limiting, batching, distributed CAT                        |
+| **Policy Misconfiguration**      | Testing, formal verification, least-privilege defaults          |
 
 ---
 
@@ -1420,7 +1500,7 @@ Authority scoped to transaction origin:
 
 1. **Least Privilege**: Authority monotonically decreases
 2. **Separation of Concerns**: Untrusted execution / trusted validation
-3. **Defense in Depth**: PoC + PoI + PoP + Governance
+3. **Defense in Depth**: PoC + EA + PoP + Governance
 4. **Fail-Safe Defaults**: Rejected unless authorized
 5. **Complete Mediation**: CAT validates every transition
 6. **Audit Trail**: Complete provenance tracking
@@ -1430,13 +1510,13 @@ Authority scoped to transaction origin:
 
 ### 7.6 Formal Security Properties
 
-| Property                         | Statement                                              |
-|----------------------------------|--------------------------------------------------------|
-| **Origin Immutability**          | ∀i: `p_i = p_0`                                        |
-| **Authority Monotonicity**       | ∀i: `ops_i ⊆ ops_{i-1}`                                |
-| **Confused Deputy Impossibility**| ∀E_i: cannot exercise `ops_j` where `ops_j ⊄ ops_i`    |
-| **Causal Provenance**            | ∀PCA_i: ∃ chain `PCA_0 → ... → PCA_i`                  |
-| **Non-Transferability**          | ∀PCA_i: bound to E_i, unusable by E_j                  |
+| Property                          | Statement                                           |
+|-----------------------------------|-----------------------------------------------------|
+| **Origin Immutability**           | ∀i: `p_i = p_0`                                     |
+| **Authority Monotonicity**        | ∀i: `ops_i ⊆ ops_{i-1}`                             |
+| **Confused Deputy Impossibility** | ∀E_i: cannot exercise `ops_j` where `ops_j ⊄ ops_i` |
+| **Causal Provenance**             | ∀PCA_i: ∃ chain `PCA_0 → ... → PCA_i`               |
+| **Non-Transferability**           | ∀PCA_i: bound to E_i, unusable by E_j               |
 
 **Formal Proof**: See [[1]](#references)
 
@@ -1722,4 +1802,3 @@ Acknowledged individuals are explicitly excluded from **all** such claims.
 - [1] Gallo, N. (2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. [doi.org/10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
 - [2] Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems (0.1-draft)*. Zenodo. [doi.org/10.5281/zenodo.17777421](https://doi.org/10.5281/zenodo.17777421)
 - [3] Gallo, N. (2025). *Authority is a Continuous System. (0.1-draft)*. Zenodo. [doi.org/10.5281/zenodo.17860199](https://doi.org/10.5281/zenodo.17860199)
-  
