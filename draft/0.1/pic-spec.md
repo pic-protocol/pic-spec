@@ -1400,7 +1400,7 @@ Let `Π = {T_ext, T_int₁, T_int₂, ...}` be a set of Trust Planes.
 
 Let `B: PCA_Tᵢ → PCA_Tⱼ` be a bridge function between planes.
 
-A bridge function B is **valid** iff:
+A bridge function B is **valid** if and only if::
 
 ```text
 B(PCA) = PCA' where:
