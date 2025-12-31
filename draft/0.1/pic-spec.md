@@ -1331,7 +1331,233 @@ Client → API Gateway (acts as Federation Bridge) → PCA_0 → Backend service
 
 ---
 
-### 6.5 Adoption Path
+### 6.5 PIC Federation
+
+#### 6.5.1 Overview
+
+PIC Federation enables composition of multiple Trust Planes across security boundaries while preserving all PIC invariants.
+
+Organizations can decompose monoliths into microservices, restructure internal boundaries, and evolve topology—without altering the security model. If bridge invariants hold, the mathematical guarantees hold.
+
+Typical federated deployments operate two or more planes:
+
+- **External Trust Plane**: federated, cross-organization, internet-facing, cryptographic verification at each hop
+- **Internal Trust Plane**: enterprise-local, low latency, in-memory or embedded CAT
+
+The boundary between planes is managed by **Ingress** and **Egress Bridges** that translate PCAs while preserving PIC invariants.
+
+#### 6.5.2 Architecture
+
+```text
+EXTERNAL TRUST PLANE (federated / internet)
+        │
+        ▼ PCA_ext_in
+   ┌─────────────┐
+   │   INGRESS   │ ◄── validates PCA_ext_in against external CAT
+   │   BRIDGE    │ ◄── issues PCA_int_0 under internal CAT
+   └─────────────┘
+        │
+        ▼ PCA_int_0
+┌─────────────────────────────────────────────────────┐
+│         INTERNAL TRUST PLANE (enterprise)           │
+│                                                     │
+│    ┌───────────┐    ┌───────────┐    ┌───────────┐  │
+│    │ Service A │───►│ Service B │───►│ Service C │  │
+│    └───────────┘    └───────────┘    └───────────┘  │
+│          │               │               │          │
+│          └───────────────┴───────────────┘          │
+│                          │                          │
+│                    Internal CAT                     │
+│              (in-memory / embedded / sidecar)       │
+└─────────────────────────────────────────────────────┘
+        │
+        ▼ PCA_int_n
+   ┌─────────────┐
+   │   EGRESS    │ ◄── validates PCA_int_n against internal CAT
+   │   BRIDGE    │ ◄── issues PCA_ext_out under external CAT
+   └─────────────┘
+        │
+        ▼ PCA_ext_out
+EXTERNAL TRUST PLANE (federated / internet)
+```
+
+#### 6.5.3 Bridge Invariants
+
+Ingress and Egress Bridges MUST satisfy the following invariants to preserve PIC guarantees across trust plane boundaries.
+
+| Invariant                  | Requirement                                                | Description                                                            |
+|----------------------------|------------------------------------------------------------|------------------------------------------------------------------------|
+| **Origin Preservation**    | `p_0(PCA_T₂) = p_0(PCA_T₁)`                                | Origin principal MUST remain identical. Silent substitution forbidden. |
+| **Monotonicity**           | `ops(PCA_T₂) ⊆ ops(PCA_T₁)`                                | Authority can only decrease or remain constant.                        |
+| **No Expansion**           | `∀(o,r): (o,r) ∈ ops(PCA_T₂) → (o,r) ∈ ops(PCA_T₁)`        | Bridges MUST NOT recreate, expand, or fabricate authority.             |
+| **Provenance Continuity**  | `provenance(PCA_T₂)` references `PCA_T₁`                   | Causal chain MUST remain verifiable across the bridge.                 |
+
+If all bridge transitions satisfy these invariants, the composed multi-plane system preserves PIC guarantees: `ops_final ⊆ ops_0` and confused deputy remains non-formulable across federated planes.
+
+#### 6.5.4 Formal Model
+
+Let `Π = {T_ext, T_int₁, T_int₂, ...}` be a set of Trust Planes.
+
+Let `B: PCA_Tᵢ → PCA_Tⱼ` be a bridge function between planes.
+
+A bridge function B is **valid** iff:
+
+```text
+B(PCA) = PCA' where:
+  p_0(PCA') = p_0(PCA)
+  ops(PCA') ⊆ ops(PCA)
+  provenance(PCA') ⊇ provenance(PCA)
+```
+
+**Guarantee:** For any federated execution crossing multiple trust planes:
+
+```text
+ops(PCA_final) ⊆ ops(PCA_initial)
+p_0(PCA_final) = p_0(PCA_initial)
+```
+
+The federation is transparent to PIC invariants.
+
+#### 6.5.5 Refactoring-Invariant Security
+
+Traditional systems couple security to topology. Decomposing a monolith into microservices requires security review, new threat models, and often weaker guarantees.
+
+PIC Federation inverts this relationship:
+
+| Traditional Approach                            | PIC Federation                                   |
+|-------------------------------------------------|--------------------------------------------------|
+| Topology change → Security review               | Topology change → Same security model            |
+| Monolith → Microservices = new attack surface   | Monolith → Microservices = same invariants       |
+| Security coupled to deployment                  | Security decoupled from deployment               |
+| Refactoring breaks security assumptions         | Refactoring preserves security by construction   |
+
+A security model is **refactoring-invariant** when:
+
+```text
+For any valid topological transformation T: Architecture₁ → Architecture₂
+If Bridge Invariants hold:
+  SecurityProperties(Architecture₁) = SecurityProperties(Architecture₂)
+```
+
+PIC Federation provides this property. Both a monolith and its microservices decomposition receive the same `PCA_ext_in`, preserve the same `p_0`, enforce `ops_i ⊆ ops_{i-1}` at every hop, and emit `PCA_ext_out` where `ops_ext_out ⊆ ops_ext_in`. The external trust plane observes identical security properties regardless of internal topology.
+
+> **Practical Implication**: Architects can evolve system topology based on operational requirements without security team re-certification of the authorization model.
+
+#### 6.5.6 Performance Model
+
+The following are estimated order-of-magnitude values. Actual performance depends on deployment topology, hardware, network conditions, and CAT implementation.
+
+| Operation              | External Trust Plane         | Internal Trust Plane                |
+|------------------------|------------------------------|-------------------------------------|
+| **CAT Validation**     | Network round-trip (1-100ms) | In-memory / embedded (< 200μs)      |
+| **PCA Issuance**       | Cryptographic signing        | Cryptographic signing               |
+| **Bridge Translation** | O(1)                         | O(1)                                |
+
+Internal Trust Plane MAY be deployed as:
+
+- **In-memory**: shared memory, zero network overhead
+- **Embedded**: CAT co-located with executor (sidecar, library)
+- **Enclave**: TEE-based CAT (SGX, TDX, SEV) for hardware-enforced isolation
+- **Local network**: dedicated low-latency CAT cluster
+
+Internal hops avoid external network latency. Only boundary crossings incur external CAT cost.
+
+For an enterprise processing n internal hops:
+
+```text
+Traditional (external CAT per hop): n × RTT_external
+PIC Federation: 2 × RTT_external + n × T_internal
+```
+
+| Scenario         | Traditional (n=100)      | PIC Federation (n=100)          |
+|------------------|--------------------------|----------------------------------|
+| RTT_ext = 10ms   | 100 × 10ms = **1000ms**  | 2 × 10ms + 100 × 0.1ms = **30ms**|
+| RTT_ext = 50ms   | 100 × 50ms = **5000ms**  | 2 × 50ms + 100 × 0.1ms = **110ms**|
+
+> **Result**: For 100 internal hops, PIC Federation reduces authorization latency by **~30-50x** compared to traditional per-hop external validation.
+
+Where:
+
+- `RTT_external` = external CAT round-trip (network-dependent)
+- `T_internal` ≈ 116μs (in-memory CAT, measured on reference implementation)
+
+#### 6.5.7 Deployment Models
+
+| Model              | External CAT | Internal CAT      | Use Case                       |
+|--------------------|--------------|-------------------|--------------------------------|
+| **Single Plane**   | Centralized  | —                 | Simple deployments             |
+| **Dual Plane**     | Federated    | Embedded/Sidecar  | Enterprise with partners       |
+| **Multi Plane**    | Federated    | Multiple internal | Large enterprise, multi-region |
+| **Nested Planes**  | Federated    | Hierarchical      | Multi-tenant, regulated        |
+
+#### 6.5.8 Bridge Implementation
+
+Bridges are typically implemented at:
+
+- API Gateways (ingress)
+- Edge proxies (ingress/egress)
+- Service mesh boundaries
+- Cloud interconnects
+
+**Bridge Requirements:**
+
+1. Validate incoming PCA against source trust plane
+2. Verify PoC if required
+3. Issue new PCA bound to destination trust plane
+4. Preserve `p_0` and enforce `ops` monotonicity
+5. Maintain provenance chain
+6. Log translations for audit
+
+#### 6.5.9 Example: Multi-Partner Enterprise Flow
+
+```text
+Partner A                         Enterprise                          Partner B
+(Trust Plane A)              (Internal Trust Plane)               (Trust Plane B)
+     │                                │                                  │
+     │ PCA_A                          │                                  │
+     │ p_0 = alice@partner-a          │                                  │
+     │ ops = {read, write}            │                                  │
+     ├───────────────────────────────►│                                  │
+     │                        [Ingress Bridge]                           │
+     │                                │                                  │
+     │                          PCA_int_0                                │
+     │                          p_0 = alice@partner-a                    │
+     │                          ops = {read, write} ∩ {read} = {read}    │
+     │                                │                                  │
+     │                   ┌────────────┴────────────┐                     │
+     │                   ▼                         ▼                     │
+     │              Service X                 Service Y                  │
+     │              ops = {read}              ops = {read}               │
+     │                   │                         │                     │
+     │                   └────────────┬────────────┘                     │
+     │                                │                                  │
+     │                          PCA_int_n                                │
+     │                          p_0 = alice@partner-a                    │
+     │                          ops = {read}                             │
+     │                                │                                  │
+     │                        [Egress Bridge]                            │
+     │                                │                                  │
+     │                                │ PCA_B                            │
+     │                                │ p_0 = alice@partner-a            │
+     │                                │ ops = {read}                     │
+     │                                ├─────────────────────────────────►│
+
+Invariants verified:
+  ✓ p_0 preserved: alice@partner-a throughout
+  ✓ ops monotonic: {read, write} → {read} → {read}
+  ✓ No expansion: ops_B ⊆ ops_A
+  ✓ Confused deputy: non-formulable across all planes
+```
+
+#### 6.5.10 Summary
+
+> "Multiple Trust Planes can be composed by treating the enterprise boundary as a re-anchoring step: ingress/egress bridges re-bind the same p_0 and monotonically restrict ops, enabling low-latency internal continuity while preserving federated external continuity."
+
+PIC Federation transforms authorization from a topology-coupled constraint into a topology-independent invariant.
+
+---
+
+### 6.6 Adoption Path
 
 | Phase          | Actions                                                                             |
 |----------------|-------------------------------------------------------------------------------------|
@@ -1342,7 +1568,7 @@ Client → API Gateway (acts as Federation Bridge) → PCA_0 → Backend service
 
 ---
 
-### 6.6 AI Agents and Tool Orchestration
+### 6.7 AI Agents and Tool Orchestration
 
 No new concepts. AI agents are executors. Tools are executors. PIC applies unchanged.
 
