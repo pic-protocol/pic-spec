@@ -360,6 +360,10 @@ PIC does not prevent an application from misusing its own resources.
 > **CLARIFICATION**: If Bob uses privileged data (read with own authority) to construct a response for Alice, this is an application-level bug—not a confused deputy in the PIC sense.
 > The confused deputy occurs when the **protocol** allows authority confusion. PIC makes that structurally impossible. Application logic errors remain the responsibility of the application.
 
+### Realizability via Zero-Knowledge Proofs
+
+**Example.** Proof of Relationship and Proof of Continuity may be realized using zero-knowledge proof systems, including but not limited to SNARKs, STARKs, Bulletproofs, or any equivalent zero-knowledge construction, in order to prove relational continuity without revealing the underlying relational state or history.
+
 ---
 
 ## 3. Architecture and Components
