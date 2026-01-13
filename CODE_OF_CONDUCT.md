@@ -14,7 +14,7 @@ Specification.
 
 Reports of violations should be submitted to:
 
-**[opensource@nitroagility.com](mailto:opensource@nitroagility.com)**
+**[opensource@pic-protocol.org](mailto:opensource@pic-protocol.org)**
 
 ---
 
@@ -79,7 +79,7 @@ representative at an online or offline event.
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the project’s enforcement authority at:
 
-**opensource@nitroagility.com**
+**opensource@pic-protocol.org**
 
 All complaints will be reviewed and investigated promptly and fairly.
 
