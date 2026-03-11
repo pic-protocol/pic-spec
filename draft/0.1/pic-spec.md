@@ -1449,11 +1449,11 @@ PIC Federation provides this property. Both a monolith and its microservices dec
 
 #### 6.5.6 Performance Model
 
-The following are estimated order-of-magnitude values. Actual performance depends on deployment topology, hardware, network conditions, and CAT implementation.
+Performance characteristics depend on deployment topology, hardware, network conditions, and CAT implementation. The following describes the qualitative model without prescribing specific values.
 
 | Operation              | External Trust Plane         | Internal Trust Plane                |
 |------------------------|------------------------------|-------------------------------------|
-| **CAT Validation**     | Network round-trip (1-100ms) | In-memory / embedded (< 200μs)      |
+| **CAT Validation**     | Network round-trip           | In-memory / embedded                |
 | **PCA Issuance**       | Cryptographic signing        | Cryptographic signing               |
 | **Bridge Translation** | O(1)                         | O(1)                                |
 
@@ -1466,24 +1466,19 @@ Internal Trust Plane MAY be deployed as:
 
 Internal hops avoid external network latency. Only boundary crossings incur external CAT cost.
 
-For an enterprise processing n internal hops:
+For an enterprise processing n internal hops, the cost model is:
 
 ```text
 Traditional (external CAT per hop): n × RTT_external
 PIC Federation: 2 × RTT_external + n × T_internal
 ```
 
-| Scenario         | Traditional (n=100)      | PIC Federation (n=100)          |
-|------------------|--------------------------|----------------------------------|
-| RTT_ext = 10ms   | 100 × 10ms = **1000ms**  | 2 × 10ms + 100 × 0.1ms = **30ms**|
-| RTT_ext = 50ms   | 100 × 50ms = **5000ms**  | 2 × 50ms + 100 × 0.1ms = **110ms**|
-
-> **Result**: For 100 internal hops, PIC Federation reduces authorization latency by **~30-50x** compared to traditional per-hop external validation.
-
 Where:
 
 - `RTT_external` = external CAT round-trip (network-dependent)
-- `T_internal` ≈ 116μs (in-memory CAT, measured on reference implementation)
+- `T_internal` = internal CAT validation (deployment-dependent, significantly lower than external)
+
+The structural advantage of PIC Federation grows with the number of internal hops. As `n` increases, the difference between `n × RTT_external` and `2 × RTT_external + n × T_internal` becomes increasingly significant, since `T_internal << RTT_external`.
 
 #### 6.5.7 Deployment Models
 
