@@ -3,7 +3,8 @@
 **Version:** 0.2 (Draft)  
 **Status**: Draft – Not a Standard  
 **Date:** 2026-07-15  
-**Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-verifier-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-verifier-spec.md)
+**Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-verifier-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-verifier-spec.md)  
+**Editor:** Nicola Gallo (Nitro Agility S.r.l.)
 
 ---
 
@@ -40,7 +41,8 @@ authorship claims beyond those defined in the
 
 1. [Introduction](#1-introduction)  
 2. [Verifier Requirements](#2-verifier-requirements)  
-3. [Legal Notices](#3-legal-notices)  
+3. [Contributors](#3-contributors)  
+4. [Legal Notices](#4-legal-notices)  
 
 ---
 
@@ -60,7 +62,26 @@ semantics.)*
 
 ---
 
-## 3. Legal Notices
+## 3. Contributors
+
+This document is developed and maintained under the stewardship of
+**Nitro Agility S.r.l.** Contributor listing is governed by Appendix B.7 of the
+[PIC Legal Appendices](./pic-legal.md): contributions are incorporated into the
+Nitro Agility–stewarded specification under the CC BY 4.0 license, and being
+listed does **not** confer authorship of the PIC Model, stewardship of the
+specification, or any operational responsibility or liability.
+
+**Editor:**
+
+- **Nicola Gallo** (on behalf of Nitro Agility S.r.l.)
+
+**Contributors (non-exhaustive, in order of appearance):**
+
+- *Add your name here via pull request (individual or organization)*
+
+---
+
+## 4. Legal Notices
 
 The appendices governing:
 
