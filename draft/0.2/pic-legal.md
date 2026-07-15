@@ -162,6 +162,15 @@ External contributors:
 
 Operational and editorial responsibility for the PIC Documents remains with the Specification Steward.
 
+#### B.7.3 Contributor Listing in PIC Documents
+
+Each PIC Document MAY list its editors and contributors in its document header.
+
+- **Editors** maintain the document text on behalf of the Specification Steward, which retains full editorial and governance control (B.7.1).
+- Contributor lists are **non-exhaustive** and ordered by first appearance.
+- Inclusion in a list requires a pull request accepted by the document's editors, who act on behalf of the Specification Steward; the editors retain full discretion over listing. Omission from a list does not diminish any contribution.
+- Being listed as editor or contributor does **not** confer authorship of the PIC Model, stewardship of the specification, or any operational responsibility or liability (B.7.1, B.7.2).
+
 ---
 
 ### B.8 Credits

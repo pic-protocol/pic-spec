@@ -77,20 +77,8 @@ semantics.)*
 ## 3. Contributors
 
 The editors and contributors of this document are listed in the **document
-header** above.
-
-The contributor list is **non-exhaustive** and ordered by first appearance.
-Inclusion in the list requires a pull request accepted by the editors, who act
-on behalf of the Specification Steward; the editors retain full discretion
-over listing. Omission from the list does not diminish any contribution.
-
-This document is developed and maintained under the stewardship of
-**Nitro Agility S.r.l.** Editor and contributor listing is governed by
-Appendix B.7 of the [PIC Legal Appendices](./pic-legal.md): contributions are
-incorporated into the Nitro Agility–stewarded specification under the
-CC BY 4.0 license, and being listed does **not** confer authorship of the
-PIC Model, stewardship of the specification, or any operational responsibility
-or liability.
+header** above. Listing is governed by Appendix B.7 of the
+[PIC Legal Appendices](./pic-legal.md).
 
 ---
 
