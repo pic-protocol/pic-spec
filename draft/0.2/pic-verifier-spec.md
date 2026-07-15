@@ -4,7 +4,14 @@
 **Status**: Draft – Not a Standard  
 **Date:** 2026-07-15  
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-verifier-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-verifier-spec.md)  
-**Editor:** Nicola Gallo (Nitro Agility S.r.l.)
+**Editors:**
+
+- **Nicola Gallo** (on behalf of Nitro Agility S.r.l.) — lead editor
+
+**Contributors:**
+
+- **Antonio Radesca** (on behalf of Nitro Agility S.r.l.)
+- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 3](#3-contributors)).*
 
 ---
 
@@ -39,10 +46,15 @@ authorship claims beyond those defined in the
 
 ## Table of Contents
 
-1. [Introduction](#1-introduction)  
-2. [Verifier Requirements](#2-verifier-requirements)  
-3. [Contributors](#3-contributors)  
-4. [Legal Notices](#4-legal-notices)  
+- [PIC Verifier Specification](#pic-verifier-specification)
+  - [Abstract](#abstract)
+  - [Relationship to the PIC Specification](#relationship-to-the-pic-specification)
+  - [Table of Contents](#table-of-contents)
+  - [1. Introduction](#1-introduction)
+  - [2. Verifier Requirements](#2-verifier-requirements)
+  - [3. Contributors](#3-contributors)
+  - [4. Legal Notices](#4-legal-notices)
+  - [References](#references)
 
 ---
 
@@ -64,20 +76,21 @@ semantics.)*
 
 ## 3. Contributors
 
+The editors and contributors of this document are listed in the **document
+header** above.
+
+The contributor list is **non-exhaustive** and ordered by first appearance.
+Inclusion in the list requires a pull request accepted by the editors, who act
+on behalf of the Specification Steward; the editors retain full discretion
+over listing. Omission from the list does not diminish any contribution.
+
 This document is developed and maintained under the stewardship of
-**Nitro Agility S.r.l.** Contributor listing is governed by Appendix B.7 of the
-[PIC Legal Appendices](./pic-legal.md): contributions are incorporated into the
-Nitro Agility–stewarded specification under the CC BY 4.0 license, and being
-listed does **not** confer authorship of the PIC Model, stewardship of the
-specification, or any operational responsibility or liability.
-
-**Editor:**
-
-- **Nicola Gallo** (on behalf of Nitro Agility S.r.l.)
-
-**Contributors (non-exhaustive, in order of appearance):**
-
-- *Add your name here via pull request (individual or organization)*
+**Nitro Agility S.r.l.** Editor and contributor listing is governed by
+Appendix B.7 of the [PIC Legal Appendices](./pic-legal.md): contributions are
+incorporated into the Nitro Agility–stewarded specification under the
+CC BY 4.0 license, and being listed does **not** confer authorship of the
+PIC Model, stewardship of the specification, or any operational responsibility
+or liability.
 
 ---
 
