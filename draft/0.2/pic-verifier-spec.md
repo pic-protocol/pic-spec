@@ -13,8 +13,6 @@
 - **Antonio Radesca** (on behalf of Nitro Agility S.r.l.)
 - *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 3](#3-contributors)).*
 
----
-
 ## Abstract
 
 This document is the **PIC Verifier Specification**, a subordinate
@@ -28,8 +26,6 @@ normative semantics defined by the PIC Specification.
 
 In case of conflict, the **PIC Specification** is authoritative.
 
----
-
 ## Relationship to the PIC Specification
 
 - The **PIC Specification** ([pic-spec.md](./pic-spec.md)) is the entry point
@@ -41,8 +37,6 @@ In case of conflict, the **PIC Specification** is authoritative.
 This document does not introduce new conceptual authority, invariants, or
 authorship claims beyond those defined in the
 [PIC Legal Appendices](./pic-legal.md).
-
----
 
 ## Table of Contents
 
@@ -56,15 +50,11 @@ authorship claims beyond those defined in the
   - [4. Legal Notices](#4-legal-notices)
   - [References](#references)
 
----
-
 ## 1. Introduction
 
 *(To be written: scope of the PIC Verifier, its role in the Trust Plane,
 relationship to CAT and Federation Bridge components, and the verification
 responsibilities it assumes.)*
-
----
 
 ## 2. Verifier Requirements
 
@@ -72,15 +62,11 @@ responsibilities it assumes.)*
 challenge handling, replay protection, trust model assumptions, failure
 semantics.)*
 
----
-
 ## 3. Contributors
 
 The editors and contributors of this document are listed in the **document
 header** above. Listing is governed by Appendix B.7 of the
 [PIC Legal Appendices](./pic-legal.md).
-
----
 
 ## 4. Legal Notices
 
@@ -99,8 +85,6 @@ herein.
 In case of conflict between this document and the PIC Legal Appendices, the
 PIC Legal Appendices prevail for legal, governance, licensing, and attribution
 matters.
-
----
 
 ## References
 

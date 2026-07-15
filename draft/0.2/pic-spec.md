@@ -5,8 +5,6 @@
 **Date:** 2026-07-15  
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md)
 
----
-
 ## Abstract
 
 This document is the **PIC Specification**: the entry point of the PIC
@@ -20,15 +18,11 @@ theoretical model. In case of conflict, the **PIC Model** publications remain
 authoritative for the theoretical framework, while this **PIC Specification**
 is authoritative for normative requirements and conformance language.
 
----
-
 ## Table of Contents
 
 1. [Introduction](#1-introduction)  
 2. [Documents](#2-documents)  
 3. [Legal Notices](#3-legal-notices)  
-
----
 
 ## 1. Introduction
 
@@ -48,15 +42,11 @@ Subordinate specifications:
 - MUST incorporate the [PIC Legal Appendices](./pic-legal.md) by reference,
 - are canonical only in the version designated by the Specification Steward.
 
----
-
 ## 2. Documents
 
 | Document | Description | Status | Date |
 | --- | --- | --- | --- |
 | [PIC Verifier Specification](./pic-verifier-spec.md) | Normative requirements for PIC Verifiers: the components that validate Proofs of Continuity and enforce PIC invariants. | Draft 0.2 | 2026-07-15 |
-
----
 
 ## 3. Legal Notices
 
@@ -75,8 +65,6 @@ herein.
 In case of conflict between this document and the PIC Legal Appendices, the
 PIC Legal Appendices prevail for legal, governance, licensing, and attribution
 matters.
-
----
 
 ## References
 
