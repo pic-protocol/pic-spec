@@ -12,7 +12,7 @@ by all PIC specification documents. It is **incorporated by reference** into
 each of the following documents (collectively, the "**PIC Documents**"):
 
 - [PIC Specification](./pic-spec.md) — `draft/0.2/pic-spec.md`
-- [PIC Verifier Specification](./pic-verifier-spec.md) — `draft/0.2/pic-verifier-spec.md`
+- [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) — `draft/0.2/pic-prover-verifier-spec.md`
 - any other document published in the official PIC Spec repositories that
   explicitly incorporates these appendices by reference.
 

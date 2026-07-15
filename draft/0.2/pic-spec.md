@@ -46,7 +46,7 @@ Subordinate specifications:
 
 | Document | Description | Status | Date |
 | --- | --- | --- | --- |
-| [PIC Verifier Specification](./pic-verifier-spec.md) | Normative requirements for PIC Verifiers: the components that validate Proofs of Continuity and enforce PIC invariants. | Draft 0.2 | 2026-07-15 |
+| [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) | Normative requirements for PIC Provers and Verifiers: the components that construct and validate Proofs of Continuity and enforce PIC invariants. | Draft 0.2 | 2026-07-15 |
 
 ## 3. Legal Notices
 
