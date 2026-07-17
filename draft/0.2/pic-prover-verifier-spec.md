@@ -38,9 +38,11 @@ In case of conflict, the **PIC Specification** is authoritative.
     - [1.1 Security Guarantees of the Model](#11-security-guarantees-of-the-model)
     - [1.2 Delegating the Future](#12-delegating-the-future)
     - [1.3 The N+1 Executor Problem (Canonical Execution Model)](#13-the-n1-executor-problem-canonical-execution-model)
-    - [1.4 The Execution Flow as Part of the Security Model](#14-the-execution-flow-as-part-of-the-security-model)
-    - [1.5 Attribute Attestations](#15-attribute-attestations)
-    - [1.6 Requirements Notation](#16-requirements-notation)
+    - [1.4 Cross-Lineage Authority Composition](#14-cross-lineage-authority-composition)
+    - [1.5 The Execution Flow as Part of the Security Model](#15-the-execution-flow-as-part-of-the-security-model)
+    - [1.6 Attribute Attestations](#16-attribute-attestations)
+    - [1.7 Requirements Notation](#17-requirements-notation)
+    - [1.8 Origin Authority Context (PCA0)](#18-origin-authority-context-pca0)
   - [2. Prover Requirements](#2-prover-requirements)
   - [3. Verifier Requirements](#3-verifier-requirements)
   - [4. Contributors](#4-contributors)
@@ -133,7 +135,30 @@ first executor that serves it, crosses the same temporal gap, since that executo
 expressed. A single-hop execution is the smallest instance of the N+1 Executor Problem. Multi-hop chains repeat it at every boundary, where
 its consequences become most visible.
 
-### 1.4 The Execution Flow as Part of the Security Model
+### 1.4 Cross-Lineage Authority Composition
+
+An executor may serve more than one lineage at the same time. Each lineage carries its own authority context, attenuated along its own
+chain. A bug, or an adversarially influenced agent, can compose authority across those lineages: a privilege carried by one lineage is
+attached to the continuation of another.
+
+```text
+LINEAGE A:  { READ-ALL, BACKUP }       ---->  { READ-ALL }
+                                                   |
+                                                   |  cross-lineage composition (bug)
+                                                   v
+LINEAGE B:  { READ-FOO, SHARE-FILES }  ---->  { SHARE-FILES }  ---->  { READ-ALL, SHARE-FILES }
+                                                                         EXECUTOR n+1
+```
+
+In a possession-based model the resulting state is valid. Every privilege presented at executor `n+1` is genuinely possessed and correctly
+signed; nothing in the model distinguishes them by origin. The bug has created a valid security state, and `READ-ALL` combined with
+`SHARE-FILES` is now exercisable in a lineage that was never granted it.
+
+Under PIC the same state cannot be represented as valid. `READ-ALL` is absent from the origin context of lineage B, and no valid
+continuation can expand an authority context: the composed proof does not satisfy the lineage, and the Verifier at executor `n+1` rejects
+it. The bug can still execute locally, as stated in Section 1.1, but the state it produces is invalid and stops at that hop.
+
+### 1.5 The Execution Flow as Part of the Security Model
 
 The PIC Model resolves the N+1 Executor Problem by bringing the execution flow itself, including the not-yet-existing executor `n+1`, into
 the security model, rather than leaving the gap between `x` and `x + y` to application logic. What must hold across that gap is not the
@@ -145,7 +170,7 @@ verified continuity, never as possession by a pre-existing holder.
 
 **To be completed:** roles of the Prover and Verifier in the Trust Plane, and relationship to CAT and Federation Bridge components.
 
-### 1.5 Attribute Attestations
+### 1.6 Attribute Attestations
 
 To describe the model, this specification uses one illustrative construct: the signed attribute attestation. It is a document, signed by an
 issuer, that binds a subject to a set of attributes for a validity period. The examples in this document follow a single running scenario:
@@ -200,13 +225,65 @@ The identifiers in the examples use DIDs. This choice is illustrative, not norma
 mechanism can be used, including Verifiable Credentials, X.509 certificates, or workload identity documents. A plain attestation document
 was chosen to keep the examples easy to follow.
 
-### 1.6 Requirements Notation
+### 1.7 Requirements Notation
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
 "OPTIONAL" in this document are to be interpreted as described in BCP 14 [[3]](#references) [[4]](#references) when, and only when, they
 appear in all capitals, as shown here.
 
 Examples in this document are illustrative and non-normative.
+
+### 1.8 Origin Authority Context (PCA0)
+
+A lineage begins when a principal expresses an intent within its privileges. The result is a **PIC Context of Authority (PCA)**: the signed
+document that carries the authority context of a lineage. The PCA of the origin, **PCA0**, contains no Proof of Relationship: there is no
+predecessor to relate to. Every later hop continues, and may only attenuate, what the PCA0 grants.
+
+In the running scenario, Alice connects to the backup SaaS. The service agreement confirms that the service is operated in Europe by an
+accountable party and does not use agentic execution. On those terms she grants access to all her files for backup. Her client produces a
+PCA0, signed by Alice:
+
+```json
+{
+  "issuer": "did:example:users:alice",
+  "operations": ["READ-ALL", "BACKUP"],
+  "executionContract": {
+    "role": "backup-service",
+    "compliance": ["GDPR"],
+    "serviceAgreements": [
+      "https://legal.example.com/agreements/dpa-2026-001"
+    ],
+    "executionModel": "deterministic"
+  },
+  "issuedAt": "2026-07-17T10:00:00Z",
+  "expiresAt": "2026-07-18T10:00:00Z"
+}
+```
+
+Later, Alice uses the same SaaS to summarize a document. The terms are different this time: the service runs in the United States and uses
+an AI agent. She accepts them, but only for the file `foo`. The resulting PCA0 grants less and constrains differently:
+
+```json
+{
+  "issuer": "did:example:users:alice",
+  "operations": ["READ-FOO", "SHARE-FILES"],
+  "executionContract": {
+    "role": "summary-service",
+    "serviceAgreements": [
+      "https://legal.acme.example/agreements/asa-2026-042"
+    ],
+    "executionModel": "agentic"
+  },
+  "issuedAt": "2026-07-17T10:00:00Z",
+  "expiresAt": "2026-07-18T10:00:00Z"
+}
+```
+
+Each PCA0 starts a distinct lineage, with its own operations and its own execution contract, and no later hop can expand either. These are
+the two lineages of Section 1.4.
+
+A PCA0 may also be derived from an existing token, for example from a JWT through a custom token-exchange profile; such derivations are out
+of scope for this specification. Wherever it comes from, the derivation is where a PCA0 is born, and execution starts from there.
 
 ## 2. Prover Requirements
 
