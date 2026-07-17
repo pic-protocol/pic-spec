@@ -36,9 +36,11 @@ In case of conflict, the **PIC Specification** is authoritative.
   - [Table of Contents](#table-of-contents)
   - [1. Introduction](#1-introduction)
     - [1.1 Security Guarantees of the Model](#11-security-guarantees-of-the-model)
-    - [1.2 The N+1 Executor Problem (Canonical Execution Model)](#12-the-n1-executor-problem-canonical-execution-model)
-    - [1.3 The Execution Flow as Part of the Security Model](#13-the-execution-flow-as-part-of-the-security-model)
-    - [1.4 Requirements Notation](#14-requirements-notation)
+    - [1.2 Delegating the Future](#12-delegating-the-future)
+    - [1.3 The N+1 Executor Problem (Canonical Execution Model)](#13-the-n1-executor-problem-canonical-execution-model)
+    - [1.4 The Execution Flow as Part of the Security Model](#14-the-execution-flow-as-part-of-the-security-model)
+    - [1.5 Attribute Attestations](#15-attribute-attestations)
+    - [1.6 Requirements Notation](#16-requirements-notation)
   - [2. Prover Requirements](#2-prover-requirements)
   - [3. Verifier Requirements](#3-verifier-requirements)
   - [4. Contributors](#4-contributors)
@@ -50,7 +52,9 @@ In case of conflict, the **PIC Specification** is authoritative.
 This section is non-normative. It describes the problem this specification addresses and is independent of any concrete implementation.
 Normative requirements are defined in Section 2 (Prover) and Section 3 (Verifier).
 
-This specification defines how the **Provenance Identity Continuity (PIC) Model** is implemented at each execution hop. The model, including
+Current authorization models lack a formal execution continuity model: they define who may hold authority, but not how authority remains
+valid across the steps of a distributed execution. This specification defines how the **Provenance Identity Continuity (PIC) Model** is
+implemented at each execution hop to close that gap. The model, including
 Proof of Relationship (PoR), Proof of Continuity (PoC), and the resulting safety guarantees, is formally defined in the companion paper
 [[1]](#references) and formally verified with the Lean theorem prover [[2]](#references). The paper treats PoR as an abstract, unforgeable
 primitive. This document specifies the two components that realize it:
@@ -83,11 +87,31 @@ under a model, that model relies on correct executor behavior to avoid the compo
 construction: the damage of a buggy or compromised executor is confined to its local step and cannot propagate as valid authority at the
 next hop.
 
-### 1.2 The N+1 Executor Problem (Canonical Execution Model)
+### 1.2 Delegating the Future
 
-This specification is explained and defined around a single canonical execution model, referred to throughout as the **N+1 Executor
-Problem**. Execution is a chain of discrete steps performed by executors, such as services, workloads, functions, tools, or agents. Each
-executor receives a request, processes it, and may cause a further step:
+Software that must support implementations that do not exist yet does not hard-code future components. It defines an interface. The
+interface specifies the contract, and any future implementation can participate, provided it proves that it satisfies the contract.
+
+PIC applies the same principle to distributed execution. A continuation does not name or preselect its successor. It defines the execution
+contract instead:
+
+- the authority that may continue;
+- the constraints that must remain non-expansive;
+- the execution characteristics the successor must satisfy;
+- the causal relationship with the previous execution state.
+
+When a successor materializes, it proves that it satisfies those conditions and may continue the execution. No identity needs to be known
+in advance, and nothing binds the contract to a single successor: a continuation may be taken up by zero, one, or many executors, possibly
+in parallel. The future being delegated ranges from no continuation at all to an unbounded number of them. Identity may still support
+authentication, audit, and accountability, but it is not the primitive that preserves authority across execution.
+
+The contract defines the continuation. The executor proves conformance. Continuity, not identity, delegates the future.
+
+### 1.3 The N+1 Executor Problem (Canonical Execution Model)
+
+The N+1 Executor Problem is future delegation made concrete. This specification is explained and defined around this single canonical
+execution model. Execution is a chain of discrete steps performed by executors, such as services, workloads, functions, tools, or agents.
+Each executor receives a request, processes it, and may cause a further step:
 
 ```text
 +----------------+      |      +----------------+      |      +----------------+
@@ -96,7 +120,8 @@ executor receives a request, processes it, and may cause a further step:
                                     time x                        time x + y
 ```
 
-Each `|` marks a hop boundary: the point where the predecessor's Prover emits its proofs and the successor's Verifier validates them.
+Each `|` marks a hop boundary: the point where the predecessor's Prover emits its proofs and the successor's Verifier validates them. Each
+boundary is an act of future delegation, and the linear chain is the minimal case: a step may delegate to several successors in parallel.
 
 The problem is the executor at position n+1. Executor `n` acts at time `x`. Executor `n+1` acts at a later time `x + y`, and at time `x` it
 does not yet exist as a known party: it need not be known, selected, instantiated, or provisioned when executor `n` completes its step.
@@ -108,7 +133,7 @@ first executor that serves it, crosses the same temporal gap, since that executo
 expressed. A single-hop execution is the smallest instance of the N+1 Executor Problem. Multi-hop chains repeat it at every boundary, where
 its consequences become most visible.
 
-### 1.3 The Execution Flow as Part of the Security Model
+### 1.4 The Execution Flow as Part of the Security Model
 
 The PIC Model resolves the N+1 Executor Problem by bringing the execution flow itself, including the not-yet-existing executor `n+1`, into
 the security model, rather than leaving the gap between `x` and `x + y` to application logic. What must hold across that gap is not the
@@ -120,7 +145,54 @@ verified continuity, never as possession by a pre-existing holder.
 
 **To be completed:** roles of the Prover and Verifier in the Trust Plane, and relationship to CAT and Federation Bridge components.
 
-### 1.4 Requirements Notation
+### 1.5 Attribute Attestations
+
+To describe the model, this specification uses one illustrative construct: the signed attribute attestation. It is a document, signed by an
+issuer, that binds a subject to a set of attributes for a validity period. The examples in this document follow a single running scenario:
+a backup service operating in the European region under compliance constraints, authorized for the operations `READ-ALL` and `BACKUP`.
+
+```json
+{
+  "subject": "did:example:workloads:eu:backup-service",
+  "attributes": {
+    "role": "backup-service",
+    "compliance": ["GDPR"],
+    "environment": "production",
+    "region": "eu-1",
+    "availabilityZone": "eu-1a",
+    "executionModel": "deterministic"
+  },
+  "issuedAt": "2026-07-17T10:00:00Z",
+  "expiresAt": "2026-08-17T10:00:00Z",
+  "issuer": "did:example:org-authority"
+}
+```
+
+The scenario includes a second executor: a summary service implemented as an AI agent. It produces summaries of documents, and its
+execution is not deterministic. Its attestation differs in role, network placement, and execution model:
+
+```json
+{
+  "subject": "did:example:workloads:eu:summary-service",
+  "attributes": {
+    "role": "summary-service",
+    "compliance": ["GDPR"],
+    "environment": "production",
+    "region": "eu-1",
+    "availabilityZone": "eu-1b",
+    "executionModel": "agentic"
+  },
+  "issuedAt": "2026-07-17T10:00:00Z",
+  "expiresAt": "2026-08-17T10:00:00Z",
+  "issuer": "did:example:org-authority"
+}
+```
+
+The identifiers in the examples use DIDs. This choice is illustrative, not normative: the model does not depend on DIDs, and any equivalent
+mechanism can be used, including Verifiable Credentials, X.509 certificates, or workload identity documents. A plain attestation document
+was chosen to keep the examples easy to follow.
+
+### 1.6 Requirements Notation
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
 "OPTIONAL" in this document are to be interpreted as described in BCP 14 [[3]](#references) [[4]](#references) when, and only when, they
