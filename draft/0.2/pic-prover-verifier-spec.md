@@ -193,6 +193,11 @@ Under PIC the same state cannot be represented as valid. `READ-ALL` is absent fr
 continuation can expand an authority context: the composed proof does not satisfy the lineage, and the Verifier at executor `n+1` rejects
 it. The bug can still execute locally, as stated in Section 1.1, but the state it produces is invalid and stops at that hop.
 
+This is a *structural* elimination of the confused deputy, and it is what PIC shares with the object-capability approach: a capability
+removes the mismatch by construction at a single hop, by fusing designation and authority at invocation; PIC extends the same by-construction
+guarantee across the whole lineage, so the mismatch is not a state a valid chain can represent at any hop. It is ruled out by construction,
+not caught by runtime vigilance — and this is exactly the property the Lean formalization verifies [[2]](#references).
+
 ### 1.5 The Execution Flow as Part of the Security Model
 
 The PIC Model resolves the N+1 Executor Problem by bringing the execution flow itself, including the not-yet-existing executor `n+1`, into
@@ -202,8 +207,6 @@ identity of the successor, but that its authority is a valid continuation of the
 Verifier, which accepts the hop only if both are valid. The temporal gap is therefore not an application concern to be patched with
 perimeter assumptions or out-of-band coordination. It is the object the security model is built around: authority crosses it only as
 verified continuity, never as possession by a pre-existing holder.
-
-> **To be completed:** roles of the Prover and Verifier in the Trust Plane, and relationship to CAT and Federation Bridge components.
 
 ### 1.6 Attribute Attestations
 
@@ -455,6 +458,10 @@ The Prover MUST check its own PoR before proceeding: if the executor does not sa
 > accumulators, recursive or zero-knowledge proofs, hardware-backed attestations — including ones that do not disclose the evidence in the
 > clear, provided they preserve the normative semantics: binding to *exactly one* predecessor lineage, responding to the predecessor's
 > continuation challenge, non-expansion of the invariants, and integrity of the successor PCA as a whole.
+>
+> Carrying the attestation in the clear is a property of this minimal profile only. **Selective disclosure** — revealing just the attributes
+> the execution contract requires — is out of scope here and is a separate implementation concern, but it is **RECOMMENDED** for production
+> profiles that handle sensitive attributes (Section 6.4).
 
 ### 2.4 Invariant Monotonicity
 
@@ -563,7 +570,9 @@ for i = 1 .. n:
 all valid ?  accept and authorize invariants of PCA[n]  :  reject
 ```
 
-The following sections define each step.
+The following sections define each step. This walk-the-whole-chain procedure is the *illustrative* one for the hash-chain profile;
+alternative chain-validation methods — snapshots and succinct proofs — establish the same checks by other means and at lower cost
+(Section 5).
 
 ### 3.2 Origin Validation (PCA0)
 
@@ -778,10 +787,14 @@ trusted-time evidence for the execution instant and is left to a profile.
 
 The byte representation covered by a hash or signature MUST be unambiguous and deterministically reproducible under the selected profile.
 Each profile MUST state its canonical encoding, hash algorithm, signature algorithm, domain-separation rules, and a suite identifier. The
-illustrative profile uses canonical JSON, SHA-256, and Ed25519; these are not required of every implementation. Selective-disclosure or
-zero-knowledge mechanisms MAY replace full-attestation signing, provided the Verifier can still establish the required attributes, issuer
-validity, subject binding, validity period, and conformance. Such mechanisms do not change PIC semantics, but they may change the
-cryptographic trust model.
+illustrative profile uses canonical JSON, SHA-256, and Ed25519; these are not required of every implementation.
+
+PIC is not tied to JSON. A profile MAY carry and sign PCAs with established envelopes such as **JOSE** (JWS/JWT) or **COSE**, or with any
+canonical binary encoding. For network-heavy or resource-constrained infrastructure, a binary format is RECOMMENDED — in particular
+**CBOR** (with COSE for signing) — to reduce size and parsing cost; deterministic CBOR gives the reproducible byte representation this
+section requires. Selective-disclosure or zero-knowledge mechanisms MAY replace full-attestation signing, provided the Verifier can still
+establish the required attributes, issuer validity, subject binding, validity period, and conformance. Such mechanisms do not change PIC
+semantics, but they may change the cryptographic trust model.
 
 ### 6.5 Formal Scope
 
@@ -793,9 +806,9 @@ is not claimed that Lean proves the security of a cryptographic implementation.
 ### 6.6 Proof of Possession (Optional)
 
 The minimal profile binds a hop to its executor through the PCA signature. A profile MAY strengthen this with a **proof of possession** of
-the request itself — for example HTTP Message Signatures, or a signed request binding — so that the continuation is tied not only to the
-executor's key but to the concrete request it answers. This narrows the gap further for implementers who want it; it is an extension, not a
-requirement of the core.
+the request or channel — for example **DPoP** [[5]](#references), **HTTP Message Signatures** [[6]](#references), or an equivalent signed
+request binding — so that the continuation is tied not only to the executor's key but to the concrete request it answers. This narrows the
+gap further for implementers who want it; it is an extension, not a requirement of the core.
 
 ### 6.7 Transport Separation and Confidentiality
 
@@ -861,3 +874,5 @@ those defined in the PIC Legal Appendices.
 - [2] Gallo, N. (2026). *PIC Lean Verification*. Lean 4 formalization of the definitions and theorems of [1]. [github.com/ngallo/pic-model/draft/0.1/pic-model-math/pic-lean](https://github.com/ngallo/pic-model/tree/main/draft/0.1/pic-model-math/pic-lean)
 - [3] Bradner, S. (1997). *Key words for use in RFCs to Indicate Requirement Levels*. BCP 14, RFC 2119. [rfc-editor.org/rfc/rfc2119](https://www.rfc-editor.org/rfc/rfc2119)
 - [4] Leiba, B. (2017). *Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words*. BCP 14, RFC 8174. [rfc-editor.org/rfc/rfc8174](https://www.rfc-editor.org/rfc/rfc8174)
+- [5] Fett, D., Campbell, B., Bradley, J., Lodderstedt, T., Jones, M. B., & Waite, D. (2023). *OAuth 2.0 Demonstrating Proof of Possession (DPoP)*. RFC 9449. [rfc-editor.org/rfc/rfc9449](https://www.rfc-editor.org/rfc/rfc9449)
+- [6] Backman, A., Richer, J., & Sporny, M. (2024). *HTTP Message Signatures*. RFC 9421. [rfc-editor.org/rfc/rfc9421](https://www.rfc-editor.org/rfc/rfc9421)
