@@ -654,16 +654,18 @@ Access control: does this authority state authorize this concrete operation
                 under the application policy?
 ```
 
-An executor need not evaluate policy locally. It MAY pass the authority context to a **Policy Decision Point** — Cedar, Rego, XACML, or
-another engine — that interprets the label's semantics and renders the access decision. The two decisions MAY run in one component or in
-separate ones.
+Using a PDP is an **application choice**, not part of PIC. An executor MAY evaluate policy locally, or it MAY pass the authority context to a
+**Policy Decision Point** — Cedar, Rego, XACML, or another engine — that interprets the label's semantics and renders the access decision.
+The two decisions MAY run in one component or in separate ones. PIC neither requires a PDP nor defines one; this section exists only for
+implementers who choose that path.
 
-One obligation is essential, and it belongs to the profile or the PDP, **not** to the PIC core: the declared attenuation order on labels
-MUST be *monotone with respect to their semantics*. If `child ≤ parent` in the label order but the meaning of `child` is not contained in
-the meaning of `parent`, PIC's non-expansion is vacuous. This obligation does **not inherit the Lean proof** [[2]](#references): the proof
-covers non-expansion of the *abstract* order; that a particular label vocabulary's order refines its denotation order is a proof obligation
-of that profile or PDP. It is the same boundary the model already draws for heterogeneous translation, and it is a natural point of
-standardization — label vocabularies with provably semantic-monotone orders, and the PIC↔PDP interface that carries the obligation.
+Whoever takes that path takes an obligation with it, and it is **theirs, not PIC's**: the declared attenuation order on labels MUST be
+*monotone with respect to their semantics*. If `child ≤ parent` in the label order but the meaning of `child` is not contained in the meaning
+of `parent`, PIC's non-expansion is vacuous — the labels shrink while what they authorize grows. Establishing that the label order refines
+its denotation order is up to the application or its PDP. It does **not inherit the Lean proof** [[2]](#references): the proof covers
+non-expansion of the *abstract* order only; semantic monotonicity of a concrete vocabulary is a separate proof obligation that PIC does not
+discharge. This is the same boundary the model already draws for heterogeneous translation, and it is a natural point of standardization —
+label vocabularies with provably semantic-monotone orders, and the PIC↔PDP interface that carries the obligation.
 
 ## 5. Chain Representations
 
