@@ -93,7 +93,7 @@ processes it, and may cause a further step:
 +----------------+      |      +----------------+      |      +----------------+
 |  EXECUTOR n-1  |------|----->|   EXECUTOR n   |------|----->|  EXECUTOR n+1  |
 +----------------+      |      +----------------+      |      +----------------+
-                              time x                         time x + y
+                                    time x                        time x + y
 ```
 
 Each `|` marks a hop boundary: the point where the predecessor's Prover emits
