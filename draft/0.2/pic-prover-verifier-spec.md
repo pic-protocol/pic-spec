@@ -157,6 +157,10 @@ a backup service operating in the European region under compliance constraints, 
   "attributes": {
     "role": "backup-service",
     "compliance": ["GDPR"],
+    "accountableParty": "Example Corp",
+    "serviceAgreements": [
+      "https://legal.example.com/agreements/dpa-2026-001"
+    ],
     "environment": "production",
     "region": "eu-1",
     "availabilityZone": "eu-1a",
@@ -169,7 +173,7 @@ a backup service operating in the European region under compliance constraints, 
 ```
 
 The scenario includes a second executor: a summary service implemented as an AI agent. It produces summaries of documents, and its
-execution is not deterministic. Its attestation differs in role, network placement, and execution model:
+execution is not deterministic. Its attestation differs in role, accountable party, network placement, and execution model:
 
 ```json
 {
@@ -177,6 +181,10 @@ execution is not deterministic. Its attestation differs in role, network placeme
   "attributes": {
     "role": "summary-service",
     "compliance": ["GDPR"],
+    "accountableParty": "Acme AI Ltd",
+    "serviceAgreements": [
+      "https://legal.acme.example/agreements/asa-2026-042"
+    ],
     "environment": "production",
     "region": "eu-1",
     "availabilityZone": "eu-1b",
