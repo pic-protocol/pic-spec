@@ -6,11 +6,11 @@
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-prover-verifier-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md)  
 **Editors:**
 
-- **Nicola Gallo** (on behalf of Nitro Agility S.r.l.) — lead editor
+- **Nicola Gallo** (Nitro Agility S.r.l.)
+- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 4](#4-contributors)).*
 
 **Contributors:**
 
-- **Antonio Radesca** (on behalf of Nitro Agility S.r.l.)
 - *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 4](#4-contributors)).*
 
 ## Abstract
@@ -54,6 +54,8 @@ authorship claims beyond those defined in the
   - [Relationship to the PIC Specification](#relationship-to-the-pic-specification)
   - [Table of Contents](#table-of-contents)
   - [1. Introduction](#1-introduction)
+    - [1.1 The N+1 Executor Problem (Canonical Execution Model)](#11-the-n1-executor-problem-canonical-execution-model)
+    - [1.2 The Execution Flow as Part of the Security Model](#12-the-execution-flow-as-part-of-the-security-model)
   - [2. Prover Requirements](#2-prover-requirements)
   - [3. Verifier Requirements](#3-verifier-requirements)
   - [4. Contributors](#4-contributors)
@@ -62,9 +64,74 @@ authorship claims beyond those defined in the
 
 ## 1. Introduction
 
-*(To be written: scope of the PIC Prover and PIC Verifier, their roles in the
-Trust Plane, relationship to CAT and Federation Bridge components, and the
-prove/verify cycle at each execution hop.)*
+This specification defines how the **Provenance Identity Continuity (PIC)
+Model** is implemented at each execution hop. The PIC Model — Proof of
+Relationship (PoR), Proof of Continuity (PoC), and the resulting safety
+guarantees — is formally defined in the companion paper
+*Proof-of-Continuity: A Temporal Model for Authority Propagation in
+Distributed Systems and AI Agents* [[1]](#references). Where the paper treats
+the single-hop relationship evidence PoR as an abstract, unforgeable
+primitive, this document specifies the components that realize it:
+
+- the **PIC Prover** implements the *proving* role of the model: it constructs
+  the Proof of Continuity that binds the current execution step to its causal
+  predecessor and carries a non-expansive authority context forward;
+- the **PIC Verifier** implements the *verifying* role of the model: it
+  validates the proof received at a hop and enforces the PIC invariants —
+  causal linkage and monotonic authority restriction — before any authority is
+  exercised.
+
+### 1.1 The N+1 Executor Problem (Canonical Execution Model)
+
+This specification is explained and defined around a single canonical
+execution model, referred to throughout as the **N+1 Executor Problem**.
+Execution is a chain of discrete steps performed by executors — services,
+workloads, functions, tools, or agents — each of which receives a request,
+processes it, and may cause a further step:
+
+```text
++----------------+      |      +----------------+      |      +----------------+
+|  EXECUTOR n-1  |------|----->|   EXECUTOR n   |------|----->|  EXECUTOR n+1  |
++----------------+      |      +----------------+      |      +----------------+
+                              time x                         time x + y
+```
+
+Each `|` marks a hop boundary: the point where the predecessor's Prover emits
+a Proof of Continuity and the successor's Verifier validates it.
+
+The problem is the executor at position **n+1**. Executor `n` acts at time
+`x`; executor `n+1` acts only at a later time `x + y` — and at time `x` it
+**does not yet exist as a known party**: it need not be known, selected,
+instantiated, or provisioned when executor `n` completes its step. Execution
+is a sequence of causal steps in time, not of positions fixed by topology.
+Consequently, no security mechanism that requires pre-binding authority to a
+concrete successor — its identity, its key, or its channel — can be applied at
+time `x`: there is no holder yet to bind to.
+
+### 1.2 The Execution Flow as Part of the Security Model
+
+The PIC Model resolves the N+1 Executor Problem by bringing the execution flow
+itself — including the not-yet-existing executor `n+1` — **into the security
+model**, rather than leaving the gap between `x` and `x + y` to application
+logic. What must hold across that gap is not the identity of the successor,
+nor a policy attached to it, but that its authority is a valid continuation of
+the context that caused it:
+
+- at time `x`, the Prover of executor `n` emits a continuation — a Proof of
+  Continuity anchored to its own step, addressed to an unknown successor;
+- at time `x + y`, whichever executor materializes as `n+1` presents that
+  continuation to its Verifier, which accepts the hop only if it is causally
+  linked to executor `n` (PoR) and its authority context is non-expansive
+  with respect to the one received.
+
+Under this discipline, the temporal gap is not an application concern to be
+patched with perimeter assumptions, shared secrets, or out-of-band
+coordination: it is the object the security model is built around. Authority
+crosses the gap only as verified continuity, never as possession by a
+pre-existing holder.
+
+*(To be completed: roles of the Prover and Verifier in the Trust Plane, and
+relationship to CAT and Federation Bridge components.)*
 
 ## 2. Prover Requirements
 
