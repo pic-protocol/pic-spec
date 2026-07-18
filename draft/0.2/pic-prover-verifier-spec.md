@@ -7,11 +7,11 @@
 **Editors:**
 
 - **Nicola Gallo** (Nitro Agility S.r.l.) Lead Editor
-- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 8](#8-contributors)).*
+- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 9](#9-contributors)).*
 
 **Contributors:**
 
-- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 8](#8-contributors)).*
+- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 9](#9-contributors)).*
 
 ## Abstract
 
@@ -58,9 +58,9 @@ In case of conflict, the **PIC Specification** is authoritative.
     - [4.2 Attenuation Profiles](#42-attenuation-profiles)
     - [4.3 Policy Decision Point (PDP) Integration](#43-policy-decision-point-pdp-integration)
   - [5. Chain Representations](#5-chain-representations)
-    - [5.1 Hash Chain](#51-hash-chain)
-    - [5.2 Snapshot](#52-snapshot)
-    - [5.3 Zero-Knowledge Proofs (SNARKs)](#53-zero-knowledge-proofs-snarks)
+    - [5.1 Full Hash Chain](#51-full-hash-chain)
+    - [5.2 Snapshot Hash Chain](#52-snapshot-hash-chain)
+    - [5.3 Succinct Proofs (Zero-Knowledge)](#53-succinct-proofs-zero-knowledge)
   - [6. Security Considerations](#6-security-considerations)
     - [6.1 Freshness, Replay, and Fan-out](#61-freshness-replay-and-fan-out)
     - [6.2 Origin (PCA0) Trust Boundary](#62-origin-pca0-trust-boundary)
@@ -69,9 +69,11 @@ In case of conflict, the **PIC Specification** is authoritative.
     - [6.5 Formal Scope](#65-formal-scope)
     - [6.6 Proof of Possession (Optional)](#66-proof-of-possession-optional)
     - [6.7 Transport Separation and Confidentiality](#67-transport-separation-and-confidentiality)
-  - [7. Zero Trust](#7-zero-trust)
-  - [8. Contributors](#8-contributors)
-  - [9. Legal Notices](#9-legal-notices)
+    - [6.8 Incremental Verification and Trusted Hops](#68-incremental-verification-and-trusted-hops)
+  - [7. Deployment Models](#7-deployment-models)
+  - [8. Zero Trust](#8-zero-trust)
+  - [9. Contributors](#9-contributors)
+  - [10. Legal Notices](#10-legal-notices)
   - [References](#references)
 
 ## 1. Introduction
@@ -295,7 +297,6 @@ PCA0, signed by Alice:
 ```json
 {
   "issuer": "did:example:users:alice",
-  "txId": "urn:uuid:3f2504e0-4f89-41d3-9a0c-0305e82c3301",
   "invariants": {
     "operations": ["READ-ALL", "BACKUP"],
     "executionContract": {
@@ -323,7 +324,6 @@ an AI agent. She accepts them, but only for the file `foo`. The resulting PCA0 g
 ```json
 {
   "issuer": "did:example:users:alice",
-  "txId": "urn:uuid:9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
   "invariants": {
     "operations": ["READ-FOO", "SHARE-FILES"],
     "executionContract": {
@@ -345,11 +345,7 @@ an AI agent. She accepts them, but only for the file `foo`. The resulting PCA0 g
 ```
 
 Each PCA0 starts a distinct lineage with its own invariants, and no later hop can expand them. These are the two lineages of Section 1.4.
-The `txId` is an **OPTIONAL** convenience: a globally unique identifier for the lineage, fixed at the origin and, when present, shared by
-every hop of the chain. It names the execution transaction as a whole, so hops can be correlated for audit, replay tracking, and fan-out
-accounting without walking back to PCA0. It is not required for safety — causal linkage is carried by `previousPcaHash` regardless — and a
-profile MAY omit it. The `continuation` block is the challenge each PCA emits for its next hop, consumed in the Proof of Relationship
-(Section 2.3).
+The `continuation` block is the challenge each PCA emits for its next hop, consumed in the Proof of Relationship (Section 2.3).
 
 A PCA0 may be **minted directly** by an authenticated permissioned entity, or **derived from an existing credential** — for example from an
 OAuth access token, or from a JWT through a custom token-exchange profile. These derivations are *out of scope* for this specification, but
@@ -509,7 +505,6 @@ and the one signature:
 
 ```json
 {
-  "txId": "urn:uuid:3f2504e0-4f89-41d3-9a0c-0305e82c3301",
   "proofOfRelationship": { "…": "the PoR payload of Section 2.3" },
   "invariants":          { "…": "the attenuated invariants of Section 2.4" },
   "continuation": {
@@ -527,10 +522,6 @@ and the one signature:
 }
 ```
 
-When present, the successor carries the same `txId` as its lineage's PCA0; the outer signature covers it, and a Verifier MUST reject a hop
-whose `txId` differs from the predecessor's (it would not belong to this lineage). The `txId` is optional (Section 1.8): safety does not
-depend on it.
-
 One signature covers everything: predecessor reference, challenge response, executor evidence, attenuated invariants, the emitted
 `continuation`, and the temporal fields. It is *attributable* — the whole hop is signed by the executor that made it — and *tamper-evident*:
 changing any field invalidates it. This is what forbids the cross-lineage composition of Section 1.4: a PoR that responds to one lineage's
@@ -539,19 +530,59 @@ conforming continuation*. The only other signature a Verifier checks is the issu
 the attestation, not to PIC. Profiles that must transport or verify the PoR or the invariants independently MAY add internal signatures
 (Section 5).
 
+**Handoff: the envelope.** A PCA is a *self-contained* signed object: its signature is valid on its own, without any wrapper. Forwarding is
+done by an **envelope**, signed by the forwarding workload, that carries the predecessor PCA together with the new PCA:
+
+```json
+{
+  "envelope": {
+    "forwardedBy": "did:example:workloads:eu:backup-service",
+    "predecessor":       { "…": "PCA[n-1], self-contained, signed by n-1" },
+    "predecessorDigest": "sha256:… (content id of PCA[n-1])",
+    "current":           { "…": "PCA[n], self-contained, signed by n" },
+    "currentDigest":     "sha256:… (content id of PCA[n])"
+  },
+  "proof": {
+    "type": "Ed25519Signature2020",
+    "verificationMethod": "did:example:workloads:eu:backup-service#key-1",
+    "signature": "base64url..."
+  }
+}
+```
+
+Both `predecessor` and `current` are PCAs — same shape, one the continuation of the other — so the envelope names them symmetrically. The
+next hop unwraps the envelope, takes `current` (`PCA[n]`) **unchanged** — its signature still verifies, since the bytes were never altered —
+and places it as the `predecessor` of its own envelope, alongside the PCA it creates. Envelopes are **never nested**: the new envelope
+re-carries the PCA, not the old envelope, so size stays bounded. The envelope signature is the *handoff* proof — it attributes the forwarding
+to the workload and MAY also bind the transport or request (Section 6.6) — and is separate from the PCA's own continuity signature.
+
+`predecessorDigest` and `currentDigest` are the content-addressed identifiers of the two carried PCAs. A PCA cannot contain its own hash
+(that would be self-referential), so these digests live in the envelope, where they serve as the PCAs' ids for linking, logging, and
+deduplication — `currentDigest` is what the next hop places in its `previousPcaHash`. They are a **convenience, not trusted input**: a
+Verifier MUST recompute each digest from the PCA bytes, reject a mismatch, and check that `predecessorDigest` equals the `previousPcaHash`
+carried inside `current`. Security rests on that recomputation and on the signatures, never on the supplied digests.
+
+In the default **incremental** profile the envelope carries just the immediate predecessor, `[PCA[n-1], PCA[n]]`. Executor `n+1` verifies the
+transition it can see — hash link, non-expansion, conformance, PoR (Section 3.3) — which catches any single hop that expands authority or
+fails its contract, at the next honest hop. Validity back to PCA0 is then *inductive*: each hop verified its own predecessor. This relies on
+each hop being a trusted verifier (Section 6.8). A profile that must resist *consecutive colluding* hops carries the full chain
+`[PCA0 … PCA[n]]` in the envelope instead, or uses a succinct proof (Section 5).
+
 ## 3. Verifier Requirements
 
-A **PIC Verifier** validates the PCA presented at a hop *before any authority is exercised*. Validation is not local to the received PCA: it
-covers the **whole chain back to the origin**. The Verifier walks back to the origin **PCA0**, validates it, and then validates each later
-PCA forward against its immediate predecessor. A Verifier MUST:
+A **PIC Verifier** validates the PCA presented at a hop *before any authority is exercised*. The **per-hop checks** of Section 3.3 are the
+same in every profile; what differs is how far the Verifier walks. In the **full-chain** profile it validates the whole chain back to the
+origin: it walks to **PCA0**, validates it, and validates each later PCA against its immediate predecessor. In the **incremental** profile
+(Section 6.8) it validates the immediate transition carried in the envelope and relies on inductive validity — each hop having validated its
+own predecessor. A Verifier MUST:
 
-1. establish and validate the origin **PCA0**;
-2. validate every hop from **PCA1** onward against its immediate predecessor;
-3. accept the hop only if **every** step of the chain is valid; otherwise reject.
+1. establish and validate the origin **PCA0** (full-chain profile) or the immediate predecessor (incremental profile);
+2. validate every hop it walks against its immediate predecessor;
+3. accept the hop only if **every** step it validates is valid; otherwise reject.
 
 The authority a Verifier may authorize at the current hop is exactly the `invariants` of the last PCA. By monotonicity (Section 2.4) these
-are bounded by the origin, so a privilege absent from PCA0 can never be authorized downstream. The construction below mirrors the minimal
-profile of Section 2.
+are bounded by the origin, so a privilege absent from PCA0 can never be authorized downstream. The procedure below is written for the
+full-chain profile; the incremental profile applies steps 3 and following to the single received transition.
 
 ### 3.1 Verifier Procedure
 
@@ -605,8 +636,7 @@ following checks **in order** and MUST reject the whole chain if any fails:
 
 1. **integrity** — the outer `proof` is a valid single signature over the whole document under the profile's canonical encoding
    (Section 6.4);
-2. **predecessor reference** — `previousPcaHash` equals the hash of the predecessor PCA; if a `txId` is present, it MUST equal the
-   predecessor's `txId` (same lineage);
+2. **predecessor reference** — `previousPcaHash` equals the hash of the predecessor PCA;
 3. **continuation** — the `continuationResponse` carries the predecessor's emitted challenge, the challenge is unexpired and, when
    `single-use`, has not already been consumed (Section 6.1);
 4. **attestation** — the embedded executor attestation is valid: its issuer signature verifies, the issuer is trusted for the asserted
@@ -652,14 +682,14 @@ Every profile that introduces an authority representation or an execution contra
 attenuation order `≤`, and the conformance function that checks an executor against a contract. For example:
 
 ```text
-role:               child == parent
-allowedRegions:     child ⊆ parent
-requiredCompliance: child ⊇ parent
-executionModel:     child ⊆ parent
-expiresAt:          child ≤ parent
+role:               current == predecessor
+allowedRegions:     current ⊆ predecessor
+requiredCompliance: current ⊇ predecessor
+executionModel:     current ⊆ predecessor
+expiresAt:          current ≤ predecessor
 ```
 
-The core uses the abstract relation `Attenuates(child, parent, profile)`; a Verifier MUST reject a PCA whose profile is unknown or does not
+The core uses the abstract relation `Attenuates(current, predecessor, profile)`; a Verifier MUST reject a PCA whose profile is unknown or does not
 define a deterministic comparison. Concrete profiles for specific domains are defined by separate specifications. Translation between
 *heterogeneous* authority domains is out of scope here; consistent with the model, an overly permissive translation is a profile error, not
 a violation of the continuity invariant.
@@ -681,8 +711,8 @@ The two decisions MAY run in one component or in separate ones. PIC neither requ
 implementers who choose that path.
 
 Whoever takes that path takes an obligation with it, and it is **theirs, not PIC's**: the declared attenuation order on labels MUST be
-*monotone with respect to their semantics*. If `child ≤ parent` in the label order but the meaning of `child` is not contained in the meaning
-of `parent`, PIC's non-expansion is vacuous — the labels shrink while what they authorize grows. Establishing that the label order refines
+*monotone with respect to their semantics*. If `current ≤ predecessor` in the label order but the meaning of `current` is not contained in the
+meaning of `predecessor`, PIC's non-expansion is vacuous — the labels shrink while what they authorize grows. Establishing that the label order refines
 its denotation order is up to the application or its PDP. It does **not inherit the Lean proof** [[2]](#references): the proof covers
 non-expansion of the *abstract* order only; semantic monotonicity of a concrete vocabulary is a separate proof obligation that PIC does not
 discharge. This is the same boundary the model already draws for heterogeneous translation, and it is a natural point of standardization —
@@ -695,11 +725,11 @@ Section 3 stay the same — but it changes the *cost of validation* at a hop and
 implementation profile selects one representation. It expands on the proof mechanism agility of Section 2.3. A representation does not
 inherit the Lean proof automatically: each MUST show that its concrete acceptance predicate implies the abstract PoC (Section 6.5).
 
-### 5.1 Hash Chain
+### 5.1 Full Hash Chain
 
-Each PCA references its predecessor by hash, as in the minimal profile of Section 2. The Verifier walks the chain from **PCA0** to the
-current hop, checking every hop as described in Section 3. Validation cost is therefore *linear* in the length of the chain, **O(n)** for a
-chain of `n` hops. No external component is required: the chain, with the hashes and proofs each hop needs, is presented with the request.
+Each PCA references its predecessor by hash. The Verifier walks the chain from **PCA0** to the current hop, checking every hop as described
+in Section 3. Validation cost is *linear* in the length of the chain, **O(n)** for a chain of `n` hops. No external component is required:
+the chain, with the hashes and proofs each hop needs, is presented with the request.
 
 ```text
 PCA0 <--hash-- PCA1 <--hash-- PCA2 <--hash-- PCA[n]
@@ -708,30 +738,39 @@ PCA0 <--hash-- PCA1 <--hash-- PCA2 <--hash-- PCA[n]
                     cost: O(n)
 ```
 
-### 5.2 Snapshot
+This is the reference baseline and the decentralized, collusion-resistant fallback (Section 7). It is, however, **too slow to be a working
+default**: cost and message size grow without bound with the chain length. The specification therefore does not build on it for practical
+multi-hop deployments — it remains available where its O(n) cost is acceptable and full independent re-verification is required.
 
-Every so many hops, a trusted server validates the chain so far and issues a signed **snapshot** attesting that the chain up to some
-`PCA[k]` is valid. A Verifier presented with a snapshot verifies the *snapshot signature* and then validates only the hops after it, instead
-of walking all the way back to PCA0. Validation cost drops to the distance from the last snapshot, **O(hops since the last snapshot)**. The
-trade-off is an *external trusted component* — the snapshot server — added to the trust model.
+### 5.2 Snapshot Hash Chain
+
+Every so many hops, a trusted party validates the chain so far and issues a signed **snapshot** attesting that the chain up to some `PCA[k]`
+is valid. A Verifier presented with a snapshot verifies the *snapshot signature* and then validates only the hops after it, instead of
+walking all the way back to PCA0. Validation cost drops to the distance from the last snapshot, **O(hops since the last snapshot)**. The
+trade-off is an *external trusted component* — the snapshot issuer — added to the trust model.
 
 ```text
-PCA0 ... PCA[k]  ==>  snapshot (signed by trusted server)
+PCA0 ... PCA[k]  ==>  snapshot (signed by trusted issuer)
                           |
                           +--> verify only PCA[k+1] ... PCA[n]
                                cost: O(hops since snapshot)
 ```
 
-### 5.3 Zero-Knowledge Proofs (SNARKs)
+**This is the profile the specification orients on.** Forthcoming versions develop their normative constructions on the snapshot hash chain:
+it keeps validation bounded without requiring advanced cryptography. The choice stays non-normative — an implementation MAY use the full
+hash chain (5.1) or a succinct proof (5.3) and adapt accordingly — but the worked examples and constructions of this specification assume
+this profile.
 
-The validity of the whole chain can be compressed into a single succinct proof, for example a **SNARK**, that a Verifier checks without
-walking the chain and without seeing its contents. Each hop produces a proof that the chain up to that hop is valid; verifying it is
-**O(1)** in the length of the chain, and the underlying evidence need not be disclosed. The construction of such proofs is out of scope
-here; this section only records that the model admits them.
+### 5.3 Succinct Proofs (Zero-Knowledge)
+
+The validity of the whole chain can be compressed into a single **succinct proof** — for example a zero-knowledge SNARK — that a Verifier
+checks without walking the chain and without seeing its contents. Verifying is **O(1)** in the length of the chain, and the underlying
+evidence need not be disclosed. The **SNARK is only an example**: any cryptographic construction that soundly proves the chain's validity
+would serve. The choice of construction, and the verification of its soundness, are **out of scope** for this document.
 
 ```text
-PCA0 ... PCA[n]  -->  succinct proof (SNARK)  -->  Verifier
-                                                   check: O(1)
+PCA0 ... PCA[n]  -->  succinct proof (e.g. ZK-SNARK)  -->  Verifier
+                                                           check: O(1)
 ```
 
 ## 6. Security Considerations
@@ -781,10 +820,10 @@ re-originates authority is outside the guarantee.
 For every non-origin PCA a Verifier MUST check:
 
 ```text
-child.issuedAt      ≥ parent.issuedAt
-child.expiresAt     ≤ parent.expiresAt
-child.issuedAt      ≤ verificationTime < child.expiresAt
-challenge.expiresAt ≤ parent.expiresAt
+current.issuedAt    ≥ predecessor.issuedAt
+current.expiresAt   ≤ predecessor.expiresAt
+current.issuedAt    ≤ verificationTime < current.expiresAt
+challenge.expiresAt ≤ predecessor.expiresAt
 ```
 
 Beyond this lineage bound, each hop SHOULD carry its **own short expiry**, set from its creation time and distinct from the lineage's total
@@ -834,7 +873,59 @@ messaging in particular, channels SHOULD be encrypted — not because reading a 
 grants no ability to mint a valid successor), but to protect the confidentiality of payloads and to reduce the surface for man-in-the-middle
 attempts. Encryption here is a privacy and attack-surface measure, not a source of the model's integrity.
 
-## 7. Zero Trust
+### 6.8 Incremental Verification and Trusted Hops
+
+The **incremental** profile (Section 2.5) forwards only the immediate transition in the envelope, `[PCA[n-1], PCA[n]]`, and validates that
+one transition at each hop. Global validity back to PCA0 is then *inductive*: a valid `PCA[n]` implies its predecessor was validated by the
+hop that produced it, and so on to the origin. The per-hop checks — hash link, non-expansion, conformance, PoR (Section 3.3) — catch **any
+single** hop that expands authority or fails its contract, at the next honest hop: the next Verifier holds both PCAs of that transition and
+rejects it.
+
+This profile makes one explicit assumption: **each hop is a trusted verifier.** It resists a single compromised or buggy hop, but not two
+or more *consecutive colluding* hops. If `PCA[n-1]` is minted already expanded by a compromised `n-1` and forwarded by a complicit `n`, then
+`n+1` — lacking `PCA[n-2]` — cannot re-verify the `n-2 → n-1` step and would accept it.
+
+The predecessor hashes do **not** close this gap, and it is worth being precise about why. They prove *linkage and order* — that each PCA
+follows the one it names, unaltered, so history cannot be reordered or rewritten. They do **not** prove *non-expansion of content*. Checking
+that a step did not expand needs the `invariants` of the predecessor — its bytes — and a hash is one-way: a downstream verifier holds
+`H(PCA[n-2])` (inside `PCA[n-1]`) but not `I(n-2)`, so it cannot re-check a step whose PCA it does not carry. The colluding hops do not
+rewrite history and do not forge any honest DID; they sign two expanded PCAs with their **own** keys, and the next honest hop never holds the
+earlier bytes to notice. This is the same trust model as a snapshot (Section 5.2): the incremental profile is, in effect, a decentralized
+per-hop snapshot, each envelope attesting that its signer validated its predecessor. A deployment that must resist consecutive collusion MUST use the **full-chain** profile — the envelope carries `[PCA0 … PCA[n]]`
+and the Verifier re-validates every step independently — or a succinct proof that commits to the whole prefix (Section 5.3). Safety against a
+single faulty hop holds in all profiles; the choice is only how much independent re-verification the deployment wants to pay for.
+
+## 7. Deployment Models
+
+PIC runs the same model in different topologies. The trade-off is between three properties the lightweight profile cannot maximize at once:
+**decentralization**, **low per-hop cost**, and **resistance to consecutive colluding hops** (Section 6.8). A single faulty hop is contained
+in *every* model (Section 1.1); deployment only decides how much — and on what — to spend to also resist collusion among
+compromised-but-authorized parties.
+
+| Model | Central party | Per-hop cost | Consecutive collusion |
+| --- | --- | --- | --- |
+| Decentralized, incremental (default) | none | O(1) | not resisted |
+| Decentralized, full-chain | none | O(n) | resisted |
+| Central / snapshot validator | yes | O(1) | resisted |
+| Succinct proof (SNARK) | none | O(1) verify | resisted |
+
+- **Decentralized, incremental** (Section 2.5). Each hop forwards only the immediate transition; no central component; O(1). Resists a single
+  faulty hop but not consecutive collusion. Right when every hop is a trusted verifier and group compromise is out of scope.
+- **Decentralized, full-chain.** The envelope carries `[PCA0 … PCA[n]]` and every hop re-validates every step. No central party, and
+  consecutive collusion is resisted — the honest verifier holds the earlier bytes and the colluders cannot forge the honest DIDs — at O(n)
+  size and validation cost per hop.
+- **Central (or snapshot) validator.** A trusted service validates each hop against the lineage history it holds, or issues periodic signed
+  snapshots (Section 5.2). Workloads forward at O(1), and the validator catches an expansion even under hop collusion because it holds the
+  earlier invariants. This is the practical way to resist collusion at O(1) without advanced cryptography — at the cost of a central trust
+  anchor and an availability dependency.
+- **Succinct proof.** A succinct proof — for example a SNARK or accumulator — proves non-expansion over the whole prefix (Section 5.3): decentralized, O(1) to verify, and
+  collusion-resistant, all at once — at the cost of proof-generation complexity and a heavier cryptographic profile.
+
+Stated plainly: **to resist collusion among compromised-but-authorized hops while keeping O(1) forwarding and no advanced cryptography, use a
+central or federated validator.** The decentralized alternatives that also resist it are full-chain (pay O(n)) or succinct proofs (pay in
+cryptography). Fully decentralized *and* lightweight means trusting each hop — the incremental profile and its documented limit (Section 6.8).
+
+## 8. Zero Trust
 
 PIC is zero-trust in a precise, checkable sense, not as a label. Each property below is a concrete consequence of the model, not an
 aspiration.
@@ -856,12 +947,12 @@ aspiration.
 The result is not "trust nothing" as a slogan but a model where trust is *earned per hop, verified explicitly, and bounded by construction* —
 which is what zero trust asks for.
 
-## 8. Contributors
+## 9. Contributors
 
 The editors and contributors of this document are listed in the **document header** above. Listing is governed by Appendix B.7 of the
 [PIC Legal Appendices](./pic-legal.md).
 
-## 9. Legal Notices
+## 10. Legal Notices
 
 The appendices governing:
 
