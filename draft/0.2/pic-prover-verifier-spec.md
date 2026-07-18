@@ -295,6 +295,7 @@ PCA0, signed by Alice:
 ```json
 {
   "issuer": "did:example:users:alice",
+  "txId": "urn:uuid:3f2504e0-4f89-41d3-9a0c-0305e82c3301",
   "invariants": {
     "operations": ["READ-ALL", "BACKUP"],
     "executionContract": {
@@ -322,6 +323,7 @@ an AI agent. She accepts them, but only for the file `foo`. The resulting PCA0 g
 ```json
 {
   "issuer": "did:example:users:alice",
+  "txId": "urn:uuid:9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
   "invariants": {
     "operations": ["READ-FOO", "SHARE-FILES"],
     "executionContract": {
@@ -343,7 +345,9 @@ an AI agent. She accepts them, but only for the file `foo`. The resulting PCA0 g
 ```
 
 Each PCA0 starts a distinct lineage with its own invariants, and no later hop can expand them. These are the two lineages of Section 1.4.
-The `continuation` block is the challenge each PCA emits for its next hop, consumed in the Proof of Relationship (Section 2.3).
+The `txId` is a globally unique identifier for the lineage, fixed at the origin and shared by every hop of the chain: it names the execution
+transaction as a whole, so hops can be correlated for audit, replay tracking, and fan-out accounting without walking back to PCA0. The
+`continuation` block is the challenge each PCA emits for its next hop, consumed in the Proof of Relationship (Section 2.3).
 
 A PCA0 may be **minted directly** by an authenticated permissioned entity, or **derived from an existing credential** — for example from an
 OAuth access token, or from a JWT through a custom token-exchange profile. These derivations are *out of scope* for this specification, but
@@ -503,6 +507,7 @@ and the one signature:
 
 ```json
 {
+  "txId": "urn:uuid:3f2504e0-4f89-41d3-9a0c-0305e82c3301",
   "proofOfRelationship": { "…": "the PoR payload of Section 2.3" },
   "invariants":          { "…": "the attenuated invariants of Section 2.4" },
   "continuation": {
@@ -519,6 +524,9 @@ and the one signature:
   }
 }
 ```
+
+The successor carries the same `txId` as its lineage's PCA0; the outer signature covers it, and a Verifier MUST reject a hop whose `txId`
+differs from the predecessor's (it would not belong to this lineage).
 
 One signature covers everything: predecessor reference, challenge response, executor evidence, attenuated invariants, the emitted
 `continuation`, and the temporal fields. It is *attributable* — the whole hop is signed by the executor that made it — and *tamper-evident*:
@@ -594,7 +602,8 @@ following checks **in order** and MUST reject the whole chain if any fails:
 
 1. **integrity** — the outer `proof` is a valid single signature over the whole document under the profile's canonical encoding
    (Section 6.4);
-2. **predecessor reference** — `previousPcaHash` equals the hash of the predecessor PCA;
+2. **predecessor reference** — `previousPcaHash` equals the hash of the predecessor PCA, and `txId` equals the predecessor's `txId` (the
+   hop belongs to the same lineage);
 3. **continuation** — the `continuationResponse` carries the predecessor's emitted challenge, the challenge is unexpired and, when
    `single-use`, has not already been consumed (Section 6.1);
 4. **attestation** — the embedded executor attestation is valid: its issuer signature verifies, the issuer is trusted for the asserted
