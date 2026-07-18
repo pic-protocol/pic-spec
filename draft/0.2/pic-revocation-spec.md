@@ -1,6 +1,6 @@
 # PIC Revocation Specification
 
-**Version:** 0.1 (Draft)  
+**Version:** 0.2 (Draft)  
 **Status**: Draft – Not a Standard  
 **Date:** 2026-07-15  
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-revocation-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md)  
@@ -18,17 +18,16 @@
 This document is the **PIC Revocation Specification**, a subordinate specification of the [PIC Specification](./pic-spec.md). It prepares
 the ground for **revoking authority** within the Provenance Identity Continuity (PIC) Model.
 
-This revision normatively defines the **revocation coordinates**, their **origin binding**, and their **hop-by-hop continuity**
-requirements. It also illustrates candidate revocation strategies and records the semantic constraints that a later normative
-revocation-object specification must preserve.
-
-Expiry bounds *how long* a PCA is valid; revocation withdraws validity *before* that bound. The profile covers grant-, key-, delegate-,
+Expiry bounds *how long* a PCA is valid; revocation withdraws validity *before* that bound. The profile supports grant-, key-, delegate-,
 attestation-, issuer-, and policy-based revocation, and adds a property specific to PIC: **causal execution cutoffs** — revoking a lineage,
-or its future from a given position. The ordinary verification path in the incremental profile stays **O(1)**.
+or its future from a given position.
 
-The coordinates extend the PCA format of the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md); they do not alter the
-PIC Model invariants — non-expansion and Proof of Relationship are unchanged, and every PCA still continues exactly one predecessor. In case
-of conflict, the **PIC Specification** is authoritative.
+This revision normatively defines the **revocation coordinates** and their hop-by-hop continuity (Section 2), the requirements for turning a
+historical selector into a causal cutoff (Section 4), and the revocation-authorization and revocation-state requirements (Section 5). It
+illustrates candidate revocation strategies (Section 3, non-normative). The coordinates extend the PCA format of the
+[PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md); they do not alter the PIC Model invariants — non-expansion of the
+signed state and Proof of Relationship are unchanged, and every PCA still continues exactly one predecessor. In case of conflict, the
+**PIC Specification** is authoritative.
 
 ## Table of Contents
 
@@ -50,13 +49,18 @@ of conflict, the **PIC Specification** is authoritative.
     - [3.4 Retrospective Annotation](#34-retrospective-annotation)
     - [3.5 Summary](#35-summary)
   - [4. Making Selectors Causal](#4-making-selectors-causal)
-    - [4.1 Known Positions and Materialization](#41-known-positions-and-materialization)
-    - [4.2 Historical Position Index](#42-historical-position-index)
-    - [4.3 Not Carrying Full History](#43-not-carrying-full-history)
-  - [5. Revocation Model and Limitations](#5-revocation-model-and-limitations)
+    - [4.1 Position Witness](#41-position-witness)
+    - [4.2 Cutoff Authorization](#42-cutoff-authorization)
+    - [4.3 Known Positions](#43-known-positions)
+    - [4.4 Historical Position Index](#44-historical-position-index)
+    - [4.5 Not Carrying Full History](#45-not-carrying-full-history)
+  - [5. Revocation Authorization and State](#5-revocation-authorization-and-state)
     - [5.1 Who May Revoke](#51-who-may-revoke)
-    - [5.2 Revocation State](#52-revocation-state)
-    - [5.3 Limitations](#53-limitations)
+    - [5.2 Dynamic Restriction Requirements](#52-dynamic-restriction-requirements)
+    - [5.3 Monotonicity](#53-monotonicity)
+    - [5.4 Revocation State and Availability](#54-revocation-state-and-availability)
+    - [5.5 Trusted Time and Key Compromise](#55-trusted-time-and-key-compromise)
+    - [5.6 Limitations](#56-limitations)
   - [6. Counter Capacity](#6-counter-capacity)
   - [7. Contributors](#7-contributors)
   - [8. Legal Notices](#8-legal-notices)
@@ -64,7 +68,7 @@ of conflict, the **PIC Specification** is authoritative.
 
 ## 1. Introduction
 
-This section is non-normative. It explains the concepts revocation needs; the normative requirements are in Section 2.
+This section is non-normative. It explains the concepts revocation needs; the normative requirements are in Sections 2, 4, and 5.
 
 ### 1.1 What Is a Lineage
 
@@ -84,13 +88,13 @@ PCA100
  └── PCA101-B
 ```
 
-So a lineage is a sequence — or, with fan-out, a tree — of PCAs, each linked to its predecessor by `previousPcaHash`. Revocation operates on
-this structure: to revoke, one must be able to *name* a lineage and a *position* within it.
+Each individual lineage path is causally sequential; the lineage as a whole may form a tree under fan-out. Revocation operates on this
+structure: to revoke, one must be able to *name* a lineage and a *position* within it.
 
 ### 1.2 Three Kinds of Revocation State
 
-This is the one idea a reader coming from capability systems needs. Not everything a PCA touches can be revoked the same way, because not
-everything survives to the next hop.
+This is the one distinction a reader coming from OAuth or capability systems needs. Not everything a PCA touches can be revoked the same way,
+because not everything survives to the next hop.
 
 **Lineage-persistent state** is signed data propagated (or attenuated) along the lineage:
 
@@ -99,14 +103,14 @@ profile
 lineageId
 grantId
 lineageCounter
-originIssuer   (when the profile requires it)
+originIssuer   (when propagated)
 operations
 executionContract
 ```
 
 A revocation or restriction over these can be applied downstream, because the Verifier still holds the data.
 
-**Hop-local evidence** is used to validate one transition and does not become a permanent property of every descendant:
+**Hop-local evidence** validates one concrete transition and does not become a permanent property of every descendant:
 
 ```text
 executor
@@ -118,23 +122,24 @@ proofOfRelationship
 
 Revoking hop-local evidence has direct effect only while that evidence is still *presented* to a Verifier.
 
-**Derived causal revocation** is how the two are bridged. To invalidate the descendants of a historical key, delegate, attestation, or
-issuer, the historical position is resolved into a native PIC cutoff:
+**Derived causal revocation** bridges the two. A historical revocation of a `KEY`, `DELEGATE`, `ATTESTATION`, or `ISSUER` reaches descendants
+only when the historical position is turned into a native cutoff:
 
 ```text
 LINEAGE-SUFFIX(lineageId, fromCounter)
 ```
 
-The downstream Verifier then applies the cutoff without ever seeing the historical key, identity, or attestation again. This is the ontological
-shift: a revocation is expressed as a *position in an execution*, not only as a revoked credential.
+The key change is that historical evidence is converted into an *execution coordinate* that downstream Verifiers can still evaluate — a
+revocation is expressed as a position in an execution, not only as a revoked credential. A Verifier at a later hop applies the cutoff without
+seeing the historical key, identity, or attestation again.
 
 ### 1.3 Requirements Notation
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" in this document are to be interpreted as described in BCP 14 [[2]](#references) [[3]](#references) when, and only when, they appear
-in all capitals, as shown here.
+The **normative** sections of this document are Sections 2, 4, and 5. Sections 1, 3, and 6 are **non-normative**.
 
-Examples in this document are illustrative and non-normative.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" are to be interpreted as described in BCP 14 [[2]](#references) [[3]](#references) when, and only when, they appear in all capitals,
+and only within the normative sections. Examples are illustrative and non-normative.
 
 ## 2. Revocation Coordinates
 
@@ -146,37 +151,43 @@ its non-expansion or Proof-of-Relationship rules.
 ### 2.1 Origin PCA (PCA0)
 
 A revocable PCA0 carries `profile`, `originNonce`, `lineageId`, `lineageCounter`, `grantId` (when it derives from a separately revocable
-grant), and `originIssuer` (when the profile supports direct `ISSUER` revocation). All are covered by the PCA0 signature.
+grant), and `originIssuer` (when the profile supports direct origin-issuer revocation). All are covered by the PCA0 signature, which itself
+includes `lineageId`.
 
 **`lineageId` is derived from a non-self-referential origin core.** A PCA cannot hash *itself* to obtain its own identifier, so `lineageId`
 is the hash of a canonical projection of PCA0 that excludes `lineageId` and `proof`:
 
 ```text
-originCore = the profile's canonical projection of PCA0, excluding lineageId and proof
+originCore = the profile-defined canonical projection of PCA0, excluding lineageId and proof
 lineageId  = H( "PIC-Lineage-v0" || canonical(originCore) )
 ```
 
 `originCore` MUST include at least `profile`, `issuer`, `originNonce`, the presence and value of `grantId`, the origin authority context,
-`issuedAt`, and `expiresAt`. The profile MUST specify exactly which fields are included, which excluded, the canonical encoding, the hash
-suite, and the domain-separation string.
+`issuedAt`, and `expiresAt`. The profile MUST define exactly the fields included, the fields excluded, the canonical encoding, the hash
+suite, and the domain separator.
 
-**`originNonce`** MUST have sufficient entropy — SHOULD be at least 128 random bits, 256 RECOMMENDED. An issuer MUST generate a *fresh* nonce
-for each intentionally distinct lineage and MUST NOT reuse one within the same origin-commitment namespace. Two PCA0 with the same origin
-commitment (hence the same `lineageId`) are the *same* origin, not independent lineages.
-
-The commitment binds `lineageId` to the declared issuer, nonce, profile, grant binding, and origin authority context. Copying those public
-fields does not create a valid colliding lineage, because the resulting PCA0 must also satisfy the origin trust boundary
+The origin commitment binds `lineageId` to the declared issuer, nonce, profile, grant binding, and origin authority context. Copying those
+public fields does not create a valid colliding lineage, because the resulting PCA0 must also satisfy the origin trust boundary
 ([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Section 6.2) and carry a valid signature (or equivalent origin
-authorization) for the committed issuer. The nonce distinguishes intentionally separate origins by the same issuer; the signature prevents
-another party from originating *as* that issuer.
+authorization) for the committed issuer:
 
-**`grantId`** — present when the origin derives from a separately revocable grant. The binding between `grantId` and the PCA0 MUST be
-verifiable at origin validation (the same trust boundary, Section 6.2): a PCA0 whose `grantId` is not attestable by the grant authority is
-invalid. Possession of a `grantId` does not authorize its revocation (Section 5.1). It MUST NOT be interpreted as authorization on its own,
-and MAY be shared by several PCA0.
+```text
+originNonce                     distinguishes intentionally separate origins by the same issuer
+issuer signature / origin authz  prevents another party from creating a valid origin as that issuer
+```
 
-**`originIssuer`** — when the profile supports direct `ISSUER` revocation, `PCA0.originIssuer == PCA0.issuer`, covered by the signature and
-propagated unchanged (Section 2.2).
+**`originNonce`** SHOULD contain at least 128 random bits; 256 random bits are RECOMMENDED. An issuer MUST generate a fresh `originNonce` for
+every intentionally distinct lineage and MUST NOT reuse one within the same origin-commitment namespace. Two PCA0 with the same origin
+commitment (hence the same `lineageId`) MUST be treated as the *same* origin, not as independent lineages. Global reuse detection MAY require
+an authenticated origin registry, a transparency log, or shared state, but the no-reuse rule remains a requirement of the origin issuer.
+
+**`grantId`** — present when the origin derives from a separately revocable grant. The binding between `grantId`, its grant authority, and
+the authority context MUST be verifiable during PCA0 validation. Possession or knowledge of a `grantId` does not authorize its revocation
+(Section 5.1). It MUST NOT be interpreted as authorization on its own, and MAY be shared by several PCA0.
+
+**`originIssuer`** — when the profile supports direct origin-issuer revocation, `PCA0.originIssuer == PCA0.issuer`, covered by the signature
+and propagated unchanged (Section 2.2). `originIssuer` is a revocation-administration coordinate: it does not grant execution authority, does
+not designate a successor, and does not replace Proof of Relationship or executor conformance.
 
 **`profile`** identifies the revocable profile in force. **`lineageCounter`** MUST be `0`.
 
@@ -193,18 +204,19 @@ propagated unchanged (Section 2.2).
   "continuation": { "…": "the emitted challenge" },
   "issuedAt": "2026-07-17T10:00:00Z",
   "expiresAt": "2026-07-18T10:00:00Z",
-  "proof": { "…": "signature covering the complete PCA0" }
+  "proof": { "…": "signature covering the complete PCA0, including lineageId" }
 }
 ```
 
-To validate PCA0, the Verifier MUST reconstruct `originCore`, recompute `lineageId`, compare it with `PCA0.lineageId`, verify the PCA0
-signature, and verify the grant and origin bindings.
+To validate PCA0, the Verifier MUST reconstruct `originCore`, recompute `lineageId`, compare it with `PCA0.lineageId`, verify the complete
+PCA0 signature, verify the origin authorization, and verify the grant binding when `grantId` is present.
 
 ### 2.2 Successor PCA
 
 Every non-origin PCA MUST propagate `profile`, `lineageId`, the presence and value of `grantId`, and `originIssuer` (when the profile
 propagates it) **unchanged**, MUST set `lineageCounter` to the predecessor's value plus one, and MUST cover all of them under the PCA
-signature. A Prover MUST NOT alter or drop these fields, introduce a `grantId` the predecessor lacks, or change the `profile`.
+signature. A Prover MUST NOT alter or drop these fields, MUST NOT introduce a `grantId` the predecessor lacks, and MUST NOT change the
+`profile`.
 
 > A lineage created under a revocable profile remains revocable for its entire lifetime. A successor cannot downgrade it by omitting the
 > profile or its revocation coordinates.
@@ -221,17 +233,22 @@ current.profile           == predecessor.profile
 current.lineageId         == predecessor.lineageId
 presence(current.grantId) == presence(predecessor.grantId)
 if grantId is present:      current.grantId == predecessor.grantId
-if profile propagates it:   current.originIssuer == predecessor.originIssuer
+if originIssuer propagated:  current.originIssuer == predecessor.originIssuer
 current.lineageCounter     == predecessor.lineageCounter + 1
 ```
 
-The counter rule is exact. The Verifier MUST reject a `lineageCounter` that is missing, negative, fractional, non-canonical, less than or
-equal to the predecessor's, greater than `predecessor + 1`, or that overflows or wraps around.
+The Verifier MUST reject when `profile` is missing or unknown, when `current.profile != predecessor.profile`, when required revocation
+coordinates are omitted, or when a revocable lineage is presented under a non-revocable profile. The counter rule is exact: the Verifier
+MUST reject a `lineageCounter` that is missing, negative, fractional, non-canonical, less than or equal to the predecessor's, greater than
+`predecessor + 1`, or that overflows or wraps around.
+
+A valid signature is necessary but not sufficient: the Verifier validates the concrete transition `PCA[n-1] -> PCA[n]`, not merely the
+signature of `PCA[n]`.
 
 ## 3. Revocation Strategies
 
-This section is non-normative. It illustrates the revocation targets expressible with PIC coordinates; the normative revocation object and
-verification procedure are defined in a later revision. All examples share one minimal format:
+This section is non-normative and illustrative. It shows the revocation targets expressible with PIC coordinates; the normative revocation
+object and verification procedure are defined by a later revision and by Sections 4 and 5. All examples share one minimal format:
 
 ```json
 {
@@ -243,7 +260,7 @@ verification procedure are defined in a later revision. All examples share one m
 }
 ```
 
-The `proof` field is omitted for brevity. A valid revocation MUST be signed by an authorized authority (Section 5.1); an object signed by an
+The `proof` field is omitted for brevity. A valid revocation is signed by an authorized authority (Section 5.1); an object signed by an
 unauthorized party has no effect.
 
 ### 3.1 Native Causal Revocations
@@ -293,30 +310,24 @@ reject if:
   PCA.grantId == target.grantId
 ```
 
-**`BRANCH-SUFFIX`** is a future extension: `branchId` is not defined by this revision. Until it is, `LINEAGE-SUFFIX` strikes *all* sibling
-branches at or beyond `fromCounter` (Section 5.3).
+**`BRANCH-SUFFIX`** is a future extension: `branchId` is not defined by this revision and branch revocation is not available in the core.
+Until `branchId` exists, `LINEAGE-SUFFIX` affects *every* sibling branch at or beyond `fromCounter` (Section 5.6).
 
 ### 3.2 Identity and Evidence Selectors
 
-These target **hop-local evidence** — a key, a delegate, an attestation, an issuer. They have direct effect while the element is *presented*;
-they are **not** automatically retroactive over descendants that no longer carry it. Reaching those descendants is the subject of Section 4.
+These target **hop-local evidence** — a key, a delegate, an attestation, or a historical issuer. They have direct effect while the element is
+*presented*; they are not automatically retroactive over descendants that no longer carry it. Reaching those descendants is Section 4.
 
-- **`KEY`** — reject when the revoked `verificationMethod` appears in the current transition.
-- **`DELEGATE`** — reject when the revoked delegate is the `executor` of the current transition (the field name may be `delegateId`,
-  `executorId`, `subject`, or `workloadId`, per profile).
-- **`ATTESTATION`** — reject when the revoked attestation is presented as conformance evidence.
-- **`ISSUER`** — reject directly when `originIssuer`, or an equivalent authenticated origin binding, is available under the profile.
-
-```json
-{
-  "type": "PIC-Revocation-v0",
-  "strategy": "KEY",
-  "target": { "verificationMethod": "did:example:workloads:eu:backup-service#key-1" },
-  "effectiveAt": "2026-07-18T09:30:00Z",
-  "issuedAt": "2026-07-18T10:00:00Z",
-  "issuer": "did:example:key-authority"
-}
+```text
+KEY          reject when the revoked verification method is present in the received transition
+DELEGATE     reject when the revoked executor is present in the received transition
+ATTESTATION  reject when the revoked attestation is presented as conformance evidence
+ISSUER       direct only if originIssuer or an equivalent propagated binding is available
 ```
+
+When `originIssuer` is propagated (Section 2.1), issuer revocation is a **direct, persistent** selector — `PCA.originIssuer ==
+target.issuerId` — not hop-local. When it is not propagated, `ISSUER` is a historical selector and must be resolved into
+`LINEAGE-SUFFIX(lineageId, 0)` for the issuer's known lineages (Section 4).
 
 **Why "presented only".** In the incremental profile a Verifier holds only the immediate transition — the predecessor and the current PCA:
 
@@ -346,41 +357,28 @@ CAUSAL-RETROACTIVE  existing descendants are invalidated only after the historic
                     is converted into a lineage cutoff (Section 4)
 ```
 
-The visibility window is two verifications, not one.
-
 ### 3.3 Dynamic Restrictions
 
-These restrict *effective* authority without rewriting the signed chain.
-
-**`AUTHORITY`** removes operations:
+These restrict *effective* authority without rewriting the signed chain. `AUTHORITY` removes operations; `EXECUTION-CONTRACT` restricts who
+or what may continue.
 
 ```text
 signed operations    = { READ, WRITE }
 active restrictions  = { remove WRITE }
 effective operations = { READ }
-
-effectiveAuthority(PCA) = signedAuthority(PCA) − applicableRestrictions(PCA)
 ```
 
-Non-expansion still compares the *signed* state — `signedAuthority(current) <= signedAuthority(predecessor)` — so a PCA signed before the
-revocation does not spuriously fail. The concrete operation is checked against `effectiveAuthority(current)`; a PCA already attenuated to
-`{READ}` continues normally. The filter belongs to the authorization rule (paper, Section 5.1), downstream of chain validation, never to the
-non-expansion check.
+A restriction may be scoped to a lineage suffix or a whole grant:
 
-**`EXECUTION-CONTRACT`** restricts *who or what* may continue:
-
-```text
-signed executionModel = { deterministic, agentic }
-restriction removes   = { agentic }
-effective model       = { deterministic }
+```json
+{ "strategy": "AUTHORITY", "target": { "lineageId": "L1", "fromCounter": 42, "operations": ["WRITE"] } }
 ```
 
-Every new executor must conform to the *effective* contract.
+```json
+{ "strategy": "AUTHORITY", "target": { "grantId": "G1", "operations": ["WRITE"] } }
+```
 
-**Restrictions are monotonic.** They are append-only and only ever more restrictive: `effectiveRestrictions(t+1) >= effectiveRestrictions(t)`
-in the profile's order. Relaxing authority requires a *new* grant, PCA0, and lineage — never deleting a revocation, un-revoking a lineage, or
-replacing the revocation view with an older one. A temporary operational suspension, if supported, belongs to a separate profile and MUST NOT
-weaken the monotonicity of security revocations.
+The normative rules for scope, matching, effective authority, and the empty case are in Section 5.2.
 
 ### 3.4 Retrospective Annotation
 
@@ -396,17 +394,18 @@ invalid segment. The forward consequence of flagging an interval from counter `k
 
 ### 3.5 Summary
 
-| Category                   | Strategies                                        | Direct meaning                                                                        |
-| -------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Native causal revocation   | `LINEAGE-SUFFIX`, `GRANT`, future `BRANCH-SUFFIX` | Directly enforceable from propagated execution coordinates                            |
-| Identity/evidence selector | `KEY`, `DELEGATE`, `ATTESTATION`, `ISSUER`        | Blocks presented evidence; historical causal effects require resolution into suffixes |
-| Dynamic restriction        | `AUTHORITY`, `EXECUTION-CONTRACT`                 | Restricts effective authority or conformance without rewriting the signed chain       |
-| Retrospective annotation   | `AUDIT-RANGE`                                     | Marks an affected historical interval but does not preserve a valid suffix above it   |
+| Category                     | Strategies                                                | Direct meaning                                                                                                              |
+| ---------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Native causal revocation     | `LINEAGE-SUFFIX`, `GRANT`, future `BRANCH-SUFFIX`         | Directly enforceable from propagated execution coordinates                                                                  |
+| Persistent issuer revocation | direct `ORIGIN-ISSUER`, when `originIssuer` is propagated | Directly enforceable from the propagated origin binding                                                                     |
+| Identity/evidence selector   | `KEY`, `DELEGATE`, `ATTESTATION`, resolved `ISSUER`       | Blocks presented evidence; historical causal effect requires authenticated resolution and authorized suffix materialization |
+| Dynamic restriction          | `AUTHORITY`, `EXECUTION-CONTRACT`                         | Restricts effective authority or conformance without rewriting the signed chain                                             |
+| Retrospective annotation     | `AUDIT-RANGE`                                             | Marks a historical incident interval; forward invalidity is represented by a suffix cutoff                                  |
 
 ## 4. Making Selectors Causal
 
-This section is non-normative and may be skipped on a first reading. It is the machinery that turns an identity/evidence selector
-(Section 3.2) into causal cutoffs that reach descendants no longer carrying the evidence — while keeping downstream verification **O(1)**:
+This section is normative. It defines how an identity/evidence selector (Section 3.2) becomes causal cutoffs that reach descendants no longer
+carrying the evidence:
 
 ```text
 KEY / DELEGATE / ATTESTATION / ISSUER
@@ -415,39 +414,64 @@ KEY / DELEGATE / ATTESTATION / ISSUER
    affected (lineageId, counter) pairs
         |
         v
-   LINEAGE-SUFFIX records  ->  O(1) verification
+   LINEAGE-SUFFIX records  ->  O(1) downstream verification
 ```
 
-### 4.1 Known Positions and Materialization
+The ordinary incremental revocation check remains O(1) in lineage length, assuming the applicable revocation state is already authenticated
+and indexed. O(1) does not include network retrieval, revocation-state synchronization, historical resolution, batch generation, or witness
+construction. After materialization, the downstream check of `LINEAGE-SUFFIX`, `GRANT`, and indexed restrictions is O(1) in lineage length.
 
-A selector MAY carry a bounded set of `knownPositions`; each one implies `LINEAGE-SUFFIX(lineageId, atCounter)`:
+Three checks are kept separate throughout this section:
+
+```text
+Position authenticity:       Did the selector actually occur at this lineage position?
+Cutoff authorization:        Is this authority allowed to invalidate the causal future?
+Native suffix verification:  Does the current PCA match the authorized lineage and counter cutoff?
+```
+
+A key controller is not, by that fact alone, a lineage revocation authority.
+
+### 4.1 Position Witness
+
+A position is proven by a **position witness**; a bare `(lineageId, atCounter)` assertion is not a witness. When a position must be proven, a
+valid position witness MUST be one of: a complete signed PCA, an authenticated PCA extract, a snapshot attestation, an authenticated
+historical-index record, a Merkle inclusion proof against an authenticated commitment, or a succinct proof. The base illustrative form is a
+complete PCA or an authenticated extract:
 
 ```json
 {
-  "type": "PIC-Revocation-v0",
-  "strategy": "KEY",
-  "target": { "verificationMethod": "did:example:bob#key-1" },
-  "knownPositions": [
-    { "lineageId": "L1", "atCounter": 7,  "positionWitness": { "…": "…" } },
-    { "lineageId": "L7", "atCounter": 14, "positionWitness": { "…": "…" } }
-  ],
-  "issuedAt": "2026-07-18T10:00:00Z",
-  "issuer": "did:example:key-authority"
+  "lineageId": "L1",
+  "atCounter": 7,
+  "positionWitness": {
+    "type": "SignedPCAExtract",
+    "pcaHash": "sha256:…",
+    "signedFields": {
+      "lineageId": "L1",
+      "lineageCounter": 7,
+      "executor": "did:example:bob",
+      "verificationMethod": "did:example:bob#key-1"
+    },
+    "issuer": "did:example:bob",
+    "proof": { "…": "signature or authenticated inclusion proof" }
+  }
 }
 ```
 
-`knownPositions` MUST be OPTIONAL, bounded by the profile, and used only for small sets. Large sets MUST be published as separate
-`LINEAGE-SUFFIX` records or an authenticated, paginable batch — never a single unbounded object.
+The witness MUST cryptographically bind the selector, the `lineageId`, the `lineageCounter`, the PCA content or digest, the witness issuer,
+and its own integrity. The Verifier or materializer MUST verify that `witness.lineageId == position.lineageId`, `witness.lineageCounter ==
+position.atCounter`, the witness selector equals the revoked selector, the witness cryptographic integrity is valid, and the witness belongs
+to the claimed PCA or authenticated history. A hash accompanied by unauthenticated fields MUST NOT be accepted.
 
-**Authorization and witness.** A `knownPositions` entry MUST NOT create an implied suffix merely because it sits inside an authorized `KEY`,
-`DELEGATE`, `ATTESTATION`, or `ISSUER` revocation. For every implied suffix the implementation MUST establish both:
+### 4.2 Cutoff Authorization
+
+Every derived cutoff requires two independent proofs:
 
 ```text
-1. position authenticity  — the selector actually appeared in the named lineage at the stated counter;
-2. cutoff authorization   — the revocation issuer is authorized to invalidate the suffix rooted there.
+1. POSITION AUTHENTICITY  — the selector actually appeared in the named lineage at the stated counter (Section 4.1)
+2. CUTOFF AUTHORIZATION    — the party materializing the suffix is authorized to invalidate the causal future from that position
 ```
 
-The base profile SHOULD use a conservative chain:
+The base profile MUST use the conservative model:
 
 ```text
 identity/evidence revocation
@@ -456,29 +480,39 @@ identity/evidence revocation
   -> materialized LINEAGE-SUFFIX
 ```
 
-The controller of a revoked key is therefore *not* automatically authorized to revoke every lineage in which that key appeared. Position
-authenticity is proven by a witness:
+**Conservative model (base).** The final `LINEAGE-SUFFIX` is authorized directly by the lineage or grant authority. A position witness is
+RECOMMENDED as evidence *during* historical resolution and MAY be omitted from the final suffix object when the authorized materializing
+authority has independently established the position; that authority MUST NOT issue a cutoff from an untrusted or unauthenticated position
+assertion. The downstream Verifier checks the authorization and target of the resulting native `LINEAGE-SUFFIX` and does not need to
+re-evaluate the historical selector witness. The controller of a revoked key is **not** automatically a lineage revocation authority.
 
-```json
-{
-  "lineageId": "L1",
-  "atCounter": 7,
-  "positionWitness": {
-    "pcaHash": "sha256:…",
-    "verificationMethod": "did:example:bob#key-1",
-    "proof": "…"
-  }
-}
+**Advanced evidence-authority model.** A profile MAY explicitly authorize a key controller, delegate authority, attestation issuer, or
+equivalent evidence authority to invalidate suffixes rooted in proven uses of the revoked evidence. Then a valid position witness MUST
+accompany or be cryptographically referenced by every derived cutoff, the witness MUST prove that the revoked selector appeared in the
+claimed lineage at the claimed counter, and the profile MUST explicitly define why that evidence authority is also authorized to invalidate
+the resulting causal suffix.
+
+In short: a position witness is **mandatory** when the authority to create the cutoff is derived from the proven historical use itself; it is
+**recommended, but need not be carried in the final suffix record**, when an independently authorized lineage or grant authority materializes
+the cutoff. The provenance of cutoff authorization MUST NOT be left implicit.
+
+### 4.3 Known Positions
+
+A selector MAY carry a bounded set of `knownPositions`. `knownPositions` MUST be OPTIONAL, MUST be bounded by the profile, MUST be used only
+for small sets, and MUST NOT be an unbounded array. Each entry MUST be authenticated or resolved through an authenticated process; an inline
+or referenced `positionWitness` (Section 4.1) MUST be present when the selected authorization model requires it (Section 4.2). Each authorized
+and verified position implies:
+
+```text
+LINEAGE-SUFFIX(lineageId = position.lineageId, fromCounter = position.atCounter)
 ```
 
-Witness verification MUST establish that the witness `lineageId` and `lineageCounter` equal the entry's, that the witness selector equals the
-revoked selector, and that the witness integrity and signature are valid. A bare, unproven `(lineageId, atCounter)` assertion MUST NOT be
-sufficient to invalidate a lineage.
+Large sets MUST instead be published as separate `LINEAGE-SUFFIX` records, an authenticated paginable batch, or an authenticated revocation
+feed.
 
-### 4.2 Historical Position Index
+### 4.4 Historical Position Index
 
-Deployments that need retroactive causal revocation for `KEY`, `DELEGATE`, `ATTESTATION`, or `ISSUER` SHOULD keep a minimal *authenticated*
-index mapping a selector to the positions where it occurred:
+A deployment that needs retroactive causal revocation SHOULD keep a minimal index mapping a selector to the positions where it occurred:
 
 ```text
 bob#key-1
@@ -487,108 +521,156 @@ bob#key-1
   -> (L9, 4)
 ```
 
-which yields `LINEAGE-SUFFIX(L1, 1)`, `LINEAGE-SUFFIX(L8, 27)`, `LINEAGE-SUFFIX(L9, 4)`. A record MAY carry more context:
+which yields `LINEAGE-SUFFIX(L1, 1)`, `LINEAGE-SUFFIX(L8, 27)`, `LINEAGE-SUFFIX(L9, 4)`. The index MUST be authenticated, MUST bind the
+selector to the position, and MUST have verifiable integrity; an unauthenticated log MUST NOT be treated as sufficient. It MAY be used to
+generate position witnesses. It is not the full-chain profile, does not require keeping all PCA bytes, and keeps the ordinary downstream path
+O(1) after materialization. Retention, access control, and privacy are responsibilities of the deployment or the applicable profile.
 
-```json
-{
-  "lineageId": "L1",
-  "lineageCounter": 42,
-  "executorId": "did:example:bob",
-  "verificationMethod": "did:example:bob#key-1",
-  "attestationId": "A17",
-  "originIssuer": "did:example:alice"
-}
-```
-
-This is **not** the full-chain profile: the hot path stays O(1), it does not keep all PCA bytes, and it only resolves selectors to
-coordinates. It MUST be authenticated — an unauthenticated log is not sufficient evidence — and its retention, privacy, and access control
-are deployment concerns.
-
-### 4.3 Not Carrying Full History
+### 4.5 Not Carrying Full History
 
 The base incremental profile does not require each PCA to carry the complete list of historical executors, keys, or attestations. Doing so
-would cause unbounded growth, correlation, duplicate data, larger signatures and messages, and harder canonicalization. A future extension
-MAY instead use a cryptographic accumulator, an authenticated index, a transparency log, a snapshot commitment, or a Merkle or succinct
-proof to show that *"key K appears in the ancestry of PCA[n]"* without transporting a full array. This is future evolution only.
+would cause unbounded growth, larger messages and signatures, correlation, duplicate data, and complex canonicalization. A future extension
+MAY instead use a cryptographic accumulator, a Merkle proof, an authenticated index, a transparency log, a snapshot commitment, or a succinct
+proof to show historical membership without transporting a full array.
 
-## 5. Revocation Model and Limitations
+## 5. Revocation Authorization and State
 
-This section is non-normative. It records the constraints a later normative revocation revision must honor.
+This section is normative.
 
 ### 5.1 Who May Revoke
 
-A revocation takes effect only if signed by an authorized issuer; an unauthorized object has no effect and is itself a denial of service.
-Listing *who* may revoke is not enough — there MUST be a **verifiable binding** between the revoker and the target.
+A revocation takes effect only if signed by an authorized issuer; an unauthorized object has no effect. There MUST be a **verifiable
+binding** between the revoker and the target — listing who may revoke is not enough, and the binding MUST be provable to the Verifier that
+receives the revocation.
 
 | Revoker | May revoke | Binding proven by |
 | --- | --- | --- |
 | The origin issuer | its own lineage | `revocation.issuer == lineage.originIssuer` |
-| An executor at hop `k` | only its own causal future (`fromCounter >= k+1`) | its position in the validated chain |
-| The grant authority | the grant, and its contract terms | `AuthorizedGrantRevoker(grantId, issuer)` |
+| An executor at counter `k` | `fromCounter = k+1` (its own future); `fromCounter = k` only if policy allows | its own signed PCA or extract, or an authenticated index |
+| The grant authority | the grant and its contract terms | `AuthorizedGrantRevoker(grantId, issuer)` |
 | The key controller | that key | control of the verification method |
 | The attestation issuer | that attestation | the attestation's issuer signature |
 
 **Counter semantics.** `fromCounter = k` revokes hop `k` *and* its future; `fromCounter = k+1` keeps hop `k` valid and blocks every
-continuation. An executor at counter `k` may revoke `fromCounter = k+1` (its own future); it may revoke `fromCounter = k` only if the policy
-grants it; it MUST NOT revoke a position upstream of itself unless it separately holds the origin, grant, or revocation authority.
+continuation. An executor at counter `k` MUST NOT revoke a position upstream of itself unless it separately holds the origin, grant, or
+revocation authority, and its position MUST be proven by a position witness, a validated PCA, an authenticated historical index, a snapshot
+attestation, or an equivalent cryptographic proof — never by an unproven claim of "its position in the chain".
+
+**Executor self-position.** An executor requesting revocation of its own continuations normally already holds the simplest valid evidence:
+the PCA it produced. It MAY prove its position by presenting its complete signed PCA, or an authenticated extract carrying the `lineageId`,
+`lineageCounter`, executor identity, and verification method. The proof MUST establish that the PCA is valid, that it belongs to the claimed
+lineage, that it carries the claimed counter, and that the revocation issuer controls the executor identity or signing method bound to it:
+
+```json
+{
+  "type": "ExecutorPositionWitness",
+  "pca": {
+    "lineageId": "L1",
+    "lineageCounter": 42,
+    "proofOfRelationship": { "executor": "did:example:bob" },
+    "proof": { "verificationMethod": "did:example:bob#key-1", "signature": "…" }
+  }
+}
+```
+
+No external historical index or registry is required in this case; an authenticated index, snapshot, or equivalent proof remains valid when
+the original PCA is unavailable, or when another authority materializes the cutoff.
 
 **Grant revocation.** A `GRANT` revocation MUST be accepted only when the Verifier can establish `AuthorizedGrantRevoker(target.grantId,
-revocation.issuer)` — via a signed grant credential, a grant-authority field committed by PCA0, an authenticated grant registry, or a
-profile-defined grant commitment. Possession of a `grantId` alone MUST NOT authorize its revocation.
+revocation.issuer)`. The profile MUST define how this predicate is proven — for example a signed grant credential, a grant-authority field
+committed in PCA0, an authenticated grant registry, or a profile-defined grant commitment. Possession or knowledge of a `grantId` alone MUST
+NOT authorize its revocation.
 
-### 5.2 Revocation State
+### 5.2 Dynamic Restriction Requirements
 
-- **Monotonic and irreversible.** Revocation state is append-only; there is no un-revoke. The view is identified by a monotonic version or
-  commitment, and a Verifier MUST NOT accept a view older than the policy minimum — otherwise it could be replayed against an older, "clean"
-  view to accept an already-revoked PCA.
-- **Freshness and distribution.** Revocation state may be pulled by the Verifier or stapled by the Prover; the choice is left to a later
-  revision. A short per-hop expiry
-  ([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Section 6.3) *bounds*, but does not eliminate, the interval in
-  which a newly issued revocation may not yet have reached a Verifier.
-- **Trusted time.** `effectiveAt` generalizes to *every* strategy with a temporal cutoff. A self-declared timestamp by a compromised subject
-  is not, by itself, reliable proof of when a signature was created. For a compromised key, *known* positions are converted into suffix
-  revocations, while *newly forged* positions are blocked by the direct key-status check when the key is presented — not by previously
-  enumerated suffixes. A future extension MAY use a trusted timestamp, transparency log, hardware monotonic time, or forward-secure
-  signatures.
+A profile that supports dynamic restrictions MUST define the predicate `ApplicableRestriction(restriction, PCA, verificationContext)`,
+together with the restriction target syntax, the matching rules, the scope, the precedence, the authority of the restriction issuer, the
+composition of multiple restrictions, and the behavior on conflict. The minimal scopes are `lineageId`, `lineageId + fromCounter`, `grantId`,
+`originIssuer` (when supported), and resource or tenant in a resource-aware profile.
 
-### 5.3 Limitations
+**`AUTHORITY`.** Effective authority subtracts applicable restrictions from the signed authority:
+
+```text
+effectiveAuthority(PCA) = signedAuthority(PCA) − ApplicableAuthorityRestrictions(PCA)
+```
+
+Non-expansion still compares the *signed* state — `signedAuthority(current) <= signedAuthority(predecessor)` — so a PCA signed before a
+restriction does not become malformed; a PCA already attenuated to `{READ}` continues normally after `WRITE` is revoked. The concrete
+operation is authorized against `effectiveAuthority(current)`, downstream of chain validation, never as an input to the non-expansion check.
+When `effectiveAuthority` is **empty**, the base behavior is: the chain may remain cryptographically and semantically valid but authorizes no
+operation. A profile MAY require the hop to be rejected when effective authority is empty, but MUST declare this explicitly.
+
+**`EXECUTION-CONTRACT`.** The effective contract combines the signed contract with applicable restrictions; the profile MUST define the
+composition operator and the restrictiveness order.
+
+```text
+signed executionModel = { deterministic, agentic }
+restriction removes   = { agentic }
+effective model       = { deterministic }
+```
+
+An agentic executor is rejected; a deterministic one may continue.
+
+### 5.3 Monotonicity
+
+Security revocations and restrictions applied to an existing lineage or grant MUST be append-only and MUST become only equally or more
+restrictive over time:
+
+```text
+effectiveRestrictions(t + 1) is at least as restrictive as effectiveRestrictions(t)
+```
+
+under the profile-defined restriction order. A relaxation MUST require a new grant, a new PCA0, and a new lineage. It MUST NOT be implemented
+by deleting an existing revocation, replaying an older revocation view, replacing the active state with a less restrictive state, or silently
+un-revoking an existing lineage. A temporary operational suspension MAY be defined by a separate profile, but it MUST NOT weaken or remove a
+security revocation.
+
+### 5.4 Revocation State and Availability
+
+Revocation state is append-only and identified by a monotonic version or commitment; it MAY be pulled by the Verifier or stapled by the
+Prover. A profile MUST specify how the revocation view is authenticated, how freshness is determined, who defines the minimum acceptable
+version and how that minimum is authenticated, how rollback is detected, and what happens when revocation state is unavailable. For
+unavailability the profile MUST choose one explicitly defined behavior — for example **fail closed**, accept only a fresh stapled proof,
+accept within a bounded offline window, or another explicitly defined behavior.
+
+> Short per-hop expiry bounds, but does not eliminate, the interval in which a newly issued revocation may not yet have reached a Verifier.
+
+### 5.5 Trusted Time and Key Compromise
+
+A self-declared `issuedAt` timestamp cannot prove that a signature was created before key compromise. Distinguish **known historical
+positions**, which are converted into suffix revocations (Section 4), from **unknown or newly forged positions**, which are blocked by the
+direct key-status check when the key is presented (Section 3.2), not by previously enumerated suffixes. A future extension MAY use a trusted
+timestamp, a transparency log, hardware monotonic time, or forward-secure signatures.
+
+### 5.6 Limitations
 
 - **Fan-out.** Until `branchId` exists (Section 3.1), `LINEAGE-SUFFIX` acts on shared depth and strikes *sibling* branches at or beyond
   `fromCounter`. The current profile is correct for "revoke the whole future", not for per-branch revocation.
-- **Privacy — in context.** Every multi-hop authority-propagation system exposes correlators; the design question is *which* correlators, to
-  *whom*, and whether they can be confined. Systems that present the full delegation history at verification time expose the identity of
-  *every past delegator* to every verifier — rich, semantic, entity-level correlators, reusable across executions. In the incremental profile
-  a Verifier sees only the identities of the current transition (executor and immediate predecessor) plus the *opaque* execution identifiers
-  `lineageId`, `grantId`, and `originIssuer` (where propagated); historical identities do not travel, so the exposed correlator is
-  execution-scoped — it links hops of the same execution but does not by itself identify the origin entity. `lineageId`, `grantId`, and
-  `originIssuer` remain persistent correlators, and this residual per-lineage linkability is not an accident: any authorization decision that
-  resolves the confused deputy must read some function of the lineage (the lineage-sensitivity result of the companion paper
-  [[1]](#references)), so a minimal execution-scoped correlator is the theoretical *floor* of that requirement, not overhead above it. It can
-  be confined without weakening the revocation predicate — pairwise or blinded per-segment lineage identifiers, reconcilable only by the
-  revocation authority, are the natural unlinkability profile, and selective disclosure on executor attestations further reduces the identity
-  surface of the current transition (consistent with the attestation-disclosure recommendation of the
-  [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md)).
+- **Privacy.** In the incremental profile, historical executor identities do not travel with the lineage: a Verifier sees the identities and
+  evidence of the *presented* transition — the current executor identity, the immediate predecessor identity, and the current transition
+  evidence — together with the persistent execution coordinates the profile requires; older executor identities are not carried by default.
+  `lineageId`, `grantId`, and `originIssuer`, when propagated, remain persistent correlators, and a profile with unlinkability requirements
+  MUST define a privacy-preserving representation or lookup mechanism without weakening revocation matching (for example pairwise or blinded
+  identifiers, per-segment commitments, privacy-preserving lookup, or selective disclosure).
 - **Incremental visibility.** Direct `KEY`, `DELEGATE`, and `ATTESTATION` see only the evidence in the received transition (Section 3.2);
   reaching the past requires Section 4.
 
 ## 6. Counter Capacity
 
-This appendix is non-normative. Because `lineageCounter` is an integer and a lineage is sequential by definition, exhausting it requires
-completing that many *causal* hops on one path — and, since each hop waits for its predecessor, the per-lineage rate is not parallelizable.
+This appendix is non-normative. Exhausting `lineageCounter` requires completing that many *causal* hops on one path:
 
 ```text
 secondsToOverflow = (2^64 − 1 − currentCounter) / R
     where R = maximum accepted hops per second on one lineage path
 ```
 
-*Illustrative only* (not a benchmark; actual `R` depends on hardware, network, and application logic): at `R = 1000` hops/s a `uint64`
-counter overflows after more than two hundred million years. A `uint64` counter is therefore practically inexhaustible under realistic
-execution rates, though a profile that wants the mathematically unbounded case MAY use a CBOR bignum. The normative point is only the one
-already stated in Section 2.3: **overflow and wraparound are rejected.**
+Each path is causally sequential; fan-out permits several paths but does not parallelize one path. A concrete `R` depends on hardware,
+network, and application logic and is not fixed here. Under any realistic per-lineage rate a `uint64` counter is practically inexhaustible,
+though a profile that wants the mathematically unbounded case MAY use a CBOR bignum. The normative point is only the one in Section 2.3:
+overflow and wraparound are rejected.
 
-The design note: the counter carries every native predicate (`LINEAGE`, `LINEAGE-SUFFIX`, `GRANT`) in the space of a small integer, with no
-stored history on the hot path. A frontier accumulator remains an *optional* extension for membership proofs and cryptographic audit of the
-prefix.
+The propagated coordinates support the native predicates: `lineageId` and `lineageCounter` support lineage cutoffs, while `grantId` supports
+grant-wide revocation. A frontier accumulator remains an *optional* extension for membership proofs and cryptographic audit of the prefix.
 
 ## 7. Contributors
 
