@@ -362,9 +362,13 @@ a per-hop Verifier requirement.
 evadable in one hop: an executor inside a revoked branch domain could mint a fresh branch domain and escape `BRANCH-SUFFIX` — and, since the
 base profile carries no branch ancestry, no downstream Verifier could relate the new domain to the revoked one. Therefore creating a new
 branch domain MUST be an authorized, authenticated operation. The base profile MUST restrict branch creation to parties authorized by the
-execution contract, the origin, or the branch creator's explicitly delegated authority. A nested continuation that is NOT authorized to
-create a new branch domain MUST inherit the current `branchId` and MUST NOT carry a `branchCreationNonce`. Inheriting is the default; minting
-is the exception.
+execution contract, the origin, or the branch-domain creator's explicitly delegated authority. A nested continuation that is NOT authorized
+to create a new branch domain MUST inherit the current `branchId` and MUST NOT carry a `branchCreationNonce`. Inheriting is the default;
+minting is the exception.
+
+The **branch-domain creator** is the executor that issues the valid branch-creation PCA establishing a new `branchId`. It is not necessarily
+the predecessor executor, the origin issuer, or a coordinator aware of all sibling successors: in the open-continuation model each authorized
+successor may independently create its own branch domain when the applicable execution contract or delegated authority permits it.
 
 A branch-domain change is valid only at a transition that both recomputes as a correct derivation from the presented predecessor and carries
 the profile-defined branch-creation authorization:
@@ -422,8 +426,19 @@ growing path. The base representation therefore keeps PCA state constant-size an
 branch domain; it does not carry recursive branch ancestry. When an authorized nested continuation creates a new branch domain, causal
 ancestry between the old and new branch identifiers requires authenticated historical resolution if revocation must cross that boundary —
 exactly as historical selectors require resolution into native cutoffs (Section 4). The derived `branchId` helps here: it commits to the
-digest of its creation-point PCA (its `previousPcaHash`), so an authenticated record of that single PCA suffices to prove which domain a new
-domain was minted from.
+digest of its creation-point PCA (its `previousPcaHash`). Proving that a new branch domain was created from an earlier one requires
+authenticating **both** the branch-creation PCA and its predecessor — or an authenticated record that binds `creationPCA.previousPcaHash` to
+the predecessor's `branchId` — and verifying:
+
+```text
+creationPCA.previousPcaHash == H(predecessorPCA)
+predecessorPCA.branchId     == claimedParentBranchId
+creationPCA.branchId        == H( "PIC-Branch-v0" || creationPCA.previousPcaHash || creationPCA.branchCreationNonce )
+```
+
+An authenticated historical-index record MAY replace transport of the complete predecessor PCA only when it cryptographically binds
+`creationPCA.previousPcaHash`, `claimedParentBranchId`, `creationPCA.branchId`, and `creationPCA.branchCreationNonce` or its authenticated
+commitment. Complete-chain transport is not required, and recursive ancestry remains external and optional.
 
 ## 3. Revocation Strategies
 
@@ -636,8 +651,9 @@ When the historical position's branch domain is known, resolution MAY instead ma
 striking only that domain; it falls back to `LINEAGE-SUFFIX` when the branch domain is unknown or when the whole future must be revoked.
 
 The ordinary incremental revocation check remains O(1) in lineage length, assuming the applicable revocation state is already authenticated
-and indexed. O(1) does not include network retrieval, revocation-state synchronization, historical resolution, batch generation, or witness
-construction. After materialization, the downstream check of `LINEAGE-SUFFIX`, `GRANT`, and indexed restrictions is O(1) in lineage length.
+and indexed. O(1) does not include network retrieval, revocation-state synchronization, historical resolution, batch generation, witness
+construction, or index construction. After materialization, the downstream check of `LINEAGE-SUFFIX`, `BRANCH-SUFFIX`, `GRANT`, and indexed
+restrictions is O(1) in lineage length.
 
 Three checks are kept separate throughout this section:
 
@@ -666,6 +682,7 @@ complete PCA or an authenticated extract:
     "signedFields": {
       "lineageId": "L1",
       "lineageCounter": 7,
+      "branchId": "sha256:…",
       "executor": "did:example:bob",
       "verificationMethod": "did:example:bob#key-1"
     },
@@ -679,6 +696,13 @@ The witness MUST cryptographically bind the selector, the `lineageId`, the `line
 and its own integrity. The Verifier or materializer MUST verify that `witness.lineageId == position.lineageId`, `witness.lineageCounter ==
 position.atCounter`, the witness selector equals the revoked selector, the witness cryptographic integrity is valid, and the witness belongs
 to the claimed PCA or authenticated history. A hash accompanied by unauthenticated fields MUST NOT be accepted.
+
+**Branch binding.** When a position witness is used to materialize `BRANCH-SUFFIX`, the witness MUST also cryptographically bind the
+`branchId` carried by the historical PCA at that position, and the Verifier or materializer MUST additionally verify `witness.branchId ==
+position.branchId`. A bare assertion that a known historical position belonged to a given branch domain MUST NOT be sufficient; the witness
+MUST prove that the selector occurred at the claimed position, that the position belonged to the claimed lineage, that it carried the claimed
+`branchId`, and that it belongs to the authenticated PCA or authenticated history. `branchId` is OPTIONAL in a position witness that supports
+only `LINEAGE-SUFFIX`, and mandatory when the result is `BRANCH-SUFFIX`.
 
 **Extract integrity.** A `SignedPCAExtract` is not an arbitrary new object signed by the historical executor. It MUST be one of: a selective
 disclosure of fields covered by the original PCA signature, a proof derived from the original signed PCA, or an authenticated extract issued
@@ -799,7 +823,7 @@ receives the revocation.
 | --- | --- | --- |
 | The origin issuer | its own lineage | `AuthorizedLineageRevoker(lineageId, revocation.issuer, revocation.proof)` |
 | An executor at counter `k` | `fromCounter = k+1` (its own future); `fromCounter = k` only if policy allows | its own signed PCA or extract, or an authenticated index |
-| The branch creator | the branch it created, after its creation point | the branch-creation PCA as position witness + current control of its signing key (or equivalent profile-defined binding) |
+| The branch-domain creator | the branch it created, after its creation point | the branch-creation PCA as position witness + proven authority-continuity with the creator (Section 5.1) |
 | The grant authority | the grant and its contract terms | `AuthorizedGrantRevoker(grantId, issuer)` |
 | The key controller | that key | control of the verification method |
 | The attestation issuer | that attestation | the attestation's issuer signature |
@@ -840,21 +864,26 @@ NOT authorize its revocation.
 
 **Branch revocation.** A `BRANCH-SUFFIX` MUST be accepted only when the revocation issuer is authorized to revoke the targeted branch domain,
 expressed as `AuthorizedBranchRevoker(lineageId, branchId, fromCounter, revocationIssuer, revocationProof)`. The profile MUST define how this
-binding is proven; possible authorities are the origin issuer (when policy grants branch-wide authority), the grant authority, the executor
-that created the branch, or an explicitly delegated branch revocation authority. Proof of branch creation consists of the branch-creation PCA
+binding is proven; possible authorities are the origin issuer (when policy grants branch-wide authority), the grant authority, the
+branch-domain creator, or an explicitly delegated branch revocation authority. Proof of branch creation consists of the branch-creation PCA
 itself: a valid PCA whose `branchId` correctly derives from its `previousPcaHash` and `branchCreationNonce`, whose signature verifies under
-the creator's key, and which carries valid branch-creation authorization (Section 2.4). The revocation issuer proves it is the creator by
-demonstrating current control of the key that signed that PCA (or an equivalent profile-defined binding), with the branch-creation PCA
-serving as the position witness. The nonce proves only that `branchId` was correctly derived from this creation transition; it proves nothing
-about who was authorized to perform it. Knowledge of `lineageId`, `branchId`, or `fromCounter` MUST NOT by itself authorize branch
-revocation.
+the creator's key, and which carries valid branch-creation authorization (Section 2.4), serving as the position witness.
+
+Current control of the exact historical signing key is not the only permitted proof. The revocation issuer MUST prove continuity with the
+identity or authority that issued the branch-creation PCA, which MAY be established by current control of the original signing key, an
+authenticated key-rotation or key-successor proof accepted by the profile, a current verification method bound to the same executor identity,
+or an equivalent profile-defined authority-continuity proof. The proof MUST preserve continuity with the branch-domain creator. The nonce
+proves only that `branchId` was correctly derived from this creation transition; it proves nothing about who was authorized to perform it.
+Knowledge of `lineageId`, `branchId`, `branchCreationNonce`, or `fromCounter` MUST NOT by itself authorize branch revocation.
 
 ### 5.2 Dynamic Restriction Requirements
 
 A profile that supports dynamic restrictions MUST define the predicate `ApplicableRestriction(restriction, PCA, verificationContext)`,
 together with the restriction target syntax, the matching rules, the scope, the precedence, the authority of the restriction issuer, the
 composition of multiple restrictions, and the behavior on conflict. The minimal scopes are `lineageId`, `lineageId + fromCounter`, `grantId`,
-`originIssuer` (when supported), and resource or tenant in a resource-aware profile.
+`originIssuer` (when supported), and resource or tenant in a resource-aware profile. A branch-capable profile that supports dynamic
+restrictions MUST additionally support `lineageId + branchId`, and SHOULD support `lineageId + branchId + fromCounter` for restrictions that
+begin at a specific causal position within the selected branch domain.
 
 **`AUTHORITY`.** Effective authority subtracts applicable restrictions from the signed authority:
 
@@ -878,6 +907,53 @@ effective model       = { deterministic }
 ```
 
 An agentic executor is rejected; a deterministic one may continue.
+
+**Branch-scoped restrictions.** In a branch-capable profile a restriction MAY be scoped to a branch domain. It applies when:
+
+```text
+PCA.lineageId    == restriction.target.lineageId
+AND PCA.branchId == restriction.target.branchId
+AND ( restriction.target.fromCounter is absent
+      OR PCA.lineageCounter >= restriction.target.fromCounter )
+```
+
+matching consistently with `ApplicableRestriction`. Both `AUTHORITY` and `EXECUTION-CONTRACT` MAY be branch-scoped:
+
+```json
+{ "strategy": "AUTHORITY", "target": { "lineageId": "L1", "branchId": "B1", "fromCounter": 42, "operations": ["WRITE"] } }
+```
+
+```json
+{ "strategy": "EXECUTION-CONTRACT", "target": { "lineageId": "L1", "branchId": "B1", "fromCounter": 42, "executionModels": ["agentic"] } }
+```
+
+The scopes differ in effect:
+
+```text
+BRANCH-SUFFIX                     invalidates the selected branch domain from a position onward
+branch-scoped AUTHORITY           removes selected operations from the effective authority of the branch domain
+branch-scoped EXECUTION-CONTRACT  restricts which executors, environments, or execution models may continue
+                                  within the branch domain
+```
+
+Branch-scoped restrictions obey the same authorization, authentication, freshness, rollback-protection, composition, conflict-resolution,
+monotonicity, and availability requirements as all other dynamic restrictions. A branch-scoped restriction MUST NOT expand signed authority,
+modify the signed PCA, alter Proof of Relationship, alter predecessor uniqueness, or affect sibling branch domains carrying a different
+`branchId`. It is applied to effective authority or effective conformance only; signed-state non-expansion MUST continue to compare the
+signed current and predecessor states, not the dynamically restricted effective state.
+
+**Branch creation and restriction inheritance.** When a transition creates a new branch domain, all restrictions applicable to the
+predecessor domain MUST be evaluated before branch creation, under the anti-escape validation order of Section 2.4. A branch-scoped
+restriction may therefore prevent the continuation itself, the use of an operation the transition requires, the selected executor or
+execution model, or the creation of a new branch domain, when the applicable effective authority or execution contract no longer permits it.
+
+A newly created branch domain carries a new `branchId`, so a restriction scoped only to the predecessor `branchId` does not automatically
+match the new domain after the branch-creation transition has been validly accepted. To restrict the new branch domain, the restriction MUST
+be materialized for the new `branchId`, expressed at lineage scope, expressed at grant scope, or inherited through an explicit
+profile-defined rule. Any profile-defined inheritance rule MUST be explicit, authenticated, deterministic, and monotonic, and MUST avoid
+introducing implicit or unbounded branch ancestry; the base profile SHOULD NOT imply recursive restriction inheritance across branch-domain
+changes. Branch-domain scope, lineage-wide scope, and grant-wide scope remain distinct, and sibling branches carrying a different `branchId`
+remain unaffected by a branch-scoped restriction unless another applicable lineage-, grant-, or sibling-specific restriction matches them.
 
 ### 5.3 Monotonicity
 
