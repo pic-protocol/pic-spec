@@ -47,7 +47,7 @@ Subordinate specifications:
 | Document | Description | Status | Date |
 | --- | --- | --- | --- |
 | [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) | Normative requirements for PIC Provers and Verifiers: the components that construct and validate Proofs of Continuity and enforce PIC invariants. | Draft 0.2 | 2026-07-15 |
-| [PIC Revocation Specification](./pic-revocation-spec.md) | Revocation coordinates (`lineageId`, `grantId`, `lineageCounter`, `originIssuer`) and their hop-by-hop continuity, the requirements for turning a historical selector into a causal cutoff, and revocation-authorization and revocation-state requirements. | Draft 0.2 | 2026-07-15 |
+| [PIC Revocation Specification](./pic-revocation-spec.md) | Revocation coordinates (`lineageId`, `grantId`, `lineageCounter`, `originIssuer`, and `branchId` in branch-capable profiles) and their hop-by-hop continuity, the requirements for turning a historical selector into a causal cutoff, and revocation-authorization and revocation-state requirements. | Draft 0.2 | 2026-07-18 |
 
 ## 3. Legal Notices
 

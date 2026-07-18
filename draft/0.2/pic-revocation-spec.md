@@ -2,7 +2,7 @@
 
 **Version:** 0.2 (Draft)  
 **Status**: Draft – Not a Standard  
-**Date:** 2026-07-15  
+**Date:** 2026-07-18  
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-revocation-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md)  
 **Editors:**
 
@@ -20,7 +20,7 @@ the ground for **revoking authority** within the Provenance Identity Continuity 
 
 Expiry bounds *how long* a PCA is valid; revocation withdraws validity *before* that bound. The profile supports grant-, key-, delegate-,
 attestation-, issuer-, and policy-based revocation, and adds a property specific to PIC: **causal execution cutoffs** — revoking a lineage,
-or its future from a given position.
+a branch, or its future from a given position.
 
 This revision normatively defines the **revocation coordinates** and their hop-by-hop continuity (Section 2), the requirements for turning a
 historical selector into a causal cutoff (Section 4), and the revocation-authorization and revocation-state requirements (Section 5). It
@@ -42,6 +42,7 @@ signed state and Proof of Relationship are unchanged, and every PCA still contin
     - [2.1 Origin PCA (PCA0)](#21-origin-pca-pca0)
     - [2.2 Successor PCA](#22-successor-pca)
     - [2.3 Verifier Hop Validation](#23-verifier-hop-validation)
+    - [2.4 Branch Identification](#24-branch-identification)
   - [3. Revocation Strategies](#3-revocation-strategies)
     - [3.1 Native Causal Revocations](#31-native-causal-revocations)
     - [3.2 Identity and Evidence Selectors](#32-identity-and-evidence-selectors)
@@ -89,7 +90,7 @@ PCA100
 ```
 
 Each individual lineage path is causally sequential; the lineage as a whole may form a tree under fan-out. Revocation operates on this
-structure: to revoke, one must be able to *name* a lineage and a *position* within it.
+structure: to revoke, one must be able to *name* a lineage, a branch domain within it, and a *position*.
 
 ### 1.2 Three Kinds of Revocation State
 
@@ -103,7 +104,8 @@ profile
 lineageId
 grantId
 lineageCounter
-originIssuer   (when propagated)
+originIssuer               (when propagated)
+branchId, branchNonce      (when the profile is branch-capable)
 operations
 executionContract
 ```
@@ -191,6 +193,10 @@ not designate a successor, and does not replace Proof of Relationship or executo
 
 **`profile`** identifies the revocable profile in force. **`lineageCounter`** MUST be `0`.
 
+**Branch coordinates** — in a branch-capable profile (Section 2.4), PCA0 establishes the root branch domain: either a `branchId` derived
+from PCA0 as its own creation point, or an absent `branchId` interpreted as the root. When present, `branchId` and `branchNonce` are covered
+by the PCA0 signature.
+
 ```json
 {
   "profile": "PIC-Revocable-v0",
@@ -218,6 +224,10 @@ propagates it) **unchanged**, MUST set `lineageCounter` to the predecessor's val
 signature. A Prover MUST NOT alter or drop these fields, MUST NOT introduce a `grantId` the predecessor lacks, and MUST NOT change the
 `profile`.
 
+In a branch-capable profile (Section 2.4) the successor MUST also propagate `branchId` and `branchNonce` **unchanged**, except at an
+authorized branch-creation transition, where it derives a fresh `branchId` from a fresh `branchNonce`. A branch-capable profile MUST prevent
+downgrade by omission: a successor MUST NOT drop `branchId` or `branchNonce`.
+
 > A lineage created under a revocable profile remains revocable for its entire lifetime. A successor cannot downgrade it by omitting the
 > profile or its revocation coordinates.
 
@@ -235,6 +245,11 @@ presence(current.grantId) == presence(predecessor.grantId)
 if grantId is present:      current.grantId == predecessor.grantId
 if originIssuer propagated:  current.originIssuer == predecessor.originIssuer
 current.lineageCounter     == predecessor.lineageCounter + 1
+
+if branch-capable, ordinary hop:      current.branchId    == predecessor.branchId
+                                      current.branchNonce == predecessor.branchNonce
+if branch-capable, branch creation:   current.branchId    == H("PIC-Branch-v0" || H(predecessor) || current.branchNonce)
+                                      AND valid branch-creation authorization (Section 2.4)
 ```
 
 The Verifier MUST reject when `profile` is missing or unknown, when `current.profile != predecessor.profile`, when required revocation
@@ -242,13 +257,140 @@ coordinates are omitted, or when a revocable lineage is presented under a non-re
 MUST reject a `lineageCounter` that is missing, negative, fractional, non-canonical, less than or equal to the predecessor's, greater than
 `predecessor + 1`, or that overflows or wraps around.
 
+In a branch-capable profile the Verifier MUST also reject when `branchId` or `branchNonce` is required by the profile but missing, when
+`branchId` is removed, when `branchId` changes without a valid, authorized branch-creation transition, when `branchId` does not recompute
+from the presented predecessor at a claimed branch-creation transition, or when `branchId` or `branchNonce` has a non-canonical
+representation or an invalid size.
+
 A valid signature is necessary but not sufficient: the Verifier validates the concrete transition `PCA[n-1] -> PCA[n]`, not merely the
 signature of `PCA[n]`.
 
+### 2.4 Branch Identification
+
+Branch-capable profiles add two fixed-size fields to every revocable PCA, and nothing else. They make `BRANCH-SUFFIX` (Section 3.1) a native
+strategy without carrying branch ancestry:
+
+```text
+branchId     fixed-size branch-domain identifier
+branchNonce  fixed-size random value, set at branch creation,
+             propagated unchanged within the branch domain
+```
+
+A PCA MUST NOT carry branch ancestry arrays, parent-branch lists, growing branch paths, full branch trees, or any unbounded branch metadata.
+The model stays three flat coordinates:
+
+```text
+lineageId       identifies the overall execution lineage
+lineageCounter  identifies causal depth on one path
+branchId        identifies the current branch domain
+```
+
+**`branchId` is a derived commitment, not a free choice.** A freely chosen identifier would reintroduce, one level down, the
+intentional-collision problem the origin commitment removes for `lineageId`: branch identifiers travel in the clear, so a malicious executor
+at a different fan-out point of the same lineage could copy a victim branch's identifier and have a later `BRANCH-SUFFIX` strike the victim.
+`branchId` is therefore bound to its creation point:
+
+```text
+branchId = H( "PIC-Branch-v0" || H(fanOutPredecessorPCA) || branchNonce )
+
+H(fanOutPredecessorPCA)  digest of the PCA at the fan-out (the shared predecessor of the siblings)
+branchNonce              fresh random value per child branch, generated by the fan-out creator,
+                         carried in the child PCA, propagated unchanged within the branch domain
+```
+
+This gives three properties:
+
+```text
+Self-certifying    a Verifier holding the child PCA and its predecessor recomputes branchId and
+                   rejects a mismatch; no registry is needed for the immediate transition
+Non-copyable       reusing a victim branchId at a different fan-out point needs the same predecessor
+                   digest (a different fan-out point has a different digest) or a hash collision
+Sibling-distinct   distinct branchNonce values give distinct branchId values under one predecessor;
+                   an identical nonce gives the same branch domain, not two colliding domains
+```
+
+**Representation.** `branchNonce` SHOULD contain at least 128 random bits; 256 bits are RECOMMENDED. `branchId` has the fixed size of the
+profile hash output. The profile MUST define the canonical binary representation of both; no textual UUID representation is required. A
+128-bit nonce occupies 16 bytes and a 256-bit hash 32 bytes before serialization overhead: the added state is constant per PCA. `branchId`
+and `branchNonce` MUST be covered by the complete PCA signature.
+
+**Root branch.** Before any fan-out the profile MUST choose one representation and use it consistently: either a root `branchId` derived from
+PCA0 as its own creation point,
+
+```text
+branchId = H( "PIC-Branch-v0" || H(PCA0-as-creation-point) || rootBranchNonce )
+```
+
+or an absent `branchId` interpreted as the root branch domain.
+
+**Fan-out.** At a fan-out point each distinct sibling branch receives a fresh `branchNonce`, hence a fresh derived `branchId`:
+
+```text
+PCA100
+ ├── PCA101-A  branchNonce = nA  ->  branchId = H(dsep || H(PCA100) || nA)
+ └── PCA101-B  branchNonce = nB  ->  branchId = H(dsep || H(PCA100) || nB)
+```
+
+The fan-out creator MUST generate each `branchNonce` freshly and MUST NOT reuse a `branchNonce` for different sibling branches of the same
+fan-out. Sibling distinctness is a **Prover obligation at the fan-out creator**: a per-hop Verifier in the incremental profile sees only one
+sibling per envelope and therefore cannot compare siblings directly. The derived construction makes duplicate sibling identifiers
+structurally impossible without nonce reuse, and nonce reuse under the same predecessor produces the same branch domain rather than a
+collision between distinct domains. Cross-sibling detection beyond this construction requires fan-out-point evidence or shared state and is
+not a per-hop Verifier requirement.
+
+**Branch-domain creation is a restricted operation.** This is the central security rule of the branch profile. Without it, branch revocation
+is evadable in one hop: an executor inside a revoked branch domain could perform a single-child fan-out, mint a fresh branch domain, and
+escape `BRANCH-SUFFIX` — and, since the base profile carries no branch ancestry, no downstream Verifier could relate the new domain to the
+revoked one. Therefore creating a new branch domain MUST be an authorized, authenticated operation. The base profile MUST restrict branch
+creation to parties authorized by the execution contract, the origin, or the branch creator's explicitly delegated authority. A nested
+fan-out that is NOT authorized to create a new branch domain MUST inherit the current `branchId` and `branchNonce`. Inheriting is the
+default; minting is the exception.
+
+A branch-domain change is valid only at a transition that both recomputes as a correct derivation from the presented predecessor and carries
+the profile-defined branch-creation authorization:
+
+```text
+branchId == H( "PIC-Branch-v0" || H(predecessor) || current.branchNonce )
+AND  profile-defined branch-creation evidence is present and valid
+```
+
+The profile MUST define that evidence — for example a branch-creation permission in the predecessor `executionContract`, or a signed grant
+from the branch or origin authority.
+
+**Backstop.** `BRANCH-SUFFIX` is exactly as strong as the branch-domain creation policy. `LINEAGE-SUFFIX` remains the escape-resistant
+cutoff: it strikes every branch of the lineage from the selected counter onward, regardless of `branchId`.
+
+**Nested fan-out and the ancestry trade-off.** By default a nested fan-out inside an existing branch domain inherits the same `branchId`, and
+its children remain part of the same revocation domain — this is intentional:
+
+```text
+branchId = A
+ ├── child 1: branchId = A
+ └── child 2: branchId = A
+```
+
+A profile MAY allow an *authorized* nested fan-out to create fresh branch domains:
+
+```text
+branchId = A
+ ├── child C: branchId = C   (authorized creation)
+ └── child D: branchId = D   (authorized creation)
+```
+
+The PCA still carries only the current `branchId` and `branchNonce`. The base profile MUST NOT require a `parentBranchId` field, a branch
+ancestry array, or a growing path. The base representation therefore keeps PCA state constant-size and directly supports revocation of the
+currently propagated branch domain; it does not carry recursive branch ancestry. When an authorized nested fan-out creates a new branch
+domain, causal ancestry between the old and new branch identifiers requires authenticated historical resolution if revocation must cross that
+boundary — exactly as historical selectors require resolution into native cutoffs (Section 4). The derived `branchId` helps here: it commits
+to the digest of its creation-point PCA, so an authenticated record of that single PCA suffices to prove which domain a new domain was minted
+from.
+
 ## 3. Revocation Strategies
 
-This section is non-normative and illustrative. It shows the revocation targets expressible with PIC coordinates; the normative revocation
-object and verification procedure are defined by a later revision and by Sections 4 and 5. All examples share one minimal format:
+This section is non-normative and illustrative. It shows the revocation targets expressible with PIC coordinates. The requirements these
+strategies must satisfy are normative in Sections 4 and 5: coordinates, authorization constraints, witness rules, materialization rules,
+monotonicity, and revocation-state requirements are already normative. The complete interoperable revocation-object format, its
+serialization, distribution endpoints, and status-retrieval protocol are defined by a later revision. All examples share one minimal format:
 
 ```json
 {
@@ -265,8 +407,9 @@ unauthorized party has no effect.
 
 ### 3.1 Native Causal Revocations
 
-These are enforceable directly from coordinates propagated in every PCA, so a Verifier needs nothing beyond the transition it holds. Whole-
-lineage revocation is the degenerate suffix from the origin: `LINEAGE(lineageId) = LINEAGE-SUFFIX(lineageId, 0)`.
+These strategies are directly enforceable from the propagated coordinates in the received transition once the applicable authenticated and
+sufficiently fresh revocation state is available. Whole-lineage revocation is the degenerate suffix from the origin:
+`LINEAGE(lineageId) = LINEAGE-SUFFIX(lineageId, 0)`.
 
 **`LINEAGE-SUFFIX`** — a position and everything causally after it.
 
@@ -310,8 +453,37 @@ reject if:
   PCA.grantId == target.grantId
 ```
 
-**`BRANCH-SUFFIX`** is a future extension: `branchId` is not defined by this revision and branch revocation is not available in the core.
-Until `branchId` exists, `LINEAGE-SUFFIX` affects *every* sibling branch at or beyond `fromCounter` (Section 5.6).
+**`BRANCH-SUFFIX`** — one branch domain and everything causally after a position, in **branch-capable** profiles (Section 2.4).
+
+```json
+{
+  "type": "PIC-Revocation-v0",
+  "strategy": "BRANCH-SUFFIX",
+  "target": {
+    "lineageId": "L1",
+    "branchId": "base64url-hash-value",
+    "fromCounter": 101
+  },
+  "issuedAt": "2026-07-18T10:00:00Z",
+  "issuer": "did:example:revocation-authority"
+}
+```
+
+```text
+reject if:
+  PCA.lineageId          == target.lineageId
+  AND PCA.branchId       == target.branchId
+  AND PCA.lineageCounter >= target.fromCounter
+```
+
+`LINEAGE-SUFFIX` revokes every branch of a lineage from a counter onward; `BRANCH-SUFFIX` revokes only the matching branch domain from a
+counter onward.
+
+```text
+PCA100
+ ├── PCA101-A  branchId=A   revoked by BRANCH-SUFFIX(L, A, 101)
+ └── PCA101-B  branchId=B   remains valid
+```
 
 ### 3.2 Identity and Evidence Selectors
 
@@ -394,13 +566,13 @@ invalid segment. The forward consequence of flagging an interval from counter `k
 
 ### 3.5 Summary
 
-| Category                     | Strategies                                                | Direct meaning                                                                                                              |
-| ---------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Native causal revocation     | `LINEAGE-SUFFIX`, `GRANT`, future `BRANCH-SUFFIX`         | Directly enforceable from propagated execution coordinates                                                                  |
-| Persistent issuer revocation | direct `ORIGIN-ISSUER`, when `originIssuer` is propagated | Directly enforceable from the propagated origin binding                                                                     |
-| Identity/evidence selector   | `KEY`, `DELEGATE`, `ATTESTATION`, resolved `ISSUER`       | Blocks presented evidence; historical causal effect requires authenticated resolution and authorized suffix materialization |
-| Dynamic restriction          | `AUTHORITY`, `EXECUTION-CONTRACT`                         | Restricts effective authority or conformance without rewriting the signed chain                                             |
-| Retrospective annotation     | `AUDIT-RANGE`                                             | Marks a historical incident interval; forward invalidity is represented by a suffix cutoff                                  |
+| Category | Strategies | Direct meaning |
+| --- | --- | --- |
+| Native causal revocation | `LINEAGE-SUFFIX`, `BRANCH-SUFFIX`, `GRANT` | Directly enforceable from propagated execution coordinates and authenticated revocation state |
+| Persistent issuer revocation | direct `ORIGIN-ISSUER`, when `originIssuer` is propagated | Directly enforceable from the propagated origin binding |
+| Identity/evidence selector | `KEY`, `DELEGATE`, `ATTESTATION`, resolved `ISSUER` | Blocks presented evidence; historical causal effect requires authenticated resolution and authorized suffix materialization |
+| Dynamic restriction | `AUTHORITY`, `EXECUTION-CONTRACT` | Restricts effective authority or conformance without rewriting the signed chain |
+| Retrospective annotation | `AUDIT-RANGE` | Marks a historical incident interval; forward invalidity is represented by a suffix cutoff |
 
 ## 4. Making Selectors Causal
 
@@ -461,6 +633,40 @@ The witness MUST cryptographically bind the selector, the `lineageId`, the `line
 and its own integrity. The Verifier or materializer MUST verify that `witness.lineageId == position.lineageId`, `witness.lineageCounter ==
 position.atCounter`, the witness selector equals the revoked selector, the witness cryptographic integrity is valid, and the witness belongs
 to the claimed PCA or authenticated history. A hash accompanied by unauthenticated fields MUST NOT be accepted.
+
+**Extract integrity.** A `SignedPCAExtract` is not an arbitrary new object signed by the historical executor. It MUST be one of: a selective
+disclosure of fields covered by the original PCA signature, a proof derived from the original signed PCA, or an authenticated extract issued
+by a trusted historical index or snapshot authority. A `SignedPCAExtract` MUST prove that the disclosed fields were covered by the original
+PCA authentication; a new signature over reconstructed fields is not, by itself, proof that those fields appeared in the historical PCA. This
+rule applies even when the signing key is not compromised.
+
+**Compromised-key corroboration.** For a `KEY` revocation caused by actual or suspected compromise, a position witness authenticated only by
+the revoked key MUST NOT be sufficient evidence that the claimed position was accepted into the lineage: an attacker controlling the
+compromised key could fabricate a PCA or `SignedPCAExtract` that claims an arbitrary `lineageId` and counter. Such a witness MUST be
+corroborated by evidence independent of the revoked key:
+
+```text
+the valid successor PCA that references the claimed PCA through previousPcaHash,
+    where the successor is not authenticated solely by the compromised key
+an authenticated historical position index
+an authenticated snapshot or checkpoint
+a transparency-log inclusion proof
+an attestation from an independently trusted materialization authority
+an equivalent independent cryptographic proof
+```
+
+The simplest causal corroboration is `PCA[k+1].previousPcaHash == H(PCA[k])`. Corroboration proves that the claimed position was *accepted
+into the lineage* — whether the acceptance was caused by the legitimate holder or by the compromise adversary; in both cases the position is
+real and its causal future warrants the cutoff. Corroboration does not, and need not, prove that the position predates the compromise; that
+distinction requires trusted time (Section 5.5), not corroboration. It prevents cutoffs rooted in positions that were never part of the
+lineage at all.
+
+Independent corroboration is not universally mandatory. In the **key-compromise case** above it is mandatory. In the **ordinary executor
+self-position case**, an uncompromised executor proving its own current position to revoke its continuations MAY use its complete signed PCA
+or authenticated extract when the applicable policy recognizes that executor and its key as currently valid. In the **delegate and
+attestation cases**, a self-contained signed witness MAY be sufficient only when the signing key is not the evidence being treated as
+compromised, the profile accepts that issuer as authoritative for the claim, and the witness is cryptographically bound to the authenticated
+lineage. The selected profile MUST define the required independence assumptions.
 
 ### 4.2 Cutoff Authorization
 
@@ -545,11 +751,16 @@ receives the revocation.
 
 | Revoker | May revoke | Binding proven by |
 | --- | --- | --- |
-| The origin issuer | its own lineage | `revocation.issuer == lineage.originIssuer` |
+| The origin issuer | its own lineage | `AuthorizedLineageRevoker(lineageId, revocation.issuer, revocation.proof)` |
 | An executor at counter `k` | `fromCounter = k+1` (its own future); `fromCounter = k` only if policy allows | its own signed PCA or extract, or an authenticated index |
+| The branch creator | the branch it created, after its creation point | `AuthorizedBranchRevoker(lineageId, branchId, fromCounter, issuer, proof)` |
 | The grant authority | the grant and its contract terms | `AuthorizedGrantRevoker(grantId, issuer)` |
 | The key controller | that key | control of the verification method |
 | The attestation issuer | that attestation | the attestation's issuer signature |
+
+**Origin-issuer authorization.** For the direct origin case, `AuthorizedLineageRevoker` requires both `revocation.issuer == PCA.originIssuer`
+and a `revocation.proof` that validates under a currently authorized revocation method for that origin issuer. An identifier match without a
+valid proof MUST NOT authorize revocation.
 
 **Counter semantics.** `fromCounter = k` revokes hop `k` *and* its future; `fromCounter = k+1` keeps hop `k` valid and blocks every
 continuation. An executor at counter `k` MUST NOT revoke a position upstream of itself unless it separately holds the origin, grant, or
@@ -580,6 +791,14 @@ the original PCA is unavailable, or when another authority materializes the cuto
 revocation.issuer)`. The profile MUST define how this predicate is proven — for example a signed grant credential, a grant-authority field
 committed in PCA0, an authenticated grant registry, or a profile-defined grant commitment. Possession or knowledge of a `grantId` alone MUST
 NOT authorize its revocation.
+
+**Branch revocation.** A `BRANCH-SUFFIX` MUST be accepted only when the revocation issuer is authorized to revoke the targeted branch domain,
+expressed as `AuthorizedBranchRevoker(lineageId, branchId, fromCounter, revocationIssuer, revocationProof)`. The profile MUST define how this
+binding is proven; possible authorities are the origin issuer (when policy grants branch-wide authority), the grant authority, the executor
+that created the branch, or an explicitly delegated branch revocation authority. The executor that created a branch MAY revoke the branch
+continuation after its creation point only when its authority and position are cryptographically proven: proving control of the fan-out
+predecessor PCA and knowledge of the corresponding `branchNonce` demonstrates creation of that branch domain (Section 2.4). Knowledge of
+`lineageId`, `branchId`, or `fromCounter` MUST NOT by itself authorize branch revocation.
 
 ### 5.2 Dynamic Restriction Requirements
 
@@ -633,25 +852,35 @@ version and how that minimum is authenticated, how rollback is detected, and wha
 unavailability the profile MUST choose one explicitly defined behavior — for example **fail closed**, accept only a fresh stapled proof,
 accept within a bounded offline window, or another explicitly defined behavior.
 
-> Short per-hop expiry bounds, but does not eliminate, the interval in which a newly issued revocation may not yet have reached a Verifier.
+> Short per-hop expiry bounds the interval in which a newly issued revocation may not yet have reached a Verifier, but does not eliminate
+> that interval.
 
 ### 5.5 Trusted Time and Key Compromise
 
-A self-declared `issuedAt` timestamp cannot prove that a signature was created before key compromise. Distinguish **known historical
-positions**, which are converted into suffix revocations (Section 4), from **unknown or newly forged positions**, which are blocked by the
-direct key-status check when the key is presented (Section 3.2), not by previously enumerated suffixes. A future extension MAY use a trusted
-timestamp, a transparency log, hardware monotonic time, or forward-secure signatures.
+A self-declared `issuedAt` timestamp cannot prove that a signature was created before key compromise. Known historical positions are
+converted into suffix revocations (Section 4). Unknown or newly forged positions are blocked by the direct key-status check when the key is
+presented (Section 3.2), not by previously enumerated suffixes. A position witness offered as evidence for a compromised key MUST be
+corroborated by evidence independent of the revoked key (Section 4.1); such corroboration establishes that the position was accepted into the
+lineage, not that it predates the compromise. A future extension MAY use a trusted timestamp, a transparency log, hardware monotonic time, or
+forward-secure signatures.
 
 ### 5.6 Limitations
 
-- **Fan-out.** Until `branchId` exists (Section 3.1), `LINEAGE-SUFFIX` acts on shared depth and strikes *sibling* branches at or beyond
-  `fromCounter`. The current profile is correct for "revoke the whole future", not for per-branch revocation.
+- **Branch domains.** Branch-domain revocation is supported through one fixed-size derived `branchId` (Section 2.4). The base profile does
+  not carry recursive branch ancestry. When an authorized nested fan-out creates a new branch domain, causal ancestry between the old and new
+  branch identifiers requires authenticated historical resolution if revocation must cross that boundary. Nested children that inherit the
+  same `branchId` are intentionally revoked as one branch domain. `BRANCH-SUFFIX` is as strong as the branch-domain creation policy;
+  `LINEAGE-SUFFIX` strikes every branch of the matching lineage from the selected counter onward and remains the escape-resistant cutoff.
+  Sibling branches with different `branchId` values are not struck by a `BRANCH-SUFFIX`.
 - **Privacy.** In the incremental profile, historical executor identities do not travel with the lineage: a Verifier sees the identities and
   evidence of the *presented* transition — the current executor identity, the immediate predecessor identity, and the current transition
   evidence — together with the persistent execution coordinates the profile requires; older executor identities are not carried by default.
-  `lineageId`, `grantId`, and `originIssuer`, when propagated, remain persistent correlators, and a profile with unlinkability requirements
-  MUST define a privacy-preserving representation or lookup mechanism without weakening revocation matching (for example pairwise or blinded
-  identifiers, per-segment commitments, privacy-preserving lookup, or selective disclosure).
+  `lineageId`, `grantId`, `originIssuer` (when propagated), and `branchId` (in branch-capable profiles) remain persistent correlators. A
+  profile with unlinkability requirements MUST define a privacy-preserving representation or lookup mechanism without weakening revocation
+  matching (for example pairwise or blinded identifiers, per-segment commitments, privacy-preserving lookup, or selective disclosure).
+  Uniqueness is not mathematically absolute: the derived construction makes intentional cross-branch collision require a hash collision and
+  makes accidental collision negligible under the selected security level, and copying a `branchNonce` is harmless in itself, since under a
+  different fan-out predecessor it yields a different `branchId`.
 - **Incremental visibility.** Direct `KEY`, `DELEGATE`, and `ATTESTATION` see only the evidence in the received transition (Section 3.2);
   reaching the past requires Section 4.
 
@@ -669,8 +898,21 @@ network, and application logic and is not fixed here. Under any realistic per-li
 though a profile that wants the mathematically unbounded case MAY use a CBOR bignum. The normative point is only the one in Section 2.3:
 overflow and wraparound are rejected.
 
-The propagated coordinates support the native predicates: `lineageId` and `lineageCounter` support lineage cutoffs, while `grantId` supports
-grant-wide revocation. A frontier accumulator remains an *optional* extension for membership proofs and cryptographic audit of the prefix.
+The following values are approximate and illustrative, taken at `currentCounter = 0` on one causally sequential path and rounded:
+
+| Accepted hops per second on one path | Approximate time to exhaustion |
+| -----------------------------------: | -----------------------------: |
+| 1 | about 584 billion years |
+| 1,000 | about 584 million years |
+| 1,000,000 | about 584 thousand years |
+| 1,000,000,000 | about 584 years |
+
+Even under extremely aggressive illustrative rates, the exhaustion horizon remains operationally remote. The table communicates scale, not a
+performance claim, and the rates are not deployment benchmarks.
+
+The propagated coordinates support the native predicates: `lineageId` and `lineageCounter` support lineage cutoffs, `branchId` supports
+branch-domain cutoffs, and `grantId` supports grant-wide revocation. A frontier accumulator remains an *optional* extension for membership
+proofs and cryptographic audit of the prefix.
 
 ## 7. Contributors
 
