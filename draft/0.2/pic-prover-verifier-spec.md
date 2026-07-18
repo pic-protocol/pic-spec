@@ -1,6 +1,6 @@
 # PIC Prover and Verifier Specification
 
-**Version:** 0.2 (Draft)  
+**Version:** 0.1 (Draft)  
 **Status**: Draft – Not a Standard  
 **Date:** 2026-07-15  
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-prover-verifier-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md)  

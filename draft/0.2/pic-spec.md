@@ -47,6 +47,7 @@ Subordinate specifications:
 | Document | Description | Status | Date |
 | --- | --- | --- | --- |
 | [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) | Normative requirements for PIC Provers and Verifiers: the components that construct and validate Proofs of Continuity and enforce PIC invariants. | Draft 0.2 | 2026-07-15 |
+| [PIC Revocation Specification](./pic-revocation-spec.md) | Normative requirements for revoking authority before expiry: revocation of keys, attestations, continuations, and lineages, their semantics, and Verifier behavior. | Draft 0.1 | 2026-07-15 |
 
 ## 3. Legal Notices
 
