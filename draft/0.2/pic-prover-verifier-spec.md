@@ -525,6 +525,7 @@ and the one signature:
 {
   "proofOfRelationship": { "…": "the PoR payload of Section 2.3" },
   "invariants":          { "…": "the attenuated invariants of Section 2.4" },
+  "chain":               { "…": "prefix representation — profile choice (Section 5)" },
   "continuation": {
     "challenge": "base64url-random-256-bit-value",
     "mode": "single-use",
@@ -540,9 +541,14 @@ and the one signature:
 }
 ```
 
-One signature covers everything: predecessor reference, challenge response, executor evidence, attenuated invariants, the emitted
-`continuation`, and the temporal fields. It is *attributable* — the whole hop is signed by the executor that made it — and *tamper-evident*:
-changing any field invalidates it. This is what forbids the cross-lineage composition of Section 1.4: a PoR that responds to one lineage's
+One signature covers everything: predecessor reference, challenge response, executor evidence, attenuated invariants, the `chain`
+representation, the emitted `continuation`, and the temporal fields. It is *attributable* — the whole hop is signed by the executor that
+made it — and *tamper-evident*: changing any field invalidates it.
+
+`chain` holds the **prefix representation**, and its content is a profile choice (Section 5): in the incremental profile it is a bare
+reference or omitted — the predecessor bytes travel in the envelope — while snapshot, full-chain, and succinct-proof profiles put a snapshot
+reference, the predecessor list, or a succinct proof here. It never embeds the whole envelope recursively (that would be quadratic); it is
+the compact evidence a Verifier uses to reach back beyond the immediate predecessor. This is what forbids the cross-lineage composition of Section 1.4: a PoR that responds to one lineage's
 challenge cannot be paired with `invariants` drawn from another and still verify, so the combined document *cannot be validated as a
 conforming continuation*. The only other signature a Verifier checks is the issuer's, inside the embedded attestation; that one belongs to
 the attestation, not to PIC. Profiles that must transport or verify the PoR or the invariants independently MAY add internal signatures
@@ -580,11 +586,10 @@ deduplication — `currentDigest` is what the next hop places in its `previousPc
 Verifier MUST recompute each digest from the PCA bytes, reject a mismatch, and check that `predecessorDigest` equals the `previousPcaHash`
 carried inside `current`. Security rests on that recomputation and on the signatures, never on the supplied digests.
 
-In the default **incremental** profile the envelope carries just the immediate predecessor, `[PCA[n-1], PCA[n]]`. Executor `n+1` verifies the
-transition it can see — hash link, non-expansion, conformance, PoR (Section 3.3) — which catches any single hop that expands authority or
-fails its contract, at the next honest hop. Validity back to PCA0 is then *inductive*: each hop verified its own predecessor. This relies on
-each hop being a trusted verifier (Section 6.8). A profile that must resist *consecutive colluding* hops carries the full chain
-`[PCA0 … PCA[n]]` in the envelope instead, or uses a succinct proof (Section 5).
+By default the envelope carries only the immediate transition — the predecessor and the new PCA. `n+1` verifies that one step (Section 3.3),
+which already catches any single misbehaving hop. It does not re-verify the earlier chain; it trusts that each earlier hop verified its own
+predecessor. The trade-offs of that trust — and when to carry the full chain or a succinct proof instead — are covered in Section 6.8, and
+how the chain is represented is a profile choice (Section 5).
 
 ## 3. Verifier Requirements
 
@@ -949,7 +954,7 @@ compromised-but-authorized parties.
 | Decentralized, incremental (default) | none | O(1) | not resisted |
 | Decentralized, full-chain | none | O(n) | resisted |
 | Central / snapshot validator | yes | O(1) | resisted |
-| Succinct proof (SNARK) | none | O(1) verify | resisted |
+| Succinct proof (e.g. SNARK) | none | O(1) verify | resisted |
 
 - **Decentralized, incremental** (Section 2.5). Each hop forwards only the immediate transition; no central component; O(1). Resists a single
   faulty hop but not consecutive collusion. Right when every hop is a trusted verifier and group compromise is out of scope.
