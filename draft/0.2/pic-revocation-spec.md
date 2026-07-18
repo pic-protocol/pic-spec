@@ -105,7 +105,7 @@ lineageId
 grantId
 lineageCounter
 originIssuer               (when propagated)
-branchId, branchNonce      (when the profile is branch-capable)
+branchId                   (when the profile is branch-capable)
 operations
 executionContract
 ```
@@ -120,6 +120,7 @@ signing key
 executorAttestation
 request binding
 proofOfRelationship
+branchCreationNonce        (present only in a branch-creation PCA)
 ```
 
 Revoking hop-local evidence has direct effect only while that evidence is still *presented* to a Verifier.
@@ -193,9 +194,8 @@ not designate a successor, and does not replace Proof of Relationship or executo
 
 **`profile`** identifies the revocable profile in force. **`lineageCounter`** MUST be `0`.
 
-**Branch coordinates** — in a branch-capable profile (Section 2.4), PCA0 establishes the root branch domain: either a `branchId` derived
-from PCA0 as its own creation point, or an absent `branchId` interpreted as the root. When present, `branchId` and `branchNonce` are covered
-by the PCA0 signature.
+**Branch coordinate** — in a branch-capable profile (Section 2.4), PCA0 carries the root branch domain `branchId`, derived from `lineageId`
+as `rootBranchId = H( "PIC-Root-Branch-v0" || lineageId )` and covered by the PCA0 signature. There is no root nonce and no absent-root case.
 
 ```json
 {
@@ -205,17 +205,19 @@ by the PCA0 signature.
   "originNonce": "base64url-random-256-bit-value",
   "grantId": "urn:uuid:11111111-1111-4111-8111-111111111111",
   "lineageId": "sha256:…",
+  "branchId": "sha256:… (rootBranchId, derived from lineageId; Section 2.4)",
   "lineageCounter": 0,
   "invariants": { "…": "operations and executionContract (Prover/Verifier spec)" },
   "continuation": { "…": "the emitted challenge" },
   "issuedAt": "2026-07-17T10:00:00Z",
   "expiresAt": "2026-07-18T10:00:00Z",
-  "proof": { "…": "signature covering the complete PCA0, including lineageId" }
+  "proof": { "…": "signature covering the complete PCA0, including lineageId and branchId" }
 }
 ```
 
-To validate PCA0, the Verifier MUST reconstruct `originCore`, recompute `lineageId`, compare it with `PCA0.lineageId`, verify the complete
-PCA0 signature, verify the origin authorization, and verify the grant binding when `grantId` is present.
+To validate PCA0, the Verifier MUST reconstruct `originCore`, recompute `lineageId`, compare it with `PCA0.lineageId`, recompute
+`rootBranchId` from the recomputed `lineageId` and compare it with `PCA0.branchId` (in a branch-capable profile), verify the complete PCA0
+signature, verify the origin authorization, and verify the grant binding when `grantId` is present.
 
 ### 2.2 Successor PCA
 
@@ -224,9 +226,10 @@ propagates it) **unchanged**, MUST set `lineageCounter` to the predecessor's val
 signature. A Prover MUST NOT alter or drop these fields, MUST NOT introduce a `grantId` the predecessor lacks, and MUST NOT change the
 `profile`.
 
-In a branch-capable profile (Section 2.4) the successor MUST also propagate `branchId` and `branchNonce` **unchanged**, except at an
-authorized branch-creation transition, where it derives a fresh `branchId` from a fresh `branchNonce`. A branch-capable profile MUST prevent
-downgrade by omission: a successor MUST NOT drop `branchId` or `branchNonce`.
+In a branch-capable profile (Section 2.4) the successor MUST propagate `branchId` **unchanged**, except when it is itself an authorized
+branch-creation PCA, where it derives a fresh `branchId` and carries a fresh `branchCreationNonce` for that single transition. An ordinary
+successor MUST NOT carry `branchCreationNonce`. A branch-capable profile MUST prevent downgrade by omission: a successor MUST NOT drop
+`branchId`.
 
 > A lineage created under a revocable profile remains revocable for its entire lifetime. A successor cannot downgrade it by omitting the
 > profile or its revocation coordinates.
@@ -246,9 +249,9 @@ if grantId is present:      current.grantId == predecessor.grantId
 if originIssuer propagated:  current.originIssuer == predecessor.originIssuer
 current.lineageCounter     == predecessor.lineageCounter + 1
 
-if branch-capable, ordinary hop:      current.branchId    == predecessor.branchId
-                                      current.branchNonce == predecessor.branchNonce
-if branch-capable, branch creation:   current.branchId    == H("PIC-Branch-v0" || H(predecessor) || current.branchNonce)
+if branch-capable, ordinary hop:      current.branchId == predecessor.branchId
+                                      current MUST NOT carry branchCreationNonce
+if branch-capable, branch creation:   current.branchId == H("PIC-Branch-v0" || current.previousPcaHash || current.branchCreationNonce)
                                       AND valid branch-creation authorization (Section 2.4)
 ```
 
@@ -257,23 +260,28 @@ coordinates are omitted, or when a revocable lineage is presented under a non-re
 MUST reject a `lineageCounter` that is missing, negative, fractional, non-canonical, less than or equal to the predecessor's, greater than
 `predecessor + 1`, or that overflows or wraps around.
 
-In a branch-capable profile the Verifier MUST also reject when `branchId` or `branchNonce` is required by the profile but missing, when
-`branchId` is removed, when `branchId` changes without a valid, authorized branch-creation transition, when `branchId` does not recompute
-from the presented predecessor at a claimed branch-creation transition, or when `branchId` or `branchNonce` has a non-canonical
-representation or an invalid size.
+In a branch-capable profile `branchId` is unconditionally present in every PCA. The Verifier MUST also reject when `branchId` is missing or
+removed, when `branchId` changes without a valid, authorized branch-creation transition, when `branchId` does not recompute from
+`current.previousPcaHash` and `current.branchCreationNonce` at a claimed branch-creation transition, when `branchCreationNonce` is present at
+an ordinary hop or absent at a branch-creation hop, or when `branchId` or `branchCreationNonce` has a non-canonical representation or an
+invalid size. At a branch-creation transition the Verifier MUST apply the validation order of Section 2.4, evaluating the revocations and
+restrictions inherited from the predecessor's branch domain before accepting a new domain.
 
 A valid signature is necessary but not sufficient: the Verifier validates the concrete transition `PCA[n-1] -> PCA[n]`, not merely the
 signature of `PCA[n]`.
 
 ### 2.4 Branch Identification
 
-Branch-capable profiles add two fixed-size fields to every revocable PCA, and nothing else. They make `BRANCH-SUFFIX` (Section 3.1) a native
-strategy without carrying branch ancestry:
+Branch-capable profiles add one fixed-size persistent field (`branchId`) to every revocable PCA, plus one fixed-size nonce
+(`branchCreationNonce`) that appears only in branch-creation transitions. They make `BRANCH-SUFFIX` (Section 3.1) a native strategy without
+carrying branch ancestry:
 
 ```text
-branchId     fixed-size branch-domain identifier
-branchNonce  fixed-size random value, set at branch creation,
-             propagated unchanged within the branch domain
+branchId             fixed-size branch-domain identifier, present in every PCA,
+                     propagated unchanged within the branch domain
+branchCreationNonce  fixed-size random value, present only in the PCA that creates a branch
+                     domain, where it lets that transition's Verifier recompute the derivation;
+                     never propagated to descendants
 ```
 
 A PCA MUST NOT carry branch ancestry arrays, parent-branch lists, growing branch paths, full branch trees, or any unbounded branch metadata.
@@ -288,80 +296,112 @@ branchId        identifies the current branch domain
 **`branchId` is a derived commitment, not a free choice.** A freely chosen identifier would reintroduce, one level down, the
 intentional-collision problem the origin commitment removes for `lineageId`: branch identifiers travel in the clear, so a malicious executor
 at a different fan-out point of the same lineage could copy a victim branch's identifier and have a later `BRANCH-SUFFIX` strike the victim.
-`branchId` is therefore bound to its creation point:
+A non-root `branchId` is therefore bound to its creation transition:
 
 ```text
-branchId = H( "PIC-Branch-v0" || H(fanOutPredecessorPCA) || branchNonce )
+branchId = H( "PIC-Branch-v0" || current.previousPcaHash || current.branchCreationNonce )
 
-H(fanOutPredecessorPCA)  digest of the PCA at the fan-out (the shared predecessor of the siblings)
-branchNonce              fresh random value per child branch, generated by the fan-out creator,
-                         carried in the child PCA, propagated unchanged within the branch domain
+current.previousPcaHash      the digest of the creation PCA's predecessor, already checked to equal
+                             H(predecessor) in the same hop procedure (Section 2.3)
+current.branchCreationNonce  fresh random value generated by the authorized successor creating the
+                             branch domain, present only in that creation PCA
 ```
 
 This gives three properties:
 
 ```text
-Self-certifying    a Verifier holding the child PCA and its predecessor recomputes branchId and
-                   rejects a mismatch; no registry is needed for the immediate transition
-Non-copyable       reusing a victim branchId at a different fan-out point needs the same predecessor
-                   digest (a different fan-out point has a different digest) or a hash collision
-Sibling-distinct   distinct branchNonce values give distinct branchId values under one predecessor;
-                   an identical nonce gives the same branch domain, not two colliding domains
+Locally verifiable    a Verifier holding the creation transition recomputes branchId from
+                      previousPcaHash and branchCreationNonce; no registry is needed for the
+                      immediate transition
+Creation-point-bound  reusing a branchId at a different fan-out point requires the same predecessor
+                      digest or a hash collision; a branchId cannot be transplanted across creation
+                      points
+Verifiable binding    the construction makes the nonce-to-domain binding checkable; sibling
+                      distinctness itself remains a Prover obligation — distinct nonces under one
+                      predecessor give distinct domains, and an identical nonce gives the SAME
+                      domain, not a collision between distinct domains
 ```
 
-**Representation.** `branchNonce` SHOULD contain at least 128 random bits; 256 bits are RECOMMENDED. `branchId` has the fixed size of the
-profile hash output. The profile MUST define the canonical binary representation of both; no textual UUID representation is required. A
-128-bit nonce occupies 16 bytes and a 256-bit hash 32 bytes before serialization overhead: the added state is constant per PCA. `branchId`
-and `branchNonce` MUST be covered by the complete PCA signature.
-
-**Root branch.** Before any fan-out the profile MUST choose one representation and use it consistently: either a root `branchId` derived from
-PCA0 as its own creation point,
+**Root branch.** PCA0 carries the root branch domain identifier, derived from `lineageId`:
 
 ```text
-branchId = H( "PIC-Branch-v0" || H(PCA0-as-creation-point) || rootBranchNonce )
+rootBranchId = H( "PIC-Root-Branch-v0" || lineageId )
 ```
 
-or an absent `branchId` interpreted as the root branch domain.
+- No circularity: `lineageId` is already derived from `originCore`, which excludes the identifier and proof fields (Section 2.1).
+- No root nonce: the root domain is unique per lineage and has no siblings to distinguish.
+- Always present: `branchId` is unconditionally required in every PCA of a branch-capable profile, so the "required but missing" check is
+  unconditional and the root domain is directly targetable by `BRANCH-SUFFIX`.
+- Uniform validation: PCA0 validation recomputes `rootBranchId` from the recomputed `lineageId`; every later hop uses the ordinary equality
+  or creation-derivation check.
 
-**Fan-out.** At a fan-out point each distinct sibling branch receives a fresh `branchNonce`, hence a fresh derived `branchId`:
+Anyone can *compute* the `rootBranchId` of a known lineage; this is consistent with the rule that knowledge of `lineageId`, `branchId`, or
+`fromCounter` MUST NOT by itself authorize revocation (Section 5.1).
+
+**Representation.** The persistent added state is one hash-sized field, `branchId` (e.g. 32 bytes). `branchCreationNonce` appears only in
+creation transitions: it SHOULD contain at least 128 random bits, and 256 bits are RECOMMENDED (e.g. 16–32 bytes). The profile MUST define
+the canonical binary representation of both; no textual UUID representation is required. `branchId` (always) and `branchCreationNonce` (in a
+creation PCA) MUST be covered by the complete PCA signature.
+
+**Fan-out.** At a fan-out point each new branch domain is created by an authorized successor, which generates its own fresh
+`branchCreationNonce`, hence a fresh derived `branchId`:
 
 ```text
 PCA100
- ├── PCA101-A  branchNonce = nA  ->  branchId = H(dsep || H(PCA100) || nA)
- └── PCA101-B  branchNonce = nB  ->  branchId = H(dsep || H(PCA100) || nB)
+ ├── PCA101-A  branchCreationNonce = nA  ->  branchId = H(dsep || H(PCA100) || nA)
+ └── PCA101-B  branchCreationNonce = nB  ->  branchId = H(dsep || H(PCA100) || nB)
 ```
 
-The fan-out creator MUST generate each `branchNonce` freshly and MUST NOT reuse a `branchNonce` for different sibling branches of the same
-fan-out. Sibling distinctness is a **Prover obligation at the fan-out creator**: a per-hop Verifier in the incremental profile sees only one
-sibling per envelope and therefore cannot compare siblings directly. The derived construction makes duplicate sibling identifiers
-structurally impossible without nonce reuse, and nonce reuse under the same predecessor produces the same branch domain rather than a
-collision between distinct domains. Cross-sibling detection beyond this construction requires fan-out-point evidence or shared state and is
-not a per-hop Verifier requirement.
+Each authorized successor creating a new branch domain MUST generate a fresh random `branchCreationNonce` and MUST NOT deliberately reuse
+another sibling's nonce. Sibling distinctness is a **Prover obligation**: a per-hop Verifier sees only one sibling per envelope and cannot
+compare siblings directly. In the open-continuation model the predecessor does not coordinate or mint its successors' PCAs; each continuing
+executor generates its own nonce. Cross-sibling detection beyond this construction requires fan-out-point evidence or shared state and is not
+a per-hop Verifier requirement.
 
-**Branch-domain creation is a restricted operation.** This is the central security rule of the branch profile. Without it, branch revocation
-is evadable in one hop: an executor inside a revoked branch domain could perform a single-child fan-out, mint a fresh branch domain, and
-escape `BRANCH-SUFFIX` — and, since the base profile carries no branch ancestry, no downstream Verifier could relate the new domain to the
-revoked one. Therefore creating a new branch domain MUST be an authorized, authenticated operation. The base profile MUST restrict branch
-creation to parties authorized by the execution contract, the origin, or the branch creator's explicitly delegated authority. A nested
-fan-out that is NOT authorized to create a new branch domain MUST inherit the current `branchId` and `branchNonce`. Inheriting is the
-default; minting is the exception.
+**Branch-domain creation is a restricted operation.** This is the central rule of the branch profile. Without it, branch revocation is
+evadable in one hop: an executor inside a revoked branch domain could mint a fresh branch domain and escape `BRANCH-SUFFIX` — and, since the
+base profile carries no branch ancestry, no downstream Verifier could relate the new domain to the revoked one. Therefore creating a new
+branch domain MUST be an authorized, authenticated operation. The base profile MUST restrict branch creation to parties authorized by the
+execution contract, the origin, or the branch creator's explicitly delegated authority. A nested continuation that is NOT authorized to
+create a new branch domain MUST inherit the current `branchId` and MUST NOT carry a `branchCreationNonce`. Inheriting is the default; minting
+is the exception.
 
 A branch-domain change is valid only at a transition that both recomputes as a correct derivation from the presented predecessor and carries
 the profile-defined branch-creation authorization:
 
 ```text
-branchId == H( "PIC-Branch-v0" || H(predecessor) || current.branchNonce )
+branchId == H( "PIC-Branch-v0" || current.previousPcaHash || current.branchCreationNonce )
 AND  profile-defined branch-creation evidence is present and valid
 ```
 
 The profile MUST define that evidence — for example a branch-creation permission in the predecessor `executionContract`, or a signed grant
 from the branch or origin authority.
 
-**Backstop.** `BRANCH-SUFFIX` is exactly as strong as the branch-domain creation policy. `LINEAGE-SUFFIX` remains the escape-resistant
-cutoff: it strikes every branch of the lineage from the selected counter onward, regardless of `branchId`.
+**Anti-escape validation order.** A branch-creation transition is itself part of the causal future of the predecessor's branch domain. The
+Verifier MUST therefore evaluate inherited revocations and restrictions against the predecessor's domain, at the current counter, BEFORE
+accepting the creation:
 
-**Nested fan-out and the ancestry trade-off.** By default a nested fan-out inside an existing branch domain inherits the same `branchId`, and
-its children remain part of the same revocation domain — this is intentional:
+```text
+1. validate the predecessor and the transition linkage
+   (previousPcaHash, profile, lineageId, grantId, originIssuer, lineageCounter);
+2. apply the revocations and restrictions inherited from the predecessor — evaluated against the
+   predecessor's branchId and the current lineageCounter — including LINEAGE-SUFFIX, BRANCH-SUFFIX,
+   GRANT, and applicable dynamic restrictions and effective execution-contract requirements;
+3. only if step 2 permits continuation, determine whether this transition claims branch creation;
+4. validate the branch-creation authorization;
+5. validate the branchId derivation and accept the new branch domain.
+```
+
+A `BRANCH-SUFFIX(lineageId, A, fromCounter)` therefore blocks any continuation from domain A at or beyond `fromCounter`, including a
+continuation that attempts to create a new branch domain: the creation transition is evaluated in the predecessor's domain before the new
+`branchId` exists for matching purposes. Branch creation cannot be used to exit a revoked domain.
+
+**Backstop (defense in depth).** Beyond the validation order above, `LINEAGE-SUFFIX` remains the escape-resistant cutoff: it strikes every
+branch of the lineage from the selected counter onward, regardless of `branchId`. `BRANCH-SUFFIX` is as strong as the branch-domain creation
+policy; `LINEAGE-SUFFIX` does not depend on it.
+
+**Nested fan-out and the ancestry trade-off.** By default a nested continuation inside an existing branch domain inherits the same `branchId`,
+and its children remain part of the same revocation domain — this is intentional:
 
 ```text
 branchId = A
@@ -369,7 +409,7 @@ branchId = A
  └── child 2: branchId = A
 ```
 
-A profile MAY allow an *authorized* nested fan-out to create fresh branch domains:
+A profile MAY allow an *authorized* nested continuation to create fresh branch domains:
 
 ```text
 branchId = A
@@ -377,13 +417,13 @@ branchId = A
  └── child D: branchId = D   (authorized creation)
 ```
 
-The PCA still carries only the current `branchId` and `branchNonce`. The base profile MUST NOT require a `parentBranchId` field, a branch
-ancestry array, or a growing path. The base representation therefore keeps PCA state constant-size and directly supports revocation of the
-currently propagated branch domain; it does not carry recursive branch ancestry. When an authorized nested fan-out creates a new branch
-domain, causal ancestry between the old and new branch identifiers requires authenticated historical resolution if revocation must cross that
-boundary — exactly as historical selectors require resolution into native cutoffs (Section 4). The derived `branchId` helps here: it commits
-to the digest of its creation-point PCA, so an authenticated record of that single PCA suffices to prove which domain a new domain was minted
-from.
+The PCA still carries only the current `branchId`. The base profile MUST NOT require a `parentBranchId` field, a branch ancestry array, or a
+growing path. The base representation therefore keeps PCA state constant-size and directly supports revocation of the currently propagated
+branch domain; it does not carry recursive branch ancestry. When an authorized nested continuation creates a new branch domain, causal
+ancestry between the old and new branch identifiers requires authenticated historical resolution if revocation must cross that boundary —
+exactly as historical selectors require resolution into native cutoffs (Section 4). The derived `branchId` helps here: it commits to the
+digest of its creation-point PCA (its `previousPcaHash`), so an authenticated record of that single PCA suffices to prove which domain a new
+domain was minted from.
 
 ## 3. Revocation Strategies
 
@@ -484,6 +524,9 @@ PCA100
  ├── PCA101-A  branchId=A   revoked by BRANCH-SUFFIX(L, A, 101)
  └── PCA101-B  branchId=B   remains valid
 ```
+
+The root branch domain is directly targetable: its `branchId` is the derived `rootBranchId = H("PIC-Root-Branch-v0" || lineageId)`
+(Section 2.4), so `BRANCH-SUFFIX(lineageId, rootBranchId, fromCounter)` is a well-formed target like any other branch domain.
 
 ### 3.2 Identity and Evidence Selectors
 
@@ -588,6 +631,9 @@ KEY / DELEGATE / ATTESTATION / ISSUER
         v
    LINEAGE-SUFFIX records  ->  O(1) downstream verification
 ```
+
+When the historical position's branch domain is known, resolution MAY instead materialize `BRANCH-SUFFIX(lineageId, branchId, fromCounter)`,
+striking only that domain; it falls back to `LINEAGE-SUFFIX` when the branch domain is unknown or when the whole future must be revoked.
 
 The ordinary incremental revocation check remains O(1) in lineage length, assuming the applicable revocation state is already authenticated
 and indexed. O(1) does not include network retrieval, revocation-state synchronization, historical resolution, batch generation, or witness
@@ -753,7 +799,7 @@ receives the revocation.
 | --- | --- | --- |
 | The origin issuer | its own lineage | `AuthorizedLineageRevoker(lineageId, revocation.issuer, revocation.proof)` |
 | An executor at counter `k` | `fromCounter = k+1` (its own future); `fromCounter = k` only if policy allows | its own signed PCA or extract, or an authenticated index |
-| The branch creator | the branch it created, after its creation point | `AuthorizedBranchRevoker(lineageId, branchId, fromCounter, issuer, proof)` |
+| The branch creator | the branch it created, after its creation point | the branch-creation PCA as position witness + current control of its signing key (or equivalent profile-defined binding) |
 | The grant authority | the grant and its contract terms | `AuthorizedGrantRevoker(grantId, issuer)` |
 | The key controller | that key | control of the verification method |
 | The attestation issuer | that attestation | the attestation's issuer signature |
@@ -795,10 +841,13 @@ NOT authorize its revocation.
 **Branch revocation.** A `BRANCH-SUFFIX` MUST be accepted only when the revocation issuer is authorized to revoke the targeted branch domain,
 expressed as `AuthorizedBranchRevoker(lineageId, branchId, fromCounter, revocationIssuer, revocationProof)`. The profile MUST define how this
 binding is proven; possible authorities are the origin issuer (when policy grants branch-wide authority), the grant authority, the executor
-that created the branch, or an explicitly delegated branch revocation authority. The executor that created a branch MAY revoke the branch
-continuation after its creation point only when its authority and position are cryptographically proven: proving control of the fan-out
-predecessor PCA and knowledge of the corresponding `branchNonce` demonstrates creation of that branch domain (Section 2.4). Knowledge of
-`lineageId`, `branchId`, or `fromCounter` MUST NOT by itself authorize branch revocation.
+that created the branch, or an explicitly delegated branch revocation authority. Proof of branch creation consists of the branch-creation PCA
+itself: a valid PCA whose `branchId` correctly derives from its `previousPcaHash` and `branchCreationNonce`, whose signature verifies under
+the creator's key, and which carries valid branch-creation authorization (Section 2.4). The revocation issuer proves it is the creator by
+demonstrating current control of the key that signed that PCA (or an equivalent profile-defined binding), with the branch-creation PCA
+serving as the position witness. The nonce proves only that `branchId` was correctly derived from this creation transition; it proves nothing
+about who was authorized to perform it. Knowledge of `lineageId`, `branchId`, or `fromCounter` MUST NOT by itself authorize branch
+revocation.
 
 ### 5.2 Dynamic Restriction Requirements
 
@@ -867,11 +916,16 @@ forward-secure signatures.
 ### 5.6 Limitations
 
 - **Branch domains.** Branch-domain revocation is supported through one fixed-size derived `branchId` (Section 2.4). The base profile does
-  not carry recursive branch ancestry. When an authorized nested fan-out creates a new branch domain, causal ancestry between the old and new
-  branch identifiers requires authenticated historical resolution if revocation must cross that boundary. Nested children that inherit the
-  same `branchId` are intentionally revoked as one branch domain. `BRANCH-SUFFIX` is as strong as the branch-domain creation policy;
+  not carry recursive branch ancestry. When an authorized nested continuation creates a new branch domain, causal ancestry between the old
+  and new branch identifiers requires authenticated historical resolution if revocation must cross that boundary. Nested children that inherit
+  the same `branchId` are intentionally revoked as one branch domain. `BRANCH-SUFFIX` is as strong as the branch-domain creation policy;
   `LINEAGE-SUFFIX` strikes every branch of the matching lineage from the selected counter onward and remains the escape-resistant cutoff.
   Sibling branches with different `branchId` values are not struck by a `BRANCH-SUFFIX`.
+- **Domain aliasing.** An authorized successor that deliberately reuses another sibling's branch-creation nonce at the same fan-out point
+  obtains the same `branchId` and thereby joins that sibling's branch domain, accepting its shared revocation fate. This is voluntary domain
+  sharing, not a forgery: it requires branch-creation authorization and the same creation point, and harming the co-domain sibling still
+  requires a separately authorized revocation of the shared domain. Deployments that need strict per-successor isolation should rely on
+  per-branch authorization policy or `LINEAGE-SUFFIX` granularity.
 - **Privacy.** In the incremental profile, historical executor identities do not travel with the lineage: a Verifier sees the identities and
   evidence of the *presented* transition — the current executor identity, the immediate predecessor identity, and the current transition
   evidence — together with the persistent execution coordinates the profile requires; older executor identities are not carried by default.
@@ -879,8 +933,8 @@ forward-secure signatures.
   profile with unlinkability requirements MUST define a privacy-preserving representation or lookup mechanism without weakening revocation
   matching (for example pairwise or blinded identifiers, per-segment commitments, privacy-preserving lookup, or selective disclosure).
   Uniqueness is not mathematically absolute: the derived construction makes intentional cross-branch collision require a hash collision and
-  makes accidental collision negligible under the selected security level, and copying a `branchNonce` is harmless in itself, since under a
-  different fan-out predecessor it yields a different `branchId`.
+  makes accidental collision negligible under the selected security level, and copying a `branchCreationNonce` to a different creation point
+  yields a different `branchId` (deliberate reuse at the *same* creation point is the domain-aliasing case above).
 - **Incremental visibility.** Direct `KEY`, `DELEGATE`, and `ATTESTATION` see only the evidence in the received transition (Section 3.2);
   reaching the past requires Section 4.
 
