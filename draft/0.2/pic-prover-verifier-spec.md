@@ -97,7 +97,8 @@ unforgeable primitive. This document specifies the two components that realize i
 
 PIC **does not require a central server**. Depending on deployment topology and implementer choice, a chain can be validated *fully
 decentralized* — each hop carrying everything the next needs to verify it — or with the help of a trusted component such as a snapshot
-server. Section 5 describes these representations; the model and its guarantees are the same in either case.
+server. Section 5 describes these representations; the PIC *invariants* are the same in every case, but the concrete assurance and trust
+assumptions differ by profile (Sections 6.8, 7) — the profiles are not equivalent.
 
 PIC also draws a **clean line between the security model and transport**. The guarantees come from the signed continuity chain, not from how
 it travels: an implementation MUST NOT rely on the transport — a TLS session, a network perimeter, a message bus — to obtain them. Transport
@@ -459,13 +460,18 @@ Continuing the running scenario, the backup service performing `BACKUP` produces
 The Prover MUST check its own PoR before proceeding: if the executor does not satisfy the predecessor execution contract, or
 `previousPcaHash` does not match the predecessor, or the challenge response is not built from the predecessor's challenge, the PoR is
 *invalid* and the Prover MUST stop — a PCA carrying an invalid PoR is rejected at the next hop anyway. The predecessor's challenge is
-*single-use* by default (Section 6.1), which is what stops a public predecessor PCA from being replayed as a fresh continuation.
+*single-use* by default (Section 6.1): it prevents replay within a Verifier's state or a coordinated system, but does not guarantee global
+uniqueness across independent Verifiers.
 
-**Continuation is bearer by default.** Because the PCA and its challenge travel in the clear, *any* executor that observes the PCA and holds
-a conforming attestation can produce a valid successor with its own key — the challenge proves it saw the PCA, not that it was chosen. A
-profile narrows this with a continuation `binding` (Section 6.1) — audience-, request-, or successor-bound — and with the request binding
-above, which ties the authority to a specific action. Absent such binding, treat a continuation as a bearer capability bounded only by
-attenuation.
+**Continuation is open by default.** Because the PCA and its challenge travel in the clear, *any* executor that observes the PCA and holds a
+conforming attestation can produce a valid successor with its own key — the challenge proves it saw the PCA, not that it was chosen. This
+*open* continuation is the core behavior of the N+1 case, where the successor is unknown at delegation time. What is executed is still pinned:
+the `request` block fixes the concrete action, and the executed-vs-signed rule holds **unconditionally** (Section 3.3) — an executor cannot
+sign one request and then change target, tenant, or payload at execution. Constraints on *who* may continue — a known recipient, key, or
+channel — are extension profiles, out of scope here (Section 6.6).
+
+**Out of scope.** The canonical form of the `request`, digest construction, streaming and partial payloads, and request-binding construction
+are defined by a separate specification. The core keeps only the mandatory executed-vs-signed check (Section 3.3).
 
 > **Note — proof mechanism agility.** This hash-and-signature construction is a *non-normative example*, chosen to make the model easy to
 > follow. Implementations MAY realize the PoR and the PCA integrity protection with other mechanisms — signed hash chains, Merkle proofs,
@@ -652,7 +658,7 @@ following checks **in order** and MUST reject the whole chain if any fails:
    `invariants` attenuated, and the `executionContract` checked all belong to **that same** predecessor: they MUST be one concrete
    transition, never fields stitched together from different PCAs;
 3. **continuation** — the `continuationResponse` carries the predecessor's emitted challenge, the challenge is unexpired and, when
-   `single-use`, has not already been consumed, and the declared `binding` is satisfied (Section 6.1);
+   `single-use`, has not already been consumed (Section 6.1);
 4. **attestation** — the embedded executor attestation is valid: its issuer signature verifies, the issuer is trusted for the asserted
    attributes, it is within its validity period, and its `subject` matches `executor`, which matches the key that signed the PCA;
 5. **conformance** — the attested attributes satisfy the predecessor `executionContract` under the profile's conformance function
@@ -660,15 +666,18 @@ following checks **in order** and MUST reject the whole chain if any fails:
 6. **non-expansion** — the `invariants` are equal to or more restrictive than the predecessor `invariants` under the profile's attenuation
    order (Section 4);
 7. **temporal** — the PCA is within its `issuedAt` / `expiresAt` window and that window is contained in the predecessor's (Section 6.3);
-8. **request binding** — the PoR `request` is well-formed and, when the predecessor's continuation is `request-bound` (Section 6.1), its
-   `operation`, `target`, and digests match the request being served.
+8. **request match** — the operation, target, tenant, parameters, and digests actually served or executed match those signed in the PoR
+   `request` (Section 2.3); mandatory in every profile (see enforcement below).
 
 A valid signature establishes *integrity*, not *semantic validity*: checks 2–8 are separate and the Verifier MUST NOT skip them because the
 signature verified. The Verifier does **not** trust that the Prover already performed these checks; it repeats them independently.
 
-**Enforcement is atomic with authorization.** A verified PCA authorizes the *signed* action, not a different one. The reference monitor MUST
-verify that the operation, target, and parameters actually executed match those bound in the PoR `request` (Section 2.3), and MUST refuse an
-action that differs — even if the PCA verified. Verifying the chain and permitting the act are one step, not two.
+**Executed-vs-signed, always.** Independently of the profile — *open* included — a verified PCA authorizes the *signed* action and no other:
+the reference monitor MUST verify that the operation, target, tenant, parameters, and digests actually executed match those bound in the PoR
+`request` (Section 2.3), and MUST refuse any action that differs, even if the PCA verified. Signing one request and executing another is
+always a violation. This is distinct from *who* may continue (continuation is open, check 3) and from *whether* policy allows the action:
+authorizing the concrete action against the authority context is a profile or PDP decision (Section 4), not a core rule — the core requires
+only non-expansion (Section 4.1) and this executed-vs-signed match.
 
 This is where the cross-lineage composition of Section 1.4 fails: an `invariants` block with privileges absent from the predecessor fails
 *non-expansion* (6), and a PoR that does not answer the predecessor's challenge fails *continuation* (3) or *predecessor binding* (2). Such
@@ -810,21 +819,15 @@ The `continuation` block declares how a challenge may be consumed:
     "challenge": "base64url-random-256-bit-value",
     "mode": "single-use",
     "maxUses": 1,
-    "expiresAt": "2026-07-17T10:06:00Z",
-    "binding": "request-bound",
-    "audience": "optional"
+    "expiresAt": "2026-07-17T10:06:00Z"
   }
 }
 ```
 
-`binding` selects **how narrowly** the continuation may be taken up; the default is the weakest, and each named profile strengthens it. A
-Verifier MUST enforce the declared binding:
-
-- **open** (bearer, default) — any executor with a conforming attestation that holds the challenge may continue (Section 2.3);
-- **audience-bound** — only an executor matching `audience` may continue;
-- **request-bound** — the successor's PoR MUST bind the same request (`operation`, `target`, digests; Section 2.3);
-- **successor-bound** — only a named or pre-registered successor key may continue;
-- **channel-bound** (optional) — the continuation is bound to a transport channel or key (Section 6.6).
+The `continuation` carries no recipient selector. In the core, continuation is **open**: any executor conforming to the predecessor's
+`executionContract` may continue, and the concrete action is always identified by the `request` block in the PoR (Section 2.3). `mode` and
+`maxUses` govern consumption, replay, and fan-out — not *who* may continue. Recipient-, key-, or channel-constrained continuations are future
+extension profiles (Section 6.6).
 
 For a `single-use` challenge, a Verifier MUST prevent it from being consumed twice, keeping state or an equivalent mechanism; this is what
 stops a public predecessor PCA from being replayed as a fresh continuation. Note the scope: `maxUses` enforced per Verifier is a *local*
@@ -888,10 +891,15 @@ is not claimed that Lean proves the security of a cryptographic implementation.
 
 ### 6.6 Proof of Possession (Optional)
 
-The minimal profile binds a hop to its executor through the PCA signature. A profile MAY strengthen this with a **proof of possession** of
-the request or channel — for example **DPoP** [[5]](#references), **HTTP Message Signatures** [[6]](#references), or an equivalent signed
-request binding — so that the continuation is tied not only to the executor's key but to the concrete request it answers. This narrows the
-gap further for implementers who want it; it is an extension, not a requirement of the core.
+The core binds a hop to its executor through the PCA signature and pins the action through the `request` block (Section 2.3). A profile MAY
+add a **proof of possession** of the request or channel — for example **DPoP** [[5]](#references), **HTTP Message Signatures**
+[[6]](#references), or an equivalent signed request binding — or otherwise constrain the recipient or channel. These are **not core
+continuation modes** and are **not needed for the N+1 model**, whose successor is unknown; they serve profiles that require additional
+presentation constraints.
+
+> Profiles MAY define recipient- or channel-constrained continuations when the successor or presentation key is known in advance. Such
+> profiles remain PIC-compatible but do not address the unknown-successor case that motivates the core N+1 model, and are outside the scope
+> of this specification.
 
 ### 6.7 Transport Separation and Confidentiality
 
@@ -902,10 +910,10 @@ including the result of a command, and attempt interception. That is a transport
 
 PIC is carrier-agnostic: the same chain runs over HTTP, over messaging systems such as Apache Kafka, or over any other transport. For
 messaging in particular, channels SHOULD be encrypted. A *plain outsider* who reads a PCA cannot continue it — minting a valid successor
-needs a conforming attestation. But under the **open (bearer) default** (Section 2.3), an authorized or compromised insider that observes the
-PCA *can* continue it; what limits who may continue is the continuation `binding` (Section 6.1) and the request binding, not transport
-secrecy. Encryption here protects payload confidentiality and reduces the man-in-the-middle surface — it is not a source of the model's
-integrity, and it is not what prevents continuation.
+needs a conforming attestation. But in the **open core** (Section 2.3), any conforming executor that observes the PCA *can* continue it: the
+core does not restrict *who* continues. What it does pin is the *action* (the request binding) and the fact that authority cannot grow
+(non-expansion); constraints on recipient or channel are future profiles (Section 6.6). Encryption here protects payload confidentiality and
+reduces the man-in-the-middle surface — it is not a source of the model's integrity, and it is not what prevents continuation.
 
 ### 6.8 Incremental Verification and Trusted Hops
 
@@ -966,9 +974,10 @@ aspiration.
 
 - **No implicit trust from network location.** Authorization comes from the signed continuity chain, never from where a request originates. A
   caller inside the perimeter has exactly the authority its lineage carries, and no more (Section 6.7).
-- **Every hop is verified explicitly.** No step is trusted because a previous one was: the Verifier re-validates the whole chain — signature,
-  predecessor link, challenge, attestation, conformance, non-expansion, time — at every hop (Section 3.3), and never assumes the Prover
-  already did.
+- **Every hop is verified, never assumed.** No step is trusted because a previous one was: the Verifier re-checks the transition it holds —
+  signature, predecessor link, challenge, attestation, conformance, non-expansion, time (Section 3.3) — and never assumes the Prover already
+  did. The full-chain profile re-checks *every* hop; the incremental profile re-checks the immediate transition and trusts prior verifiers
+  inductively (Section 6.8).
 - **Least privilege by construction.** Authority only attenuates; each hop carries the smallest context it needs and can never regain what an
   ancestor dropped (Section 2.4). A privilege absent from the origin cannot appear anywhere downstream.
 - **Assume breach, contain it.** A buggy or compromised executor can act arbitrarily in its own step, but it cannot propagate an invalid
