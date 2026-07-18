@@ -822,8 +822,10 @@ bob#key-1
 
 which yields `LINEAGE-SUFFIX(L1, 1)`, `LINEAGE-SUFFIX(L8, 27)`, `LINEAGE-SUFFIX(L9, 4)`. The index MUST be authenticated, MUST bind the
 selector to the position, and MUST have verifiable integrity; an unauthenticated log MUST NOT be treated as sufficient. It MAY be used to
-generate position witnesses. It is not the full-chain profile, does not require keeping all PCA bytes, and keeps the ordinary downstream path
-O(1) after materialization. Retention, access control, and privacy are responsibilities of the deployment or the applicable profile.
+generate position witnesses. A deployment intending branch-selective materialization SHOULD also record the authenticated `branchId` of each
+position; an index that does not record it supports only lineage-wide cutoffs, because Section 4.1 requires an authenticated branch binding
+for `BRANCH-SUFFIX` materialization. It is not the full-chain profile, does not require keeping all PCA bytes, and keeps the ordinary
+downstream path O(1) after materialization. Retention, access control, and privacy are responsibilities of the deployment or the applicable profile.
 
 ### 4.5 Not Carrying Full History
 
@@ -947,8 +949,11 @@ matching consistently with `ApplicableRestriction`. Both `AUTHORITY` and `EXECUT
 ```
 
 ```json
-{ "strategy": "EXECUTION-CONTRACT", "target": { "lineageId": "L1", "branchId": "B1", "fromCounter": 42, "executionModels": ["agentic"] } }
+{ "strategy": "EXECUTION-CONTRACT", "target": { "lineageId": "L1", "branchId": "B1", "fromCounter": 42, "remove": { "executionModel": ["agentic"] } } }
 ```
+
+The `remove` wrapper makes the restriction direction explicit: the named execution model is removed from the effective execution contract,
+not declared as allowed. (`AUTHORITY` needs no wrapper: its `operations` are, by definition, the values removed from effective authority.)
 
 The scopes differ in effect:
 
@@ -977,6 +982,14 @@ profile-defined rule. Any profile-defined inheritance rule MUST be explicit, aut
 introducing implicit or unbounded branch ancestry; the base profile SHOULD NOT imply recursive restriction inheritance across branch-domain
 changes. Branch-domain scope, lineage-wide scope, and grant-wide scope remain distinct, and sibling branches carrying a different `branchId`
 remain unaffected by a branch-scoped restriction unless another applicable lineage-, grant-, or sibling-specific restriction matches them.
+
+Unlike `BRANCH-SUFFIX`, which categorically rejects a matching creation transition under the anti-escape validation order of Section 2.4, a
+branch-scoped dynamic restriction affects branch creation through the resulting effective authority or effective execution contract. It may
+therefore prevent the transition when the restricted operation, executor, environment, execution model, or branch-creation permission is no
+longer allowed. If the creation transition remains permitted and is validly accepted, the new domain does not automatically inherit a
+restriction scoped only to the predecessor `branchId`, unless the restriction is separately materialized for the new `branchId` or inherited
+through an explicit profile-defined rule. This asymmetry is intentional: it follows from the selected restriction scope and from the absence
+of recursive branch ancestry in the base profile.
 
 ### 5.3 Monotonicity
 
@@ -1025,6 +1038,14 @@ forward-secure signatures.
   sharing, not a forgery: it requires branch-creation authorization and the same creation point, and harming the co-domain sibling still
   requires a separately authorized revocation of the shared domain. Deployments that need strict per-successor isolation should rely on
   per-branch authorization policy or `LINEAGE-SUFFIX` granularity.
+- **Restriction scope across domain creation.** A dynamic restriction scoped only to one `branchId` does not automatically match descendants
+  of a newly created branch domain. The creation transition remains subject to that restriction while it is evaluated in the predecessor
+  domain and may be rejected when the resulting effective authority or execution contract does not permit it. If the transition is validly
+  accepted, descendants in the new domain are not subject to the predecessor-domain restriction unless it is materialized for the new
+  `branchId`, expressed at lineage or grant scope, or inherited through an explicit profile-defined rule (Section 5.2). This does not mean the
+  new domain regains authority: it may still be constrained by signed attenuation, lineage-scoped restrictions, grant-scoped restrictions,
+  other branch-specific restrictions, and execution-contract restrictions. Issuers that intend a restriction to cover the causal future across
+  authorized domain changes SHOULD use lineage or grant scope, or define explicit authenticated inheritance.
 - **Privacy.** In the incremental profile, historical executor identities do not travel with the lineage: a Verifier sees the identities and
   evidence of the *presented* transition — the current executor identity, the immediate predecessor identity, and the current transition
   evidence — together with the persistent execution coordinates the profile requires; older executor identities are not carried by default.
