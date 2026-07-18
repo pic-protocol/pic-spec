@@ -480,7 +480,7 @@ are defined by a separate specification. The core keeps only the mandatory execu
 > continuation challenge, non-expansion of the invariants, and integrity of the successor PCA as a whole.
 >
 > Carrying the attestation in the clear is a property of this minimal profile only. **Selective disclosure** — revealing just the attributes
-> the execution contract requires — is out of scope here and is a separate implementation concern, but it is **RECOMMENDED** for production
+> the execution contract requires — is out of scope here and is a separate implementation concern, but it is RECOMMENDED for production
 > profiles that handle sensitive attributes (Section 6.4).
 
 ### 2.4 Invariant Monotonicity
@@ -491,7 +491,7 @@ Once the PoR holds, the Prover determines the successor invariants. At each hop 
 - every entry in **`operations`** MUST also be present in the predecessor `operations`;
 - every constraint of the predecessor **`executionContract`** MUST be preserved or strengthened.
 
-A Prover **MAY** drop operations, add constraints, or shorten the validity period. A Prover **MUST NOT** add operations, relax constraints,
+A Prover MAY drop operations, add constraints, or shorten the validity period. A Prover MUST NOT add operations, relax constraints,
 or extend the validity period. *What is dropped at a hop is lost:* no later hop can reintroduce it.
 
 The predecessor **PCA0** (Section 1.8) granted `READ-ALL` and `BACKUP`. The backup service needs only read access downstream, so it drops
@@ -525,7 +525,6 @@ and the one signature:
 {
   "proofOfRelationship": { "…": "the PoR payload of Section 2.3" },
   "invariants":          { "…": "the attenuated invariants of Section 2.4" },
-  "chain":               { "…": "prefix representation — profile choice (Section 5)" },
   "continuation": {
     "challenge": "base64url-random-256-bit-value",
     "mode": "single-use",
@@ -541,14 +540,9 @@ and the one signature:
 }
 ```
 
-One signature covers everything: predecessor reference, challenge response, executor evidence, attenuated invariants, the `chain`
-representation, the emitted `continuation`, and the temporal fields. It is *attributable* — the whole hop is signed by the executor that
-made it — and *tamper-evident*: changing any field invalidates it.
-
-`chain` holds the **prefix representation**, and its content is a profile choice (Section 5): in the incremental profile it is a bare
-reference or omitted — the predecessor bytes travel in the envelope — while snapshot, full-chain, and succinct-proof profiles put a snapshot
-reference, the predecessor list, or a succinct proof here. It never embeds the whole envelope recursively (that would be quadratic); it is
-the compact evidence a Verifier uses to reach back beyond the immediate predecessor. This is what forbids the cross-lineage composition of Section 1.4: a PoR that responds to one lineage's
+One signature covers everything: predecessor reference, challenge response, executor evidence, attenuated invariants, the emitted
+`continuation`, and the temporal fields. It is *attributable* — the whole hop is signed by the executor that made it — and *tamper-evident*:
+changing any field invalidates it. This is what forbids the cross-lineage composition of Section 1.4: a PoR that responds to one lineage's
 challenge cannot be paired with `invariants` drawn from another and still verify, so the combined document *cannot be validated as a
 conforming continuation*. The only other signature a Verifier checks is the issuer's, inside the embedded attestation; that one belongs to
 the attestation, not to PIC. Profiles that must transport or verify the PoR or the invariants independently MAY add internal signatures
