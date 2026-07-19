@@ -141,6 +141,10 @@ convenient (Section 2.3).
 | Trusted | out of scope | decentralized: local Prover and Verifier at every hop |
 | Untrusted | a real threat | centralized: Trust Plane with the lineage history |
 
+The same segmentation drives the guardrail deployment modes of the
+[PIC Execution Guardrail Specification](./pic-lineage-guardrail-spec.md) (Section 3.4): trusted segments may operate hops in non-sandbox
+mode; untrusted or high-risk segments use sandbox mode.
+
 ## 4. Hybrid Enterprise Architectures
 
 This section is non-normative. Enterprise deployments are rarely uniform: one execution may cross trusted and untrusted segments in the

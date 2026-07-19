@@ -429,7 +429,8 @@ The agent now holds two authorities. It constructs a Multi-Lineage Execution car
                           S3
 ```
 
-Lineage Execution A authorizes `BACKUP`; Lineage Execution B authorizes `WRITE-S3`. The agent proposed their joint participation; the
+Lineage Execution A authorizes `BACKUP`; Lineage Execution B authorizes `WRITE-S3`. B authorizes the external S3 write; A supplies the
+independently preserved authority context under which that write is proposed. The agent proposed their joint participation; the
 guardrail did not create that relationship and does not merge A and B. Configured policy determines whether the proposed transition is
 permitted, the guardrail enforces permit or deny, and every externally relevant action remains attributable to a specific Lineage
 Execution. Participation, not authority mixing.
@@ -497,10 +498,10 @@ effect; an implementation that permits an unmediated external path from the exec
 > A **sandbox** is a fixed, trusted execution boundary that encloses an executor. The executor has no path to external effect except
 > through the boundary, and it is the sandbox — not the executor — that invokes the Execution Guardrail on every boundary crossing.
 
-This closes a gap Section 1.1 left open: a purely local physical action may be invisible to the protocol. Within a correctly implemented
-sandbox, an action that never crosses the boundary has no external effect, and an action with external effect necessarily crosses the
-boundary — and is therefore mediated. The claim stops there: the sandbox does not make the executor behave; it makes external effect
-impossible without mediation.
+This closes a gap Section 1.1 left open: a purely local physical action may be invisible to the protocol. Within the external-effect
+channels governed by this execution model, an action that does not cross the sandbox boundary cannot produce an external effect through
+those channels, and an action with such an effect necessarily crosses the boundary — and is therefore mediated. The claim stops there:
+the sandbox does not make the executor behave correctly; it makes governed external effect impossible without mediation.
 
 ### 2.4 Discrete Multi-Hop Execution
 
@@ -553,7 +554,7 @@ LN ----+    |                 |     +-------------+           +----> LN'
                                            v
                                            X
 
-Every external effect crosses the sandbox boundary.
+Every governed external effect crosses the sandbox boundary.
 Every crossing passes through the guardrail.
 ```
 
@@ -563,7 +564,7 @@ this specification.
 ### 2.7 Model Summary
 
 - **executor** — untrusted, deterministic or non-deterministic; the source of bugs and unwanted decisions;
-- **sandbox** — fixed, trusted execution boundary; the only path to external effect; invokes the guardrail on every crossing;
+- **sandbox** — fixed, trusted execution boundary; the only path to governed external effect; invokes the guardrail on every crossing;
 - **Execution Guardrail** — evaluates every proposed crossing against configured policy (Section 1.3); permits or denies;
 - **Lineage Executions** — the secured authority inputs and outputs of each hop (Sections 1.1, 1.2); never merged, and every externally
   relevant action keeps an authorizing Lineage Execution.
@@ -582,8 +583,9 @@ At each hop the sandbox receives a Multi-Lineage Execution as input and emits a 
 No new machinery is required for PCA validity: each PCA remains subject to the
 [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), and an invalid PCA is rejected by a conforming PIC Verifier
 function. What sandbox mode adds is a guarded-crossing acceptance requirement through the guardrail envelope (Sections 3.3 and 3.4),
-without changing PCA validity, PoR, or non-expansion. What this specification governs is the output: the proposed crossing that would
-become the authority state of the successor (Section 1.1). That is what must pass through the guardrail.
+without changing PCA validity, PoR, or non-expansion. What this specification governs is the proposed output crossing presented to the
+successor hop: it may carry several independently attributable Lineage Executions, and it does not become a combined authority state.
+That is what must pass through the guardrail.
 
 ### 3.2 Selection
 
@@ -625,11 +627,10 @@ Multi-Lineage Execution     authorities at the hop
 
 One question remains: the successor receives Lineage Executions — how does it know they passed through a guardrail? Because a permitted
 crossing is delivered in a **guardrail envelope**: an envelope, signed by the guardrail, carrying the validated Lineage Executions of the
-crossing. It is the guarded counterpart of the forwarding envelope of the
-[PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) (Section 2.5): same construct, different signer. A guardrail
-envelope carries the Lineage Executions of the permitted crossing and binds the guardrail decision to the crossing context defined by the
-applicable profile; the normative profile defines which crossing elements are bound, including any required destination, action,
-participant, freshness, or replay-protection information.
+crossing. It follows the forwarding-envelope pattern of the
+[PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) (Section 2.5), but it is issued by the guardrail and binds the
+guardrail decision to the crossing context defined by the applicable profile; the normative profile defines which crossing elements are
+bound, including any required destination, action, participant, freshness, or replay-protection information.
 
 The guardrail signing capability lies outside the executor's reach and within the trust domain of the sandbox and guardrail enforcement
 components; an executor that can access or invoke it independently of the enforced guardrail decision violates this trust assumption.
@@ -657,6 +658,19 @@ BYPASS ATTEMPT
 
 ATTACKER ---- direct call, no envelope ---->  EXECUTOR N+1
                                               rejects the crossing
+```
+
+For a target that does not validate guardrail envelopes — a conventional storage or network service — the sandbox is responsible for
+materializing or forwarding exactly the crossing permitted by the guardrail, without returning control of that crossing to the executor:
+the action, destination, participants, and other context bound to the permit decision are not replaceable by the executor after the
+decision. For a PIC-aware successor, the envelope itself provides this binding.
+
+```text
+guardrail permits action X          not:   guardrail permits action X
+        |                                          |
+        v                                          v
+sandbox performs or                        executor substitutes action Y
+forwards action X
 ```
 
 How guardrail authorities are established and recognized — key generation, storage, attestation, rotation, revocation, and algorithm
