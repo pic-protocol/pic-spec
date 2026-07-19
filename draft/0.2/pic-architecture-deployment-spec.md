@@ -19,9 +19,9 @@ This document is the **PIC Architecture and Deployment Specification**, a subord
 [PIC Specification](./pic-spec.md). It describes how the components defined by the
 [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) and the
 [PIC Execution Guardrail Specification](./pic-lineage-guardrail-spec.md) are arranged and operated in concrete systems: the two deployment
-architectures — **centralized**, where a trusted central server, the **Trust Plane**, acts as Prover and Verifier and holds the lineage
-history, and **decentralized**,
-where every hop proves and verifies locally — their fit to trusted and untrusted environments, hybrid enterprise compositions of the two,
+architectures — **centralized**, where a trusted central server, the **Trust Plane**, validates every transition against the lineage
+history it holds, and **decentralized**, where every hop proves and verifies locally — their fit to trusted and untrusted environments,
+hybrid enterprise compositions of the two,
 and interoperability with existing token infrastructures through an OAuth token-exchange profile to be defined in a future specification.
 
 This revision describes the architectures; the normative deployment requirements will be developed in forthcoming revisions. This document
@@ -69,10 +69,13 @@ This section is non-normative. Two deployment architectures cover the space.
 
 ### 2.1 Centralized
 
-A trusted central server — the **Trust Plane** — acts as PIC Prover and PIC Verifier for every hop
-([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 2 and 3): workloads submit their transitions, the Trust
-Plane constructs and validates the proofs, and it holds the lineage history. The rest of this document uses Trust Plane for the
-centralized trusted server.
+In the centralized architecture the hops work exactly as in the decentralized one — each executor constructs, signs, and remains the
+signer of its own PCA — but every proposed transition is submitted to a trusted central server, the **Trust Plane**, which acts as the
+Verifier of the `n+1` transition ([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 3 and 5.2): it
+validates the transition against the lineage history it holds and may add its own signature — a validation attestation, receipt, envelope,
+or checkpoint. That signature attests Trust Plane validation; it does not replace, and must not be interpreted as, the executor signature.
+Where a profile lets the Trust Plane materially construct a PCA, the final signature is still produced by the executor or through an
+explicit, normatively defined signing delegation. The rest of this document uses Trust Plane for the centralized trusted server.
 
 ```text
 +--------+        +--------+        +--------+
@@ -83,9 +86,13 @@ centralized trusted server.
        v               v               v
       +---------------------------------+
       |           TRUST PLANE           |
-      |     Prover + Verifier           |
-      |     holds the lineage history   |
+      |   validates every transition    |
+      |   signs validation attestations |
+      |   holds the lineage history     |
       +---------------------------------+
+
+executors sign their own PCAs;
+the Trust Plane signs its validation
 ```
 
 ### 2.2 Decentralized
@@ -123,7 +130,7 @@ limited.
 
 | Architecture | Central component | History | Per-hop cost | Consecutive collusion |
 | --- | --- | --- | --- | --- |
-| Centralized | Trust Plane (Prover + Verifier) | held by the Trust Plane | O(1) | resisted |
+| Centralized | Trust Plane (Verifier + validation attestation) | held by the Trust Plane | O(1) | resisted |
 | Decentralized | none | not carried | O(1) | not resisted |
 | Decentralized, full history in the chain | none | carried in every PCA chain | grows without bound | resisted — viable only for very limited, minimal implementations |
 
@@ -131,10 +138,11 @@ limited.
 
 This section is non-normative. The choice between the two architectures follows the environment.
 
-In a **trusted environment** — hops operated by one accountable party, or by parties that trust each other — collusion among hops is out
-of scope: the decentralized architecture fits, with no central dependency. In an **untrusted environment** collusion is a real threat: the
+In a **trusted environment** — one whose hops the deployment threat model accepts as trustworthy — collusion among hops is out of scope:
+the decentralized architecture fits, with no central dependency. In an **untrusted environment** collusion is a real threat: the
 centralized architecture fits, because the Trust Plane holds the history; carrying the full history in the chain remains possible but not
-convenient (Section 2.3).
+convenient (Section 2.3). Trust is a property of the deployment threat model, its trust anchors, and the adopted profile — a single
+administrative domain is not trusted by itself.
 
 | Environment | Collusion | Architecture |
 | --- | --- | --- |
@@ -163,14 +171,23 @@ segment, hops use the Trust Plane. The PIC invariants are the same everywhere
                                   |          v                v
                                   |     +-------------------------+
                                   |     |       TRUST PLANE       |
-                                  |     |  Prover + Verifier      |
+                                  |     |  validates transitions  |
                                   |     +-------------------------+
 ```
 
+The segment boundary is an assurance boundary. The receiving Trust Plane is not required to retroactively validate the entire preceding
+trusted segment unless the selected profile requires full-history validation: assurance for the preceding prefix derives from the trust
+domain that produced it — presented at the boundary as a checkpoint, snapshot, authenticated state commitment, or full history — and
+accepted under the receiving side's trust policy. Trust Plane guarantees begin at the accepted boundary. How validation state transfers
+across Trust Plane boundaries — trust anchors, checkpoint signatures, prefix coverage, key rotation, revocation, trust-domain recognition,
+optional full-history verification or succinct proofs, and coordinated single-use across domains — will be defined by a future Trust Plane
+federation profile.
+
 ### 4.1 Service Meshes
 
-A service mesh — one administrative domain operating workload identity, mutual authentication, and traffic policy — can be considered a
-trusted environment: hops inside the mesh verify locally, as in the trusted segment above.
+A service mesh — one administrative domain operating workload identity, mutual authentication, and traffic policy — may be classified as a
+trusted environment when the deployment threat model accepts it as such: hops inside the mesh then verify locally, as in the trusted
+segment above.
 
 ## 5. Interoperability
 

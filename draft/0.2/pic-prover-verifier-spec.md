@@ -468,6 +468,12 @@ The Prover MUST check its own PoR before proceeding: if the executor does not sa
 *single-use* by default (Section 6.1): it prevents replay within a Verifier's state or a coordinated system, but does not guarantee global
 uniqueness across independent Verifiers.
 
+**What the PoR proves.** The PoR does not prove physical, counterfactual, or prior-designation causation. Taken in isolation, the challenge
+response proves only that the successor observed and holds the predecessor PCA. The complete PoR, validated together with the checks of
+Section 3.3, proves **PIC execution causality**: the current hop is a valid, contract-conforming, non-expansive continuation of exactly one
+predecessor, bound to the concrete request, and therefore constitutes the next element (`n+1`) of that PIC execution. This is the causal
+linkage of the model [[1]](#references), the property the Lean formalization verifies [[2]](#references).
+
 **Continuation is open by default.** Because the PCA and its challenge travel in the clear, *any* executor that observes the PCA and holds a
 conforming attestation can produce a valid successor with its own key — the challenge proves it saw the PCA, not that it was chosen. This
 *open* continuation is the core behavior of the N+1 case, where the successor is unknown at delegation time. What is executed is still pinned:
@@ -840,6 +846,14 @@ bound — it does not cap total uses across independent Verifiers. A global limi
 successors continue the same predecessor, which is permitted provided each branch references that predecessor, each branch is individually
 valid, and no branch composes authority from — or recovers authority attenuated by — another branch. Authorized fan-out is therefore
 distinct from unauthorized replay: the difference is declared by `mode`/`maxUses` and enforced by the Verifier.
+
+Three consumption semantics are therefore distinct; the base decentralized profile provides only the first. **Local single-use**: the
+challenge is consumed once per Verifier state; independent Verifiers without shared state can each accept the same continuation.
+**Coordinated single-use**: the challenge is consumed once across Verifiers; it requires shared state or a coordinating component — the
+Trust Plane of the [PIC Architecture and Deployment Specification](./pic-architecture-deployment-spec.md), or a future federation profile.
+**Bounded multi-use (fan-out)**: reuse explicitly authorized and declared by `mode`/`maxUses`. A property that depends exclusively on local
+Verifier state MUST NOT be described as global single-use; replay never expands authority, and coordination adds only a bound on the global
+cardinality of continuations.
 
 The continuation challenge is **one** freshness mechanism, not a mandatory one. A profile MAY meet the same goal differently — a monotonic
 per-lineage counter, a server-issued single-use ticket, a bounded acceptance window (Section 6.3), or a transport-level anti-replay control

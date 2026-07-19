@@ -165,8 +165,9 @@ Each PCA continues exactly one predecessor.
 Authority only narrows.
 ```
 
-These properties make the confused deputy unrepresentable as a valid authority state. Distinct authorities may travel together in the same
-message or process; they remain logically distinct and are never merged. The formal definitions and proofs are in the PIC Model
+These properties structurally eliminate the confused deputy from the PIC state model: authority from one Lineage Execution cannot appear
+as a valid continuation of another. The claim is limited to valid PIC state and authority propagation; the physical boundary is stated
+below. Distinct authorities may travel together in the same message or process; they remain logically distinct and are never merged. The formal definitions and proofs are in the PIC Model
 [[1]](#references); the construction — Provers, Verifiers, and the PCA format — is defined by the
 [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), and revocation by the
 [PIC Revocation Specification](./pic-revocation-spec.md). This document builds on them and restates none of them.
@@ -251,7 +252,9 @@ execution model of Section 2.
 A Multi-Lineage Execution is a runtime carrier: it carries n >= 1 distinct Lineage Executions, and it has no authority of its own. With
 n = 1 it is simply a proposed transition under one Lineage Execution; with n >= 2 several authorities travel together. The name is
 intentional: Multi-Lineage Execution names the uniform runtime carrier used at a guarded crossing, whether it carries one Lineage
-Execution or several. The executor or calling system constructs it by selecting the participating Lineage Executions.
+Execution or several. The executor or calling system constructs it by selecting the participating Lineage Executions. The proposed
+transition consists exclusively of the concrete signed requests carried by the participating Lineage Executions, together with their
+declared participation context: a Multi-Lineage Execution introduces no additional request, executable authority, or unsigned action.
 
 ```text
 one Lineage Execution
@@ -415,7 +418,7 @@ The agent now holds two authorities. It constructs a Multi-Lineage Execution car
 | A: PCA1-A { BACKUP }                               |
 | B: PCA0-B { WRITE-S3 }                             |
 |                                                    |
-| proposed action: write the backup to S3            |
+| proposed action: WRITE-S3, the signed request of B |
 +====================================================+
                           |
                           v
@@ -768,6 +771,10 @@ determines whether the proposed crossing is permitted
 EXECUTION GUARDRAIL
 enforces the resulting permit or deny decision
 ```
+
+The executed-vs-signed rule of the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) (Section 3.3) applies per
+participating Lineage Execution: each executed operation must match the signed request of its own Lineage Execution and remains attributed
+to it. Policy authorizes joint participation only; it does not compose the authority sets into a common one.
 
 ### 4.2 Semantic Scopes
 
