@@ -46,7 +46,7 @@ Subordinate specifications:
 
 | Document | Description | Status | Date |
 | --- | --- | --- | --- |
-| [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) | Normative requirements for PIC Provers and Verifiers: the components that construct and validate Proofs of Continuity and enforce PIC invariants. | Draft 0.2 | 2026-07-15 |
+| [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) | Normative requirements for PIC Provers and Verifiers: the per-hop Proof of Relationship and successor-PCA construction, the ordered Verifier checks (including executed-vs-signed) that enforce the PIC invariants, authority as an abstract attenuation domain with a PDP boundary, and the chain representations — full hash chain, the snapshot hash chain it orients on, and succinct proofs. | Draft 0.2 | 2026-07-15 |
 | [PIC Revocation Specification](./pic-revocation-spec.md) | Revocation coordinates (`lineageId`, `grantId`, `lineageCounter`, `originIssuer`, and `branchId` in branch-capable profiles) and their hop-by-hop continuity, the requirements for turning a historical selector into a causal cutoff, and revocation-authorization and revocation-state requirements. | Draft 0.2 | 2026-07-18 |
 | [PIC Lineage Guardrail Specification](./pic-lineage-guardrail-spec.md) | A lineage is an *atomic* execution; an application execution is often composed of several atomic lineages that must participate together. Lineage guardrails **govern that cross-lineage composition** — which lineages may join into one application execution and the bounds it must respect — as governed participation, not authority mixing. | Draft 0.2 | 2026-07-19 |
 
