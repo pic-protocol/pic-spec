@@ -56,6 +56,15 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
     - [2.5 The Abstraction Step](#25-the-abstraction-step)
     - [2.6 Lineage Executions Through the Sandbox](#26-lineage-executions-through-the-sandbox)
     - [2.7 Model Summary](#27-model-summary)
+  - [3. Guarded Crossings](#3-guarded-crossings)
+    - [3.1 Input and Output](#31-input-and-output)
+    - [3.2 Selection](#32-selection)
+    - [3.3 The Guardrail Envelope](#33-the-guardrail-envelope)
+    - [3.4 Sandbox Mode](#34-sandbox-mode)
+  - [4. Guardrail Enforcement](#4-guardrail-enforcement)
+    - [4.1 Enforcement Order](#41-enforcement-order)
+    - [4.2 Semantic Scopes](#42-semantic-scopes)
+    - [4.3 Policies](#43-policies)
   - [7. Contributors](#7-contributors)
   - [8. Legal Notices](#8-legal-notices)
   - [References](#references)
@@ -548,7 +557,182 @@ this specification.
 - **Lineage Executions** — the secured authority inputs and outputs of each hop (Sections 1.1, 1.2); never merged, and every externally
   relevant action keeps an authorizing Lineage Execution.
 
-With the model in place, the normative sections of this specification define how crossings are represented, evaluated, and enforced.
+With the model in place, Section 3 describes how crossings are carried and Section 4 how the guardrail enforces them; the formal
+requirements remain deferred to the normative sections.
+
+## 3. Guarded Crossings
+
+This section is non-normative. It describes how Lineage Executions reach a hop, how the executor selects the ones that continue, and how
+the next hop knows that a crossing was guarded.
+
+### 3.1 Input and Output
+
+At each hop the sandbox receives a Multi-Lineage Execution as input and emits a Multi-Lineage Execution as output — n >= 1 on both sides.
+The input needs no new machinery: an invalid PCA is rejected by the PIC Verifier, as defined by the
+[PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md). What this specification governs is the output: the proposed
+crossing that would become the authority state of the successor (Section 1.1). That is what must pass through the guardrail.
+
+### 3.2 Selection
+
+The Lineage Executions of the output come from two sources:
+
+- the **input**: Lineage Executions that entered the hop;
+- the **environment**: authorities available at the hop, including origins the executor mints as a permissioned entity of its own
+  (Section 1.3, canonical example).
+
+Which ones the executor selects cannot be dictated from outside. A deterministic executor with a bug departs from any instruction; a
+non-deterministic executor may simply choose otherwise (Section 2.1) — and either way the result would still need verification. The model
+therefore does not force the selection: the executor selects freely, the sandbox guarantees that the selection reaches the guardrail
+(Section 2.3), and the guardrail decides whether it may cross.
+
+```text
+INPUT (n >= 1)              ENVIRONMENT
+Multi-Lineage Execution     authorities at the hop
+        |                        |
+        v                        v
++ - - - - - - - - - - - - - - - - - - - +
+|  SANDBOX                              |
+|                                       |
+|   the executor freely selects the     |
+|   Lineage Executions of the output    |
+|                                       |
++ - - - - - - - - - - - - - - - - - - - +
+                    |
+                    | proposed output:
+                    | Multi-Lineage Execution (n >= 1)
+                    v
+             +-------------+
+             |  GUARDRAIL  |
+             +-------------+
+```
+
+### 3.3 The Guardrail Envelope
+
+One question remains: the successor receives Lineage Executions — how does it know they passed through a guardrail? Because a permitted
+crossing is delivered in a **guardrail envelope**: an envelope, signed by the guardrail, carrying the validated Lineage Executions of the
+crossing. It is the guarded counterpart of the forwarding envelope of the
+[PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) (Section 2.5): same construct, different signer — the guardrail
+attests that it evaluated and permitted exactly this crossing.
+
+The envelope is what defeats bypass. An attacker that escapes a sandbox, or skips it entirely, can still call the next hop directly; the
+call arrives without an envelope — or with one not signed by a guardrail authority the receiver recognizes — and the receiving hop rejects
+it. As with invalid authority in Section 1.1, the failure is not prevented at the faulty hop; it is blocked at the next conforming one.
+
+```text
+GUARDED PATH
+
++-------------+   permit + sign   +------------------------------+
+|  GUARDRAIL  |------------------>|  GUARDRAIL ENVELOPE          |
++-------------+                   |  [ L1' ... LN' ] validated   |
+                                  +------------------------------+
+                                                 |
+                                                 v
+                                           EXECUTOR N+1
+                                accepts: the envelope is signed by
+                                a recognized guardrail authority
+
+
+BYPASS ATTEMPT
+
+ATTACKER ---- direct call, no envelope ---->  EXECUTOR N+1
+                                              rejects the crossing
+```
+
+How guardrail authorities are established and recognized is defined in the normative sections of this specification.
+
+### 3.4 Sandbox Mode
+
+A PIC-compliant hop may operate in **sandbox mode** or not. In sandbox mode it accepts only crossings delivered in a guardrail envelope;
+outside sandbox mode it also accepts a plain PCA, as defined by the
+[PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md). The mode changes only what the hop accepts: PCA validation, PoR,
+and non-expansion are identical in both.
+
+```text
+SANDBOX MODE                          NON-SANDBOX MODE
+------------                          ----------------
+accepts only crossings carried        accepts a plain PCA as well,
+in a guardrail envelope               per the Prover and Verifier
+                                      Specification
+```
+
+## 4. Guardrail Enforcement
+
+This section is non-normative. It describes the enforcement logic of the guardrail: validation first, then policy, then the enforced
+decision.
+
+### 4.1 Enforcement Order
+
+The guardrail enforces a proposed crossing in a fixed order:
+
+1. **validate** — every PCA of every participating Lineage Execution is validated per the
+   [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md); if any is invalid, deny is enforced without evaluating policy;
+2. **evaluate** — the configured policy is evaluated over the participating Lineage Executions;
+3. **enforce** — the decision, permit or deny, is enforced at the boundary (Section 1.3).
+
+```text
+proposed crossing
+        |
+        v
+validate every PCA ---- any invalid ----> enforce deny
+        |
+    all valid
+        |
+        v
+evaluate configured policy
+        |
+        v
+enforce permit / deny
+```
+
+### 4.2 Semantic Scopes
+
+Each Lineage Execution is tagged with **semantic scopes**: labels that describe the semantics of the authority it carries. A scope adds no
+authority — the operations a Lineage Execution can authorize remain those of its PCAs, and non-expansion is untouched; scopes exist only
+to inform the guardrail decision. The scope vocabulary is defined by policy governance (Section 1.3).
+
+```text
+LINEAGE EXECUTION A        LINEAGE EXECUTION B        LINEAGE EXECUTION C
+PCA1-A { BACKUP }          PCA0-B { WRITE-S3 }        PCA0-C { SHARE-PUBLIC }
+scope: data-protection     scope: data-protection     scope: external-sharing
+```
+
+### 4.3 Policies
+
+A policy is a rule over the scopes of the participating Lineage Executions: it expresses which semantic combinations may cross together.
+Whoever defines the policies defines the composition logic of the semantics; the guardrail enforces it (Section 1.3). A policy carries an
+effect and a condition — the condition is an expression over the participants and their scopes — and the decision defaults to deny: a
+crossing is permitted only if the condition of an applicable permit policy holds. An illustrative policy, with a CEL-like condition:
+
+```json
+{
+  "id": "policy-backup-pipeline-01",
+  "effect": "permit",
+  "appliesTo": { "crossing": "*" },
+  "when": "participants.all(l, 'data-protection' in l.scopes || 'ai-compliance' in l.scopes)"
+}
+```
+
+Against the scopes of Section 4.2:
+
+```text
+PROPOSED CROSSING 1: A + B
+
+A.scopes = [ data-protection ]     condition: true
+B.scopes = [ data-protection ]     condition: true
+
+every participant satisfies the condition   -> enforce permit
+
+
+PROPOSED CROSSING 2: A + C
+
+A.scopes = [ data-protection ]     condition: true
+C.scopes = [ external-sharing ]    condition: false
+
+C does not satisfy the condition            -> enforce deny
+```
+
+The policy language, the scope vocabulary, and how scopes are bound to a Lineage Execution are defined in the normative sections of this
+specification; the example — including its CEL-like condition language — is illustrative only.
 
 ## 7. Contributors
 
