@@ -25,6 +25,11 @@ defines the normative requirements for the two complementary components of Proof
 At every hop, a node acts in both roles: it **verifies** the proof received from its predecessor and **proves** continuity to its successor
 by constructing a new proof, which the next node in turn verifies.
 
+It specifies the per-hop **Proof of Relationship** and successor-PCA construction (Section 2), the ordered **Verifier checks** — including the
+executed-vs-signed rule — that validate a hop before authority is exercised (Section 3), authority as an abstract **attenuation domain** with
+a Policy Decision Point boundary (Section 4), and the **chain representations** that carry a proof: the full hash chain, the snapshot hash
+chain this specification orients on, and succinct proofs (Section 5).
+
 This document does not redefine, extend, or alter the PIC Model or the normative semantics defined by the PIC Specification.
 
 In case of conflict, the **PIC Specification** is authoritative.

@@ -15,20 +15,28 @@
 
 ## Abstract
 
-This document is the **PIC Lineage Guardrail Specification**, a subordinate specification of the [PIC Specification](./pic-spec.md). It
-introduces **lineage guardrails**: declarative, monotonic bounds on what an execution lineage is permitted to do, evaluated alongside the
-continuity checks that already keep authority non-expansive and bound to its origin.
+This document is the **PIC Lineage Guardrail Specification**, a subordinate specification of the [PIC Specification](./pic-spec.md).
 
-Where the PIC Model guarantees that authority only ever *attenuates* along a lineage, and the [PIC Revocation Specification](./pic-revocation-spec.md)
-withdraws validity *after the fact*, a guardrail states *in advance* the conditions under which a lineage may continue at all: the bounds it
-must stay within across its hops. Guardrails **constrain continuation**; they do not create authority, expand it, or alter the PIC Model
-invariants.
+In the PIC Model a **lineage is an atomic execution**: one causal chain from an origin, along which authority only attenuates and stays bound
+to that origin. Proof of Continuity governs a lineage *from the inside* and forbids **authority mixing** — authority from one lineage can
+never be merged into another. That prohibition is what makes the confused-deputy class of failures unrepresentable.
+
+Real applications, however, are rarely a single atomic lineage. An application-level execution is often **composed of several atomic
+lineages** that must *participate together* to carry out one logical operation, each contributing its part under its own origin authority.
+This **cross-lineage composition** is legitimate, and it is *participation, not authority mixing*: no authority is merged, and each lineage
+keeps its own. The PIC Model, by design, does not govern it: continuity secures each lineage individually and says nothing about how they
+combine.
+
+A **lineage guardrail** is the construct that **governs cross-lineage composition**: the declarative rules under which multiple atomic
+lineages may join and participate in a single application execution, and the bounds that composition must respect. With a guardrail,
+cross-lineage composition becomes *governed* — which lineages may compose, under what conditions, and what the composed execution may do —
+while each participating lineage keeps its own continuity and non-expansion, and authority mixing stays forbidden.
 
 This revision establishes the concept and the standard requirements notation shared by the PIC specification set. The normative guardrail
-coordinates, their hop-by-hop continuity, and their enforcement are developed in the sections below. Guardrails build on the PCA format of
-the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) and are consistent with the
-[PIC Revocation Specification](./pic-revocation-spec.md); they do not alter non-expansion of the signed state, Proof of Relationship, or the
-rule that every PCA continues exactly one predecessor. In case of conflict, the **PIC Specification** is authoritative.
+construction — how a composed execution is declared, how atomic lineages join it, and how the bound is enforced — is developed in the
+sections below. Guardrails build on the PCA format of the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) and are
+consistent with the [PIC Revocation Specification](./pic-revocation-spec.md); they do not alter non-expansion of the signed state, Proof of
+Relationship, or the rule that every PCA continues exactly one predecessor. In case of conflict, the **PIC Specification** is authoritative.
 
 ## Table of Contents
 
@@ -36,7 +44,7 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
   - [Abstract](#abstract)
   - [Table of Contents](#table-of-contents)
   - [1. Introduction](#1-introduction)
-    - [1.1 What Is a Lineage Guardrail](#11-what-is-a-lineage-guardrail)
+    - [1.1 Atomic Lineages and Composed Executions](#11-atomic-lineages-and-composed-executions)
     - [1.2 Requirements Notation](#12-requirements-notation)
   - [Contributors](#contributors)
   - [Legal Notices](#legal-notices)
@@ -46,23 +54,31 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
 
 This section is non-normative. It explains the concept the rest of the specification builds on.
 
-### 1.1 What Is a Lineage Guardrail
+### 1.1 Atomic Lineages and Composed Executions
 
-A **lineage guardrail** is a bound placed on an execution lineage: a declarative rule that says what the lineage may and may not do as it
-propagates, independently of which executor currently carries it. A guardrail is not authority; it is a *limit on the exercise of authority*
-along the lineage.
+In PIC, a **lineage is an atomic execution**: a single causal chain that begins at an origin (PCA0) and proceeds hop by hop, carrying an
+authority context that only ever attenuates and remains bound to that origin. Proof of Continuity governs a lineage from the inside — each
+hop is a valid, non-expansive continuation of the one that caused it — and it forbids **authority mixing**: authority from one lineage can
+never be merged into another. That prohibition is what makes the confused-deputy class of failures unrepresentable.
 
-Two mechanisms of the PIC Model already shape a lineage. **Proof of Continuity** keeps it causally bound to its origin and non-expansive:
-authority only attenuates, never grows. **Revocation** ([PIC Revocation Specification](./pic-revocation-spec.md)) withdraws validity from a
-lineage, or its future from a position, after an incident. A guardrail is the third, complementary mechanism: it keeps the lineage *within
-stated bounds* for its whole life, checked at each hop as part of verification, before any authority is exercised.
+Applications are rarely one atomic lineage. A single application-level operation is often **composed of several atomic lineages** that must
+participate together: each is caused by its own origin, carries its own attenuated authority, and contributes one part of the whole — for
+example a transaction whose steps are authorized by different origins, or an agent workflow in which a user-originated lineage and a
+service-originated lineage must jointly complete one task. This **cross-lineage composition** is legitimate, and it is *participation, not
+authority mixing*: no authority is merged, and each lineage keeps its own.
 
-Like attenuation and revocation, guardrails are **monotonic**: a lineage can inherit a guardrail and make it stricter, but it can never
-loosen or remove one it inherited. A guardrail therefore travels with the lineage and bounds every hop that continues it, including the
-not-yet-existing successor of the N+1 execution model.
+Continuity does not govern that composition. It secures each lineage *individually* and forbids authority mixing between them, yet the
+application still needs those lineages to *compose* into one coherent execution. The open question is therefore: **how is cross-lineage
+composition governed** so that the whole remains safe while each participating lineage keeps its own guarantees?
 
-> The concrete guardrail coordinates, their hop-by-hop continuity, and their enforcement are defined in the normative sections of this
-> document.
+A **lineage guardrail** answers it. It is the declarative construct that **governs cross-lineage composition**: it defines a composed
+application execution and the rules under which atomic lineages may join and participate in it — which lineages may compose, under what
+conditions, and what the composition as a whole may do. With a guardrail, composing atomic lineages becomes *governed participation*, never
+authority mixing: the guardrail bounds the composition without reaching inside any participating lineage, weakening its continuity, expanding
+its authority, or merging authority across lineages.
+
+> The concrete guardrail construction — how a composed execution and its participation rules are declared, carried, and enforced — is defined
+> in the normative sections of this document.
 
 ### 1.2 Requirements Notation
 

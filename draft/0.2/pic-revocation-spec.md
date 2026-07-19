@@ -15,8 +15,8 @@
 
 ## Abstract
 
-This document is the **PIC Revocation Specification**, a subordinate specification of the [PIC Specification](./pic-spec.md). It prepares
-the ground for **revoking authority** within the Provenance Identity Continuity (PIC) Model.
+This document is the **PIC Revocation Specification**, a subordinate specification of the [PIC Specification](./pic-spec.md). It defines how
+**authority is revoked** within the Provenance Identity Continuity (PIC) Model.
 
 Expiry bounds *how long* a PCA is valid; revocation withdraws validity *before* that bound. The profile supports grant-, key-, delegate-,
 attestation-, issuer-, and policy-based revocation, and adds a property specific to PIC: **causal execution cutoffs** — revoking a lineage,
