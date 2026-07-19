@@ -346,10 +346,9 @@ MULTI-LINEAGE EXECUTION (n >= 1)
 Permit allows the proposed transition to cross the execution boundary as presented. Deny prevents that proposed transition from crossing
 the boundary. Future revisions may define additional runtime controls; this section does not anticipate them.
 
-The executor or calling system constructs the proposal: the proposed action, whether it uses one Lineage Execution or a Multi-Lineage
-Execution, which Lineage Executions are selected, and how they are intended to participate. The guardrail does not construct the proposal,
-does not decide which authorities to combine, does not modify the PCA inputs, and does not create an alternative transition, a new
-authority, or a new Lineage Execution.
+The executor or calling system constructs the proposed transition by selecting the participating Lineage Executions, their concrete signed
+requests, and their declared participation context. The guardrail does not construct or modify those requests, does not decide which
+Lineage Executions participate, and does not create an alternative transition, a new authority state, or a new Lineage Execution.
 
 > The executor constructs the proposed transition. The guardrail does not compose the participating Lineage Executions; it only determines
 > whether the proposed transition may cross the execution boundary.
@@ -637,6 +636,16 @@ crossing. It follows the forwarding-envelope pattern of the
 [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) (Section 2.5), but it is issued by the guardrail and binds the
 guardrail decision to the crossing context defined by the applicable profile; the normative profile defines which crossing elements are
 bound, including any required destination, action, participant, freshness, or replay-protection information.
+
+For a guarded crossing, the guardrail envelope is the applicable forwarding envelope of that crossing: it replaces, rather than contains,
+the ordinary forwarding envelope — envelopes are never nested — and it preserves the handoff semantics of the forwarding pattern: the
+carried PCAs unaltered, digests recomputable, forwarding attribution intact. In the base profile the forwarding attribution is derived
+cryptographically from the carried PCAs: the forwarding workload of a guarded crossing is the executor that signed the current PCA, as
+bound by its request binding; no additional forwarding artefact is required.
+
+The guardrail signature attests only that the participating PCAs were validated, the policy was evaluated, this specific crossing was
+permitted, and the signed context matches the delivered crossing; a permit is bound to its crossing and is not reusable for another. It is
+neither a PCA signature nor an executor signature, and the guardrail does not become the Prover of any PCA.
 
 The guardrail signing capability lies outside the executor's reach and within the trust domain of the sandbox and guardrail enforcement
 components; an executor that can access or invoke it independently of the enforced guardrail decision violates this trust assumption.

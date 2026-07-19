@@ -106,7 +106,8 @@ server. Section 5 describes these representations; the PIC *invariants* are the 
 assumptions differ by profile (Sections 6.8, 7) — the profiles are not equivalent.
 
 PIC also draws a **clean line between the security model and transport**. The guarantees come from the signed continuity chain, not from how
-it travels: an implementation MUST NOT rely on the transport — a TLS session, a network perimeter, a message bus — to obtain them. Transport
+it travels: an implementation must not rely on the transport — a TLS session, a network perimeter, a message bus — to obtain them (the
+normative requirement is stated in Section 6.7). Transport
 is only transport. A compromised channel can read or drop messages but cannot forge a valid PCA; confidentiality and attack-surface concerns
 belong to transport and are addressed in Section 6.7. This separation is what lets the same model run unchanged over HTTP, over messaging
 systems such as Apache Kafka, or over any other carrier.
@@ -201,7 +202,8 @@ Under PIC the same state cannot be represented as valid. `READ-ALL` is absent fr
 continuation can expand an authority context: the composed proof does not satisfy the lineage, and the Verifier at executor `n+1` rejects
 it. The bug can still execute locally, as stated in Section 1.1, but the state it produces is invalid and stops at that hop.
 
-This is a *structural* elimination of the confused deputy, and it is what PIC shares with the object-capability approach: a capability
+This is a *structural* elimination of cross-lineage confused-deputy authority composition from the PIC state model, and it is what PIC
+shares with the object-capability approach: a capability
 removes the mismatch by construction at a single hop, by fusing designation and authority at invocation; PIC extends the same by-construction
 guarantee across the whole lineage, so the mismatch is not a state a valid chain can represent at any hop. It is ruled out by construction,
 not caught by runtime vigilance — and this is exactly the property the Lean formalization verifies [[2]](#references).
@@ -277,9 +279,12 @@ prerequisites.
 
 ### 1.7 Requirements Notation
 
+The **normative** sections of this document are Sections 2, 3, 4, and 6, together with the requirement explicitly marked normative in
+Section 5. Sections 1, 7, and 8 are non-normative.
+
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
 "OPTIONAL" in this document are to be interpreted as described in BCP 14 [[3]](#references) [[4]](#references) when, and only when, they
-appear in all capitals, as shown here.
+appear in all capitals within normative text.
 
 Examples in this document are illustrative and non-normative.
 
@@ -596,6 +601,11 @@ which already catches any single misbehaving hop. It does not re-verify the earl
 predecessor. The trade-offs of that trust — and when to carry the full chain or a succinct proof instead — are covered in Section 6.8, and
 how the chain is represented is a profile choice (Section 5).
 
+> **Note — guarded crossings.** A profile that applies an Execution Guardrail
+> ([PIC Execution Guardrail Specification](./pic-lineage-guardrail-spec.md)) MAY replace the ordinary forwarding envelope with a
+> non-nested guardrail forwarding envelope, provided it preserves the PCA bytes, digest recomputation, forwarding attribution, and all
+> normative handoff semantics of this section.
+
 ## 3. Verifier Requirements
 
 A **PIC Verifier** validates the PCA presented at a hop *before any authority is exercised*. The **per-hop checks** of Section 3.3 are the
@@ -760,9 +770,10 @@ label vocabularies with provably semantic-monotone orders, and the PIC↔PDP int
 ## 5. Chain Representations
 
 A PIC chain can be implemented and validated in more than one way. The choice does not change the model — the invariants and the checks of
-Section 3 stay the same — but it changes the *cost of validation* at a hop and the *trust assumptions*. This section is non-normative; an
-implementation profile selects one representation. It expands on the proof mechanism agility of Section 2.3. A representation does not
-inherit the Lean proof automatically: each MUST show that its concrete acceptance predicate implies the abstract PoC (Section 6.5).
+Section 3 stay the same — but it changes the *cost of validation* at a hop and the *trust assumptions*. This section is non-normative,
+except for one requirement that is normative: a representation does not inherit the Lean proof automatically — each MUST show that its
+concrete acceptance predicate implies the abstract PoC (Section 6.5). An implementation profile selects one representation; this section
+expands on the proof mechanism agility of Section 2.3.
 
 ### 5.1 Full Hash Chain
 
@@ -796,7 +807,7 @@ PCA0 ... PCA[k]  ==>  snapshot (signed by trusted issuer)
 ```
 
 **This is the profile the specification orients on.** Forthcoming versions develop their normative constructions on the snapshot hash chain:
-it keeps validation bounded without requiring advanced cryptography. The choice stays non-normative — an implementation MAY use the full
+it keeps validation bounded without requiring advanced cryptography. The choice stays non-normative — an implementation may use the full
 hash chain (5.1) or a succinct proof (5.3) and adapt accordingly — but the worked examples and constructions of this specification assume
 this profile.
 
@@ -852,13 +863,14 @@ challenge is consumed once per Verifier state; independent Verifiers without sha
 **Coordinated single-use**: the challenge is consumed once across Verifiers; it requires shared state or a coordinating component — the
 Trust Plane of the [PIC Architecture and Deployment Specification](./pic-architecture-deployment-spec.md), or a future federation profile.
 **Bounded multi-use (fan-out)**: reuse explicitly authorized and declared by `mode`/`maxUses`. A property that depends exclusively on local
-Verifier state MUST NOT be described as global single-use; replay never expands authority, and coordination adds only a bound on the global
-cardinality of continuations.
+Verifier state MUST NOT be described as global single-use. Replay never expands authority, but it can duplicate effects or continuations;
+coordination adds the bound on their global cardinality.
 
 The continuation challenge is **one** freshness mechanism, not a mandatory one. A profile MAY meet the same goal differently — a monotonic
-per-lineage counter, a server-issued single-use ticket, a bounded acceptance window (Section 6.3), or a transport-level anti-replay control
-— provided a stale or duplicated continuation cannot be accepted. What is normative is the *property* (no replayed or duplicated continuation
-is accepted), not the specific method.
+per-lineage counter, a server-issued single-use ticket, a bounded acceptance window (Section 6.3), or a transport-level anti-replay
+control. What is normative is conformance to the consumption semantics and enforcement scope declared by the selected profile, not the specific
+freshness mechanism: the anti-replay enforcement MUST match the scope the profile declares, and a profile claiming coordinated single-use
+MUST provide the shared state or coordination required to enforce that claim across the participating Verifiers.
 
 ### 6.2 Origin (PCA0) Trust Boundary
 

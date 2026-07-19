@@ -65,7 +65,9 @@ and only within the normative sections of this document. Examples are illustrati
 
 ## 2. Architectures
 
-This section is non-normative. Two deployment architectures cover the space.
+This section is non-normative. This specification defines two deployment topologies, centralized and decentralized; within each, different
+chain-validation profiles ([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 5 and 7) provide different
+cost and assurance properties.
 
 ### 2.1 Centralized
 
@@ -124,30 +126,37 @@ colluding hops: without the history, HOP 4
 cannot re-check the step from HOP 1 to HOP 2
 ```
 
-The history can live in two places: on the Trust Plane, or inside the PCA chain itself. Carrying it in the chain makes size and validation
-cost grow without bound, so it is discarded as the working option; minimal implementations may still choose it, but they remain very
-limited.
+The history can be held by the Trust Plane, carried inside the PCA chain, or committed to by a succinct proof
+([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 5.1–5.3). Carrying it in the chain makes size and
+validation cost grow without bound, so it is discarded as the working option — minimal implementations may still choose it, but they
+remain very limited. A succinct proof keeps verification cheap but moves the cost to proof generation and adds the proof-system, setup,
+and availability assumptions.
 
-| Architecture | Central component | History | Per-hop cost | Consecutive collusion |
+| Topology and profile | Central component | History | Cost | Consecutive collusion |
 | --- | --- | --- | --- | --- |
-| Centralized | Trust Plane (Verifier + validation attestation) | held by the Trust Plane | O(1) | resisted |
-| Decentralized | none | not carried | O(1) | not resisted |
-| Decentralized, full history in the chain | none | carried in every PCA chain | grows without bound | resisted — viable only for very limited, minimal implementations |
+| Centralized: Trust Plane | yes | history or authenticated validation state held by the Trust Plane | O(1) per hop | resisted under the Trust Plane assumptions |
+| Decentralized, incremental | none | immediate transition only | O(1) | not resisted |
+| Decentralized, full-chain | none | complete prefix carried or otherwise available | O(n) size and verification | resisted |
+| Decentralized, succinct proof | none | proof commits to the validated prefix | succinct verification; generation cost per proof system | resisted under the proof-system assumptions |
+
+The profile trade-offs are analyzed in the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 6.8 and 7.
 
 ## 3. Trusted and Untrusted Environments
 
 This section is non-normative. The choice between the two architectures follows the environment.
 
-In a **trusted environment** — one whose hops the deployment threat model accepts as trustworthy — collusion among hops is out of scope:
-the decentralized architecture fits, with no central dependency. In an **untrusted environment** collusion is a real threat: the
-centralized architecture fits, because the Trust Plane holds the history; carrying the full history in the chain remains possible but not
-convenient (Section 2.3). Trust is a property of the deployment threat model, its trust anchors, and the adopted profile — a single
-administrative domain is not trusted by itself.
+In a **trusted environment** — one whose hops the deployment threat model accepts as trustworthy — consecutive collusion is out of scope:
+decentralized incremental validation may be sufficient, with no central dependency. In an **untrusted environment** where consecutive
+collusion is in scope, the deployment must select a profile that independently authenticates the relevant lineage prefix: a Trust Plane
+with authenticated history, full-chain validation, or an approved succinct-proof profile (Section 2.3). The Trust Plane is the
+operationally preferred choice — collusion resistance at O(1) without advanced cryptography — but not the only profile the model permits.
+Trust is a property of the deployment threat model, its trust anchors, and the adopted profile — a single administrative domain is not
+trusted by itself.
 
-| Environment | Collusion | Architecture |
+| Environment | Threat assumption | Suitable topology and profile |
 | --- | --- | --- |
-| Trusted | out of scope | decentralized: local Prover and Verifier at every hop |
-| Untrusted | a real threat | centralized: Trust Plane with the lineage history |
+| Trusted | consecutive collusion out of scope | decentralized incremental may be sufficient |
+| Untrusted or high-risk | consecutive collusion in scope | Trust Plane with authenticated history, full-chain validation, or an approved succinct-proof profile |
 
 The same segmentation drives the guardrail deployment modes of the
 [PIC Execution Guardrail Specification](./pic-lineage-guardrail-spec.md) (Section 3.4): trusted segments may operate hops in non-sandbox
@@ -157,8 +166,9 @@ mode; untrusted or high-risk segments use sandbox mode.
 
 This section is non-normative. Enterprise deployments are rarely uniform: one execution may cross trusted and untrusted segments in the
 same chain. The two architectures compose: while execution crosses a trusted segment, hops verify locally; when it enters an untrusted
-segment, hops use the Trust Plane. The PIC invariants are the same everywhere
-([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Section 5); only the validation topology changes.
+segment, hops use the Trust Plane. The PIC invariants are the same everywhere ([PIC Specification](./pic-spec.md);
+[PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 2.4 and 3.3); only the validation topology, the
+chain-validation profile, and the resulting assurance assumptions change.
 
 ```text
         TRUSTED SEGMENT           |          UNTRUSTED SEGMENT
