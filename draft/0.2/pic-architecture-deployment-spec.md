@@ -113,9 +113,9 @@ no central component; every hop proves and verifies locally
 
 ### 2.3 Consecutive Collusion and History
 
-The decentralized architecture is secure hop by hop, with one documented limit
+The decentralized incremental profile is secure hop by hop, with one documented limit
 ([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Section 6.8): two or more consecutive colluding hops cannot be
-detected without the lineage history.
+detected when the receiving Verifier lacks authenticated evidence of the earlier lineage prefix.
 
 ```text
 +-------+      +---------+      +---------+      +-------+
@@ -127,10 +127,10 @@ cannot re-check the step from HOP 1 to HOP 2
 ```
 
 The history can be held by the Trust Plane, carried inside the PCA chain, or committed to by a succinct proof
-([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 5.1–5.3). Carrying it in the chain makes size and
-validation cost grow without bound, so it is discarded as the working option — minimal implementations may still choose it, but they
-remain very limited. A succinct proof keeps verification cheap but moves the cost to proof generation and adds the proof-system, setup,
-and availability assumptions.
+([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 5.1–5.3). Carrying the complete prefix makes size and
+validation cost grow linearly with lineage length, so it is unsuitable as the default lightweight profile; a deployment may nevertheless
+select full-chain validation when its stronger independent-verification property justifies the O(n) cost. A succinct proof keeps
+verification cheap but moves the cost to proof generation and adds the proof-system, setup, and availability assumptions.
 
 | Topology and profile | Central component | History | Cost | Consecutive collusion |
 | --- | --- | --- | --- | --- |
@@ -164,11 +164,15 @@ mode; untrusted or high-risk segments use sandbox mode.
 
 ## 4. Hybrid Enterprise Architectures
 
-This section is non-normative. Enterprise deployments are rarely uniform: one execution may cross trusted and untrusted segments in the
-same chain. The two architectures compose: while execution crosses a trusted segment, hops verify locally; when it enters an untrusted
-segment, hops use the Trust Plane. The PIC invariants are the same everywhere ([PIC Specification](./pic-spec.md);
+This section is non-normative. Enterprise deployments are rarely uniform: one execution may cross segments with different threat
+assumptions in the same chain. While execution crosses a segment in which consecutive collusion is out of scope, decentralized incremental
+verification may be used; when it enters a segment in which consecutive collusion is in scope, the deployment uses the selected
+collusion-resistant profile — Trust Plane validation, full-chain validation, or an approved succinct-proof profile (Section 3). The PIC
+invariants are the same everywhere ([PIC Specification](./pic-spec.md);
 [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 2.4 and 3.3); only the validation topology, the
 chain-validation profile, and the resulting assurance assumptions change.
+
+The following diagram illustrates the Trust Plane variant of a hybrid deployment.
 
 ```text
         TRUSTED SEGMENT           |          UNTRUSTED SEGMENT

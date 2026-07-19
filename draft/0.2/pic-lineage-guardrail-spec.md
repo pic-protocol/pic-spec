@@ -639,13 +639,55 @@ bound, including any required destination, action, participant, freshness, or re
 
 For a guarded crossing, the guardrail envelope is the applicable forwarding envelope of that crossing: it replaces, rather than contains,
 the ordinary forwarding envelope — envelopes are never nested — and it preserves the handoff semantics of the forwarding pattern: the
-carried PCAs unaltered, digests recomputable, forwarding attribution intact. In the base profile the forwarding attribution is derived
-cryptographically from the carried PCAs: the forwarding workload of a guarded crossing is the executor that signed the current PCA, as
-bound by its request binding; no additional forwarding artefact is required.
+carried PCAs unaltered, digests recomputable, forwarding attribution intact.
 
-The guardrail signature attests only that the participating PCAs were validated, the policy was evaluated, this specific crossing was
-permitted, and the signed context matches the delivered crossing; a permit is bound to its crossing and is not reusable for another. It is
-neither a PCA signature nor an executor signature, and the guardrail does not become the Prover of any PCA.
+Forwarding attribution and guardrail validation are separate attestations over the same non-nested envelope. A **`forwardingProof`**
+attributes presentation of the crossing to `forwardedBy` — the authenticated workload, sandbox, gateway, or equivalent enforcement
+component that presents the guarded crossing under the applicable profile, which need not be the executor that signed the current PCA. A
+**`guardrailProof`** attests validation of the participating PCAs, policy evaluation, and permission of that exact crossing, and covers
+the digest of the `forwardingProof`, so the guardrail attests exactly the crossing the forwarder presented. Neither proof replaces the
+executor signature on any carried PCA.
+
+Both proofs cover, directly or through commitment, the carried PCAs and their digests, the participants, destination, concrete signed
+requests, crossing context, freshness and replay-protection fields, and the decision identifier when present. The profile defines which
+subjects may appear in `forwardedBy`, the keys or trust anchors that verify each proof, the envelope fields covered by both signatures,
+how the guardrail verifies that the crossing it evaluates is the one the forwarder signed, and how the successor verifies both
+attestations. A permit is bound to its crossing and is not reusable for another; the guardrail does not replace either proof with its own
+signature over a different crossing, does not modify the carried PCAs, and does not become the Prover of any PCA. The successor verifies
+the PCA signatures and recomputed digests, both proofs, the identity between presented, evaluated, and delivered crossing, and the
+freshness semantics of the profile.
+
+An illustrative guardrail forwarding envelope:
+
+```json
+{
+  "envelope": {
+    "forwardedBy": "did:example:sandbox-or-workload",
+    "predecessor":       { "…": "signed PCA[n-1]" },
+    "predecessorDigest": "sha256:…",
+    "current":           { "…": "signed PCA[n]" },
+    "currentDigest":     "sha256:…",
+    "crossingContext": {
+      "participants": ["A", "B"],
+      "destination": "…",
+      "requestsDigest": "sha256:…",
+      "freshness": { "…": "…" }
+    },
+    "decisionId": "…"
+  },
+  "forwardingProof": {
+    "verificationMethod": "…",
+    "signature": "…"
+  },
+  "guardrailProof": {
+    "verificationMethod": "…",
+    "forwardingProofDigest": "sha256:…",
+    "signature": "…"
+  }
+}
+```
+
+The example is illustrative; the canonical serialization is defined in the normative sections of this specification.
 
 The guardrail signing capability lies outside the executor's reach and within the trust domain of the sandbox and guardrail enforcement
 components; an executor that can access or invoke it independently of the enforced guardrail decision violates this trust assumption.

@@ -84,7 +84,8 @@ In case of conflict, the **PIC Specification** is authoritative.
 ## 1. Introduction
 
 This section is non-normative. It describes the problem this specification addresses and is independent of any concrete implementation.
-Normative requirements are defined in Section 2 (Prover) and Section 3 (Verifier).
+Normative requirements are defined in Sections 2, 3, 4, and 6, together with the requirement explicitly marked normative in Section 5
+(Section 1.7).
 
 Current authorization models lack a formal execution continuity model: they define who may hold authority, but not how authority remains
 valid across the steps of a distributed execution. This specification defines how the **Provenance Identity Continuity (PIC) Model** is
@@ -490,13 +491,13 @@ channel — are extension profiles, out of scope here (Section 6.6).
 are defined by a separate specification. The core keeps only the mandatory executed-vs-signed check (Section 3.3).
 
 > **Note — proof mechanism agility.** This hash-and-signature construction is a *non-normative example*, chosen to make the model easy to
-> follow. Implementations MAY realize the PoR and the PCA integrity protection with other mechanisms — signed hash chains, Merkle proofs,
+> follow. Implementations may realize the PoR and the PCA integrity protection with other mechanisms — signed hash chains, Merkle proofs,
 > accumulators, recursive or zero-knowledge proofs, hardware-backed attestations — including ones that do not disclose the evidence in the
 > clear, provided they preserve the normative semantics: binding to *exactly one* predecessor lineage, responding to the predecessor's
 > continuation challenge, non-expansion of the invariants, and integrity of the successor PCA as a whole.
 >
 > Carrying the attestation in the clear is a property of this minimal profile only. **Selective disclosure** — revealing just the attributes
-> the execution contract requires — is out of scope here and is a separate implementation concern, but it is RECOMMENDED for production
+> the execution contract requires — is out of scope here and is a separate implementation concern, but it is recommended for production
 > profiles that handle sensitive attributes (Section 6.4).
 
 ### 2.4 Invariant Monotonicity
@@ -604,7 +605,8 @@ how the chain is represented is a profile choice (Section 5).
 > **Note — guarded crossings.** A profile that applies an Execution Guardrail
 > ([PIC Execution Guardrail Specification](./pic-lineage-guardrail-spec.md)) MAY replace the ordinary forwarding envelope with a
 > non-nested guardrail forwarding envelope, provided it preserves the PCA bytes, digest recomputation, forwarding attribution, and all
-> normative handoff semantics of this section.
+> normative handoff semantics of this section. In such a profile, forwarding attribution and guardrail validation MAY be represented by
+> separate signatures over the same envelope; neither signature replaces the executor signature on any PCA.
 
 ## 3. Verifier Requirements
 
