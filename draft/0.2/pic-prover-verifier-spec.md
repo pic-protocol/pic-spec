@@ -602,7 +602,7 @@ which already catches any single misbehaving hop. It does not re-verify the earl
 predecessor. The trade-offs of that trust — and when to carry the full chain or a succinct proof instead — are covered in Section 6.8, and
 how the chain is represented is a profile choice (Section 5).
 
-> **Note — guarded crossings.** A profile that applies an Execution Guardrail
+> **Normative guarded-crossing requirement.** A profile that applies an Execution Guardrail
 > ([PIC Execution Guardrail Specification](./pic-lineage-guardrail-spec.md)) MAY replace the ordinary forwarding envelope with a
 > non-nested guardrail forwarding envelope, provided it preserves the PCA bytes, digest recomputation, forwarding attribution, and all
 > normative handoff semantics of this section. In such a profile, forwarding attribution and guardrail validation MAY be represented by

@@ -417,7 +417,7 @@ The agent now holds two authorities. It constructs a Multi-Lineage Execution car
 | A: PCA1-A { BACKUP }                               |
 | B: PCA0-B { WRITE-S3 }                             |
 |                                                    |
-| proposed action: WRITE-S3, the signed request of B |
+| concrete signed request: B / WRITE-S3              |
 +====================================================+
                           |
                           v
@@ -631,11 +631,11 @@ Multi-Lineage Execution     authorities at the hop
 ### 3.3 The Guardrail Envelope
 
 One question remains: the successor receives Lineage Executions — how does it know they passed through a guardrail? Because a permitted
-crossing is delivered in a **guardrail envelope**: an envelope, signed by the guardrail, carrying the validated Lineage Executions of the
-crossing. It follows the forwarding-envelope pattern of the
-[PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) (Section 2.5), but it is issued by the guardrail and binds the
-guardrail decision to the crossing context defined by the applicable profile; the normative profile defines which crossing elements are
-bound, including any required destination, action, participant, freshness, or replay-protection information.
+crossing is delivered in a **guardrail forwarding envelope** carrying the validated Lineage Executions together with the forwarding and
+guardrail attestations defined below. It follows the forwarding-envelope pattern of the
+[PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) (Section 2.5), and binds both forwarding attribution and the
+guardrail decision to the crossing context defined by the applicable profile. The profile defines which crossing elements are bound,
+including any required destination, signed request, participant, freshness, replay-protection, and decision information.
 
 For a guarded crossing, the guardrail envelope is the applicable forwarding envelope of that crossing: it replaces, rather than contains,
 the ordinary forwarding envelope — envelopes are never nested — and it preserves the handoff semantics of the forwarding pattern: the
@@ -687,7 +687,8 @@ An illustrative guardrail forwarding envelope:
 }
 ```
 
-The example is illustrative; the canonical serialization is defined in the normative sections of this specification.
+The example is illustrative and non-normative. The canonical serialization and interoperable verification rules will be defined by a
+future normative revision or profile.
 
 The guardrail signing capability lies outside the executor's reach and within the trust domain of the sandbox and guardrail enforcement
 components; an executor that can access or invoke it independently of the enforced guardrail decision violates this trust assumption.
@@ -730,8 +731,8 @@ sandbox performs or                        executor substitutes action Y
 forwards action X
 ```
 
-How guardrail authorities are established and recognized — key generation, storage, attestation, rotation, revocation, and algorithm
-selection — is defined in the normative sections of this specification.
+How guardrail authorities are established and recognized — including key generation, storage, attestation, rotation, revocation, algorithm
+selection, and trust-anchor distribution — will be defined by a future normative revision or profile.
 
 ### 3.4 Sandbox Mode and Non-Sandbox Mode
 
