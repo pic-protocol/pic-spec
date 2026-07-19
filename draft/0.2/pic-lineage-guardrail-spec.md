@@ -314,7 +314,8 @@ limits, observation, and denial
 > An **Execution Guardrail** is an externally configured runtime control at an execution boundary that evaluates a proposed transition
 > involving one or more Lineage Executions and enforces the resulting policy decision.
 
-The guardrail receives one Multi-Lineage Execution (Section 1.2), the single-lineage case included. Within a single Lineage Execution,
+The guardrail evaluates a proposed transition represented as one Multi-Lineage Execution (Section 1.2), the single-lineage case included.
+Within a single Lineage Execution,
 authority states are already secured by execution lineage safety (Section 1.1); what the guardrail adds is the evaluation of the proposed
 transition against configured policy.
 
@@ -429,8 +430,8 @@ The agent now holds two authorities. It constructs a Multi-Lineage Execution car
                           S3
 ```
 
-Lineage Execution A authorizes `BACKUP`; Lineage Execution B authorizes `WRITE-S3`. B authorizes the external S3 write; A supplies the
-independently preserved authority context under which that write is proposed. The agent proposed their joint participation; the
+Lineage Execution A authorizes `BACKUP`; Lineage Execution B authorizes `WRITE-S3`. B authorizes the external S3 write; A provides the
+independently preserved `BACKUP` authority context that motivates the proposed transition. The agent proposed their joint participation; the
 guardrail did not create that relationship and does not merge A and B. Configured policy determines whether the proposed transition is
 permitted, the guardrail enforces permit or deny, and every externally relevant action remains attributable to a specific Lineage
 Execution. Participation, not authority mixing.
@@ -475,12 +476,16 @@ question would be the enforcement point of its own limits. The invocation of the
 
 ### 2.3 The Sandbox
 
+> A **sandbox** is a fixed, trusted execution boundary that encloses an executor. The executor has no path to governed external effect
+> except through the boundary, and it is the sandbox — not the executor — that invokes the Execution Guardrail on every governed boundary
+> crossing.
+
 The sandbox is a trusted component: an explicit trust assumption of this specification, exactly as Verifier correctness is an explicit
 trust assumption of the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md). The gain is where the trust sits: it moves
-from the behavior of the executor, unverifiable per Section 2.1, to the structure of the boundary — fixed, implementable, attestable.
-
-In the execution model assumed by this specification, the sandbox is the only permitted path from the enclosed executor to an external
-effect; an implementation that permits an unmediated external path from the executor does not satisfy this execution-model assumption.
+from the behavior of the executor, unverifiable per Section 2.1, to the structure of the boundary — fixed, implementable, attestable. In
+the execution model assumed by this specification, the sandbox is the only permitted path from the enclosed executor to a governed
+external effect; an implementation that permits an unmediated governed external path from the executor does not satisfy this
+execution-model assumption.
 
 ```text
 + - - - - - - - - - - - - - - - +
@@ -493,10 +498,7 @@ effect; an implementation that permits an unmediated external path from the exec
 |   +-----------------------+   |
 |                               |
 + - - - - - - - - - - - - - - - +
-
 ```
-> A **sandbox** is a fixed, trusted execution boundary that encloses an executor. The executor has no path to external effect except
-> through the boundary, and it is the sandbox — not the executor — that invokes the Execution Guardrail on every boundary crossing.
 
 This closes a gap Section 1.1 left open: a purely local physical action may be invisible to the protocol. Within the external-effect
 channels governed by this execution model, an action that does not cross the sandbox boundary cannot produce an external effect through
@@ -540,8 +542,8 @@ The sandbox invokes the guardrail; the executor cannot skip it.
 
 ### 2.6 Lineage Executions Through the Sandbox
 
-At each hop, a Multi-Lineage Execution (Section 1.2) enters, traverses, and leaves the sandbox. Every crossing passes through the
-Execution Guardrail, which evaluates the proposed transition against configured policy (Section 1.3); the decision gates continuation.
+At each hop, a Multi-Lineage Execution (Section 1.2) enters, traverses, and leaves the sandbox. Every governed crossing passes through
+the Execution Guardrail, which evaluates the proposed transition against configured policy (Section 1.3); the decision gates continuation.
 
 ```text
 L1 ----+                                                      +----> L1'
@@ -555,7 +557,7 @@ LN ----+    |                 |     +-------------+           +----> LN'
                                            X
 
 Every governed external effect crosses the sandbox boundary.
-Every crossing passes through the guardrail.
+Every governed crossing passes through the guardrail.
 ```
 
 The decision verbs are those of Section 1.3: permit and deny. Richer runtime-control taxonomies are deferred to the normative sections of
@@ -564,7 +566,8 @@ this specification.
 ### 2.7 Model Summary
 
 - **executor** — untrusted, deterministic or non-deterministic; the source of bugs and unwanted decisions;
-- **sandbox** — fixed, trusted execution boundary; the only path to governed external effect; invokes the guardrail on every crossing;
+- **sandbox** — fixed, trusted execution boundary; the only path to governed external effect; invokes the guardrail on every governed
+  crossing;
 - **Execution Guardrail** — evaluates every proposed crossing against configured policy (Section 1.3); permits or denies;
 - **Lineage Executions** — the secured authority inputs and outputs of each hop (Sections 1.1, 1.2); never merged, and every externally
   relevant action keeps an authorizing Lineage Execution.
@@ -827,8 +830,8 @@ This section is non-normative. It closes the conceptual model.
 
 A crossing is an execution in transit: it may happen in process, across a network, or over any other medium. The transport does not
 matter — the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) already separates the security model from transport,
-and this specification inherits that separation. What travels is the guardrail envelope, and inside it travel the Lineage Executions of
-the crossing: bound together, never merged.
+and this specification inherits that separation. In a guarded crossing, what travels is the guardrail envelope, and inside it travel the
+Lineage Executions of the crossing: bound together, never merged.
 
 ```text
 HOP N                                                            HOP N+1
