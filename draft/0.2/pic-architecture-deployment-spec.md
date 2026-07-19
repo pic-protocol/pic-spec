@@ -1,6 +1,6 @@
 # PIC Architecture and Deployment Specification
 
-**Version:** 0.1 (Draft)  
+**Version:** 0.2 (Draft)  
 **Status**: Draft – Not a Standard  
 **Date:** 2026-07-19  
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-architecture-deployment-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md)  
