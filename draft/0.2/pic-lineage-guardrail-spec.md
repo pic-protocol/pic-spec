@@ -7,11 +7,11 @@
 **Editors:**
 
 - **Nicola Gallo** (Nitro Agility S.r.l.) Lead Editor
-- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Contributors](#contributors)).*
+- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 7](#7-contributors)).*
 
 **Contributors:**
 
-- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Contributors](#contributors)).*
+- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 7](#7-contributors)).*
 
 ## Abstract
 
@@ -46,8 +46,8 @@ Relationship, or the rule that every PCA continues exactly one predecessor. In c
   - [1. Introduction](#1-introduction)
     - [1.1 Atomic Lineages and Composed Executions](#11-atomic-lineages-and-composed-executions)
     - [1.2 Requirements Notation](#12-requirements-notation)
-  - [Contributors](#contributors)
-  - [Legal Notices](#legal-notices)
+  - [7. Contributors](#7-contributors)
+  - [8. Legal Notices](#8-legal-notices)
   - [References](#references)
 
 ## 1. Introduction
@@ -86,12 +86,12 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 "OPTIONAL" are to be interpreted as described in BCP 14 [[2]](#references) [[3]](#references) when, and only when, they appear in all capitals,
 and only within the normative sections of this document. Examples are illustrative and non-normative.
 
-## Contributors
+## 7. Contributors
 
 The editors and contributors of this document are listed in the **document header** above. Listing is governed by Appendix B.7 of the
 [PIC Legal Appendices](./pic-legal.md).
 
-## Legal Notices
+## 8. Legal Notices
 
 The appendices governing:
 
