@@ -7,11 +7,11 @@
 **Editors:**
 
 - **Nicola Gallo** (Nitro Agility S.r.l.) Lead Editor
-- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 7](#7-contributors)).*
+- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 6](#6-contributors)).*
 
 **Contributors:**
 
-- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 7](#7-contributors)).*
+- *Add your name via pull request (individual or organization) — listing is subject to editor approval (see [Section 6](#6-contributors)).*
 
 ## Abstract
 
@@ -65,8 +65,9 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
     - [4.1 Enforcement Order](#41-enforcement-order)
     - [4.2 Semantic Scopes](#42-semantic-scopes)
     - [4.3 Policies](#43-policies)
-  - [7. Contributors](#7-contributors)
-  - [8. Legal Notices](#8-legal-notices)
+  - [5. Lineage Executions in Transit](#5-lineage-executions-in-transit)
+  - [6. Contributors](#6-contributors)
+  - [7. Legal Notices](#7-legal-notices)
   - [References](#references)
 
 ## 1. Introduction
@@ -734,12 +735,55 @@ C does not satisfy the condition            -> enforce deny
 The policy language, the scope vocabulary, and how scopes are bound to a Lineage Execution are defined in the normative sections of this
 specification; the example — including its CEL-like condition language — is illustrative only.
 
-## 7. Contributors
+## 5. Lineage Executions in Transit
+
+This section is non-normative. It closes the conceptual model.
+
+A crossing is an execution in transit: it may happen in process, across a network, or over any other medium. The transport does not
+matter — the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) already separates the security model from transport,
+and this specification inherits that separation. What travels is the guardrail envelope, and inside it travel the Lineage Executions of
+the crossing: bound together, never merged.
+
+```text
+HOP N                                                            HOP N+1
+
+GUARDRAIL                                                        VERIFIER
+    |                                                               ^
+    |     +----------------------------------------------+          |
+    +---->| GUARDRAIL ENVELOPE                           |----------+
+          | [ L1 | L2 | ... | LN ]  bound, never merged  |
+          +----------------------------------------------+
+
+          ------ in process | network | any medium ------
+```
+
+Composition is prohibited within a single Lineage Execution: a successor PCA cannot import or merge authority, and that prohibition is
+what eliminates the confused deputy by construction (Section 1.1). Composition re-enters the execution model in composed form — several
+Lineage Executions in transit together — validated by an external component, the guardrail. The placement is deliberate: composition must
+stay outside the security protocol. If composed authority entered the protocol as a valid PCA state, the confused deputy would be
+reintroduced; kept outside, composed execution is governed by the guardrail while remaining unrepresentable inside the protocol.
+
+```text
+INSIDE THE PROTOCOL                    INSIDE THE EXECUTION MODEL
+-------------------                    --------------------------
+one Lineage Execution                  n Lineage Executions in transit,
+authority only narrows                 bound in one guardrail envelope
+composition prohibited                 composition handled in composed
+by construction                        form by an external validator:
+                                       the guardrail
+
+confused deputy                        confused deputy
+unrepresentable                        not reintroduced
+```
+
+This closes the conceptual model of this revision; the normative sections define the representations and the enforcement requirements.
+
+## 6. Contributors
 
 The editors and contributors of this document are listed in the **document header** above. Listing is governed by Appendix B.7 of the
 [PIC Legal Appendices](./pic-legal.md).
 
-## 8. Legal Notices
+## 7. Legal Notices
 
 The appendices governing:
 
