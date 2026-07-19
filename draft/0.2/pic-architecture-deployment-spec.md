@@ -18,8 +18,9 @@
 This document is the **PIC Architecture and Deployment Specification**, a subordinate specification of the
 [PIC Specification](./pic-spec.md). It describes how the components defined by the
 [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) and the
-[PIC Lineage Guardrail Specification](./pic-lineage-guardrail-spec.md) are arranged and operated in concrete systems: the two deployment
-architectures — **centralized**, where a trusted server acts as Prover and Verifier and holds the lineage history, and **decentralized**,
+[PIC Execution Guardrail Specification](./pic-lineage-guardrail-spec.md) are arranged and operated in concrete systems: the two deployment
+architectures — **centralized**, where a trusted central server, the **Trust Plane**, acts as Prover and Verifier and holds the lineage
+history, and **decentralized**,
 where every hop proves and verifies locally — their fit to trusted and untrusted environments, hybrid enterprise compositions of the two,
 and interoperability with existing token infrastructures through an OAuth token-exchange profile to be defined in a future specification.
 
@@ -54,7 +55,7 @@ This specification describes the architectures of PIC systems and their deployme
 their fit to trusted and untrusted environments (Section 3), hybrid enterprise compositions (Section 4), and interoperability with
 existing token infrastructures (Section 5). The components deployed are those of the
 [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) and the
-[PIC Lineage Guardrail Specification](./pic-lineage-guardrail-spec.md).
+[PIC Execution Guardrail Specification](./pic-lineage-guardrail-spec.md).
 
 ### 1.1 Requirements Notation
 
@@ -68,9 +69,10 @@ This section is non-normative. Two deployment architectures cover the space.
 
 ### 2.1 Centralized
 
-A trusted central server acts as PIC Prover and PIC Verifier for every hop
-([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 2 and 3): workloads submit their transitions, the server
-constructs and validates the proofs, and it holds the lineage history.
+A trusted central server — the **Trust Plane** — acts as PIC Prover and PIC Verifier for every hop
+([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Sections 2 and 3): workloads submit their transitions, the Trust
+Plane constructs and validates the proofs, and it holds the lineage history. The rest of this document uses Trust Plane for the
+centralized trusted server.
 
 ```text
 +--------+        +--------+        +--------+
@@ -80,7 +82,7 @@ constructs and validates the proofs, and it holds the lineage history.
       \                |                /
        v               v               v
       +---------------------------------+
-      |     TRUSTED CENTRAL SERVER      |
+      |           TRUST PLANE           |
       |     Prover + Verifier           |
       |     holds the lineage history   |
       +---------------------------------+
@@ -115,13 +117,13 @@ colluding hops: without the history, HOP 4
 cannot re-check the step from HOP 1 to HOP 2
 ```
 
-The history can live in two places: on the trusted central server, or inside the PCA chain itself. Carrying it in the chain makes size
-and validation cost grow without bound, so it is discarded as the working option; minimal implementations may still choose it, but they
-remain very limited.
+The history can live in two places: on the Trust Plane, or inside the PCA chain itself. Carrying it in the chain makes size and validation
+cost grow without bound, so it is discarded as the working option; minimal implementations may still choose it, but they remain very
+limited.
 
 | Architecture | Central component | History | Per-hop cost | Consecutive collusion |
 | --- | --- | --- | --- | --- |
-| Centralized | trusted server (Prover + Verifier) | held by the server | O(1) | resisted |
+| Centralized | Trust Plane (Prover + Verifier) | held by the Trust Plane | O(1) | resisted |
 | Decentralized | none | not carried | O(1) | not resisted |
 | Decentralized, full history in the chain | none | carried in every PCA chain | grows without bound | resisted — viable only for very limited, minimal implementations |
 
@@ -131,19 +133,19 @@ This section is non-normative. The choice between the two architectures follows 
 
 In a **trusted environment** — hops operated by one accountable party, or by parties that trust each other — collusion among hops is out
 of scope: the decentralized architecture fits, with no central dependency. In an **untrusted environment** collusion is a real threat: the
-centralized architecture fits, because the server holds the history; carrying the full history in the chain remains possible but not
+centralized architecture fits, because the Trust Plane holds the history; carrying the full history in the chain remains possible but not
 convenient (Section 2.3).
 
 | Environment | Collusion | Architecture |
 | --- | --- | --- |
 | Trusted | out of scope | decentralized: local Prover and Verifier at every hop |
-| Untrusted | a real threat | centralized: trusted server with the lineage history |
+| Untrusted | a real threat | centralized: Trust Plane with the lineage history |
 
 ## 4. Hybrid Enterprise Architectures
 
 This section is non-normative. Enterprise deployments are rarely uniform: one execution may cross trusted and untrusted segments in the
 same chain. The two architectures compose: while execution crosses a trusted segment, hops verify locally; when it enters an untrusted
-segment, hops use the trusted central server. The PIC invariants are the same everywhere
+segment, hops use the Trust Plane. The PIC invariants are the same everywhere
 ([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Section 5); only the validation topology changes.
 
 ```text
@@ -156,7 +158,7 @@ segment, hops use the trusted central server. The PIC invariants are the same ev
                                   |          |                |
                                   |          v                v
                                   |     +-------------------------+
-                                  |     |  TRUSTED CENTRAL SERVER |
+                                  |     |       TRUST PLANE       |
                                   |     |  Prover + Verifier      |
                                   |     +-------------------------+
 ```
