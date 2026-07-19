@@ -657,6 +657,12 @@ signature over a different crossing, does not modify the carried PCAs, and does 
 the PCA signatures and recomputed digests, both proofs, the identity between presented, evaluated, and delivered crossing, and the
 freshness semantics of the profile.
 
+Transport is not presentation. A transport intermediary — a message broker, a queue, a proxy, or any relay that carries the envelope
+without exercising enforcement responsibility for the crossing — is not a forwarder: it does not produce a `forwardingProof`, does not
+re-sign or re-bind the envelope, and its transit does not create a new presentation of the crossing. The `forwardingProof` belongs
+exclusively to the enforcement component that presents the guarded crossing, and the envelope travels through any medium unchanged,
+exactly as a PCA does ([PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), Section 6.7).
+
 An illustrative guardrail forwarding envelope:
 
 ```json
