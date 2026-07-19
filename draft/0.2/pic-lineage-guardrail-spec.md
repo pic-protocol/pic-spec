@@ -32,7 +32,9 @@ An **Execution Guardrail** is an externally configured runtime control at an exe
 Multi-Lineage Execution against configured policy and permits or denies it. Guardrails do not make an invalid PCA valid, do not merge
 authorities, and do not alter lineage invariants.
 
-This revision establishes the concepts and the standard requirements notation shared by the PIC specification set; the normative guardrail
+This revision establishes the concepts and the standard requirements notation shared by the PIC specification set. It also defines the
+execution model — untrusted executors inside trusted sandboxes that invoke the guardrail — the guardrail envelope in which permitted
+crossings travel, and the enforcement order over semantic scopes and configured policies (Sections 2–5); the normative guardrail
 construction and enforcement requirements will be defined in forthcoming revisions. Guardrails build on the PCA format of the
 [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) and are consistent with the
 [PIC Revocation Specification](./pic-revocation-spec.md); they do not alter non-expansion of the signed state, Proof of Relationship, or the
@@ -161,7 +163,7 @@ Authority only narrows.
 ```
 
 These properties make the confused deputy unrepresentable as a valid authority state. Distinct authorities may travel together in the same
-envelope or process; they remain logically distinct and are never merged. The formal definitions and proofs are in the PIC Model
+message or process; they remain logically distinct and are never merged. The formal definitions and proofs are in the PIC Model
 [[1]](#references); the construction — Provers, Verifiers, and the PCA format — is defined by the
 [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md), and revocation by the
 [PIC Revocation Specification](./pic-revocation-spec.md). This document builds on them and restates none of them.
@@ -235,14 +237,15 @@ authority state cannot propagate as a valid PIC continuation.
 > A faulty executor may act locally, but it cannot use PIC to create a valid authority state that commands the next conforming executor
 > beyond the authority of the current Lineage Execution.
 
-The operational risk that remains — the physical behavior itself — is addressed by the guardrails of Section 1.3.
+The operational risk that remains — the physical behavior itself — is addressed by the guardrails of Section 1.3, enforced through the
+execution model of Section 2.
 
 ### 1.2 Multi-Lineage Execution
 
 > A **Multi-Lineage Execution** is an execution in which one or more independent Lineage Executions are carried together for one proposed
 > transition, while each retains its own origin, PCA chain, authority context, and continuity.
 
-A Multi-Lineage Execution is a runtime envelope: it carries n >= 1 distinct Lineage Executions, and it has no authority of its own. With
+A Multi-Lineage Execution is a runtime carrier: it carries n >= 1 distinct Lineage Executions, and it has no authority of its own. With
 n = 1 it is simply a proposed transition under one Lineage Execution; with n >= 2 several authorities travel together. The executor or
 calling system constructs and presents it.
 
@@ -366,8 +369,8 @@ Runtime evaluation is not itself governance. PIC and the guardrail also answer d
 
 Guardrails do not make an invalid PCA valid, do not merge authorities, do not change lineage invariants, and do not guarantee correct
 internal executor behavior. They reduce the executor's ability to cause another executor or target to continue an operation that violates
-the configured policy. How context, policy, and decisions are represented and evaluated is defined by the normative sections of this
-specification; this section only introduces the concept.
+the configured policy. How crossings are carried and enforced is described in Sections 3 and 4; the formal requirements are deferred to
+the normative sections of this specification.
 
 The canonical example. A user authorizes an application to read a document and perform a backup; that authority propagates through Lineage
 Execution A. The executor serving the request is an AI agent: it receives PCA1-A and proves the PoR, like any other executor.
@@ -467,8 +470,9 @@ question would be the enforcement point of its own limits. The invocation of the
 
 ### 2.3 The Sandbox
 
-> A **sandbox** is a fixed, trusted execution boundary that encloses an executor. The executor has no path to external effect except
-> through the boundary, and it is the sandbox — not the executor — that invokes the Execution Guardrail on every boundary crossing.
+The sandbox is a trusted component: an explicit trust assumption of this specification, exactly as Verifier correctness is an explicit
+trust assumption of the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md). The gain is where the trust sits: it moves
+from the behavior of the executor, unverifiable per Section 2.1, to the structure of the boundary — fixed, implementable, attestable.
 
 ```text
 + - - - - - - - - - - - - - - - +
@@ -481,11 +485,10 @@ question would be the enforcement point of its own limits. The invocation of the
 |   +-----------------------+   |
 |                               |
 + - - - - - - - - - - - - - - - +
-```
 
-The sandbox is a trusted component: an explicit trust assumption of this specification, exactly as Verifier correctness is an explicit
-trust assumption of the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md). The gain is where the trust sits: it moves
-from the behavior of the executor, unverifiable per Section 2.1, to the structure of the boundary — fixed, implementable, attestable.
+```
+> A **sandbox** is a fixed, trusted execution boundary that encloses an executor. The executor has no path to external effect except
+> through the boundary, and it is the sandbox — not the executor — that invokes the Execution Guardrail on every boundary crossing.
 
 This closes a gap Section 1.1 left open: a purely local physical action may be invisible to the protocol. Within a correctly implemented
 sandbox, an action that never crosses the boundary has no external effect, and an action with external effect necessarily crosses the
