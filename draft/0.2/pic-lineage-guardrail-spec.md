@@ -24,14 +24,13 @@ cannot be represented as a valid continuation of another. Physical executor beha
 compromised, or malicious executor can still act locally, but it cannot use PIC to command the next conforming executor beyond the authority
 of its Lineage Execution.
 
-An executor may propose a transition involving one Lineage Execution, or several: a **Multi-Lineage Execution** carries two or more
-independent Lineage Executions together for one proposed transition, while each retains its own origin, PCA chain, authority context, and
-continuity. The participating authorities remain distinct, and no new authority or lineage is created by their joint carriage.
-*Participation, not authority mixing.*
+An executor proposes a transition through a **Multi-Lineage Execution**: one or more independent Lineage Executions carried together for
+one proposed transition, each retaining its own origin, PCA chain, authority context, and continuity. The participating authorities remain
+distinct, and no new authority or lineage is created by their joint carriage. *Participation, not authority mixing.*
 
-An **Execution Guardrail** is an externally configured runtime control at an execution boundary that evaluates a proposed transition
-involving one or more Lineage Executions against configured policy and permits or denies it. Guardrails do not make an invalid PCA valid,
-do not merge authorities, and do not alter lineage invariants.
+An **Execution Guardrail** is an externally configured runtime control at an execution boundary that evaluates the proposed transition of a
+Multi-Lineage Execution against configured policy and permits or denies it. Guardrails do not make an invalid PCA valid, do not merge
+authorities, and do not alter lineage invariants.
 
 This revision establishes the concepts and the standard requirements notation shared by the PIC specification set; the normative guardrail
 construction and enforcement requirements will be defined in forthcoming revisions. Guardrails build on the PCA format of the
@@ -46,9 +45,17 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
   - [Table of Contents](#table-of-contents)
   - [1. Introduction](#1-introduction)
     - [1.1 Lineage Execution and Execution Lineage Safety](#11-lineage-execution-and-execution-lineage-safety)
-    - [1.2 Execution Guardrails](#12-execution-guardrails)
-    - [1.3 Multi-Lineage Execution](#13-multi-lineage-execution)
+    - [1.2 Multi-Lineage Execution](#12-multi-lineage-execution)
+    - [1.3 Execution Guardrails](#13-execution-guardrails)
     - [1.4 Requirements Notation](#14-requirements-notation)
+  - [2. Execution Model](#2-execution-model)
+    - [2.1 Executors: Deterministic and Non-Deterministic](#21-executors-deterministic-and-non-deterministic)
+    - [2.2 The Invocation Problem](#22-the-invocation-problem)
+    - [2.3 The Sandbox](#23-the-sandbox)
+    - [2.4 Discrete Multi-Hop Execution](#24-discrete-multi-hop-execution)
+    - [2.5 The Abstraction Step](#25-the-abstraction-step)
+    - [2.6 Lineage Executions Through the Sandbox](#26-lineage-executions-through-the-sandbox)
+    - [2.7 Model Summary](#27-model-summary)
   - [7. Contributors](#7-contributors)
   - [8. Legal Notices](#8-legal-notices)
   - [References](#references)
@@ -56,8 +63,8 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
 ## 1. Introduction
 
 This section is non-normative. It introduces the three concepts the rest of this specification builds on: the Lineage Execution, which PIC
-secures; the Execution Guardrail, which evaluates proposed transitions at execution boundaries; and the Multi-Lineage Execution, which
-carries several Lineage Executions together for one proposed transition:
+secures; the Multi-Lineage Execution, which carries one or more Lineage Executions together for one proposed transition; and the Execution
+Guardrail, which evaluates that proposed transition at an execution boundary:
 
 ```text
 PIC
@@ -74,24 +81,24 @@ a single-origin PIC execution
 - no invalid PCA accepted downstream
 
 
-EXECUTION GUARDRAIL
--------------------
-evaluates a proposed transition
-at an execution boundary
-
-- input: one or more Lineage Executions
-- evaluate configured policy
-- enforce permit or deny
-
-
 MULTI-LINEAGE EXECUTION
 -----------------------
-two or more Lineage Executions carried
+n >= 1 Lineage Executions carried
 together for one proposed transition
 
 - constructed by the executor
 - authorities remain separate
 - no new authority or lineage is created
+
+
+EXECUTION GUARDRAIL
+-------------------
+evaluates the proposed transition
+at an execution boundary
+
+- input: one Multi-Lineage Execution
+- evaluate configured policy
+- enforce permit or deny
 ```
 
 ### 1.1 Lineage Execution and Execution Lineage Safety
@@ -218,9 +225,55 @@ authority state cannot propagate as a valid PIC continuation.
 > A faulty executor may act locally, but it cannot use PIC to create a valid authority state that commands the next conforming executor
 > beyond the authority of the current Lineage Execution.
 
-The operational risk that remains — the physical behavior itself — is addressed by the guardrails of Section 1.2.
+The operational risk that remains — the physical behavior itself — is addressed by the guardrails of Section 1.3.
 
-### 1.2 Execution Guardrails
+### 1.2 Multi-Lineage Execution
+
+> A **Multi-Lineage Execution** is an execution in which one or more independent Lineage Executions are carried together for one proposed
+> transition, while each retains its own origin, PCA chain, authority context, and continuity.
+
+A Multi-Lineage Execution is a runtime envelope: it carries n >= 1 distinct Lineage Executions, and it has no authority of its own. With
+n = 1 it is simply a proposed transition under one Lineage Execution; with n >= 2 several authorities travel together. The executor or
+calling system constructs and presents it.
+
+```text
+one Lineage Execution
+    -> one authority-propagation flow
+
+Multi-Lineage Execution
+    -> n >= 1 distinct Lineage Executions
+       carried together for one proposed transition
+```
+
+```text
+LINEAGE EXECUTION A
+PCA1-A { BACKUP }
+        |
+        | enters as A
+        v
++====================================================+
+|               MULTI-LINEAGE EXECUTION              |
+|                                                    |
+|  +----------------------------------------------+  |
+|  | A: PCA1-A { BACKUP }                         |  |
+|  +----------------------------------------------+  |
+|                                                    |
+|  +----------------------------------------------+  |
+|  | B: PCA0-B { WRITE-S3 }                       |  |
+|  +----------------------------------------------+  |
+|                                                    |
+|  authorities remain separate                       |
++====================================================+
+        ^
+        | enters as B
+        |
+LINEAGE EXECUTION B
+PCA0-B { WRITE-S3 }
+
+Distinct Lineage Executions, one proposed transition.
+```
+
+### 1.3 Execution Guardrails
 
 An example introduces the concept. A homeowner gives an authorized contractor a key to renovate a house. The key allows the contractor to
 enter. If the contractor enters and destroys the house, the key has not failed: asking the key to guarantee correct physical behavior is a
@@ -244,12 +297,12 @@ limits, observation, and denial
 > An **Execution Guardrail** is an externally configured runtime control at an execution boundary that evaluates a proposed transition
 > involving one or more Lineage Executions and enforces the resulting policy decision.
 
-The guardrail may receive one Lineage Execution, or one Multi-Lineage Execution carrying two or more (Section 1.3). Within a single Lineage
-Execution, authority states are already secured by execution lineage safety (Section 1.1); what the guardrail adds is the evaluation of the
-proposed transition against configured policy.
+The guardrail receives one Multi-Lineage Execution (Section 1.2), the single-lineage case included. Within a single Lineage Execution,
+authority states are already secured by execution lineage safety (Section 1.1); what the guardrail adds is the evaluation of the proposed
+transition against configured policy.
 
 ```text
-  ONE OR MORE LINEAGE EXECUTIONS
+MULTI-LINEAGE EXECUTION (n >= 1)
                 |
                 | proposed transition
                 v
@@ -305,69 +358,6 @@ Guardrails do not make an invalid PCA valid, do not merge authorities, do not ch
 internal executor behavior. They reduce the executor's ability to cause another executor or target to continue an operation that violates
 the configured policy. How context, policy, and decisions are represented and evaluated is defined by the normative sections of this
 specification; this section only introduces the concept.
-
-### 1.3 Multi-Lineage Execution
-
-> A **Multi-Lineage Execution** is an execution in which two or more independent Lineage Executions are carried together for one proposed
-> transition, while each retains its own origin, PCA chain, authority context, and continuity.
-
-A Multi-Lineage Execution is a runtime envelope: it carries several distinct Lineage Executions together, and it has no authority of its
-own. The executor or calling system constructs and presents it; the guardrail does not create it.
-
-```text
-one Lineage Execution
-    -> one authority-propagation flow
-
-Multi-Lineage Execution
-    -> two or more distinct Lineage Executions
-       carried together for one proposed transition
-```
-
-```text
-LINEAGE EXECUTION A
-PCA1-A { BACKUP }
-        |
-        | enters as A
-        v
-+====================================================+
-|               MULTI-LINEAGE EXECUTION              |
-|                                                    |
-|  +----------------------------------------------+  |
-|  | A: PCA1-A { BACKUP }                         |  |
-|  +----------------------------------------------+  |
-|                                                    |
-|  +----------------------------------------------+  |
-|  | B: PCA0-B { WRITE-S3 }                       |  |
-|  +----------------------------------------------+  |
-|                                                    |
-|  authorities remain separate                       |
-+====================================================+
-        ^
-        | enters as B
-        |
-LINEAGE EXECUTION B
-PCA0-B { WRITE-S3 }
-
-Distinct Lineage Executions, one proposed transition.
-```
-
-At the guardrail interface the number of participating Lineage Executions is any number greater than or equal to one:
-
-```text
-Lineage Execution A ----+
-                        |
-Lineage Execution B ----+---> proposed transition
-                        |             |
-Lineage Execution C ----+             v
-                              EXECUTION GUARDRAIL
-
-1 Lineage Execution
-or
-N Lineage Executions
-```
-
-With one participant, the proposal is simply a transition under one Lineage Execution; with two or more, they are carried as a
-Multi-Lineage Execution. The guardrail interface does not require separate mechanisms for the two cases.
 
 The canonical example. A user authorizes an application to read a document and perform a backup; that authority propagates through Lineage
 Execution A. The executor serving the request is an AI agent: it receives PCA1-A and proves the PoR, like any other executor.
@@ -434,6 +424,131 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 and only within the normative sections of this document. Examples are illustrative and non-normative.
 
 The normative guardrail construction and enforcement requirements will be defined in forthcoming revisions of this specification.
+
+## 2. Execution Model
+
+This section is non-normative. It defines the execution model — executor, sandbox, guardrail — and one point must be clear by its end:
+the executor, deterministic or not, is never trusted to invoke its own control; the sandbox is.
+
+### 2.1 Executors: Deterministic and Non-Deterministic
+
+An executor belongs to one of two classes:
+
+- a **deterministic executor** has behavior fixed by human-written code: given the same inputs and state, it performs the same operations;
+- a **non-deterministic executor** has behavior not fixed by its implementation — an LLM, an AI agent, or any component whose next
+  operation is a runtime decision.
+
+When an operation is judged incorrect, the two classes name it differently, but it is the same phenomenon. In a deterministic executor it
+is called a **bug**: the author acknowledges a design or implementation error. In a non-deterministic executor it is a **decision we did
+not want**: there is no error to point to; the component chose. Both belong to the physics of execution — physical executor behavior in
+the sense of Section 1.1, outside execution lineage safety, for PIC as for any security protocol. From the protocol's point of view the
+two failure modes are operationally equivalent.
+
+### 2.2 The Invocation Problem
+
+Section 1 defined the Execution Guardrail but left one question open: who invokes it?
+
+- If the executor's own code is responsible for calling the guardrail, a deterministic executor with a bug may simply never make the
+  call: the control silently does not run.
+- A non-deterministic executor may decide not to make the call — precisely because it does not want to be limited.
+
+The flaw is the same in both cases: trusting the executor to invoke its own control is circular — the component whose behavior is in
+question would be the enforcement point of its own limits. The invocation of the guardrail cannot live inside the executor.
+
+### 2.3 The Sandbox
+
+> A **sandbox** is a fixed, trusted execution boundary that encloses an executor. The executor has no path to external effect except
+> through the boundary, and it is the sandbox — not the executor — that invokes the Execution Guardrail on every boundary crossing.
+
+```text
++ - - - - - - - - - - - - - - - +
+|  SANDBOX                      |
+|                               |
+|   +-----------------------+   |
+|   |       EXECUTOR        |   |
+|   | (deterministic /      |   |
+|   |  non-deterministic)   |   |
+|   +-----------------------+   |
+|                               |
++ - - - - - - - - - - - - - - - +
+```
+
+The sandbox is a trusted component: an explicit trust assumption of this specification, exactly as Verifier correctness is an explicit
+trust assumption of the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md). The gain is where the trust sits: it moves
+from the behavior of the executor, unverifiable per Section 2.1, to the structure of the boundary — fixed, implementable, attestable.
+
+This closes a gap Section 1.1 left open: a purely local physical action may be invisible to the protocol. Within a correctly implemented
+sandbox, an action that never crosses the boundary has no external effect, and an action with external effect necessarily crosses the
+boundary — and is therefore mediated. The claim stops there: the sandbox does not make the executor behave; it makes external effect
+impossible without mediation.
+
+### 2.4 Discrete Multi-Hop Execution
+
+Execution is discrete and multi-hop: a chain of sandboxed executors, each hop continuing the Lineage Execution under PoR and non-expansion
+as defined by the [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md).
+
+```text
++ - - - - - - - - +      + - - - - - - - - +      + - - - - - - - - +
+|  SANDBOX        |      |  SANDBOX        |      |  SANDBOX        |
+|  +-----------+  |      |  +-----------+  |      |  +-----------+  |
+|  | EXECUTOR  |  |----->|  | EXECUTOR  |  |----->|  | EXECUTOR  |  |
+|  +-----------+  | PoR  |  +-----------+  | PoR  |  +-----------+  |
++ - - - - - - - - +      + - - - - - - - - +      + - - - - - - - - +
+```
+
+### 2.5 The Abstraction Step
+
+Whether the executor inside a sandbox is deterministic or non-deterministic does not matter. Bug or decision, the failure mode is the same
+(Section 2.1); the invocation problem is the same (Section 2.2); the answer is the same (Section 2.3). The model therefore discards the
+executor's nature and keeps only the invariant element: the sandbox is fixed, and the sandbox invokes the guardrail.
+
+```text
++ - - - - - - - - - - - - - - - +
+|  SANDBOX                      |
+|                               |
+|   +-----------------------+   |
+|   |     ANY EXECUTOR      |   |
+|   +-----------------------+   |
+|                               |
++ - - - - - - - - - - - - - - - +
+
+The sandbox is the fixed, trusted element.
+The executor inside it is untrusted, whatever its nature.
+The sandbox invokes the guardrail; the executor cannot skip it.
+```
+
+### 2.6 Lineage Executions Through the Sandbox
+
+At each hop, a Multi-Lineage Execution (Section 1.2) enters, traverses, and leaves the sandbox. Every crossing passes through the
+Execution Guardrail, which evaluates the proposed transition against configured policy (Section 1.3); the decision gates continuation.
+
+```text
+L1 ----+                                                      +----> L1'
+       |    + - - - - - - - - +                               |
+L2 ----+--->|     SANDBOX     |     +-------------+  permit   +----> L2'
+       |    |  [ EXECUTOR ]   |---->|  GUARDRAIL  |-----------+
+LN ----+    |                 |     +-------------+           +----> LN'
+            + - - - - - - - - +            |
+                                           | deny
+                                           v
+                                           X
+
+Every external effect crosses the sandbox boundary.
+Every crossing passes through the guardrail.
+```
+
+The decision verbs are those of Section 1.3: permit and deny. Richer runtime-control taxonomies are deferred to the normative sections of
+this specification.
+
+### 2.7 Model Summary
+
+- **executor** — untrusted, deterministic or non-deterministic; the source of bugs and unwanted decisions;
+- **sandbox** — fixed, trusted execution boundary; the only path to external effect; invokes the guardrail on every crossing;
+- **Execution Guardrail** — evaluates every proposed crossing against configured policy (Section 1.3); permits or denies;
+- **Lineage Executions** — the secured authority inputs and outputs of each hop (Sections 1.1, 1.2); never merged, and every externally
+  relevant action keeps an authorizing Lineage Execution.
+
+With the model in place, the normative sections of this specification define how crossings are represented, evaluated, and enforced.
 
 ## 7. Contributors
 
