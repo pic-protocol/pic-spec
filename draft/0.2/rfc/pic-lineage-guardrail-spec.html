@@ -1377,7 +1377,10 @@ Multi-Lineage Execution. It introduces no new PCA type and no trusted sandbox.<a
                 <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-non-pic-aware-target" class="internal xref">Non-PIC-Aware Target</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-consecutive-collusion" class="internal xref">Consecutive Collusion</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-relationship-to-service-mes" class="internal xref">Relationship to Service Meshes and Deployment Infrastructure</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-consecutive-collusion" class="internal xref">Consecutive Collusion</a></p>
 </li>
             </ul>
 </li>
@@ -1549,13 +1552,22 @@ predecessor under the ordinary PIC Proof of Relationship rules:<a href="#section
 <pre>
 OUTER SANDBOXED EXECUTION
 
-PCA-G[n-1]              PCA-G[n]                PCA-G[n+1]
-Guardrail n-1  --PoR--&gt; Guardrail n  --PoR--&gt;  Guardrail n+1
-                            |
-                            | carries and evaluates
-                            v
-                     Multi-Lineage Execution
-                     [ leg A | leg B | ... ]
+Guardrail n-1
+    produces PCA-G[n-1]
+          |
+          | PCA-G[n-1] is presented as predecessor
+          | and verified by Guardrail n
+          v
+Guardrail n
+    verifies the outer predecessor
+    verifies the carried Multi-Lineage Execution
+    applies the enforcement function
+    produces PCA-G[n]
+          |
+          | PCA-G[n] is presented as predecessor
+          | and verified by Guardrail n+1
+          v
+Guardrail n+1
 </pre><a href="#section-1.3-2" class="pilcrow">¶</a>
 </div>
 <p id="section-1.3-3">The guardrails are the executors of the outer Lineage Execution. They are not a parallel guardrail chain and do not use a separate
@@ -1595,7 +1607,8 @@ continues only a valid outer PCA.<a href="#section-1.3-7" class="pilcrow">¶</a>
             <p id="section-1.3-8.1.1">The execution is sandboxed because it can continue <strong>as valid PIC state</strong> only through valid guardrail hops of the outer lineage.<a href="#section-1.3-8.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-1.3-9">This specification does not prevent a compromised executor from attempting local physical actions outside the signed execution.<a href="#section-1.3-9" class="pilcrow">¶</a></p>
+<p id="section-1.3-9">This specification does not prevent a compromised or non-conforming executor from attempting local physical actions outside the signed
+execution.<a href="#section-1.3-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="requirements-notation">
@@ -1605,10 +1618,10 @@ continues only a valid outer PCA.<a href="#section-1.3-7" class="pilcrow">¶</a>
         </h3>
 <p id="section-1.4-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
 "OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span> when, and only when, they appear in all capitals
-in normative text. The sections defining <code>multiLineage</code>, sandbox origination, the Guardrail Prover and Verifier profile, the operation
-profile, Acceptance, Bypass rejection behavior, materializing-guardrail requirements, and Recursion resource limits are normative. The
-Abstract, Introduction, explanatory diagrams, examples, and Security Boundary explanations are non-normative unless a requirement is
-explicitly expressed using BCP 14 keywords.<a href="#section-1.4-1" class="pilcrow">¶</a></p>
+in normative text. The sections defining <code>multiLineage</code>, its canonical binding, sandbox origination, the Guardrail Prover and Verifier
+profile, the operation profile, Acceptance, Bypass rejection behavior, materializing-guardrail requirements, and Recursion resource limits
+are normative. The Abstract, Introduction, explanatory diagrams, examples, deployment comparisons, the service-mesh explanation, and Security
+Boundary explanations are non-normative unless a requirement is explicitly expressed using BCP 14 keywords.<a href="#section-1.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1720,8 +1733,10 @@ invalid Leg B successor:
 </div>
 <p id="section-2.3-6">PIC eliminates cross-lineage authority composition from valid PIC state. Sandboxed Execution recursively protects the decision that
 determines whether independently valid lineages may participate in one exact transition.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
-<p id="section-2.3-7">This is a guarantee about valid and accepted PIC state. It does not prove that a compromised executor cannot perform an unauthorized physical
-action locally.<a href="#section-2.3-7" class="pilcrow">¶</a></p>
+<p id="section-2.3-7">At every recursive level, the local lineage preserves its own origin-bounded authority, while nested executions are treated only as
+independently verified execution inputs.<a href="#section-2.3-7" class="pilcrow">¶</a></p>
+<p id="section-2.3-8">This is a guarantee about valid and accepted PIC state. It does not prove that a compromised executor cannot perform an unauthorized physical
+action locally.<a href="#section-2.3-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="the-multilineage-pca-profile-field">
@@ -1740,7 +1755,7 @@ one Multi-Lineage Execution; inside it, <code>legs</code> is the bounded list of
       {
         "pca": { "...": "ordinary signed PCA" },
         "predecessor": { "...": "when required by the selected validation profile" },
-        "role": "..."
+        "role": "... authenticated, attested, or profile-derived ..."
       }
     ],
     "context": {
@@ -1835,19 +1850,24 @@ the result for the exact <code>multiLineage</code>, destination, request, payloa
 bound by the same outer request. A <code>permit</code> MAY appear in an authorizing outer successor; a <code>deny</code> MUST NOT authorize continuation. A profile
 MAY record a denial for audit, but MUST NOT introduce a denial PCA type or interpret a deny-bearing PCA as permission to cross the governed
 boundary.<a href="#section-2.4-16" class="pilcrow">¶</a></p>
-<p id="section-2.4-17">Evolution across hops. The outer PCA at hop <code>n</code> carries the exact inner execution evaluated by guardrail <code>n</code>. The next guardrail receives
-that signed object and MAY continue the same inner execution or evaluate a profile-valid successor Multi-Lineage Execution.<a href="#section-2.4-17" class="pilcrow">¶</a></p>
+<p id="section-2.4-17">For every non-origin outer PCA, <code>operation</code>, <code>multiLineageDigest</code>, and <code>enforcementResult</code> are mandatory; other request fields follow the
+selected profile's optionality rules.<a href="#section-2.4-17" class="pilcrow">¶</a></p>
+<p id="section-2.4-18">An audit representation of <code>deny</code> is not an execution-authorizing continuation. Unless a future profile explicitly defines denial-state
+progression, a denial MUST NOT be assumed to consume the predecessor continuation challenge, advance the authorizing outer lineage, or create
+an executable successor. The interoperable denial-recording format is out of scope for this revision.<a href="#section-2.4-18" class="pilcrow">¶</a></p>
+<p id="section-2.4-19">Evolution across hops. The outer PCA at hop <code>n</code> carries the exact inner execution evaluated by guardrail <code>n</code>. The next guardrail receives
+that signed object and MAY continue the same inner execution or evaluate a profile-valid successor Multi-Lineage Execution.<a href="#section-2.4-19" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.4-18.1">
-            <p id="section-2.4-18.1.1">A successor outer PCA MUST NOT silently mutate <code>multiLineage</code>. If the proposed inner execution changes, the successor request MUST bind the
-complete new <code>multiLineage</code>, and every changed leg MUST independently validate as required by its own PIC lineage and the selected profile.<a href="#section-2.4-18.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-2.4-20.1">
+            <p id="section-2.4-20.1.1">A successor outer PCA MUST NOT silently mutate <code>multiLineage</code>. If the proposed inner execution changes, the successor request MUST bind the
+complete new <code>multiLineage</code>, and every changed leg MUST independently validate as required by its own PIC lineage and the selected profile.<a href="#section-2.4-20.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.4-19">An unchanged inner execution may be re-carried unchanged. An inner leg may continue only through its own valid PIC successor. A removed leg
+<p id="section-2.4-21">An unchanged inner execution may be re-carried unchanged. An inner leg may continue only through its own valid PIC successor. A removed leg
 is not an attenuation of the outer authority; it is a change to the execution input and MUST be visible in the signed request binding. Inner
-authority is never silently added, removed, replaced, or imported.<a href="#section-2.4-19" class="pilcrow">¶</a></p>
-<p id="section-2.4-20">The recursion is structural, not authority composition:<a href="#section-2.4-20" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-2.4-21">
+authority is never silently added, removed, replaced, or imported.<a href="#section-2.4-21" class="pilcrow">¶</a></p>
+<p id="section-2.4-22">The recursion is structural, not authority composition:<a href="#section-2.4-22" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-23">
 <pre>
 PCA
  +-- multiLineage
@@ -1856,7 +1876,7 @@ PCA
       +-- leg: PCA
            +-- multiLineage
                 +-- ...
-</pre><a href="#section-2.4-21" class="pilcrow">¶</a>
+</pre><a href="#section-2.4-23" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -2246,31 +2266,33 @@ sender ---- inner Multi-Lineage only ----&gt; next conforming guardrail
 <p id="section-4.1-1">A non-PIC-aware target cannot verify the outer Sandboxed Execution. For such a target, the final hop of the Sandboxed Execution is the
 <strong>materializing guardrail</strong> — an ordinary executor of the outer lineage that performs the exact physical action permitted by its own bound
 outer request.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">It MUST:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">It MUST produce and sign its ordinary outer successor PCA for the exact materialized action; it MUST NOT complete or mutate an already-signed
+PCA. The materializing guardrail:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-4.1-3">
 <li id="section-4.1-3.1">
-            <p id="section-4.1-3.1.1">validate its outer predecessor;<a href="#section-4.1-3.1.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-3.1.1">verifies its outer predecessor;<a href="#section-4.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.1-3.2">
-            <p id="section-4.1-3.2.1">validate every inner leg;<a href="#section-4.1-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-3.2.1">verifies every inner leg;<a href="#section-4.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.1-3.3">
-            <p id="section-4.1-3.3.1">evaluate the enforcement function;<a href="#section-4.1-3.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-3.3.1">evaluates the enforcement function;<a href="#section-4.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.1-3.4">
-            <p id="section-4.1-3.4.1">produce or complete the ordinary outer PCA for the exact action;<a href="#section-4.1-3.4.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-3.4.1">constructs its own ordinary outer successor PCA;<a href="#section-4.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.1-3.5">
-            <p id="section-4.1-3.5.1">materialize exactly the bound action;<a href="#section-4.1-3.5.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-3.5.1">binds the exact physical action, destination, payload, participants, policy inputs, and context;<a href="#section-4.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.1-3.6">
-            <p id="section-4.1-3.6.1">use the bound destination, request, payload, participants, and context;<a href="#section-4.1-3.6.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-3.6.1">signs the complete successor PCA;<a href="#section-4.1-3.6.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.1-3.7">
-            <p id="section-4.1-3.7.1">prevent post-decision substitution within its own implementation.<a href="#section-4.1-3.7.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-3.7.1">performs exactly the bound physical action.<a href="#section-4.1-3.7.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-4.1-4">After the decision, control of the materialized target operation does not return to the proposing executor.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">After the decision, control of that concrete materialized target operation does not return to the proposing executor; this concerns the
+materialized operation, not ownership of unrelated application workflow.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-4.1-5">
 <pre>
 proposing executor
@@ -2288,23 +2310,71 @@ non-PIC-aware target
 </pre><a href="#section-4.1-5" class="pilcrow">¶</a>
 </div>
 <p id="section-4.1-6">The materializing guardrail is not a new trusted authority, a special PCA type, a required service mesh, a universal gateway, or a
-protocol-level physical sandbox; it remains an ordinary executor of the outer PIC lineage. PIC does not prevent all direct physical access to
-a non-PIC-aware target: ensuring that the target cannot also be reached through unrelated credentials, alternate routes, or physical access
-remains a deployment responsibility, addressed by the
+protocol-level physical sandbox; it remains an ordinary executor of the outer PIC lineage. For a non-PIC-aware target, ensuring that the
+target cannot also be reached through unrelated credentials, alternate routes, direct network access, or other physical paths remains a
+deployment responsibility, addressed by the
 <a href="pic-architecture-deployment-spec.html">PIC Architecture and Deployment Specification</a>.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
+<p id="section-4.1-7">PIC determines whether an execution may continue as valid PIC state; network infrastructure may prevent ungoverned physical access. These are
+separate guarantees, and one does not replace the other.<a href="#section-4.1-7" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4.1-8">
+<pre>
+PIC validity boundary:
+    Is this a valid recursive PIC continuation?
+
+Deployment path boundary:
+    Can the target be reached through an alternate physical route?
+</pre><a href="#section-4.1-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="relationship-to-service-meshes-and-deployment-infrastructure">
+<section id="section-4.2">
+        <h3 id="name-relationship-to-service-mes">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-relationship-to-service-mes" class="section-name selfRef">Relationship to Service Meshes and Deployment Infrastructure</a>
+        </h3>
+<p id="section-4.2-1">A Sandboxed Execution does not require a service mesh, sidecar, proxy, gateway, network-interception layer, or physical sandbox. The validity
+of guardrail traversal derives from the outer PIC lineage: ordinary Proof of Relationship, exactly-one-predecessor continuity,
+non-expansion, request binding, executor conformance, revocation checks, and verification by the next conforming outer executor.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">A service mesh MAY transport, route, encrypt, observe, load-balance, or operationally restrict a Sandboxed Execution. It is not the source of
+the execution's continuity, guardrail authorization, authority separation, or sandboxing property. PIC therefore assumes responsibility for
+the execution-continuity and guardrail-validity properties that would otherwise have to be trusted to interception infrastructure; the
+service mesh, when present, remains deployment infrastructure rather than a PIC security primitive.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4.2-3">
+<pre>
+PIC SANDBOXED EXECUTION            OPTIONAL SERVICE MESH
+provides:                          may provide:
+- outer execution continuity;      - transport encryption;
+- guardrail-to-guardrail PoR;      - service discovery;
+- exact request binding;           - routing;
+- authority non-expansion;         - observability;
+- independent inner-leg checks;    - load balancing;
+- recursive validation;            - rate limiting;
+- rejection of an invalid          - network policy;
+  outer continuation.              - operational path restriction;
+                                   - resilience and availability.
+</pre><a href="#section-4.2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-4.2-4">A service mesh does not make an invalid PCA valid, does not replace PIC verification, and does not create a Sandboxed Execution merely by
+forcing traffic through a proxy. Conversely, PIC does not replace networking, transport confidentiality, availability engineering, service
+discovery, or physical path control. It is unnecessary only as the source of the cryptographic and lineage-based sandboxing guarantee.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-4.2-5.1">
+            <p id="section-4.2-5.1.1">A service mesh may carry the sandbox, but it is not the sandbox.<a href="#section-4.2-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 <div id="consecutive-collusion">
-<section id="section-4.2">
+<section id="section-4.3">
         <h3 id="name-consecutive-collusion">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-consecutive-collusion" class="section-name selfRef">Consecutive Collusion</a>
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-consecutive-collusion" class="section-name selfRef">Consecutive Collusion</a>
         </h3>
-<p id="section-4.2-1">A sender colluding with a receiving hop that deliberately ignores the Sandboxed Execution profile is a non-conforming or consecutive-collusion
+<p id="section-4.3-1">A sender colluding with a receiving hop that deliberately ignores the Sandboxed Execution profile is a non-conforming or consecutive-collusion
 case under the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>.
 Detection beyond the colluding pair depends on the selected chain-validation profile and the authenticated history available to the later
 Verifier: a full-chain, Trust Plane, authenticated-checkpoint, or approved succinct-proof profile may detect the invalid prefix according to
 its guarantees, while an incremental Verifier without authenticated evidence of the earlier prefix has the consecutive-collusion limitation
-already documented by that specification (Section 6.8). Sandboxed Execution introduces no new failure class.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+already documented by that specification (Section 6.8). Sandboxed Execution introduces no new failure class.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2464,8 +2534,9 @@ is itself represented and protected by PIC.
 </div>
 <p id="section-7-2">The result is recursive execution safety: independently originated authorities may participate in one evaluated transition without becoming
 one authority state, and the evaluation process itself continues only as valid PIC state.<a href="#section-7-2" class="pilcrow">¶</a></p>
-<p id="section-7-3">Physical executor behavior, implementation failure, cryptographic compromise, unavailable authenticated history, and policy-semantic error
-remain at the stated boundaries of the model.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-3">A service mesh may carry, observe, encrypt, or operationally restrict this execution, but it is not the source of its sandboxing property.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-4">Physical executor behavior, alternate physical paths, implementation failure, cryptographic compromise, unavailable authenticated history,
+and policy-semantic error remain at the stated boundaries of the model.<a href="#section-7-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="contributors">

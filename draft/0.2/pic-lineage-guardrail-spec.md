@@ -156,13 +156,22 @@ predecessor under the ordinary PIC Proof of Relationship rules:
 ~~~text
 OUTER SANDBOXED EXECUTION
 
-PCA-G[n-1]              PCA-G[n]                PCA-G[n+1]
-Guardrail n-1  --PoR--> Guardrail n  --PoR-->  Guardrail n+1
-                            |
-                            | carries and evaluates
-                            v
-                     Multi-Lineage Execution
-                     [ leg A | leg B | ... ]
+Guardrail n-1
+    produces PCA-G[n-1]
+          |
+          | PCA-G[n-1] is presented as predecessor
+          | and verified by Guardrail n
+          v
+Guardrail n
+    verifies the outer predecessor
+    verifies the carried Multi-Lineage Execution
+    applies the enforcement function
+    produces PCA-G[n]
+          |
+          | PCA-G[n] is presented as predecessor
+          | and verified by Guardrail n+1
+          v
+Guardrail n+1
 ~~~
 
 The guardrails are the executors of the outer Lineage Execution. They are not a parallel guardrail chain and do not use a separate
@@ -186,16 +195,17 @@ continues only a valid outer PCA.
 
 > The execution is sandboxed because it can continue **as valid PIC state** only through valid guardrail hops of the outer lineage.
 
-This specification does not prevent a compromised executor from attempting local physical actions outside the signed execution.
+This specification does not prevent a compromised or non-conforming executor from attempting local physical actions outside the signed
+execution.
 
 ## Requirements Notation
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
 "OPTIONAL" are to be interpreted as described in BCP 14 [[2]](#references) [[3]](#references) when, and only when, they appear in all capitals
-in normative text. The sections defining `multiLineage`, sandbox origination, the Guardrail Prover and Verifier profile, the operation
-profile, Acceptance, Bypass rejection behavior, materializing-guardrail requirements, and Recursion resource limits are normative. The
-Abstract, Introduction, explanatory diagrams, examples, and Security Boundary explanations are non-normative unless a requirement is
-explicitly expressed using BCP 14 keywords.
+in normative text. The sections defining `multiLineage`, its canonical binding, sandbox origination, the Guardrail Prover and Verifier
+profile, the operation profile, Acceptance, Bypass rejection behavior, materializing-guardrail requirements, and Recursion resource limits
+are normative. The Abstract, Introduction, explanatory diagrams, examples, deployment comparisons, the service-mesh explanation, and Security
+Boundary explanations are non-normative unless a requirement is explicitly expressed using BCP 14 keywords.
 
 # Recursive Execution Model
 
@@ -287,6 +297,9 @@ invalid Leg B successor:
 PIC eliminates cross-lineage authority composition from valid PIC state. Sandboxed Execution recursively protects the decision that
 determines whether independently valid lineages may participate in one exact transition.
 
+At every recursive level, the local lineage preserves its own origin-bounded authority, while nested executions are treated only as
+independently verified execution inputs.
+
 This is a guarantee about valid and accepted PIC state. It does not prove that a compromised executor cannot perform an unauthorized physical
 action locally.
 
@@ -303,7 +316,7 @@ one Multi-Lineage Execution; inside it, `legs` is the bounded list of independen
       {
         "pca": { "...": "ordinary signed PCA" },
         "predecessor": { "...": "when required by the selected validation profile" },
-        "role": "..."
+        "role": "... authenticated, attested, or profile-derived ..."
       }
     ],
     "context": {
@@ -385,6 +398,13 @@ the result for the exact `multiLineage`, destination, request, payload, policy, 
 bound by the same outer request. A `permit` MAY appear in an authorizing outer successor; a `deny` MUST NOT authorize continuation. A profile
 MAY record a denial for audit, but MUST NOT introduce a denial PCA type or interpret a deny-bearing PCA as permission to cross the governed
 boundary.
+
+For every non-origin outer PCA, `operation`, `multiLineageDigest`, and `enforcementResult` are mandatory; other request fields follow the
+selected profile's optionality rules.
+
+An audit representation of `deny` is not an execution-authorizing continuation. Unless a future profile explicitly defines denial-state
+progression, a denial MUST NOT be assumed to consume the predecessor continuation challenge, advance the authorizing outer lineage, or create
+an executable successor. The interoperable denial-recording format is out of scope for this revision.
 
 Evolution across hops. The outer PCA at hop `n` carries the exact inner execution evaluated by guardrail `n`. The next guardrail receives
 that signed object and MAY continue the same inner execution or evaluate a profile-valid successor Multi-Lineage Execution.
@@ -704,17 +724,19 @@ A non-PIC-aware target cannot verify the outer Sandboxed Execution. For such a t
 **materializing guardrail** — an ordinary executor of the outer lineage that performs the exact physical action permitted by its own bound
 outer request.
 
-It MUST:
+It MUST produce and sign its ordinary outer successor PCA for the exact materialized action; it MUST NOT complete or mutate an already-signed
+PCA. The materializing guardrail:
 
-1. validate its outer predecessor;
-2. validate every inner leg;
-3. evaluate the enforcement function;
-4. produce or complete the ordinary outer PCA for the exact action;
-5. materialize exactly the bound action;
-6. use the bound destination, request, payload, participants, and context;
-7. prevent post-decision substitution within its own implementation.
+1. verifies its outer predecessor;
+2. verifies every inner leg;
+3. evaluates the enforcement function;
+4. constructs its own ordinary outer successor PCA;
+5. binds the exact physical action, destination, payload, participants, policy inputs, and context;
+6. signs the complete successor PCA;
+7. performs exactly the bound physical action.
 
-After the decision, control of the materialized target operation does not return to the proposing executor.
+After the decision, control of that concrete materialized target operation does not return to the proposing executor; this concerns the
+materialized operation, not ownership of unrelated application workflow.
 
 ~~~text
 proposing executor
@@ -732,10 +754,52 @@ non-PIC-aware target
 ~~~
 
 The materializing guardrail is not a new trusted authority, a special PCA type, a required service mesh, a universal gateway, or a
-protocol-level physical sandbox; it remains an ordinary executor of the outer PIC lineage. PIC does not prevent all direct physical access to
-a non-PIC-aware target: ensuring that the target cannot also be reached through unrelated credentials, alternate routes, or physical access
-remains a deployment responsibility, addressed by the
+protocol-level physical sandbox; it remains an ordinary executor of the outer PIC lineage. For a non-PIC-aware target, ensuring that the
+target cannot also be reached through unrelated credentials, alternate routes, direct network access, or other physical paths remains a
+deployment responsibility, addressed by the
 [PIC Architecture and Deployment Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md).
+
+PIC determines whether an execution may continue as valid PIC state; network infrastructure may prevent ungoverned physical access. These are
+separate guarantees, and one does not replace the other.
+
+~~~text
+PIC validity boundary:
+    Is this a valid recursive PIC continuation?
+
+Deployment path boundary:
+    Can the target be reached through an alternate physical route?
+~~~
+
+## Relationship to Service Meshes and Deployment Infrastructure
+
+A Sandboxed Execution does not require a service mesh, sidecar, proxy, gateway, network-interception layer, or physical sandbox. The validity
+of guardrail traversal derives from the outer PIC lineage: ordinary Proof of Relationship, exactly-one-predecessor continuity,
+non-expansion, request binding, executor conformance, revocation checks, and verification by the next conforming outer executor.
+
+A service mesh MAY transport, route, encrypt, observe, load-balance, or operationally restrict a Sandboxed Execution. It is not the source of
+the execution's continuity, guardrail authorization, authority separation, or sandboxing property. PIC therefore assumes responsibility for
+the execution-continuity and guardrail-validity properties that would otherwise have to be trusted to interception infrastructure; the
+service mesh, when present, remains deployment infrastructure rather than a PIC security primitive.
+
+~~~text
+PIC SANDBOXED EXECUTION            OPTIONAL SERVICE MESH
+provides:                          may provide:
+- outer execution continuity;      - transport encryption;
+- guardrail-to-guardrail PoR;      - service discovery;
+- exact request binding;           - routing;
+- authority non-expansion;         - observability;
+- independent inner-leg checks;    - load balancing;
+- recursive validation;            - rate limiting;
+- rejection of an invalid          - network policy;
+  outer continuation.              - operational path restriction;
+                                   - resilience and availability.
+~~~
+
+A service mesh does not make an invalid PCA valid, does not replace PIC verification, and does not create a Sandboxed Execution merely by
+forcing traffic through a proxy. Conversely, PIC does not replace networking, transport confidentiality, availability engineering, service
+discovery, or physical path control. It is unnecessary only as the source of the cryptographic and lineage-based sandboxing guarantee.
+
+> A service mesh may carry the sandbox, but it is not the sandbox.
 
 ## Consecutive Collusion
 
@@ -852,8 +916,10 @@ is itself represented and protected by PIC.
 The result is recursive execution safety: independently originated authorities may participate in one evaluated transition without becoming
 one authority state, and the evaluation process itself continues only as valid PIC state.
 
-Physical executor behavior, implementation failure, cryptographic compromise, unavailable authenticated history, and policy-semantic error
-remain at the stated boundaries of the model.
+A service mesh may carry, observe, encrypt, or operationally restrict this execution, but it is not the source of its sandboxing property.
+
+Physical executor behavior, alternate physical paths, implementation failure, cryptographic compromise, unavailable authenticated history,
+and policy-semantic error remain at the stated boundaries of the model.
 
 # Contributors {#contributors}
 
