@@ -33,8 +33,8 @@ Abstract
    No new PCA type is introduced, no trusted sandbox, and no external
    guardrail authority.  The outer lineage is identified only by the
    operation ENFORCE and by one signed profile field, multiLineage, that
-   carries the inner execution.  The construction is recursive: an inner
-   leg may itself be a Sandboxed Execution.
+   carries the inner execution.  The construction is recursive: a
+   carried lineage may itself be a Sandboxed Execution.
 
       A Sandboxed Execution is PIC applied recursively: an outer PIC
       execution carries and governs an inner PIC execution.
@@ -85,27 +85,27 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
      1.1.  Lineage Execution . . . . . . . . . . . . . . . . . . . .   3
      1.2.  Multi-Lineage Execution . . . . . . . . . . . . . . . . .   4
-     1.3.  Sandboxed Execution . . . . . . . . . . . . . . . . . . .   5
-     1.4.  Requirements Notation . . . . . . . . . . . . . . . . . .   6
-   2.  Recursive Execution Model . . . . . . . . . . . . . . . . . .   6
-     2.1.  Outer and Inner Execution . . . . . . . . . . . . . . . .   6
-     2.2.  PIC Carrying PIC (PIC of PIC) . . . . . . . . . . . . . .   7
-     2.3.  Recursive Multi-Lineage Safety  . . . . . . . . . . . . .   7
-     2.4.  The multiLineage PCA Profile Field  . . . . . . . . . . .   8
-     2.5.  Originating the Sandboxed Execution . . . . . . . . . . .  12
-     2.6.  Guardrail Prover and Verifier Profile . . . . . . . . . .  14
-     2.7.  Operation Profile . . . . . . . . . . . . . . . . . . . .  17
-   3.  Acceptance  . . . . . . . . . . . . . . . . . . . . . . . . .  18
-   4.  Bypass  . . . . . . . . . . . . . . . . . . . . . . . . . . .  20
-     4.1.  Non-PIC-Aware Target  . . . . . . . . . . . . . . . . . .  20
+     1.3.  Sandboxed Execution . . . . . . . . . . . . . . . . . . .   6
+     1.4.  Requirements Notation . . . . . . . . . . . . . . . . . .   7
+   2.  Recursive Execution Model . . . . . . . . . . . . . . . . . .   8
+     2.1.  Outer and Inner Execution . . . . . . . . . . . . . . . .   8
+     2.2.  PIC Carrying PIC (PIC of PIC) . . . . . . . . . . . . . .   8
+     2.3.  Recursive Multi-Lineage Safety  . . . . . . . . . . . . .   9
+     2.4.  The multiLineage PCA Profile Field  . . . . . . . . . . .  10
+     2.5.  Originating the Sandboxed Execution . . . . . . . . . . .  13
+     2.6.  Guardrail Prover and Verifier Profile . . . . . . . . . .  16
+     2.7.  Operation Profile . . . . . . . . . . . . . . . . . . . .  19
+   3.  Acceptance  . . . . . . . . . . . . . . . . . . . . . . . . .  20
+   4.  Bypass  . . . . . . . . . . . . . . . . . . . . . . . . . . .  22
+     4.1.  Non-PIC-Aware Target  . . . . . . . . . . . . . . . . . .  22
      4.2.  Relationship to Service Meshes and Deployment
-           Infrastructure  . . . . . . . . . . . . . . . . . . . . .  22
-     4.3.  Consecutive Collusion . . . . . . . . . . . . . . . . . .  23
-   5.  Recursion . . . . . . . . . . . . . . . . . . . . . . . . . .  23
-   6.  Security Boundary . . . . . . . . . . . . . . . . . . . . . .  24
-     6.1.  Model Guarantee . . . . . . . . . . . . . . . . . . . . .  24
-     6.2.  Implementation Failure  . . . . . . . . . . . . . . . . .  25
-     6.3.  Semantic Divergence . . . . . . . . . . . . . . . . . . .  25
+           Infrastructure  . . . . . . . . . . . . . . . . . . . . .  24
+     4.3.  Consecutive Collusion . . . . . . . . . . . . . . . . . .  25
+   5.  Recursion . . . . . . . . . . . . . . . . . . . . . . . . . .  25
+   6.  Security Boundary . . . . . . . . . . . . . . . . . . . . . .  26
+     6.1.  Model Guarantee . . . . . . . . . . . . . . . . . . . . .  26
+     6.2.  Implementation Failure  . . . . . . . . . . . . . . . . .  27
+     6.3.  Semantic Divergence . . . . . . . . . . . . . . . . . . .  27
 
 
 
@@ -114,11 +114,11 @@ Gallo                         Informational                     [Page 2]
                          PIC Sandboxed Execution               July 2026
 
 
-   7.  Model Summary . . . . . . . . . . . . . . . . . . . . . . . .  25
-   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  26
-   9.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  26
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  27
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  27
+   7.  Model Summary . . . . . . . . . . . . . . . . . . . . . . . .  27
+   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  28
+   9.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  28
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  29
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  29
 
 1.  Introduction
 
@@ -206,14 +206,14 @@ Gallo                         Informational                     [Page 3]
    *  it is the execution input carried by the multiLineage field
       (Section 2.4).
 
-   +======================================+
-   | MULTI-LINEAGE EXECUTION              |
-   |                                      |
-   | leg A: PCA1-A { BACKUP }             |
-   | leg B: PCA0-B { WRITE-S3 }           |
-   |                                      |
-   | authorities remain separate          |
-   +======================================+
+   +========================================+
+   | MULTI-LINEAGE EXECUTION                |
+   |                                        |
+   | carried lineage A: PCA1-A { BACKUP }   |
+   | carried lineage B: PCA0-B { WRITE-S3 } |
+   |                                        |
+   | authorities remain separate            |
+   +========================================+
 
    Distinct lineages, one proposed transition.
 
@@ -225,6 +225,81 @@ Gallo                         Informational                     [Page 4]
 
                          PIC Sandboxed Execution               July 2026
 
+
+   A *carried lineage* is an independently verifiable PIC lineage
+   representation carried within a Multi-Lineage Execution for joint
+   evaluation in one exact proposed transition.  A carried lineage is
+   not an execution step, workflow stage, route segment, child lineage,
+   subordinate lineage, additional outer predecessor, or authority
+   fragment.
+
+   The Sandboxed Execution does not execute on or through its carried
+   lineages.  It carries and evaluates their joint participation while
+   preserving each lineage's independent origin, authority context,
+   predecessor relation, signature, execution contract, and revocation
+   state.
+
+   A Multi-Lineage Execution is structurally composed of
+   carriedLineages.  The outer Sandboxed Execution remains a separate
+   PIC lineage with its own origin, predecessor chain, authority {
+   ENFORCE }, execution contract, continuation, and revocation
+   coordinates.  The existence of carried lineages motivates the
+   execution being evaluated, but the outer lineage does not derive
+   authority from them.
+
+   The name carriedLineages describes containment and transport within
+   the Multi-Lineage Execution.  It does not imply that the outer
+   lineage is composed from, descended from, authorized by, or
+   structurally continued from the carried lineages.  The outer lineage
+   is originated independently by an authorized sandbox origin; the
+   carried lineages define the authenticated execution inputs being
+   evaluated, not the authority source of the outer lineage.
+
+   The carriedLineages are constitutive of the evaluated inner Multi-
+   Lineage Execution.  Without at least one carried lineage, there is no
+   Multi-Lineage Execution and therefore no inner execution for this
+   Sandboxed Execution profile to govern.  The Sandboxed Execution
+   exists to validate and control the proposed joint participation of
+   its carriedLineages; in that functional sense, the carried lineages
+   define the subject matter and purpose of the outer execution.
+
+   This dependency is semantic and structural, not an authority
+   derivation.  The outer lineage is not created from the authority of
+   the carried lineages, is not their successor, and is not their union.
+   It is independently originated by an authorized sandbox origin and
+   carries only its own authority, { ENFORCE }.
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 5]
+
+                         PIC Sandboxed Execution               July 2026
+
+
+   carriedLineages
+       constitute the inner Multi-Lineage Execution
+
+   Multi-Lineage Execution
+       constitutes the execution subject evaluated by the sandbox
+
+   authorized sandbox origin
+       independently originates the outer lineage
+
+   outer lineage authority
+       remains only { ENFORCE }
+
+   Removing all carriedLineages removes the execution subject of the
+   Sandboxed Execution; it does not attenuate the outer authority or
+   transform the outer lineage into an empty authority container.
+   multiLineage.carriedLineages MUST contain at least one element; an
+   empty carriedLineages array is invalid under this profile because it
+   represents no Multi-Lineage Execution to evaluate.
 
 1.3.  Sandboxed Execution
 
@@ -251,6 +326,18 @@ Gallo                         Informational                     [Page 4]
              v
    Guardrail n+1
 
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 6]
+
+                         PIC Sandboxed Execution               July 2026
+
+
    The guardrails are the executors of the outer Lineage Execution.
    They are not a parallel guardrail chain and do not use a separate
    continuity model.  The executor at outer hop n produces PCA-G[n]; the
@@ -264,23 +351,13 @@ Gallo                         Informational                     [Page 4]
 
    2.  verifies the outer PIC continuation;
 
-   3.  verifies every inner leg;
+   3.  verifies every carried lineage;
 
    4.  applies the enforcement function;
 
    5.  on permit, proves the next ordinary outer PCA;
 
    6.  on deny, produces no authorizing continuation for that crossing.
-
-
-
-
-
-
-Gallo                         Informational                     [Page 5]
-
-                         PIC Sandboxed Execution               July 2026
-
 
       A *guardrail* is an executor of a Sandboxed Execution: it verifies
       the outer continuation, verifies the carried inner execution,
@@ -309,6 +386,14 @@ Gallo                         Informational                     [Page 5]
    Verifier profile, the operation profile, Acceptance, Bypass rejection
    behavior, materializing-guardrail requirements, and Recursion
    resource limits are normative.  The Abstract, Introduction,
+
+
+
+Gallo                         Informational                     [Page 7]
+
+                         PIC Sandboxed Execution               July 2026
+
+
    explanatory diagrams, examples, deployment comparisons, the service-
    mesh explanation, and Security Boundary explanations are non-
    normative unless a requirement is explicitly expressed using BCP 14
@@ -323,20 +408,11 @@ Gallo                         Informational                     [Page 5]
 
    The outer execution is an ordinary Lineage Execution with its own
    PCA0, authority context, PoR chain, execution contract, continuation,
-   and revocation coordinates.  Every inner leg independently has the
-   same PIC structure.
+   and revocation coordinates.  Every carried lineage independently has
+   the same PIC structure.
 
    The outer execution does not absorb the inner lineages.  It carries
    them as execution inputs and continues on its own authority, ENFORCE.
-
-
-
-
-
-Gallo                         Informational                     [Page 6]
-
-                         PIC Sandboxed Execution               July 2026
-
 
    Outer authority  = ENFORCE
    Inner lineages   = execution inputs carried for evaluation
@@ -361,15 +437,24 @@ Gallo                         Informational                     [Page 6]
    +-- executionContract: required next-guardrail properties
    +-- multiLineage:
        |
-       +-- INNER PIC LEG A
-       +-- INNER PIC LEG B
+       +-- CARRIED PIC LINEAGE A
+       +-- CARRIED PIC LINEAGE B
        +-- ...
+
+
+
+
+
+Gallo                         Informational                     [Page 8]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    PCA-G[n-1] --> PCA-G[n] --> PCA-G[n+1]
                       |
                       +-- multiLineage
                             |
-                            +-- independently verified PIC legs
+                            +-- independently verified carried lineages
 
       PIC does not stop at protecting application execution.  It can
       protect the execution that protects application execution.
@@ -379,46 +464,47 @@ Gallo                         Informational                     [Page 6]
    Ordinary PIC prevents authority originating in one Lineage Execution
    from being represented as a valid continuation of another.  Multi-
    Lineage Execution preserves this property by carrying independently
-   valid lineages as separate legs rather than creating their authority
-   union.
+   valid lineages as separate carried lineages rather than creating
+   their authority union.
 
    Sandboxed Execution applies PIC recursively to the process that
    evaluates their joint participation.  The outer lineage carries only
-   ENFORCE; every inner leg retains its own origin authority.
-
-
-
-
-Gallo                         Informational                     [Page 7]
-
-                         PIC Sandboxed Execution               July 2026
-
+   ENFORCE; every carried lineage retains its own origin authority.
 
    OUTER SANDBOXED EXECUTION
    authority: { ENFORCE }
    |
    +-- multiLineage
        |
-       +-- LEG A
+       +-- CARRIED LINEAGE A
        |   origin: A
        |   authority: { READ-ALL }
        |
-       +-- LEG B
+       +-- CARRIED LINEAGE B
            origin: B
            authority: { BACKUP }
 
    No authority union is created.
 
-   Policy may permit Leg A and Leg B to participate in one concrete
-   transition.  Policy does not create { READ-ALL, BACKUP } as a new
-   lineage authority.  Both of the following are rejected by ordinary
-   PIC origin binding and non-expansion:
+   Policy may permit carried lineage A and carried lineage B to
+   participate in one concrete transition.  Policy does not create {
+   READ-ALL, BACKUP } as a new lineage authority.  Both of the following
+   are rejected by ordinary PIC origin binding and non-expansion:
 
    invalid outer authority:
    { ENFORCE, READ-ALL, BACKUP }
 
-   invalid Leg B successor:
+   invalid carried lineage B successor:
    { BACKUP, READ-ALL }
+
+
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    PIC eliminates cross-lineage authority composition from valid PIC
    state.  Sandboxed Execution recursively protects the decision that
@@ -439,20 +525,12 @@ Gallo                         Informational                     [Page 7]
    same extension style as the revocation coordinates of the PIC
    Revocation Specification (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-revocation-spec.md), Section 2.  It
-   carries one Multi-Lineage Execution; inside it, legs is the bounded
-   list of independently verifiable PIC inputs.
-
-
-
-
-Gallo                         Informational                     [Page 8]
-
-                         PIC Sandboxed Execution               July 2026
-
+   carries one Multi-Lineage Execution; inside it, carriedLineages is
+   the bounded list of independently verifiable PIC inputs.
 
    {
      "multiLineage": {
-       "legs": [
+       "carriedLineages": [
          {
            "pca": { "...": "ordinary signed PCA" },
            "predecessor": { "...": "when required by the selected validation profile" },
@@ -461,7 +539,7 @@ Gallo                         Informational                     [Page 8]
        ],
        "context": {
          "destination": "...",
-         "requestsDigest": "sha256:...",
+         "requestSetDigest": "sha256:...",
          "payloadDigest": "sha256:...",
          "freshness": "..."
        }
@@ -473,18 +551,26 @@ Gallo                         Informational                     [Page 8]
    *  the whole multiLineage field is covered by the outer PCA's
       ordinary single signature;
 
-   *  every leg is an ordinary PIC PCA, or the profile-selected proof
-      representation of one;
+   *  every carried lineage is an ordinary PIC PCA, or the profile-
+      selected proof representation of one;
 
-   *  each leg keeps its own origin, predecessor relation, authority
-      context, and revocation coordinates;
 
-   *  legs are never merged;
+
+
+Gallo                         Informational                    [Page 10]
+
+                         PIC Sandboxed Execution               July 2026
+
+
+   *  each carried lineage keeps its own origin, predecessor relation,
+      authority context, and revocation coordinates;
+
+   *  carried lineages are never merged;
 
    *  the list is bounded by the profile;
 
-   *  a leg MAY itself contain multiLineage; recursion has no special
-      terminal depth in the model;
+   *  a carried lineage MAY itself contain multiLineage; recursion has
+      no special terminal depth in the model;
 
    *  implementations MAY impose resource and maximum-depth limits;
       these are implementation and profile limits, not PIC-semantic
@@ -492,19 +578,14 @@ Gallo                         Informational                     [Page 8]
 
    multiLineage MUST NOT alter previousPcaHash, create additional
    predecessors, enter invariants.operations, import authority from its
-   legs, or replace PoR, any leg's signature, or any leg's validation.
+   carried lineages, or replace PoR, any carried lineage's signature, or
+   any carried lineage's validation.
 
    Exactness.  The outer request binding commits to the complete
-   presented multiLineage.  The Verifier reconstructs the leg set and
-   context from the presented objects and recomputes every supplied
-   digest; an added, removed, or substituted leg causes rejection.
-
-
-
-Gallo                         Informational                     [Page 9]
-
-                         PIC Sandboxed Execution               July 2026
-
+   presented multiLineage.  The Verifier reconstructs the carried-
+   lineage set and context from the presented objects and recomputes
+   every supplied digest; an added, removed, or substituted carried
+   lineage causes rejection.
 
       Exactness applies to the authenticated Multi-Lineage Execution
       presented to the guardrail.  Detecting inputs hidden before
@@ -523,6 +604,19 @@ Gallo                         Informational                     [Page 9]
    proofOfRelationship.request MUST contain a cryptographic commitment
    to the complete canonical multiLineage field carried by that PCA.
    The request profile contains at least:
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 11]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    proofOfRelationship.request.operation
    proofOfRelationship.request.target
@@ -551,23 +645,16 @@ Gallo                         Informational                     [Page 9]
    H( "PIC-Multi-Lineage-v0" || canonical(PCA.multiLineage) )
 
    The selected profile MUST define the canonical encoding, hash suite,
-   domain separator, leg ordering and whether it is semantic, duplicate-
-   leg handling, maximum leg count, treatment of optional fields,
-   normalization rules, and included context fields. requestDigest and
-
-
-
-Gallo                         Informational                    [Page 10]
-
-                         PIC Sandboxed Execution               July 2026
-
-
-   payloadDigest MAY bind additional material, but MUST NOT replace
-   multiLineageDigest.  The Verifier MUST reject a missing digest, an
-   unknown canonicalization profile, a non-canonical field, a digest
-   mismatch, an added, removed, or substituted leg, a forbidden
-   duplicate, a semantically significant reordering, or a mismatch
-   between the carried context and the committed context.
+   domain separator, carried-lineage ordering and whether it is
+   semantic, duplicate-carried-lineage handling, maximum carried-lineage
+   count, treatment of optional fields, normalization rules, and
+   included context fields. requestDigest and payloadDigest MAY bind
+   additional material, but MUST NOT replace multiLineageDigest.  The
+   Verifier MUST reject a missing digest, an unknown canonicalization
+   profile, a non-canonical field, a digest mismatch, an added, removed,
+   or substituted carried lineage, a forbidden duplicate carried
+   lineage, a semantically significant reordering, or a mismatch between
+   the carried context and the committed context.
 
    The decision is recorded only at
    proofOfRelationship.request.enforcementResult, where
@@ -579,6 +666,13 @@ Gallo                         Informational                    [Page 10]
    record a denial for audit, but MUST NOT introduce a denial PCA type
    or interpret a deny-bearing PCA as permission to cross the governed
    boundary.
+
+
+
+Gallo                         Informational                    [Page 12]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    For every non-origin outer PCA, operation, multiLineageDigest, and
    enforcementResult are mandatory; other request fields follow the
@@ -598,37 +692,43 @@ Gallo                         Informational                    [Page 10]
 
       A successor outer PCA MUST NOT silently mutate multiLineage.  If
       the proposed inner execution changes, the successor request MUST
-      bind the complete new multiLineage, and every changed leg MUST
-      independently validate as required by its own PIC lineage and the
-      selected profile.
+      bind the complete new multiLineage, and every changed carried
+      lineage MUST independently validate as required by its own PIC
+      lineage and the selected profile.
 
-   An unchanged inner execution may be re-carried unchanged.  An inner
-   leg may continue only through its own valid PIC successor.  A removed
-   leg is not an attenuation of the outer authority; it is a change to
-   the execution input and MUST be visible in the signed request
-   binding.  Inner authority is never silently added, removed, replaced,
-   or imported.
+   An unchanged carried lineage may be re-carried unchanged.  A carried
+   lineage may continue only through its own valid PIC successor.
+   Removing a carried lineage is not an attenuation of the outer
+   authority; it is a change to the execution input and MUST be visible
+   in the signed request binding.  Inner authority is never silently
+   added, removed, replaced, or imported.
 
    The recursion is structural, not authority composition:
 
-
-
-Gallo                         Informational                    [Page 11]
-
-                         PIC Sandboxed Execution               July 2026
-
-
    PCA
     +-- multiLineage
-         +-- leg: PCA
-         +-- leg: PCA
-         +-- leg: PCA
+         +-- carried lineage: PCA
+         +-- carried lineage: PCA
+         +-- carried lineage: PCA
               +-- multiLineage
                    +-- ...
 
 2.5.  Originating the Sandboxed Execution
 
    Three roles are distinct:
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 13]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    proposing executor
        proposes the inner Multi-Lineage Execution
@@ -666,14 +766,6 @@ Gallo                         Informational                    [Page 11]
    receiving deployment policy, to originate an outer lineage with the
    presented ENFORCE authority and execution contract.
 
-
-
-
-Gallo                         Informational                    [Page 12]
-
-                         PIC Sandboxed Execution               July 2026
-
-
    PCA0-G establishes the outer authority and the future guardrail
    contract; it does not evaluate the inner execution.  It is an
    ordinary PCA0 — no predecessor, no PoR, signed by its authorized
@@ -687,13 +779,20 @@ Gallo                         Informational                    [Page 12]
      "continuation": { "...": "challenge for the first guardrail" }
    }
 
+
+
+Gallo                         Informational                    [Page 14]
+
+                         PIC Sandboxed Execution               July 2026
+
+
    PCA0-G MAY carry an origin-level commitment identifying the execution
    proposal, but it MUST NOT contain a guardrail verdict.
 
    The first guardrail receives PCA0-G and the proposed Multi-Lineage
    Execution, proves conformance to the PCA0-G execution contract,
-   validates every inner leg, applies the enforcement function, and — on
-   permit — produces the ordinary successor PCA1-G.
+   validates every carried lineage, applies the enforcement function,
+   and — on permit — produces the ordinary successor PCA1-G.
 
    PCA0-G
      establishes ENFORCE authority
@@ -725,14 +824,27 @@ Gallo                         Informational                    [Page 12]
 
 
 
-Gallo                         Informational                    [Page 13]
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 15]
 
                          PIC Sandboxed Execution               July 2026
 
 
    INNER EXECUTION PROPOSAL
    Multi-Lineage Execution
-   [ leg A | leg B | ... ]
+   [ carried lineage A | carried lineage B | ... ]
              |
              v
    AUTHORIZED SANDBOX ORIGIN
@@ -745,7 +857,7 @@ Gallo                         Informational                    [Page 13]
              v
    FIRST GUARDRAIL
      verify PCA0-G
-     verify every inner leg
+     verify every carried lineage
      apply enforcement function
              |
           permit
@@ -781,7 +893,7 @@ Gallo                         Informational                    [Page 13]
 
 
 
-Gallo                         Informational                    [Page 14]
+Gallo                         Informational                    [Page 16]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -804,10 +916,10 @@ Gallo                         Informational                    [Page 14]
        multiLineage.
 
    *Phase 2 — Inner PIC verification.* Only after Phase 1 succeeds, for
-   every leg:
+   every carried lineage:
 
-   1.  validate the leg using the selected ordinary PIC validation
-       profile;
+   1.  validate the carried lineage using the selected ordinary PIC
+       validation profile;
 
    2.  verify its origin or immediate predecessor as required;
 
@@ -825,8 +937,8 @@ Gallo                         Informational                    [Page 14]
 
    9.  verify revocation coordinates and active revocation state.
 
-   Any invalid outer check or inner leg produces deny before policy
-   evaluation.
+   Any invalid outer check or carried lineage produces deny before
+   policy evaluation.
 
    *Phase 3 — Enforcement function.* Over the validated inner execution
    and the exact crossing context, the guardrail evaluates the profile-
@@ -837,7 +949,7 @@ Gallo                         Informational                    [Page 14]
 
 
 
-Gallo                         Informational                    [Page 15]
+Gallo                         Informational                    [Page 17]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -846,10 +958,10 @@ Gallo                         Informational                    [Page 15]
       inputs.  It does not require a specific PDP, policy language,
       vendor, process boundary, or deployment topology.
 
-   Every leg-describing input used by the enforcement function MUST be
-   cryptographically or operationally bound to the corresponding leg by
-   a mechanism that is not under the unilateral control of the executor
-   whose execution is being evaluated.  This includes, when used, role,
+   Every carried-lineage-describing input used by the enforcement
+   function MUST be cryptographically or operationally bound to the
+   corresponding carried lineage by a mechanism not under the unilateral
+   control of the proposing executor.  This includes, when used, role,
    semantic scopes, labels, data classifications, tenant or security-
    domain claims, accountable-party claims, environment claims,
    application identity, purpose or intent metadata, policy-selection
@@ -893,7 +1005,7 @@ Gallo                         Informational                    [Page 15]
 
 
 
-Gallo                         Informational                    [Page 16]
+Gallo                         Informational                    [Page 18]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -907,7 +1019,7 @@ Gallo                         Informational                    [Page 16]
          |
    Phase 1: validate outer PIC continuation
          |
-   Phase 2: validate every inner PIC leg
+   Phase 2: validate every carried lineage
          |
    Phase 3: apply enforcement function
          |
@@ -949,12 +1061,12 @@ Gallo                         Informational                    [Page 16]
 
 
 
-Gallo                         Informational                    [Page 17]
+Gallo                         Informational                    [Page 19]
 
                          PIC Sandboxed Execution               July 2026
 
 
-   *  it grants none of the authority carried by the inner legs;
+   *  it grants none of the authority of the carried lineages;
 
    *  it is subject to ordinary PIC non-expansion: the outer lineage MAY
       retain or attenuate it, never add broader operations.
@@ -1005,7 +1117,7 @@ Gallo                         Informational                    [Page 17]
 
 
 
-Gallo                         Informational                    [Page 18]
+Gallo                         Informational                    [Page 20]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1021,18 +1133,24 @@ Gallo                         Informational                    [Page 18]
    and MAY require a minimum outer execution contract.  Such
    restrictions narrow acceptance; they do not create outer authority.
 
-   ValidMultiLineage means every presented leg validates independently
-   under its own PIC lineage and selected validation profile.
+   ValidMultiLineage means that multiLineage.carriedLineages contains at
+   least one element and every carried lineage in it validates
+   independently under its own PIC lineage and the selected validation
+   profile.  Validation of one carried lineage does not validate
+   another.  A carried lineage is never an additional predecessor of the
+   outer PCA.  A carried lineage may itself contain multiLineage,
+   enabling recursive composition to arbitrary finite depth.  An empty
+   carriedLineages array is invalid under this profile.
 
-   ExactPresentedExecutionBinding means that the complete presented leg
-   set and crossing context are reconstructed from the presented
-   objects, every supplied digest is recomputed, and the result matches
-   the signed outer request commitments under the exactness and
-   canonical-binding rules of this specification.
+   ExactPresentedExecutionBinding means that the complete presented
+   carried-lineage set and crossing context are reconstructed from the
+   presented objects, every supplied digest is recomputed, and the
+   result matches the signed outer request commitments under the
+   exactness and canonical-binding rules of this specification.
 
    ExactPresentedExecutionBinding
        =
-   PresentedLegSetMatchesCommitment
+   PresentedCarriedLineageSetMatchesCommitment
    AND PresentedContextMatchesCommitment
    AND RecomputedMultiLineageDigestMatches
    AND RecomputedRequestAndPayloadCommitmentsMatch
@@ -1045,12 +1163,20 @@ Gallo                         Informational                    [Page 18]
    specification.  The two predicates remain distinct:
 
    ValidMultiLineage
-       validates every leg independently
+       validates every carried lineage independently
 
    ExactPresentedExecutionBinding
        validates completeness and exact binding
        of the presented multi-lineage execution
        and its crossing context
+
+
+
+
+Gallo                         Informational                    [Page 21]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    The receiving component MUST recompute all digests and MUST reject:
 
@@ -1058,17 +1184,9 @@ Gallo                         Informational                    [Page 18]
 
    *  an invalid outer continuation;
 
+   *  an invalid carried lineage;
 
-
-
-Gallo                         Informational                    [Page 19]
-
-                         PIC Sandboxed Execution               July 2026
-
-
-   *  an invalid inner leg;
-
-   *  an added, removed, or substituted presented leg;
+   *  an added, removed, or substituted presented carried lineage;
 
    *  a mismatched request, destination, or payload;
 
@@ -1106,21 +1224,23 @@ Gallo                         Informational                    [Page 19]
    that performs the exact physical action permitted by its own bound
    outer request.
 
+
+
+
+
+
+Gallo                         Informational                    [Page 22]
+
+                         PIC Sandboxed Execution               July 2026
+
+
    It MUST produce and sign its ordinary outer successor PCA for the
    exact materialized action; it MUST NOT complete or mutate an already-
    signed PCA.  The materializing guardrail:
 
    1.  verifies its outer predecessor;
 
-   2.  verifies every inner leg;
-
-
-
-
-Gallo                         Informational                    [Page 20]
-
-                         PIC Sandboxed Execution               July 2026
-
+   2.  verifies every carried lineage;
 
    3.  evaluates the enforcement function;
 
@@ -1145,7 +1265,7 @@ Gallo                         Informational                    [Page 20]
    materializing guardrail
          |
          | validates outer PIC
-         | validates inner legs
+         | validates carried lineages
          | evaluates enforcement
          | physically performs exact permitted action
          v
@@ -1162,21 +1282,17 @@ Gallo                         Informational                    [Page 20]
    protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-
    spec.md).
 
-   PIC determines whether an execution may continue as valid PIC state;
-   network infrastructure may prevent ungoverned physical access.  These
-   are separate guarantees, and one does not replace the other.
 
 
 
-
-
-
-
-
-Gallo                         Informational                    [Page 21]
+Gallo                         Informational                    [Page 23]
 
                          PIC Sandboxed Execution               July 2026
 
+
+   PIC determines whether an execution may continue as valid PIC state;
+   network infrastructure may prevent ungoverned physical access.  These
+   are separate guarantees, and one does not replace the other.
 
    PIC validity boundary:
        Is this a valid recursive PIC continuation?
@@ -1208,7 +1324,7 @@ Gallo                         Informational                    [Page 21]
    - guardrail-to-guardrail PoR;      - service discovery;
    - exact request binding;           - routing;
    - authority non-expansion;         - observability;
-   - independent inner-leg checks;    - load balancing;
+   - independent lineage checks;      - load balancing;
    - recursive validation;            - rate limiting;
    - rejection of an invalid          - network policy;
      outer continuation.              - operational path restriction;
@@ -1222,17 +1338,15 @@ Gallo                         Informational                    [Page 21]
    as the source of the cryptographic and lineage-based sandboxing
    guarantee.
 
-      A service mesh may carry the sandbox, but it is not the sandbox.
 
 
 
-
-
-
-Gallo                         Informational                    [Page 22]
+Gallo                         Informational                    [Page 24]
 
                          PIC Sandboxed Execution               July 2026
 
+
+      A service mesh may carry the sandbox, but it is not the sandbox.
 
 4.3.  Consecutive Collusion
 
@@ -1283,9 +1397,7 @@ Gallo                         Informational                    [Page 22]
 
 
 
-
-
-Gallo                         Informational                    [Page 23]
+Gallo                         Informational                    [Page 25]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1300,15 +1412,15 @@ Gallo                         Informational                    [Page 23]
    |
    +-- multiLineage
        |
-       +-- LEVEL 1 / Leg A
+       +-- LEVEL 1 / Carried Lineage A
        |   PCA { READ }
        |
-       +-- LEVEL 1 / Leg B
+       +-- LEVEL 1 / Carried Lineage B
            PCA { ENFORCE }
            |
            +-- multiLineage
                |
-               +-- LEVEL 2 / Leg C
+               +-- LEVEL 2 / Carried Lineage C
                    PCA { WRITE }
 
    Nesting adds execution structure.  It does not create authority
@@ -1316,9 +1428,9 @@ Gallo                         Informational                    [Page 23]
 
    The model is recursively composable to arbitrary finite depth — not
    literal infinite execution.  Implementations MUST bound maximum
-   recursion depth, leg count, encoded size, and total validation work.
-   Resource limits cause rejection or indeterminate-deny according to
-   the profile; they do not change PIC semantics.
+   recursion depth, carried-lineage count, encoded size, and total
+   validation work.  Resource limits cause rejection or indeterminate-
+   deny according to the profile; they do not change PIC semantics.
 
 6.  Security Boundary
 
@@ -1341,7 +1453,7 @@ Gallo                         Informational                    [Page 23]
 
 
 
-Gallo                         Informational                    [Page 24]
+Gallo                         Informational                    [Page 26]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1397,7 +1509,7 @@ Gallo                         Informational                    [Page 24]
 
 
 
-Gallo                         Informational                    [Page 25]
+Gallo                         Informational                    [Page 27]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1453,7 +1565,7 @@ Gallo                         Informational                    [Page 25]
 
 
 
-Gallo                         Informational                    [Page 26]
+Gallo                         Informational                    [Page 28]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1509,4 +1621,4 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 27]
+Gallo                         Informational                    [Page 29]

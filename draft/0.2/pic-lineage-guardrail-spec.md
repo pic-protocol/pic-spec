@@ -53,8 +53,8 @@ of that outer lineage: it verifies the outer continuation, verifies every carrie
 permit — proves the next ordinary outer PCA.
 
 No new PCA type is introduced, no trusted sandbox, and no external guardrail authority. The outer lineage is identified only by the
-operation `ENFORCE` and by one signed profile field, `multiLineage`, that carries the inner execution. The construction is recursive: an
-inner leg may itself be a Sandboxed Execution.
+operation `ENFORCE` and by one signed profile field, `multiLineage`, that carries the inner execution. The construction is recursive: a
+carried lineage may itself be a Sandboxed Execution.
 
 > A Sandboxed Execution is PIC applied recursively: an outer PIC execution carries and governs an inner PIC execution.
 
@@ -136,17 +136,60 @@ formal model and proofs by the PIC Model [[1]](#references). This document resta
 - it is the execution input carried by the `multiLineage` field (Section 2.4).
 
 ~~~text
-+======================================+
-| MULTI-LINEAGE EXECUTION              |
-|                                      |
-| leg A: PCA1-A { BACKUP }             |
-| leg B: PCA0-B { WRITE-S3 }           |
-|                                      |
-| authorities remain separate          |
-+======================================+
++========================================+
+| MULTI-LINEAGE EXECUTION                |
+|                                        |
+| carried lineage A: PCA1-A { BACKUP }   |
+| carried lineage B: PCA0-B { WRITE-S3 } |
+|                                        |
+| authorities remain separate            |
++========================================+
 
 Distinct lineages, one proposed transition.
 ~~~
+
+A **carried lineage** is an independently verifiable PIC lineage representation carried within a Multi-Lineage Execution for joint evaluation
+in one exact proposed transition. A carried lineage is not an execution step, workflow stage, route segment, child lineage, subordinate
+lineage, additional outer predecessor, or authority fragment.
+
+The Sandboxed Execution does not execute on or through its carried lineages. It carries and evaluates their joint participation while
+preserving each lineage's independent origin, authority context, predecessor relation, signature, execution contract, and revocation state.
+
+A Multi-Lineage Execution is structurally composed of `carriedLineages`. The outer Sandboxed Execution remains a separate PIC lineage with
+its own origin, predecessor chain, authority `{ ENFORCE }`, execution contract, continuation, and revocation coordinates. The existence of
+carried lineages motivates the execution being evaluated, but the outer lineage does not derive authority from them.
+
+The name `carriedLineages` describes containment and transport within the Multi-Lineage Execution. It does not imply that the outer lineage
+is composed from, descended from, authorized by, or structurally continued from the carried lineages. The outer lineage is originated
+independently by an authorized sandbox origin; the carried lineages define the authenticated execution inputs being evaluated, not the
+authority source of the outer lineage.
+
+The `carriedLineages` are constitutive of the evaluated inner Multi-Lineage Execution. Without at least one carried lineage, there is no
+Multi-Lineage Execution and therefore no inner execution for this Sandboxed Execution profile to govern. The Sandboxed Execution exists to
+validate and control the proposed joint participation of its `carriedLineages`; in that functional sense, the carried lineages define the
+subject matter and purpose of the outer execution.
+
+This dependency is semantic and structural, not an authority derivation. The outer lineage is not created from the authority of the carried
+lineages, is not their successor, and is not their union. It is independently originated by an authorized sandbox origin and carries only its
+own authority, `{ ENFORCE }`.
+
+~~~text
+carriedLineages
+    constitute the inner Multi-Lineage Execution
+
+Multi-Lineage Execution
+    constitutes the execution subject evaluated by the sandbox
+
+authorized sandbox origin
+    independently originates the outer lineage
+
+outer lineage authority
+    remains only { ENFORCE }
+~~~
+
+Removing all `carriedLineages` removes the execution subject of the Sandboxed Execution; it does not attenuate the outer authority or
+transform the outer lineage into an empty authority container. `multiLineage.carriedLineages` MUST contain at least one element; an empty
+`carriedLineages` array is invalid under this profile because it represents no Multi-Lineage Execution to evaluate.
 
 ## Sandboxed Execution
 
@@ -182,7 +225,7 @@ Each guardrail:
 
 1. receives an ordinary outer PCA carrying `multiLineage`;
 2. verifies the outer PIC continuation;
-3. verifies every inner leg;
+3. verifies every carried lineage;
 4. applies the enforcement function;
 5. on permit, proves the next ordinary outer PCA;
 6. on deny, produces no authorizing continuation for that crossing.
@@ -217,7 +260,7 @@ inner execution = Multi-Lineage Execution carried in multiLineage
 ~~~
 
 The outer execution is an ordinary Lineage Execution with its own PCA0, authority context, PoR chain, execution contract, continuation, and
-revocation coordinates. Every inner leg independently has the same PIC structure.
+revocation coordinates. Every carried lineage independently has the same PIC structure.
 
 The outer execution does not absorb the inner lineages. It carries them as execution inputs and continues on its own authority, `ENFORCE`.
 
@@ -243,8 +286,8 @@ PCA-G[n]
 +-- executionContract: required next-guardrail properties
 +-- multiLineage:
     |
-    +-- INNER PIC LEG A
-    +-- INNER PIC LEG B
+    +-- CARRIED PIC LINEAGE A
+    +-- CARRIED PIC LINEAGE B
     +-- ...
 ~~~
 
@@ -253,7 +296,7 @@ PCA-G[n-1] --> PCA-G[n] --> PCA-G[n+1]
                    |
                    +-- multiLineage
                          |
-                         +-- independently verified PIC legs
+                         +-- independently verified carried lineages
 ~~~
 
 > PIC does not stop at protecting application execution. It can protect the execution that protects application execution.
@@ -261,10 +304,11 @@ PCA-G[n-1] --> PCA-G[n] --> PCA-G[n+1]
 ## Recursive Multi-Lineage Safety
 
 Ordinary PIC prevents authority originating in one Lineage Execution from being represented as a valid continuation of another. Multi-Lineage
-Execution preserves this property by carrying independently valid lineages as separate legs rather than creating their authority union.
+Execution preserves this property by carrying independently valid lineages as separate carried lineages rather than creating their authority
+union.
 
 Sandboxed Execution applies PIC recursively to the process that evaluates their joint participation. The outer lineage carries only
-`ENFORCE`; every inner leg retains its own origin authority.
+`ENFORCE`; every carried lineage retains its own origin authority.
 
 ~~~text
 OUTER SANDBOXED EXECUTION
@@ -272,25 +316,25 @@ authority: { ENFORCE }
 |
 +-- multiLineage
     |
-    +-- LEG A
+    +-- CARRIED LINEAGE A
     |   origin: A
     |   authority: { READ-ALL }
     |
-    +-- LEG B
+    +-- CARRIED LINEAGE B
         origin: B
         authority: { BACKUP }
 
 No authority union is created.
 ~~~
 
-Policy may permit Leg A and Leg B to participate in one concrete transition. Policy does not create `{ READ-ALL, BACKUP }` as a new lineage
-authority. Both of the following are rejected by ordinary PIC origin binding and non-expansion:
+Policy may permit carried lineage A and carried lineage B to participate in one concrete transition. Policy does not create
+`{ READ-ALL, BACKUP }` as a new lineage authority. Both of the following are rejected by ordinary PIC origin binding and non-expansion:
 
 ~~~text
 invalid outer authority:
 { ENFORCE, READ-ALL, BACKUP }
 
-invalid Leg B successor:
+invalid carried lineage B successor:
 { BACKUP, READ-ALL }
 ~~~
 
@@ -307,12 +351,12 @@ action locally.
 
 `multiLineage` is a signed profile extension of an ordinary PCA, in the same extension style as the revocation coordinates of the
 [PIC Revocation Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md), Section 2. It carries
-one Multi-Lineage Execution; inside it, `legs` is the bounded list of independently verifiable PIC inputs.
+one Multi-Lineage Execution; inside it, `carriedLineages` is the bounded list of independently verifiable PIC inputs.
 
 ~~~json
 {
   "multiLineage": {
-    "legs": [
+    "carriedLineages": [
       {
         "pca": { "...": "ordinary signed PCA" },
         "predecessor": { "...": "when required by the selected validation profile" },
@@ -321,7 +365,7 @@ one Multi-Lineage Execution; inside it, `legs` is the bounded list of independen
     ],
     "context": {
       "destination": "...",
-      "requestsDigest": "sha256:...",
+      "requestSetDigest": "sha256:...",
       "payloadDigest": "sha256:...",
       "freshness": "..."
     }
@@ -332,18 +376,18 @@ one Multi-Lineage Execution; inside it, `legs` is the bounded list of independen
 Semantics:
 
 - the whole `multiLineage` field is covered by the outer PCA's ordinary single signature;
-- every leg is an ordinary PIC PCA, or the profile-selected proof representation of one;
-- each leg keeps its own origin, predecessor relation, authority context, and revocation coordinates;
-- legs are never merged;
+- every carried lineage is an ordinary PIC PCA, or the profile-selected proof representation of one;
+- each carried lineage keeps its own origin, predecessor relation, authority context, and revocation coordinates;
+- carried lineages are never merged;
 - the list is bounded by the profile;
-- a leg MAY itself contain `multiLineage`; recursion has no special terminal depth in the model;
+- a carried lineage MAY itself contain `multiLineage`; recursion has no special terminal depth in the model;
 - implementations MAY impose resource and maximum-depth limits; these are implementation and profile limits, not PIC-semantic changes.
 
 `multiLineage` MUST NOT alter `previousPcaHash`, create additional predecessors, enter `invariants.operations`, import authority from its
-legs, or replace PoR, any leg's signature, or any leg's validation.
+carried lineages, or replace PoR, any carried lineage's signature, or any carried lineage's validation.
 
-Exactness. The outer request binding commits to the complete presented `multiLineage`. The Verifier reconstructs the leg set and context
-from the presented objects and recomputes every supplied digest; an added, removed, or substituted leg causes rejection.
+Exactness. The outer request binding commits to the complete presented `multiLineage`. The Verifier reconstructs the carried-lineage set and
+context from the presented objects and recomputes every supplied digest; an added, removed, or substituted carried lineage causes rejection.
 
 > Exactness applies to the authenticated Multi-Lineage Execution presented to the guardrail. Detecting inputs hidden before presentation
 > requires a profile-defined authenticated input manifest or observation source.
@@ -387,11 +431,12 @@ request.multiLineageDigest
 H( "PIC-Multi-Lineage-v0" || canonical(PCA.multiLineage) )
 ~~~
 
-The selected profile MUST define the canonical encoding, hash suite, domain separator, leg ordering and whether it is semantic,
-duplicate-leg handling, maximum leg count, treatment of optional fields, normalization rules, and included context fields. `requestDigest`
-and `payloadDigest` MAY bind additional material, but MUST NOT replace `multiLineageDigest`. The Verifier MUST reject a missing digest, an
-unknown canonicalization profile, a non-canonical field, a digest mismatch, an added, removed, or substituted leg, a forbidden duplicate, a
-semantically significant reordering, or a mismatch between the carried context and the committed context.
+The selected profile MUST define the canonical encoding, hash suite, domain separator, carried-lineage ordering and whether it is semantic,
+duplicate-carried-lineage handling, maximum carried-lineage count, treatment of optional fields, normalization rules, and included context
+fields. `requestDigest` and `payloadDigest` MAY bind additional material, but MUST NOT replace `multiLineageDigest`. The Verifier MUST reject
+a missing digest, an unknown canonicalization profile, a non-canonical field, a digest mismatch, an added, removed, or substituted carried
+lineage, a forbidden duplicate carried lineage, a semantically significant reordering, or a mismatch between the carried context and the
+committed context.
 
 The decision is recorded only at `proofOfRelationship.request.enforcementResult`, where `enforcementResult` is `permit` or `deny`. It records
 the result for the exact `multiLineage`, destination, request, payload, policy, committed inputs, semantic profile, and crossing context
@@ -410,20 +455,21 @@ Evolution across hops. The outer PCA at hop `n` carries the exact inner executio
 that signed object and MAY continue the same inner execution or evaluate a profile-valid successor Multi-Lineage Execution.
 
 > A successor outer PCA MUST NOT silently mutate `multiLineage`. If the proposed inner execution changes, the successor request MUST bind the
-> complete new `multiLineage`, and every changed leg MUST independently validate as required by its own PIC lineage and the selected profile.
+> complete new `multiLineage`, and every changed carried lineage MUST independently validate as required by its own PIC lineage and the
+> selected profile.
 
-An unchanged inner execution may be re-carried unchanged. An inner leg may continue only through its own valid PIC successor. A removed leg
-is not an attenuation of the outer authority; it is a change to the execution input and MUST be visible in the signed request binding. Inner
-authority is never silently added, removed, replaced, or imported.
+An unchanged carried lineage may be re-carried unchanged. A carried lineage may continue only through its own valid PIC successor. Removing a
+carried lineage is not an attenuation of the outer authority; it is a change to the execution input and MUST be visible in the signed request
+binding. Inner authority is never silently added, removed, replaced, or imported.
 
 The recursion is structural, not authority composition:
 
 ~~~text
 PCA
  +-- multiLineage
-      +-- leg: PCA
-      +-- leg: PCA
-      +-- leg: PCA
+      +-- carried lineage: PCA
+      +-- carried lineage: PCA
+      +-- carried lineage: PCA
            +-- multiLineage
                 +-- ...
 ~~~
@@ -475,7 +521,7 @@ PCA0 — no predecessor, no PoR, signed by its authorized origin — containing 
 `PCA0-G` MAY carry an origin-level commitment identifying the execution proposal, but it MUST NOT contain a guardrail verdict.
 
 The first guardrail receives `PCA0-G` and the proposed Multi-Lineage Execution, proves conformance to the `PCA0-G` execution contract,
-validates every inner leg, applies the enforcement function, and — on permit — produces the ordinary successor `PCA1-G`.
+validates every carried lineage, applies the enforcement function, and — on permit — produces the ordinary successor `PCA1-G`.
 
 ~~~text
 PCA0-G
@@ -495,7 +541,7 @@ The complete first sequence:
 ~~~text
 INNER EXECUTION PROPOSAL
 Multi-Lineage Execution
-[ leg A | leg B | ... ]
+[ carried lineage A | carried lineage B | ... ]
           |
           v
 AUTHORIZED SANDBOX ORIGIN
@@ -508,7 +554,7 @@ PCA0-G
           v
 FIRST GUARDRAIL
   verify PCA0-G
-  verify every inner leg
+  verify every carried lineage
   apply enforcement function
           |
        permit
@@ -548,9 +594,9 @@ MUST perform the phases in order.
 8. verify the outer request operation is `ENFORCE`;
 9. recompute and verify the request commitment to the complete `multiLineage`.
 
-**Phase 2 — Inner PIC verification.** Only after Phase 1 succeeds, for every leg:
+**Phase 2 — Inner PIC verification.** Only after Phase 1 succeeds, for every carried lineage:
 
-1. validate the leg using the selected ordinary PIC validation profile;
+1. validate the carried lineage using the selected ordinary PIC validation profile;
 2. verify its origin or immediate predecessor as required;
 3. verify signature and PoR;
 4. verify predecessor binding;
@@ -560,7 +606,7 @@ MUST perform the phases in order.
 8. verify freshness and time;
 9. verify revocation coordinates and active revocation state.
 
-Any invalid outer check or inner leg produces deny before policy evaluation.
+Any invalid outer check or carried lineage produces deny before policy evaluation.
 
 **Phase 3 — Enforcement function.** Over the validated inner execution and the exact crossing context, the guardrail evaluates the
 profile-defined enforcement function. A PDP is only one possible implementation.
@@ -568,8 +614,8 @@ profile-defined enforcement function. A PDP is only one possible implementation.
 > The profile defines the required enforcement result and its signed inputs. It does not require a specific PDP, policy language, vendor,
 > process boundary, or deployment topology.
 
-Every leg-describing input used by the enforcement function MUST be cryptographically or operationally bound to the corresponding leg by a
-mechanism that is not under the unilateral control of the executor whose execution is being evaluated. This includes, when used, `role`,
+Every carried-lineage-describing input used by the enforcement function MUST be cryptographically or operationally bound to the corresponding
+carried lineage by a mechanism not under the unilateral control of the proposing executor. This includes, when used, `role`,
 semantic scopes, labels, data classifications, tenant or security-domain claims, accountable-party claims, environment claims, application
 identity, purpose or intent metadata, policy-selection metadata, and translation or semantic-profile identifiers. Accepted binding mechanisms
 MAY include origin-bound signed metadata, signed declarations from an accepted authority, trusted derivation from validated PCA contents,
@@ -602,7 +648,7 @@ receive outer PCA
       |
 Phase 1: validate outer PIC continuation
       |
-Phase 2: validate every inner PIC leg
+Phase 2: validate every carried lineage
       |
 Phase 3: apply enforcement function
       |
@@ -638,7 +684,7 @@ This revision uses one operation class, `ENFORCE`:
 
 - it means: validate the carried Multi-Lineage Execution, apply the enforcement function, and decide whether the outer execution may
   continue;
-- it grants none of the authority carried by the inner legs;
+- it grants none of the authority of the carried lineages;
 - it is subject to ordinary PIC non-expansion: the outer lineage MAY retain or attenuate it, never add broader operations.
 
 Future revisions MAY define additional recursive-control operation classes, using the same ordinary PCA, PoR, and profile-extension model.
@@ -692,16 +738,19 @@ proof, or another mechanism permitted by that profile. Not every incremental rec
 A receiving deployment MAY restrict the sandbox origins it accepts and MAY require a minimum outer execution contract. Such restrictions
 narrow acceptance; they do not create outer authority.
 
-`ValidMultiLineage` means every presented leg validates independently under its own PIC lineage and selected validation profile.
+`ValidMultiLineage` means that `multiLineage.carriedLineages` contains at least one element and every carried lineage in it validates
+independently under its own PIC lineage and the selected validation profile. Validation of one carried lineage does not validate another. A
+carried lineage is never an additional predecessor of the outer PCA. A carried lineage may itself contain `multiLineage`, enabling recursive
+composition to arbitrary finite depth. An empty `carriedLineages` array is invalid under this profile.
 
-`ExactPresentedExecutionBinding` means that the complete presented leg set and crossing context are reconstructed from the presented objects,
-every supplied digest is recomputed, and the result matches the signed outer request commitments under the exactness and canonical-binding
-rules of this specification.
+`ExactPresentedExecutionBinding` means that the complete presented carried-lineage set and crossing context are reconstructed from the
+presented objects, every supplied digest is recomputed, and the result matches the signed outer request commitments under the exactness and
+canonical-binding rules of this specification.
 
 ~~~text
 ExactPresentedExecutionBinding
     =
-PresentedLegSetMatchesCommitment
+PresentedCarriedLineageSetMatchesCommitment
 AND PresentedContextMatchesCommitment
 AND RecomputedMultiLineageDigestMatches
 AND RecomputedRequestAndPayloadCommitmentsMatch
@@ -714,7 +763,7 @@ specification. The two predicates remain distinct:
 
 ~~~text
 ValidMultiLineage
-    validates every leg independently
+    validates every carried lineage independently
 
 ExactPresentedExecutionBinding
     validates completeness and exact binding
@@ -726,8 +775,8 @@ The receiving component MUST recompute all digests and MUST reject:
 
 - a missing `multiLineage`;
 - an invalid outer continuation;
-- an invalid inner leg;
-- an added, removed, or substituted presented leg;
+- an invalid carried lineage;
+- an added, removed, or substituted presented carried lineage;
 - a mismatched request, destination, or payload;
 - an invalid policy or input commitment;
 - a non-permit decision;
@@ -761,7 +810,7 @@ It MUST produce and sign its ordinary outer successor PCA for the exact material
 PCA. The materializing guardrail:
 
 1. verifies its outer predecessor;
-2. verifies every inner leg;
+2. verifies every carried lineage;
 3. evaluates the enforcement function;
 4. constructs its own ordinary outer successor PCA;
 5. binds the exact physical action, destination, payload, participants, policy inputs, and context;
@@ -779,7 +828,7 @@ proposing executor
 materializing guardrail
       |
       | validates outer PIC
-      | validates inner legs
+      | validates carried lineages
       | evaluates enforcement
       | physically performs exact permitted action
       v
@@ -821,7 +870,7 @@ provides:                          may provide:
 - guardrail-to-guardrail PoR;      - service discovery;
 - exact request binding;           - routing;
 - authority non-expansion;         - observability;
-- independent inner-leg checks;    - load balancing;
+- independent lineage checks;      - load balancing;
 - recursive validation;            - rate limiting;
 - rejection of an invalid          - network policy;
   outer continuation.              - operational path restriction;
@@ -875,22 +924,23 @@ outer PCA { ENFORCE }
 |
 +-- multiLineage
     |
-    +-- LEVEL 1 / Leg A
+    +-- LEVEL 1 / Carried Lineage A
     |   PCA { READ }
     |
-    +-- LEVEL 1 / Leg B
+    +-- LEVEL 1 / Carried Lineage B
         PCA { ENFORCE }
         |
         +-- multiLineage
             |
-            +-- LEVEL 2 / Leg C
+            +-- LEVEL 2 / Carried Lineage C
                 PCA { WRITE }
 ~~~
 
 Nesting adds execution structure. It does not create authority inheritance between recursive levels.
 
 The model is recursively composable to arbitrary finite depth — not literal infinite execution. Implementations MUST bound maximum recursion
-depth, leg count, encoded size, and total validation work. Resource limits cause rejection or indeterminate-deny according to the profile;
+depth, carried-lineage count, encoded size, and total validation work. Resource limits cause rejection or indeterminate-deny according to the
+profile;
 they do not change PIC semantics.
 
 # Security Boundary

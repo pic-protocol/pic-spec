@@ -46,8 +46,8 @@ of that outer lineage: it verifies the outer continuation, verifies every carrie
 permit — proves the next ordinary outer PCA.</t>
 
 <t>No new PCA type is introduced, no trusted sandbox, and no external guardrail authority. The outer lineage is identified only by the
-operation <spanx style="verb">ENFORCE</spanx> and by one signed profile field, <spanx style="verb">multiLineage</spanx>, that carries the inner execution. The construction is recursive: an
-inner leg may itself be a Sandboxed Execution.</t>
+operation <spanx style="verb">ENFORCE</spanx> and by one signed profile field, <spanx style="verb">multiLineage</spanx>, that carries the inner execution. The construction is recursive: a
+carried lineage may itself be a Sandboxed Execution.</t>
 
 <ul empty="true"><li>
   <t>A Sandboxed Execution is PIC applied recursively: an outer PIC execution carries and governs an inner PIC execution.</t>
@@ -195,17 +195,60 @@ their authorities.</t>
 </list></t>
 
 <figure><sourcecode type="text"><![CDATA[
-+======================================+
-| MULTI-LINEAGE EXECUTION              |
-|                                      |
-| leg A: PCA1-A { BACKUP }             |
-| leg B: PCA0-B { WRITE-S3 }           |
-|                                      |
-| authorities remain separate          |
-+======================================+
++========================================+
+| MULTI-LINEAGE EXECUTION                |
+|                                        |
+| carried lineage A: PCA1-A { BACKUP }   |
+| carried lineage B: PCA0-B { WRITE-S3 } |
+|                                        |
+| authorities remain separate            |
++========================================+
 
 Distinct lineages, one proposed transition.
 ]]></sourcecode></figure>
+
+<t>A <strong>carried lineage</strong> is an independently verifiable PIC lineage representation carried within a Multi-Lineage Execution for joint evaluation
+in one exact proposed transition. A carried lineage is not an execution step, workflow stage, route segment, child lineage, subordinate
+lineage, additional outer predecessor, or authority fragment.</t>
+
+<t>The Sandboxed Execution does not execute on or through its carried lineages. It carries and evaluates their joint participation while
+preserving each lineage's independent origin, authority context, predecessor relation, signature, execution contract, and revocation state.</t>
+
+<t>A Multi-Lineage Execution is structurally composed of <spanx style="verb">carriedLineages</spanx>. The outer Sandboxed Execution remains a separate PIC lineage with
+its own origin, predecessor chain, authority <spanx style="verb">{ ENFORCE }</spanx>, execution contract, continuation, and revocation coordinates. The existence of
+carried lineages motivates the execution being evaluated, but the outer lineage does not derive authority from them.</t>
+
+<t>The name <spanx style="verb">carriedLineages</spanx> describes containment and transport within the Multi-Lineage Execution. It does not imply that the outer lineage
+is composed from, descended from, authorized by, or structurally continued from the carried lineages. The outer lineage is originated
+independently by an authorized sandbox origin; the carried lineages define the authenticated execution inputs being evaluated, not the
+authority source of the outer lineage.</t>
+
+<t>The <spanx style="verb">carriedLineages</spanx> are constitutive of the evaluated inner Multi-Lineage Execution. Without at least one carried lineage, there is no
+Multi-Lineage Execution and therefore no inner execution for this Sandboxed Execution profile to govern. The Sandboxed Execution exists to
+validate and control the proposed joint participation of its <spanx style="verb">carriedLineages</spanx>; in that functional sense, the carried lineages define the
+subject matter and purpose of the outer execution.</t>
+
+<t>This dependency is semantic and structural, not an authority derivation. The outer lineage is not created from the authority of the carried
+lineages, is not their successor, and is not their union. It is independently originated by an authorized sandbox origin and carries only its
+own authority, <spanx style="verb">{ ENFORCE }</spanx>.</t>
+
+<figure><sourcecode type="text"><![CDATA[
+carriedLineages
+    constitute the inner Multi-Lineage Execution
+
+Multi-Lineage Execution
+    constitutes the execution subject evaluated by the sandbox
+
+authorized sandbox origin
+    independently originates the outer lineage
+
+outer lineage authority
+    remains only { ENFORCE }
+]]></sourcecode></figure>
+
+<t>Removing all <spanx style="verb">carriedLineages</spanx> removes the execution subject of the Sandboxed Execution; it does not attenuate the outer authority or
+transform the outer lineage into an empty authority container. <spanx style="verb">multiLineage.carriedLineages</spanx> MUST contain at least one element; an empty
+<spanx style="verb">carriedLineages</spanx> array is invalid under this profile because it represents no Multi-Lineage Execution to evaluate.</t>
 
 </section>
 <section anchor="sandboxed-execution"><name>Sandboxed Execution</name>
@@ -243,7 +286,7 @@ Every non-origin PCA continues exactly one predecessor in its own lineage, and i
 <t><list style="numbers" type="1">
   <t>receives an ordinary outer PCA carrying <spanx style="verb">multiLineage</spanx>;</t>
   <t>verifies the outer PIC continuation;</t>
-  <t>verifies every inner leg;</t>
+  <t>verifies every carried lineage;</t>
   <t>applies the enforcement function;</t>
   <t>on permit, proves the next ordinary outer PCA;</t>
   <t>on deny, produces no authorizing continuation for that crossing.</t>
@@ -286,7 +329,7 @@ inner execution = Multi-Lineage Execution carried in multiLineage
 ]]></sourcecode></figure>
 
 <t>The outer execution is an ordinary Lineage Execution with its own PCA0, authority context, PoR chain, execution contract, continuation, and
-revocation coordinates. Every inner leg independently has the same PIC structure.</t>
+revocation coordinates. Every carried lineage independently has the same PIC structure.</t>
 
 <t>The outer execution does not absorb the inner lineages. It carries them as execution inputs and continues on its own authority, <spanx style="verb">ENFORCE</spanx>.</t>
 
@@ -313,8 +356,8 @@ PCA-G[n]
 +-- executionContract: required next-guardrail properties
 +-- multiLineage:
     |
-    +-- INNER PIC LEG A
-    +-- INNER PIC LEG B
+    +-- CARRIED PIC LINEAGE A
+    +-- CARRIED PIC LINEAGE B
     +-- ...
 ]]></sourcecode></figure>
 
@@ -323,7 +366,7 @@ PCA-G[n-1] --> PCA-G[n] --> PCA-G[n+1]
                    |
                    +-- multiLineage
                          |
-                         +-- independently verified PIC legs
+                         +-- independently verified carried lineages
 ]]></sourcecode></figure>
 
 <ul empty="true"><li>
@@ -334,10 +377,11 @@ PCA-G[n-1] --> PCA-G[n] --> PCA-G[n+1]
 <section anchor="recursive-multi-lineage-safety"><name>Recursive Multi-Lineage Safety</name>
 
 <t>Ordinary PIC prevents authority originating in one Lineage Execution from being represented as a valid continuation of another. Multi-Lineage
-Execution preserves this property by carrying independently valid lineages as separate legs rather than creating their authority union.</t>
+Execution preserves this property by carrying independently valid lineages as separate carried lineages rather than creating their authority
+union.</t>
 
 <t>Sandboxed Execution applies PIC recursively to the process that evaluates their joint participation. The outer lineage carries only
-<spanx style="verb">ENFORCE</spanx>; every inner leg retains its own origin authority.</t>
+<spanx style="verb">ENFORCE</spanx>; every carried lineage retains its own origin authority.</t>
 
 <figure><sourcecode type="text"><![CDATA[
 OUTER SANDBOXED EXECUTION
@@ -345,25 +389,25 @@ authority: { ENFORCE }
 |
 +-- multiLineage
     |
-    +-- LEG A
+    +-- CARRIED LINEAGE A
     |   origin: A
     |   authority: { READ-ALL }
     |
-    +-- LEG B
+    +-- CARRIED LINEAGE B
         origin: B
         authority: { BACKUP }
 
 No authority union is created.
 ]]></sourcecode></figure>
 
-<t>Policy may permit Leg A and Leg B to participate in one concrete transition. Policy does not create <spanx style="verb">{ READ-ALL, BACKUP }</spanx> as a new lineage
-authority. Both of the following are rejected by ordinary PIC origin binding and non-expansion:</t>
+<t>Policy may permit carried lineage A and carried lineage B to participate in one concrete transition. Policy does not create
+<spanx style="verb">{ READ-ALL, BACKUP }</spanx> as a new lineage authority. Both of the following are rejected by ordinary PIC origin binding and non-expansion:</t>
 
 <figure><sourcecode type="text"><![CDATA[
 invalid outer authority:
 { ENFORCE, READ-ALL, BACKUP }
 
-invalid Leg B successor:
+invalid carried lineage B successor:
 { BACKUP, READ-ALL }
 ]]></sourcecode></figure>
 
@@ -381,12 +425,12 @@ action locally.</t>
 
 <t><spanx style="verb">multiLineage</spanx> is a signed profile extension of an ordinary PCA, in the same extension style as the revocation coordinates of the
 <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</eref>, Section 2. It carries
-one Multi-Lineage Execution; inside it, <spanx style="verb">legs</spanx> is the bounded list of independently verifiable PIC inputs.</t>
+one Multi-Lineage Execution; inside it, <spanx style="verb">carriedLineages</spanx> is the bounded list of independently verifiable PIC inputs.</t>
 
 <figure><sourcecode type="json"><![CDATA[
 {
   "multiLineage": {
-    "legs": [
+    "carriedLineages": [
       {
         "pca": { "...": "ordinary signed PCA" },
         "predecessor": { "...": "when required by the selected validation profile" },
@@ -395,7 +439,7 @@ one Multi-Lineage Execution; inside it, <spanx style="verb">legs</spanx> is the 
     ],
     "context": {
       "destination": "...",
-      "requestsDigest": "sha256:...",
+      "requestSetDigest": "sha256:...",
       "payloadDigest": "sha256:...",
       "freshness": "..."
     }
@@ -407,19 +451,19 @@ one Multi-Lineage Execution; inside it, <spanx style="verb">legs</spanx> is the 
 
 <t><list style="symbols">
   <t>the whole <spanx style="verb">multiLineage</spanx> field is covered by the outer PCA's ordinary single signature;</t>
-  <t>every leg is an ordinary PIC PCA, or the profile-selected proof representation of one;</t>
-  <t>each leg keeps its own origin, predecessor relation, authority context, and revocation coordinates;</t>
-  <t>legs are never merged;</t>
+  <t>every carried lineage is an ordinary PIC PCA, or the profile-selected proof representation of one;</t>
+  <t>each carried lineage keeps its own origin, predecessor relation, authority context, and revocation coordinates;</t>
+  <t>carried lineages are never merged;</t>
   <t>the list is bounded by the profile;</t>
-  <t>a leg MAY itself contain <spanx style="verb">multiLineage</spanx>; recursion has no special terminal depth in the model;</t>
+  <t>a carried lineage MAY itself contain <spanx style="verb">multiLineage</spanx>; recursion has no special terminal depth in the model;</t>
   <t>implementations MAY impose resource and maximum-depth limits; these are implementation and profile limits, not PIC-semantic changes.</t>
 </list></t>
 
 <t><spanx style="verb">multiLineage</spanx> MUST NOT alter <spanx style="verb">previousPcaHash</spanx>, create additional predecessors, enter <spanx style="verb">invariants.operations</spanx>, import authority from its
-legs, or replace PoR, any leg's signature, or any leg's validation.</t>
+carried lineages, or replace PoR, any carried lineage's signature, or any carried lineage's validation.</t>
 
-<t>Exactness. The outer request binding commits to the complete presented <spanx style="verb">multiLineage</spanx>. The Verifier reconstructs the leg set and context
-from the presented objects and recomputes every supplied digest; an added, removed, or substituted leg causes rejection.</t>
+<t>Exactness. The outer request binding commits to the complete presented <spanx style="verb">multiLineage</spanx>. The Verifier reconstructs the carried-lineage set and
+context from the presented objects and recomputes every supplied digest; an added, removed, or substituted carried lineage causes rejection.</t>
 
 <ul empty="true"><li>
   <t>Exactness applies to the authenticated Multi-Lineage Execution presented to the guardrail. Detecting inputs hidden before presentation
@@ -465,11 +509,12 @@ request.multiLineageDigest
 H( "PIC-Multi-Lineage-v0" || canonical(PCA.multiLineage) )
 ]]></sourcecode></figure>
 
-<t>The selected profile MUST define the canonical encoding, hash suite, domain separator, leg ordering and whether it is semantic,
-duplicate-leg handling, maximum leg count, treatment of optional fields, normalization rules, and included context fields. <spanx style="verb">requestDigest</spanx>
-and <spanx style="verb">payloadDigest</spanx> MAY bind additional material, but MUST NOT replace <spanx style="verb">multiLineageDigest</spanx>. The Verifier MUST reject a missing digest, an
-unknown canonicalization profile, a non-canonical field, a digest mismatch, an added, removed, or substituted leg, a forbidden duplicate, a
-semantically significant reordering, or a mismatch between the carried context and the committed context.</t>
+<t>The selected profile MUST define the canonical encoding, hash suite, domain separator, carried-lineage ordering and whether it is semantic,
+duplicate-carried-lineage handling, maximum carried-lineage count, treatment of optional fields, normalization rules, and included context
+fields. <spanx style="verb">requestDigest</spanx> and <spanx style="verb">payloadDigest</spanx> MAY bind additional material, but MUST NOT replace <spanx style="verb">multiLineageDigest</spanx>. The Verifier MUST reject
+a missing digest, an unknown canonicalization profile, a non-canonical field, a digest mismatch, an added, removed, or substituted carried
+lineage, a forbidden duplicate carried lineage, a semantically significant reordering, or a mismatch between the carried context and the
+committed context.</t>
 
 <t>The decision is recorded only at <spanx style="verb">proofOfRelationship.request.enforcementResult</spanx>, where <spanx style="verb">enforcementResult</spanx> is <spanx style="verb">permit</spanx> or <spanx style="verb">deny</spanx>. It records
 the result for the exact <spanx style="verb">multiLineage</spanx>, destination, request, payload, policy, committed inputs, semantic profile, and crossing context
@@ -489,21 +534,22 @@ that signed object and MAY continue the same inner execution or evaluate a profi
 
 <ul empty="true"><li>
   <t>A successor outer PCA MUST NOT silently mutate <spanx style="verb">multiLineage</spanx>. If the proposed inner execution changes, the successor request MUST bind the
-complete new <spanx style="verb">multiLineage</spanx>, and every changed leg MUST independently validate as required by its own PIC lineage and the selected profile.</t>
+complete new <spanx style="verb">multiLineage</spanx>, and every changed carried lineage MUST independently validate as required by its own PIC lineage and the
+selected profile.</t>
 </li></ul>
 
-<t>An unchanged inner execution may be re-carried unchanged. An inner leg may continue only through its own valid PIC successor. A removed leg
-is not an attenuation of the outer authority; it is a change to the execution input and MUST be visible in the signed request binding. Inner
-authority is never silently added, removed, replaced, or imported.</t>
+<t>An unchanged carried lineage may be re-carried unchanged. A carried lineage may continue only through its own valid PIC successor. Removing a
+carried lineage is not an attenuation of the outer authority; it is a change to the execution input and MUST be visible in the signed request
+binding. Inner authority is never silently added, removed, replaced, or imported.</t>
 
 <t>The recursion is structural, not authority composition:</t>
 
 <figure><sourcecode type="text"><![CDATA[
 PCA
  +-- multiLineage
-      +-- leg: PCA
-      +-- leg: PCA
-      +-- leg: PCA
+      +-- carried lineage: PCA
+      +-- carried lineage: PCA
+      +-- carried lineage: PCA
            +-- multiLineage
                 +-- ...
 ]]></sourcecode></figure>
@@ -556,7 +602,7 @@ PCA0 — no predecessor, no PoR, signed by its authorized origin — containing 
 <t><spanx style="verb">PCA0-G</spanx> MAY carry an origin-level commitment identifying the execution proposal, but it MUST NOT contain a guardrail verdict.</t>
 
 <t>The first guardrail receives <spanx style="verb">PCA0-G</spanx> and the proposed Multi-Lineage Execution, proves conformance to the <spanx style="verb">PCA0-G</spanx> execution contract,
-validates every inner leg, applies the enforcement function, and — on permit — produces the ordinary successor <spanx style="verb">PCA1-G</spanx>.</t>
+validates every carried lineage, applies the enforcement function, and — on permit — produces the ordinary successor <spanx style="verb">PCA1-G</spanx>.</t>
 
 <figure><sourcecode type="text"><![CDATA[
 PCA0-G
@@ -576,7 +622,7 @@ PCA1-G
 <figure><sourcecode type="text"><![CDATA[
 INNER EXECUTION PROPOSAL
 Multi-Lineage Execution
-[ leg A | leg B | ... ]
+[ carried lineage A | carried lineage B | ... ]
           |
           v
 AUTHORIZED SANDBOX ORIGIN
@@ -589,7 +635,7 @@ PCA0-G
           v
 FIRST GUARDRAIL
   verify PCA0-G
-  verify every inner leg
+  verify every carried lineage
   apply enforcement function
           |
        permit
@@ -632,10 +678,10 @@ MUST perform the phases in order.</t>
   <t>recompute and verify the request commitment to the complete <spanx style="verb">multiLineage</spanx>.</t>
 </list></t>
 
-<t><strong>Phase 2 — Inner PIC verification.</strong> Only after Phase 1 succeeds, for every leg:</t>
+<t><strong>Phase 2 — Inner PIC verification.</strong> Only after Phase 1 succeeds, for every carried lineage:</t>
 
 <t><list style="numbers" type="1">
-  <t>validate the leg using the selected ordinary PIC validation profile;</t>
+  <t>validate the carried lineage using the selected ordinary PIC validation profile;</t>
   <t>verify its origin or immediate predecessor as required;</t>
   <t>verify signature and PoR;</t>
   <t>verify predecessor binding;</t>
@@ -646,7 +692,7 @@ MUST perform the phases in order.</t>
   <t>verify revocation coordinates and active revocation state.</t>
 </list></t>
 
-<t>Any invalid outer check or inner leg produces deny before policy evaluation.</t>
+<t>Any invalid outer check or carried lineage produces deny before policy evaluation.</t>
 
 <t><strong>Phase 3 — Enforcement function.</strong> Over the validated inner execution and the exact crossing context, the guardrail evaluates the
 profile-defined enforcement function. A PDP is only one possible implementation.</t>
@@ -656,8 +702,8 @@ profile-defined enforcement function. A PDP is only one possible implementation.
 process boundary, or deployment topology.</t>
 </li></ul>
 
-<t>Every leg-describing input used by the enforcement function MUST be cryptographically or operationally bound to the corresponding leg by a
-mechanism that is not under the unilateral control of the executor whose execution is being evaluated. This includes, when used, <spanx style="verb">role</spanx>,
+<t>Every carried-lineage-describing input used by the enforcement function MUST be cryptographically or operationally bound to the corresponding
+carried lineage by a mechanism not under the unilateral control of the proposing executor. This includes, when used, <spanx style="verb">role</spanx>,
 semantic scopes, labels, data classifications, tenant or security-domain claims, accountable-party claims, environment claims, application
 identity, purpose or intent metadata, policy-selection metadata, and translation or semantic-profile identifiers. Accepted binding mechanisms
 MAY include origin-bound signed metadata, signed declarations from an accepted authority, trusted derivation from validated PCA contents,
@@ -692,7 +738,7 @@ receive outer PCA
       |
 Phase 1: validate outer PIC continuation
       |
-Phase 2: validate every inner PIC leg
+Phase 2: validate every carried lineage
       |
 Phase 3: apply enforcement function
       |
@@ -730,7 +776,7 @@ function applicable to that hop, produce its own signed result, and produce a ne
 <t><list style="symbols">
   <t>it means: validate the carried Multi-Lineage Execution, apply the enforcement function, and decide whether the outer execution may
 continue;</t>
-  <t>it grants none of the authority carried by the inner legs;</t>
+  <t>it grants none of the authority of the carried lineages;</t>
   <t>it is subject to ordinary PIC non-expansion: the outer lineage MAY retain or attenuate it, never add broader operations.</t>
 </list></t>
 
@@ -787,16 +833,19 @@ proof, or another mechanism permitted by that profile. Not every incremental rec
 <t>A receiving deployment MAY restrict the sandbox origins it accepts and MAY require a minimum outer execution contract. Such restrictions
 narrow acceptance; they do not create outer authority.</t>
 
-<t><spanx style="verb">ValidMultiLineage</spanx> means every presented leg validates independently under its own PIC lineage and selected validation profile.</t>
+<t><spanx style="verb">ValidMultiLineage</spanx> means that <spanx style="verb">multiLineage.carriedLineages</spanx> contains at least one element and every carried lineage in it validates
+independently under its own PIC lineage and the selected validation profile. Validation of one carried lineage does not validate another. A
+carried lineage is never an additional predecessor of the outer PCA. A carried lineage may itself contain <spanx style="verb">multiLineage</spanx>, enabling recursive
+composition to arbitrary finite depth. An empty <spanx style="verb">carriedLineages</spanx> array is invalid under this profile.</t>
 
-<t><spanx style="verb">ExactPresentedExecutionBinding</spanx> means that the complete presented leg set and crossing context are reconstructed from the presented objects,
-every supplied digest is recomputed, and the result matches the signed outer request commitments under the exactness and canonical-binding
-rules of this specification.</t>
+<t><spanx style="verb">ExactPresentedExecutionBinding</spanx> means that the complete presented carried-lineage set and crossing context are reconstructed from the
+presented objects, every supplied digest is recomputed, and the result matches the signed outer request commitments under the exactness and
+canonical-binding rules of this specification.</t>
 
 <figure><sourcecode type="text"><![CDATA[
 ExactPresentedExecutionBinding
     =
-PresentedLegSetMatchesCommitment
+PresentedCarriedLineageSetMatchesCommitment
 AND PresentedContextMatchesCommitment
 AND RecomputedMultiLineageDigestMatches
 AND RecomputedRequestAndPayloadCommitmentsMatch
@@ -809,7 +858,7 @@ specification. The two predicates remain distinct:</t>
 
 <figure><sourcecode type="text"><![CDATA[
 ValidMultiLineage
-    validates every leg independently
+    validates every carried lineage independently
 
 ExactPresentedExecutionBinding
     validates completeness and exact binding
@@ -822,8 +871,8 @@ ExactPresentedExecutionBinding
 <t><list style="symbols">
   <t>a missing <spanx style="verb">multiLineage</spanx>;</t>
   <t>an invalid outer continuation;</t>
-  <t>an invalid inner leg;</t>
-  <t>an added, removed, or substituted presented leg;</t>
+  <t>an invalid carried lineage;</t>
+  <t>an added, removed, or substituted presented carried lineage;</t>
   <t>a mismatched request, destination, or payload;</t>
   <t>an invalid policy or input commitment;</t>
   <t>a non-permit decision;</t>
@@ -862,7 +911,7 @@ PCA. The materializing guardrail:</t>
 
 <t><list style="numbers" type="1">
   <t>verifies its outer predecessor;</t>
-  <t>verifies every inner leg;</t>
+  <t>verifies every carried lineage;</t>
   <t>evaluates the enforcement function;</t>
   <t>constructs its own ordinary outer successor PCA;</t>
   <t>binds the exact physical action, destination, payload, participants, policy inputs, and context;</t>
@@ -881,7 +930,7 @@ proposing executor
 materializing guardrail
       |
       | validates outer PIC
-      | validates inner legs
+      | validates carried lineages
       | evaluates enforcement
       | physically performs exact permitted action
       v
@@ -924,7 +973,7 @@ provides:                          may provide:
 - guardrail-to-guardrail PoR;      - service discovery;
 - exact request binding;           - routing;
 - authority non-expansion;         - observability;
-- independent inner-leg checks;    - load balancing;
+- independent lineage checks;      - load balancing;
 - recursive validation;            - rate limiting;
 - rejection of an invalid          - network policy;
   outer continuation.              - operational path restriction;
@@ -985,22 +1034,23 @@ outer PCA { ENFORCE }
 |
 +-- multiLineage
     |
-    +-- LEVEL 1 / Leg A
+    +-- LEVEL 1 / Carried Lineage A
     |   PCA { READ }
     |
-    +-- LEVEL 1 / Leg B
+    +-- LEVEL 1 / Carried Lineage B
         PCA { ENFORCE }
         |
         +-- multiLineage
             |
-            +-- LEVEL 2 / Leg C
+            +-- LEVEL 2 / Carried Lineage C
                 PCA { WRITE }
 ]]></sourcecode></figure>
 
 <t>Nesting adds execution structure. It does not create authority inheritance between recursive levels.</t>
 
 <t>The model is recursively composable to arbitrary finite depth — not literal infinite execution. Implementations MUST bound maximum recursion
-depth, leg count, encoded size, and total validation work. Resource limits cause rejection or indeterminate-deny according to the profile;
+depth, carried-lineage count, encoded size, and total validation work. Resource limits cause rejection or indeterminate-deny according to the
+profile;
 they do not change PIC semantics.</t>
 
 </section>
@@ -1125,305 +1175,322 @@ those defined in the PIC Legal Appendices.</t>
   </back>
 
 <!-- ##markdown-source:
-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
-42PWiuP2zf8BImBNa6qrAAA=
+H4sIAAAAAAAAA819+3Lc1tHn/+cpsPQfEWnMWJIdOyHL/mpE0Tbrk0QtKcXO
+alUhZgYkEWOACYAhTV9S+w67T7hPsn07ffoAmBGd8m6WlVjkDC7n0vf+dZ/J
+ZOK6oivzw2Tv9elxcpFVy3n9Y75MTn7MF5uuqKs9l83nTX6764plvaiyFTxk
+2WRX3WRdLCatv26S++smZdblbecW8M913dwfJkV1Vbti3RwmVV3lrt3MV0Xb
+wqXd/TrHr5f5Oof/VJ1rO3jg37ISrjtM7vPWtaus6f72j00NzzxMrrKyzd26
+OEzedfUiTdq66Zr8qoXf7lf4y3u3hNceJk8fP/188viLydPHzmWb7qZuDl2S
+TOBd8JRX0+SbrCxr+CRJeEavikVdZubjurnGT7umTmbXRVl098nFtJmWU+eq
+ulllXXELt/38q8PJ2b8nsNb4H5hrl//teb3YrGBif7vosm7TOndw8Je8wbkf
+Hhwkj6dPk0fPcTH34Qu+5ODgMKGPkv/9P/5n8qrukiy5wFXJmiVc9BynB7ea
+CcKd9aZZ0MfvrovuZjOfLurVJ7g/66aGhapL+qNd54tPaO8+gTfTR2VR5dl1
+PrnewOObrCjpoulq+f7RTdet28NPPvngE+dlPf9klRXVQ5+979ybm6JNgNwK
+XIpkmV/BtW3S3eQJzGZIe7goSJbZel0W8EUDn8Mq3ublPSzT/0qyKqk3Xd7Q
+RfJeeFrWJYusaQp4NDwzua5v86bC34EOqrxxLzdlV0xeyPX6tmly2sEVsPfL
+zQLureqkyu+S18ezBCmWngWfdc2m7WAwwgNTs+0ny6KrG9juCczH0hZs0aMx
+qtpPXuQZTJjuw7tmy2VyD9tK9JncFlmy3pQlTPwfG2Cu5BEwTXFbLDdZCaSK
+1JpVxU8Zjn6fVqQs2q6orhNYZuC3v+eLLunqJKfn4zI29S3c+qjN8+TdMXBi
+U8w3OOT3jz5amD/396cHZl72Svf/5TCzeds12aITElsK/+ELmLq2SLfkAmiz
+uCoWGdNbCmwHI6qbZVEByyWt/Tqpr/Bp7h09zH7zO7CNZxKiwibv4Io2Kbo2
+gfnAXOFFuL7rusU1undXRZnT4j+63Ml0l/tAoDNYgC1ED5TpeQWEL+7Wqm5y
+K5wtc8Fq1tc5rEGTXOHGwh0wQxgUrCmsfwWDI0b67iavYB0XN7Cc4fNkBZzj
+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
+n20dK375kLHidfvu/wCH/WEsz7oAAA==
 
 -->
 
