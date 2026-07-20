@@ -1,7 +1,7 @@
 ---
 title: "PIC Revocation"
 abbrev: "PIC Revocation"
-docname: draft-pic-revocation-latest
+docname: pic-revocation-02
 category: info
 ipr: none
 submissiontype: independent
@@ -22,10 +22,39 @@ informative: {}
 
 --- note_Document_Status
 
+**Project:** PIC Protocol
+**Project Website:** [www.pic-protocol.org](https://www.pic-protocol.org/)
+**Document:** pic-revocation-02
 **Version:** 0.2 (Draft)
-**Status**: Draft – Not a Standard
-**Date:** 2026-07-18
+**Document Status:** Public Draft
+**Intended Use:** Informational and Experimental
+**Published:** 2026-07-18
+**Editor(s):** Nicola Gallo (Nitro Agility S.r.l.)
+**Steward:** Nitro Agility S.r.l.
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-revocation-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md)
+
+--- note_About_This_Document
+
+> **Public Draft — Not a Standard**
+>
+> This document is an independently developed specification published as part of the PIC Protocol and maintained by Nitro Agility
+> S.r.l. in its role as Specification Steward.
+>
+> It has not been adopted, endorsed, approved, or published by the IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
+> Foundation, or any other standards-development organization, unless a later version explicitly states otherwise.
+>
+> It is not an RFC, an Internet Standard, or an official work item of any working group or standards body.
+>
+> This document is published for public review, research, experimentation, implementation feedback, and possible future
+> standardization work. It may be revised, replaced, or withdrawn at any time.
+>
+> Implementers use this draft at their own risk. Any implementation, interoperability statement, or conformance claim applies only
+> to the exact document version identified above.
+>
+> Publication of this draft does not constitute certification, endorsement, security approval, interoperability assurance,
+> regulatory approval, or standards-body recognition.
+>
+> Current project information and published specifications are available at `https://www.pic-protocol.org/`.
 
 --- note_Editors
 

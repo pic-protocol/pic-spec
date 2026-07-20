@@ -8,7 +8,7 @@
 
 
                         PIC Sandboxed Execution
-                  draft-pic-sandboxed-execution-latest
+                       pic-sandboxed-execution-02
 
 Abstract
 
@@ -58,17 +58,61 @@ Gallo                         Informational                     [Page 1]
                          PIC Sandboxed Execution               July 2026
 
 
-   *Version:* 0.2 (Draft) *Status*: Draft – Not a Standard *Date:*
-   2026-07-20 *Source:* github.com/pic-protocol/pic-spec/draft/0.2/pic-
-   lineage-guardrail-spec.md (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md)
+   *Project:* PIC Protocol *Project Website:* www.pic-protocol.org
+   (https://www.pic-protocol.org/) *Document:* pic-sandboxed-
+   execution-02 *Version:* 0.2 (Draft) *Document Status:* Public Draft
+   *Intended Use:* Informational and Experimental *Published:*
+   2026-07-20 *Editor(s):* Nicola Gallo (Nitro Agility S.r.l.)
+   *Steward:* Nitro Agility S.r.l. *Source:* github.com/pic-protocol/
+   pic-spec/draft/0.2/pic-lineage-guardrail-spec.md (https://github.com/
+   pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-
+   spec.md)
 
    This revision defines the *Sandboxed Execution*: PIC applied
    recursively — an outer PIC lineage that carries and governs an inner
    Multi-Lineage Execution.  It introduces no new PCA type and no
    trusted sandbox.
 
+About This Document
+
+      *Public Draft — Not a Standard*
+
+      This document is an independently developed specification
+      published as part of the PIC Protocol and maintained by Nitro
+      Agility S.r.l. in its role as Specification Steward.
+
+      It has not been adopted, endorsed, approved, or published by the
+      IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
+      Foundation, or any other standards-development organization,
+      unless a later version explicitly states otherwise.
+
+      It is not an RFC, an Internet Standard, or an official work item
+      of any working group or standards body.
+
+      This document is published for public review, research,
+      experimentation, implementation feedback, and possible future
+      standardization work.  It may be revised, replaced, or withdrawn
+      at any time.
+
+      Implementers use this draft at their own risk.  Any
+      implementation, interoperability statement, or conformance claim
+      applies only to the exact document version identified above.
+
+      Publication of this draft does not constitute certification,
+      endorsement, security approval, interoperability assurance,
+      regulatory approval, or standards-body recognition.
+
+      Current project information and published specifications are
+      available at https://www.pic-protocol.org/.
+
 Editors
+
+
+
+Gallo                         Informational                     [Page 2]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    *  *Nicola Gallo* (Nitro Agility S.r.l.)  Lead Editor
 
@@ -83,49 +127,48 @@ Contributors
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
-     1.1.  Lineage Execution . . . . . . . . . . . . . . . . . . . .   3
-     1.2.  Multi-Lineage Execution . . . . . . . . . . . . . . . . .   4
-     1.3.  Sandboxed Execution . . . . . . . . . . . . . . . . . . .   6
-     1.4.  Requirements Notation . . . . . . . . . . . . . . . . . .   7
-   2.  Recursive Execution Model . . . . . . . . . . . . . . . . . .   8
-     2.1.  Outer and Inner Execution . . . . . . . . . . . . . . . .   8
-     2.2.  PIC Carrying PIC (PIC of PIC) . . . . . . . . . . . . . .   8
-     2.3.  Recursive Multi-Lineage Safety  . . . . . . . . . . . . .   9
-     2.4.  The multiLineage PCA Profile Field  . . . . . . . . . . .  10
-     2.5.  Originating the Sandboxed Execution . . . . . . . . . . .  13
-     2.6.  Guardrail Prover and Verifier Profile . . . . . . . . . .  16
-     2.7.  Operation Profile . . . . . . . . . . . . . . . . . . . .  19
-   3.  Acceptance  . . . . . . . . . . . . . . . . . . . . . . . . .  20
-   4.  Bypass  . . . . . . . . . . . . . . . . . . . . . . . . . . .  22
-     4.1.  Non-PIC-Aware Target  . . . . . . . . . . . . . . . . . .  22
+     1.1.  Lineage Execution . . . . . . . . . . . . . . . . . . . .   4
+     1.2.  Multi-Lineage Execution . . . . . . . . . . . . . . . . .   5
+     1.3.  Sandboxed Execution . . . . . . . . . . . . . . . . . . .   7
+     1.4.  Requirements Notation . . . . . . . . . . . . . . . . . .   8
+   2.  Recursive Execution Model . . . . . . . . . . . . . . . . . .   9
+     2.1.  Outer and Inner Execution . . . . . . . . . . . . . . . .   9
+     2.2.  PIC Carrying PIC (PIC of PIC) . . . . . . . . . . . . . .   9
+     2.3.  Recursive Multi-Lineage Safety  . . . . . . . . . . . . .  10
+     2.4.  The multiLineage PCA Profile Field  . . . . . . . . . . .  11
+     2.5.  Originating the Sandboxed Execution . . . . . . . . . . .  14
+     2.6.  Guardrail Prover and Verifier Profile . . . . . . . . . .  17
+     2.7.  Operation Profile . . . . . . . . . . . . . . . . . . . .  20
+   3.  Acceptance  . . . . . . . . . . . . . . . . . . . . . . . . .  21
+   4.  Bypass  . . . . . . . . . . . . . . . . . . . . . . . . . . .  23
+     4.1.  Non-PIC-Aware Target  . . . . . . . . . . . . . . . . . .  23
      4.2.  Relationship to Service Meshes and Deployment
-           Infrastructure  . . . . . . . . . . . . . . . . . . . . .  24
-     4.3.  Consecutive Collusion . . . . . . . . . . . . . . . . . .  25
-   5.  Recursion . . . . . . . . . . . . . . . . . . . . . . . . . .  25
-   6.  Security Boundary . . . . . . . . . . . . . . . . . . . . . .  26
-     6.1.  Model Guarantee . . . . . . . . . . . . . . . . . . . . .  26
-     6.2.  Implementation Failure  . . . . . . . . . . . . . . . . .  27
-     6.3.  Semantic Divergence . . . . . . . . . . . . . . . . . . .  27
-
-
-
-Gallo                         Informational                     [Page 2]
-
-                         PIC Sandboxed Execution               July 2026
-
-
-   7.  Model Summary . . . . . . . . . . . . . . . . . . . . . . . .  27
-   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  28
-   9.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .  29
-   10. Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  29
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  30
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  30
+           Infrastructure  . . . . . . . . . . . . . . . . . . . . .  25
+     4.3.  Consecutive Collusion . . . . . . . . . . . . . . . . . .  26
+   5.  Recursion . . . . . . . . . . . . . . . . . . . . . . . . . .  26
+   6.  Security Boundary . . . . . . . . . . . . . . . . . . . . . .  27
+     6.1.  Model Guarantee . . . . . . . . . . . . . . . . . . . . .  27
+     6.2.  Implementation Failure  . . . . . . . . . . . . . . . . .  28
+     6.3.  Semantic Divergence . . . . . . . . . . . . . . . . . . .  28
+   7.  Model Summary . . . . . . . . . . . . . . . . . . . . . . . .  28
+   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  29
+   9.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .  30
+   10. Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  30
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  31
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  31
 
 1.  Introduction
 
    This section is non-normative.  It introduces the three concepts this
    specification builds on, and the single idea that connects them: PIC
    carries PIC.
+
+
+
+Gallo                         Informational                     [Page 3]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    LINEAGE EXECUTION
    -----------------
@@ -162,17 +205,26 @@ Gallo                         Informational                     [Page 2]
 
    *  non-expansion at every hop, so authority only narrows;
 
-
-
-
-Gallo                         Informational                     [Page 3]
-
-                         PIC Sandboxed Execution               July 2026
-
-
    *  no authority is imported from another lineage;
 
    *  physical executor behavior is outside the protocol guarantee.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 4]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    PCA0-A { READ, BACKUP }
       |
@@ -219,16 +271,17 @@ Gallo                         Informational                     [Page 3]
 
    Distinct lineages, one proposed transition.
 
+   A *carried lineage* is an independently verifiable PIC lineage
+   representation carried within a Multi-Lineage Execution for joint
+   evaluation in one exact proposed transition.  A carried lineage is
 
 
-Gallo                         Informational                     [Page 4]
+
+Gallo                         Informational                     [Page 5]
 
                          PIC Sandboxed Execution               July 2026
 
 
-   A *carried lineage* is an independently verifiable PIC lineage
-   representation carried within a Multi-Lineage Execution for joint
-   evaluation in one exact proposed transition.  A carried lineage is
    not an execution step, workflow stage, route segment, child lineage,
    subordinate lineage, additional outer predecessor, or authority
    fragment.
@@ -277,7 +330,10 @@ Gallo                         Informational                     [Page 4]
 
 
 
-Gallo                         Informational                     [Page 5]
+
+
+
+Gallo                         Informational                     [Page 6]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -333,7 +389,7 @@ Gallo                         Informational                     [Page 5]
 
 
 
-Gallo                         Informational                     [Page 6]
+Gallo                         Informational                     [Page 7]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -389,7 +445,7 @@ Gallo                         Informational                     [Page 6]
 
 
 
-Gallo                         Informational                     [Page 7]
+Gallo                         Informational                     [Page 8]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -445,7 +501,7 @@ Gallo                         Informational                     [Page 7]
 
 
 
-Gallo                         Informational                     [Page 8]
+Gallo                         Informational                     [Page 9]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -501,7 +557,7 @@ Gallo                         Informational                     [Page 8]
 
 
 
-Gallo                         Informational                     [Page 9]
+Gallo                         Informational                    [Page 10]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -557,7 +613,7 @@ Gallo                         Informational                     [Page 9]
 
 
 
-Gallo                         Informational                    [Page 10]
+Gallo                         Informational                    [Page 11]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -613,7 +669,7 @@ Gallo                         Informational                    [Page 10]
 
 
 
-Gallo                         Informational                    [Page 11]
+Gallo                         Informational                    [Page 12]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -669,7 +725,7 @@ Gallo                         Informational                    [Page 11]
 
 
 
-Gallo                         Informational                    [Page 12]
+Gallo                         Informational                    [Page 13]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -725,7 +781,7 @@ Gallo                         Informational                    [Page 12]
 
 
 
-Gallo                         Informational                    [Page 13]
+Gallo                         Informational                    [Page 14]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -781,7 +837,7 @@ Gallo                         Informational                    [Page 13]
 
 
 
-Gallo                         Informational                    [Page 14]
+Gallo                         Informational                    [Page 15]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -837,7 +893,7 @@ Gallo                         Informational                    [Page 14]
 
 
 
-Gallo                         Informational                    [Page 15]
+Gallo                         Informational                    [Page 16]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -893,7 +949,7 @@ Gallo                         Informational                    [Page 15]
 
 
 
-Gallo                         Informational                    [Page 16]
+Gallo                         Informational                    [Page 17]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -949,7 +1005,7 @@ Gallo                         Informational                    [Page 16]
 
 
 
-Gallo                         Informational                    [Page 17]
+Gallo                         Informational                    [Page 18]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1005,7 +1061,7 @@ Gallo                         Informational                    [Page 17]
 
 
 
-Gallo                         Informational                    [Page 18]
+Gallo                         Informational                    [Page 19]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1061,7 +1117,7 @@ Gallo                         Informational                    [Page 18]
 
 
 
-Gallo                         Informational                    [Page 19]
+Gallo                         Informational                    [Page 20]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1117,7 +1173,7 @@ Gallo                         Informational                    [Page 19]
 
 
 
-Gallo                         Informational                    [Page 20]
+Gallo                         Informational                    [Page 21]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1173,7 +1229,7 @@ Gallo                         Informational                    [Page 20]
 
 
 
-Gallo                         Informational                    [Page 21]
+Gallo                         Informational                    [Page 22]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1229,7 +1285,7 @@ Gallo                         Informational                    [Page 21]
 
 
 
-Gallo                         Informational                    [Page 22]
+Gallo                         Informational                    [Page 23]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1285,7 +1341,7 @@ Gallo                         Informational                    [Page 22]
 
 
 
-Gallo                         Informational                    [Page 23]
+Gallo                         Informational                    [Page 24]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1341,7 +1397,7 @@ Gallo                         Informational                    [Page 23]
 
 
 
-Gallo                         Informational                    [Page 24]
+Gallo                         Informational                    [Page 25]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1397,7 +1453,7 @@ Gallo                         Informational                    [Page 24]
 
 
 
-Gallo                         Informational                    [Page 25]
+Gallo                         Informational                    [Page 26]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1453,7 +1509,7 @@ Gallo                         Informational                    [Page 25]
 
 
 
-Gallo                         Informational                    [Page 26]
+Gallo                         Informational                    [Page 27]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1509,7 +1565,7 @@ Gallo                         Informational                    [Page 26]
 
 
 
-Gallo                         Informational                    [Page 27]
+Gallo                         Informational                    [Page 28]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1565,7 +1621,7 @@ Gallo                         Informational                    [Page 27]
 
 
 
-Gallo                         Informational                    [Page 28]
+Gallo                         Informational                    [Page 29]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1621,7 +1677,7 @@ Gallo                         Informational                    [Page 28]
 
 
 
-Gallo                         Informational                    [Page 29]
+Gallo                         Informational                    [Page 30]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1677,4 +1733,4 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 30]
+Gallo                         Informational                    [Page 31]

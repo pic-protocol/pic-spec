@@ -8,7 +8,7 @@
 
 
         Provenance Identity Continuity (PIC) Model Specification
-                         draft-pic-spec-latest
+                          pic-specification-02
 
 Abstract
 
@@ -26,19 +26,62 @@ Abstract
 
 Document Status
 
-   *Version:* 0.2 (Draft) *Status*: Draft – Not a Standard *Date:*
-   2026-07-15 *Source:* github.com/pic-protocol/pic-spec/draft/0.2/pic-
-   spec.md (https://github.com/pic-protocol/pic-
+   *Project:* PIC Protocol *Project Website:* www.pic-protocol.org
+   (https://www.pic-protocol.org/) *Document:* pic-specification-02
+   *Version:* 0.2 (Draft) *Document Status:* Public Draft *Intended
+   Use:* Informational and Experimental *Published:* 2026-07-15
+   *Editor(s):* Nicola Gallo (Nitro Agility S.r.l.) *Steward:* Nitro
+   Agility S.r.l. *Source:* github.com/pic-protocol/pic-spec/draft/0.2/
+   pic-spec.md (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-spec.md)
+
+About This Document
+
+      *Public Draft — Not a Standard*
+
+      This document is an independently developed specification
+      published as part of the PIC Protocol and maintained by Nitro
+      Agility S.r.l. in its role as Specification Steward.
+
+      It has not been adopted, endorsed, approved, or published by the
+      IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
+      Foundation, or any other standards-development organization,
+      unless a later version explicitly states otherwise.
+
+      It is not an RFC, an Internet Standard, or an official work item
+      of any working group or standards body.
+
+
+
+Gallo                         Informational                     [Page 1]
+
+                            PIC Specification                  July 2026
+
+
+      This document is published for public review, research,
+      experimentation, implementation feedback, and possible future
+      standardization work.  It may be revised, replaced, or withdrawn
+      at any time.
+
+      Implementers use this draft at their own risk.  Any
+      implementation, interoperability statement, or conformance claim
+      applies only to the exact document version identified above.
+
+      Publication of this draft does not constitute certification,
+      endorsement, security approval, interoperability assurance,
+      regulatory approval, or standards-body recognition.
+
+      Current project information and published specifications are
+      available at https://www.pic-protocol.org/.
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   1
-   2.  Documents . . . . . . . . . . . . . . . . . . . . . . . . . .   2
-   3.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .   4
-   4.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .   5
-   5.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   5
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   5
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Documents . . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .   5
+   4.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .   6
+   5.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   6
 
 1.  Introduction
 
@@ -47,16 +90,6 @@ Table of Contents
 
    *  The *PIC Specification* (this document and its subordinate
       specifications) defines the normative semantics of the PIC Model.
-
-
-
-
-
-
-Gallo                         Informational                     [Page 1]
-
-                            PIC Specification                  July 2026
-
 
    Documents and implementations claiming conformance with PIC *MUST*
    faithfully preserve the invariants defined by the PIC Model as
@@ -73,6 +106,13 @@ Gallo                         Informational                     [Page 1]
 
    *  are canonical only in the version designated by the Specification
       Steward.
+
+
+
+Gallo                         Informational                     [Page 2]
+
+                            PIC Specification                  July 2026
+
 
 2.  Documents
 
@@ -106,14 +146,6 @@ Gallo                         Informational                     [Page 1]
    |                           | snapshot hash     |      |            |
    |                           | chain it orients  |      |            |
    |                           | on, and succinct  |      |            |
-
-
-
-Gallo                         Informational                     [Page 2]
-
-                            PIC Specification                  July 2026
-
-
    |                           | proofs.           |      |            |
    +---------------------------+-------------------+------+------------+
    | PIC Revocation            | Revocation        |Draft | 2026-07-18 |
@@ -130,6 +162,14 @@ Gallo                         Informational                     [Page 2]
    |                           | requirements for  |      |            |
    |                           | turning a         |      |            |
    |                           | historical        |      |            |
+
+
+
+Gallo                         Informational                     [Page 3]
+
+                            PIC Specification                  July 2026
+
+
    |                           | selector into a   |      |            |
    |                           | causal cutoff,    |      |            |
    |                           | and revocation-   |      |            |
@@ -162,14 +202,6 @@ Gallo                         Informational                     [Page 2]
    |                           | semantic scopes,  |      |            |
    |                           | and enforce       |      |            |
    |                           | permit or deny;   |      |            |
-
-
-
-Gallo                         Informational                     [Page 3]
-
-                            PIC Specification                  July 2026
-
-
    |                           | permitted         |      |            |
    |                           | crossings travel  |      |            |
    |                           | in a guardrail    |      |            |
@@ -186,6 +218,14 @@ Gallo                         Informational                     [Page 3]
    | pic-architecture-         | their fit to      |      |            |
    | deployment-spec.md)       | trusted and       |      |            |
    |                           | untrusted         |      |            |
+
+
+
+Gallo                         Informational                     [Page 4]
+
+                            PIC Specification                  July 2026
+
+
    |                           | environments,     |      |            |
    |                           | hybrid            |      |            |
    |                           | enterprise        |      |            |
@@ -215,17 +255,6 @@ Gallo                         Informational                     [Page 3]
       records/17777421 (https://zenodo.org/records/17777421) (DOI:
       10.5281/zenodo.17777421).
 
-
-
-
-
-
-
-Gallo                         Informational                     [Page 4]
-
-                            PIC Specification                  July 2026
-
-
    *  Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
       Authority Propagation in Distributed Systems and AI Agents_.
       Zenodo. zenodo.org/records/21285112 (https://zenodo.org/
@@ -241,6 +270,17 @@ Gallo                         Informational                     [Page 4]
    spec/blob/main/draft/0.2/pic-legal.md)* (Appendix B, Attribution;
    Appendix D, Acknowledgements), which are incorporated into this
    specification by reference.
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 5]
+
+                            PIC Specification                  July 2026
+
 
 4.  Legal Notices
 
@@ -273,49 +313,9 @@ Gallo                         Informational                     [Page 4]
 
 Author's Address
 
-
-
-
-
-Gallo                         Informational                     [Page 5]
-
-                            PIC Specification                  July 2026
-
-
    Nicola Gallo
    Nitro Agility S.r.l.
    Email: nicola.gallo@nitroagility.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

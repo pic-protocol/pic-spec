@@ -8,7 +8,7 @@
 
 
                     PIC Architecture and Deployment
-                draft-pic-architecture-deployment-latest
+                     pic-architecture-deployment-02
 
 Abstract
 
@@ -37,10 +37,54 @@ Abstract
 
 Document Status
 
-   *Version:* 0.2 (Draft) *Status*: Draft – Not a Standard *Date:*
-   2026-07-19 *Source:* github.com/pic-protocol/pic-spec/draft/0.2/pic-
-   architecture-deployment-spec.md (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md)
+   *Project:* PIC Protocol *Project Website:* www.pic-protocol.org
+   (https://www.pic-protocol.org/) *Document:* pic-architecture-
+   deployment-02 *Version:* 0.2 (Draft) *Document Status:* Public Draft
+   *Intended Use:* Informational and Experimental *Published:*
+   2026-07-19 *Editor(s):* Nicola Gallo (Nitro Agility S.r.l.)
+   *Steward:* Nitro Agility S.r.l. *Source:* github.com/pic-protocol/
+   pic-spec/draft/0.2/pic-architecture-deployment-spec.md
+   (https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-
+   architecture-deployment-spec.md)
+
+About This Document
+
+      *Public Draft — Not a Standard*
+
+
+
+Gallo                         Informational                     [Page 1]
+
+                     PIC Architecture and Deployment           July 2026
+
+
+      This document is an independently developed specification
+      published as part of the PIC Protocol and maintained by Nitro
+      Agility S.r.l. in its role as Specification Steward.
+
+      It has not been adopted, endorsed, approved, or published by the
+      IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
+      Foundation, or any other standards-development organization,
+      unless a later version explicitly states otherwise.
+
+      It is not an RFC, an Internet Standard, or an official work item
+      of any working group or standards body.
+
+      This document is published for public review, research,
+      experimentation, implementation feedback, and possible future
+      standardization work.  It may be revised, replaced, or withdrawn
+      at any time.
+
+      Implementers use this draft at their own risk.  Any
+      implementation, interoperability statement, or conformance claim
+      applies only to the exact document version identified above.
+
+      Publication of this draft does not constitute certification,
+      endorsement, security approval, interoperability assurance,
+      regulatory approval, or standards-body recognition.
+
+      Current project information and published specifications are
+      available at https://www.pic-protocol.org/.
 
 Editors
 
@@ -51,33 +95,34 @@ Editors
 
 Contributors
 
-
-
-Gallo                         Informational                     [Page 1]
-
-                     PIC Architecture and Deployment           July 2026
-
-
    *  _Add your name via pull request (individual or organization) —
       listing is subject to editor approval (see Section 6)._
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-     1.1.  Requirements Notation . . . . . . . . . . . . . . . . . .   2
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.1.  Requirements Notation . . . . . . . . . . . . . . . . . .   3
    2.  Architectures . . . . . . . . . . . . . . . . . . . . . . . .   3
-     2.1.  Centralized . . . . . . . . . . . . . . . . . . . . . . .   3
-     2.2.  Decentralized . . . . . . . . . . . . . . . . . . . . . .   3
-     2.3.  Consecutive Collusion and History . . . . . . . . . . . .   4
-   3.  Trusted and Untrusted Environments  . . . . . . . . . . . . .   5
-   4.  Hybrid Enterprise Architectures . . . . . . . . . . . . . . .   6
-     4.1.  Service Meshes  . . . . . . . . . . . . . . . . . . . . .   7
-   5.  Interoperability  . . . . . . . . . . . . . . . . . . . . . .   7
-   6.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   8
-   7.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .   8
-   8.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .   9
-   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  10
+     2.1.  Centralized . . . . . . . . . . . . . . . . . . . . . . .   4
+     2.2.  Decentralized . . . . . . . . . . . . . . . . . . . . . .   4
+     2.3.  Consecutive Collusion and History . . . . . . . . . . . .   5
+
+
+
+Gallo                         Informational                     [Page 2]
+
+                     PIC Architecture and Deployment           July 2026
+
+
+   3.  Trusted and Untrusted Environments  . . . . . . . . . . . . .   6
+   4.  Hybrid Enterprise Architectures . . . . . . . . . . . . . . .   7
+     4.1.  Service Meshes  . . . . . . . . . . . . . . . . . . . . .   8
+   5.  Interoperability  . . . . . . . . . . . . . . . . . . . . . .   8
+   6.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   9
+   7.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .   9
+   8.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  10
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  11
 
 1.  Introduction
 
@@ -103,17 +148,6 @@ Table of Contents
    capitals, and only within the normative sections of this document.
    Examples are illustrative and non-normative.
 
-
-
-
-
-
-
-Gallo                         Informational                     [Page 2]
-
-                     PIC Architecture and Deployment           July 2026
-
-
 2.  Architectures
 
    This section is non-normative.  This specification defines two
@@ -122,6 +156,19 @@ Gallo                         Informational                     [Page 2]
    Specification (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Sections 5 and
    7) provide different cost and assurance properties.
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 3]
+
+                     PIC Architecture and Deployment           July 2026
+
 
 2.1.  Centralized
 
@@ -163,19 +210,21 @@ Gallo                         Informational                     [Page 2]
    component is required, and every transition is proved and verified at
    the hop that performs it.
 
-
-
-Gallo                         Informational                     [Page 3]
-
-                     PIC Architecture and Deployment           July 2026
-
-
    +-------------+       +-------------+       +-------------+
    | HOP 1       |------>| HOP 2       |------>| HOP 3       |
    | local P + V |  PoR  | local P + V |  PoR  | local P + V |
    +-------------+       +-------------+       +-------------+
 
    no central component; every hop proves and verifies locally
+
+
+
+
+
+Gallo                         Informational                     [Page 4]
+
+                     PIC Architecture and Deployment           July 2026
+
 
 2.3.  Consecutive Collusion and History
 
@@ -221,7 +270,14 @@ Gallo                         Informational                     [Page 3]
 
 
 
-Gallo                         Informational                     [Page 4]
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 5]
 
                      PIC Architecture and Deployment           July 2026
 
@@ -277,7 +333,7 @@ Gallo                         Informational                     [Page 4]
 
 
 
-Gallo                         Informational                     [Page 5]
+Gallo                         Informational                     [Page 6]
 
                      PIC Architecture and Deployment           July 2026
 
@@ -333,7 +389,7 @@ Gallo                         Informational                     [Page 5]
 
 
 
-Gallo                         Informational                     [Page 6]
+Gallo                         Informational                     [Page 7]
 
                      PIC Architecture and Deployment           July 2026
 
@@ -389,7 +445,7 @@ Gallo                         Informational                     [Page 6]
 
 
 
-Gallo                         Informational                     [Page 7]
+Gallo                         Informational                     [Page 8]
 
                      PIC Architecture and Deployment           July 2026
 
@@ -445,7 +501,7 @@ Gallo                         Informational                     [Page 7]
 
 
 
-Gallo                         Informational                     [Page 8]
+Gallo                         Informational                     [Page 9]
 
                      PIC Architecture and Deployment           July 2026
 
@@ -501,7 +557,7 @@ Gallo                         Informational                     [Page 8]
 
 
 
-Gallo                         Informational                     [Page 9]
+Gallo                         Informational                    [Page 10]
 
                      PIC Architecture and Deployment           July 2026
 
@@ -557,4 +613,4 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 10]
+Gallo                         Informational                    [Page 11]

@@ -8,7 +8,7 @@
 
 
                         PIC Prover and Verifier
-                    draft-pic-prover-verifier-latest
+                         pic-prover-verifier-02
 
 Abstract
 
@@ -46,10 +46,10 @@ Abstract
 
 Document Status
 
-   *Version:* 0.2 (Draft) *Status*: Draft – Not a Standard *Date:*
-   2026-07-15 *Source:* github.com/pic-protocol/pic-spec/draft/0.2/pic-
-   prover-verifier-spec.md (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-prover-verifier-spec.md)
+   *Project:* PIC Protocol *Project Website:* www.pic-protocol.org
+   (https://www.pic-protocol.org/) *Document:* pic-prover-verifier-02
+   *Version:* 0.2 (Draft) *Document Status:* Public Draft *Intended
+   Use:* Informational and Experimental *Published:* 2026-07-15
 
 
 
@@ -57,6 +57,43 @@ Gallo                         Informational                     [Page 1]
 
                          PIC Prover and Verifier               July 2026
 
+
+   *Editor(s):* Nicola Gallo (Nitro Agility S.r.l.) *Steward:* Nitro
+   Agility S.r.l. *Source:* github.com/pic-protocol/pic-spec/draft/0.2/
+   pic-prover-verifier-spec.md (https://github.com/pic-protocol/pic-
+   spec/blob/main/draft/0.2/pic-prover-verifier-spec.md)
+
+About This Document
+
+      *Public Draft — Not a Standard*
+
+      This document is an independently developed specification
+      published as part of the PIC Protocol and maintained by Nitro
+      Agility S.r.l. in its role as Specification Steward.
+
+      It has not been adopted, endorsed, approved, or published by the
+      IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
+      Foundation, or any other standards-development organization,
+      unless a later version explicitly states otherwise.
+
+      It is not an RFC, an Internet Standard, or an official work item
+      of any working group or standards body.
+
+      This document is published for public review, research,
+      experimentation, implementation feedback, and possible future
+      standardization work.  It may be revised, replaced, or withdrawn
+      at any time.
+
+      Implementers use this draft at their own risk.  Any
+      implementation, interoperability statement, or conformance claim
+      applies only to the exact document version identified above.
+
+      Publication of this draft does not constitute certification,
+      endorsement, security approval, interoperability assurance,
+      regulatory approval, or standards-body recognition.
+
+      Current project information and published specifications are
+      available at https://www.pic-protocol.org/.
 
 Editors
 
@@ -70,18 +107,25 @@ Contributors
    *  _Add your name via pull request (individual or organization) —
       listing is subject to editor approval (see Section 9)._
 
+
+
+Gallo                         Informational                     [Page 2]
+
+                         PIC Prover and Verifier               July 2026
+
+
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
-     1.1.  Security Guarantees of the Model  . . . . . . . . . . . .   4
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   4
+     1.1.  Security Guarantees of the Model  . . . . . . . . . . . .   5
      1.2.  Delegating the Future . . . . . . . . . . . . . . . . . .   5
-     1.3.  The N+1 Executor Problem (Canonical Execution Model)  . .   5
-     1.4.  Cross-Lineage Authority Composition . . . . . . . . . . .   6
-     1.5.  The Execution Flow as Part of the Security Model  . . . .   7
-     1.6.  Attribute Attestations  . . . . . . . . . . . . . . . . .   7
+     1.3.  The N+1 Executor Problem (Canonical Execution Model)  . .   6
+     1.4.  Cross-Lineage Authority Composition . . . . . . . . . . .   7
+     1.5.  The Execution Flow as Part of the Security Model  . . . .   8
+     1.6.  Attribute Attestations  . . . . . . . . . . . . . . . . .   8
      1.7.  Requirements Notation . . . . . . . . . . . . . . . . . .   9
-     1.8.  Origin Authority Context (PCA0) . . . . . . . . . . . . .   9
-   2.  Prover Requirements . . . . . . . . . . . . . . . . . . . . .  11
+     1.8.  Origin Authority Context (PCA0) . . . . . . . . . . . . .  10
+   2.  Prover Requirements . . . . . . . . . . . . . . . . . . . . .  12
      2.1.  Prover Procedure  . . . . . . . . . . . . . . . . . . . .  12
      2.2.  Predecessor Validation  . . . . . . . . . . . . . . . . .  13
      2.3.  Proof of Relationship . . . . . . . . . . . . . . . . . .  13
@@ -106,14 +150,6 @@ Table of Contents
      6.4.  Canonicalization and Cryptographic Agility  . . . . . . .  29
      6.5.  Formal Scope  . . . . . . . . . . . . . . . . . . . . . .  29
      6.6.  Proof of Possession (Optional)  . . . . . . . . . . . . .  29
-
-
-
-Gallo                         Informational                     [Page 2]
-
-                         PIC Prover and Verifier               July 2026
-
-
      6.7.  Transport Separation and Confidentiality  . . . . . . . .  30
      6.8.  Incremental Verification and Trusted Hops . . . . . . . .  30
    7.  Deployment Models . . . . . . . . . . . . . . . . . . . . . .  31
@@ -123,6 +159,16 @@ Gallo                         Informational                     [Page 2]
    11. Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  34
    12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  35
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  36
+
+
+
+
+
+
+Gallo                         Informational                     [Page 3]
+
+                         PIC Prover and Verifier               July 2026
+
 
 1.  Introduction
 
@@ -162,14 +208,6 @@ Gallo                         Informational                     [Page 2]
    decentralized_ — each hop carrying everything the next needs to
    verify it — or with the help of a trusted component such as a
    snapshot server.  Section 5 describes these representations; the PIC
-
-
-
-Gallo                         Informational                     [Page 3]
-
-                         PIC Prover and Verifier               July 2026
-
-
    _invariants_ are the same in every case, but the concrete assurance
    and trust assumptions differ by profile (Sections 6.8, 7) — the
    profiles are not equivalent.
@@ -180,6 +218,14 @@ Gallo                         Informational                     [Page 3]
    — a TLS session, a network perimeter, a message bus — to obtain them
    (the normative requirement is stated in Section 6.7).  Transport is
    only transport.  A compromised channel can read or drop messages but
+
+
+
+Gallo                         Informational                     [Page 4]
+
+                         PIC Prover and Verifier               July 2026
+
+
    cannot forge a valid PCA; confidentiality and attack-surface concerns
    belong to transport and are addressed in Section 6.7.  This
    separation is what lets the same model run unchanged over HTTP, over
@@ -219,19 +265,22 @@ Gallo                         Informational                     [Page 3]
    confined to its local step and cannot propagate as valid authority at
    the next hop.
 
-
-
-Gallo                         Informational                     [Page 4]
-
-                         PIC Prover and Verifier               July 2026
-
-
 1.2.  Delegating the Future
 
    Software that must support implementations that do not exist yet does
    not hard-code future components.  It defines an interface.  The
    interface specifies the contract, and any future implementation can
    participate, provided it proves that it satisfies the contract.
+
+
+
+
+
+
+Gallo                         Informational                     [Page 5]
+
+                         PIC Prover and Verifier               July 2026
+
 
    PIC applies the same principle to distributed execution.  A
    continuation does not name or preselect its successor.  It defines
@@ -271,21 +320,23 @@ Gallo                         Informational                     [Page 4]
    +----------------+      |      +----------------+      |      +----------------+
                                        time x                        time x + y
 
-
-
-
-
-
-
-Gallo                         Informational                     [Page 5]
-
-                         PIC Prover and Verifier               July 2026
-
-
    Each | marks a hop boundary: the point where the predecessor's Prover
    emits its proofs and the successor's Verifier validates them.  Each
    boundary is an act of future delegation, and the linear chain is the
    minimal case: a step may delegate to several successors in parallel.
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 6]
+
+                         PIC Prover and Verifier               July 2026
+
 
    The problem is the executor at position n+1.  Executor n acts at time
    x.  Executor n+1 acts at a later time x + y, and at time x it does
@@ -325,19 +376,6 @@ Gallo                         Informational                     [Page 5]
    with SHARE-FILES is now exercisable in a lineage that was never
    granted it.
 
-
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 6]
-
-                         PIC Prover and Verifier               July 2026
-
-
    Under PIC the same state cannot be represented as valid.  READ-ALL is
    absent from the origin context of lineage B, and no valid
    continuation can expand an authority context: the composed proof does
@@ -348,6 +386,14 @@ Gallo                         Informational                     [Page 6]
    This is a _structural_ elimination of cross-lineage confused-deputy
    authority composition from the PIC state model, and it is what PIC
    shares with the object-capability approach: a capability removes the
+
+
+
+Gallo                         Informational                     [Page 7]
+
+                         PIC Prover and Verifier               July 2026
+
+
    mismatch by construction at a single hop, by fusing designation and
    authority at invocation; PIC extends the same by-construction
    guarantee across the whole lineage, so the mismatch is not a state a
@@ -378,22 +424,6 @@ Gallo                         Informational                     [Page 6]
    under compliance constraints, authorized for the operations READ-ALL
    and BACKUP.
 
-
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 7]
-
-                         PIC Prover and Verifier               July 2026
-
-
    {
      "subject": "did:example:workloads:eu:backup-service",
      "attributes": {
@@ -412,6 +442,13 @@ Gallo                         Informational                     [Page 7]
      "expiresAt": "2026-08-17T10:00:00Z",
      "issuer": "did:example:org-authority"
    }
+
+
+
+Gallo                         Informational                     [Page 8]
+
+                         PIC Prover and Verifier               July 2026
+
 
    The scenario includes a second executor: a summary service
    implemented as an AI agent.  It produces summaries of documents, and
@@ -437,19 +474,6 @@ Gallo                         Informational                     [Page 7]
      "issuer": "did:example:org-authority"
    }
 
-
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 8]
-
-                         PIC Prover and Verifier               July 2026
-
-
    The identifiers in the examples use DIDs, but this is a
    _presentational_ choice, not a requirement. *PIC does not depend on
    any identifier scheme; what it needs are the signed attestations
@@ -471,6 +495,16 @@ Gallo                         Informational                     [Page 8]
    The *normative* sections of this document are Sections 2, 3, 4, and
    6, together with the requirement explicitly marked normative in
    Section 5.  Sections 1, 7, and 8 are non-normative.
+
+
+
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                         PIC Prover and Verifier               July 2026
+
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
@@ -498,19 +532,35 @@ Gallo                         Informational                     [Page 8]
    authority as an abstract domain (roles, labels, scopes, policy
    references) and its relationship to a Policy Decision Point.
 
-
-
-
-Gallo                         Informational                     [Page 9]
-
-                         PIC Prover and Verifier               July 2026
-
-
    In the running scenario, Alice connects to the backup SaaS.  The
    service agreement confirms that the service is operated in Europe by
    an accountable party and does not use agentic execution.  On those
    terms she grants access to all her files for backup.  Her client
    produces a PCA0, signed by Alice:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 10]
+
+                         PIC Prover and Verifier               July 2026
+
 
    {
      "issuer": "did:example:users:alice",
@@ -539,29 +589,6 @@ Gallo                         Informational                     [Page 9]
    uses an AI agent.  She accepts them, but only for the file foo.  The
    resulting PCA0 grants less and constrains differently:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 10]
-
-                         PIC Prover and Verifier               July 2026
-
-
    {
      "issuer": "did:example:users:alice",
      "invariants": {
@@ -582,6 +609,14 @@ Gallo                         Informational                    [Page 10]
      "issuedAt": "2026-07-17T10:00:00Z",
      "expiresAt": "2026-07-18T10:00:00Z"
    }
+
+
+
+
+Gallo                         Informational                    [Page 11]
+
+                         PIC Prover and Verifier               July 2026
+
 
    Each PCA0 starts a distinct lineage with its own invariants, and no
    later hop can expand them.  These are the two lineages of
@@ -610,14 +645,6 @@ Gallo                         Informational                    [Page 10]
 
    2.  include a *cryptographic reference* to that predecessor;
 
-
-
-
-Gallo                         Informational                    [Page 11]
-
-                         PIC Prover and Verifier               July 2026
-
-
    3.  include a *Proof of Relationship* that responds to the
        predecessor's continuation challenge and binds the current
        execution to it;
@@ -640,6 +667,13 @@ Gallo                         Informational                    [Page 11]
    Given a predecessor PCA, the Prover MUST perform the following steps
    and MUST NOT emit a successor PCA if any of them fails:
 
+
+
+Gallo                         Informational                    [Page 12]
+
+                         PIC Prover and Verifier               July 2026
+
+
    1.  validate the predecessor PCA (Section 2.2);
 
    2.  build the Proof of Relationship, responding to the predecessor's
@@ -651,28 +685,6 @@ Gallo                         Informational                    [Page 11]
        challenge — and sign it as a whole (Section 2.5);
 
    5.  emit the signed PCA to the next hop.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 12]
-
-                         PIC Prover and Verifier               July 2026
-
 
    receive PCA[n-1]
          |
@@ -710,18 +722,6 @@ Gallo                         Informational                    [Page 12]
    *  *previousPcaHash* — the hash of the predecessor PCA, binding this
       step to exactly one lineage;
 
-   *  *continuationResponse* — the predecessor's emitted
-      continuation.challenge (Section 2.5) with a random value the
-      executor generates locally.  It proves the executor *observed and
-      holds* the predecessor PCA (it has the challenge) and keeps the
-      response fresh.  It does *not* prove that the request causally
-      required this step, nor that this executor was designated as the
-      successor;
-
-
-
-
-
 
 
 
@@ -729,6 +729,14 @@ Gallo                         Informational                    [Page 13]
 
                          PIC Prover and Verifier               July 2026
 
+
+   *  *continuationResponse* — the predecessor's emitted
+      continuation.challenge (Section 2.5) with a random value the
+      executor generates locally.  It proves the executor *observed and
+      holds* the predecessor PCA (it has the challenge) and keeps the
+      response fresh.  It does *not* prove that the request causally
+      required this step, nor that this executor was designated as the
+      successor;
 
    *  *executor* and *request* — the executor identifier and the
       _request binding_: the operation, its target (resource), the
@@ -744,14 +752,6 @@ Gallo                         Informational                    [Page 13]
 
    Continuing the running scenario, the backup service performing BACKUP
    produces the following PoR payload:
-
-
-
-
-
-
-
-
 
 
 

@@ -8,7 +8,7 @@
 
 
                              PIC Revocation
-                      draft-pic-revocation-latest
+                           pic-revocation-02
 
 Abstract
 
@@ -39,17 +39,17 @@ Abstract
 
 Document Status
 
-   *Version:* 0.2 (Draft) *Status*: Draft – Not a Standard *Date:*
-   2026-07-18 *Source:* github.com/pic-protocol/pic-spec/draft/0.2/pic-
-   revocation-spec.md (https://github.com/pic-protocol/pic-
+   *Project:* PIC Protocol *Project Website:* www.pic-protocol.org
+   (https://www.pic-protocol.org/) *Document:* pic-revocation-02
+   *Version:* 0.2 (Draft) *Document Status:* Public Draft *Intended
+   Use:* Informational and Experimental *Published:* 2026-07-18
+   *Editor(s):* Nicola Gallo (Nitro Agility S.r.l.) *Steward:* Nitro
+   Agility S.r.l. *Source:* github.com/pic-protocol/pic-spec/draft/0.2/
+   pic-revocation-spec.md (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-revocation-spec.md)
 
-Editors
+About This Document
 
-   *  *Nicola Gallo* (Nitro Agility S.r.l.)  Lead Editor
-
-   *  _Add your name via pull request (individual or organization) —
-      listing is subject to editor approval (see Section 7)._
 
 
 
@@ -58,6 +58,43 @@ Gallo                         Informational                     [Page 1]
                              PIC Revocation                    July 2026
 
 
+      *Public Draft — Not a Standard*
+
+      This document is an independently developed specification
+      published as part of the PIC Protocol and maintained by Nitro
+      Agility S.r.l. in its role as Specification Steward.
+
+      It has not been adopted, endorsed, approved, or published by the
+      IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
+      Foundation, or any other standards-development organization,
+      unless a later version explicitly states otherwise.
+
+      It is not an RFC, an Internet Standard, or an official work item
+      of any working group or standards body.
+
+      This document is published for public review, research,
+      experimentation, implementation feedback, and possible future
+      standardization work.  It may be revised, replaced, or withdrawn
+      at any time.
+
+      Implementers use this draft at their own risk.  Any
+      implementation, interoperability statement, or conformance claim
+      applies only to the exact document version identified above.
+
+      Publication of this draft does not constitute certification,
+      endorsement, security approval, interoperability assurance,
+      regulatory approval, or standards-body recognition.
+
+      Current project information and published specifications are
+      available at https://www.pic-protocol.org/.
+
+Editors
+
+   *  *Nicola Gallo* (Nitro Agility S.r.l.)  Lead Editor
+
+   *  _Add your name via pull request (individual or organization) —
+      listing is subject to editor approval (see Section 7)._
+
 Contributors
 
    *  _Add your name via pull request (individual or organization) —
@@ -65,45 +102,8 @@ Contributors
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-     1.1.  What Is a Lineage . . . . . . . . . . . . . . . . . . . .   3
-     1.2.  Three Kinds of Revocation State . . . . . . . . . . . . .   3
-     1.3.  Requirements Notation . . . . . . . . . . . . . . . . . .   4
-   2.  Revocation Coordinates  . . . . . . . . . . . . . . . . . . .   4
-     2.1.  Origin PCA (PCA0) . . . . . . . . . . . . . . . . . . . .   5
-     2.2.  Successor PCA . . . . . . . . . . . . . . . . . . . . . .   7
-     2.3.  Verifier Hop Validation . . . . . . . . . . . . . . . . .   7
-     2.4.  Branch Identification . . . . . . . . . . . . . . . . . .   8
-   3.  Revocation Strategies . . . . . . . . . . . . . . . . . . . .  12
-     3.1.  Native Causal Revocations . . . . . . . . . . . . . . . .  13
-     3.2.  Identity and Evidence Selectors . . . . . . . . . . . . .  15
-     3.3.  Dynamic Restrictions  . . . . . . . . . . . . . . . . . .  15
-     3.4.  Retrospective Annotation  . . . . . . . . . . . . . . . .  16
-     3.5.  Summary . . . . . . . . . . . . . . . . . . . . . . . . .  16
-   4.  Making Selectors Causal . . . . . . . . . . . . . . . . . . .  17
-     4.1.  Position Witness  . . . . . . . . . . . . . . . . . . . .  18
-     4.2.  Cutoff Authorization  . . . . . . . . . . . . . . . . . .  20
-     4.3.  Known Positions . . . . . . . . . . . . . . . . . . . . .  21
-     4.4.  Historical Position Index . . . . . . . . . . . . . . . .  22
-     4.5.  Not Carrying Full History . . . . . . . . . . . . . . . .  22
-   5.  Revocation Authorization and State  . . . . . . . . . . . . .  22
-     5.1.  Who May Revoke  . . . . . . . . . . . . . . . . . . . . .  23
-     5.2.  Dynamic Restriction Requirements  . . . . . . . . . . . .  25
-     5.3.  Monotonicity  . . . . . . . . . . . . . . . . . . . . . .  28
-     5.4.  Revocation State and Availability . . . . . . . . . . . .  28
-     5.5.  Trusted Time and Key Compromise . . . . . . . . . . . . .  29
-     5.6.  Limitations . . . . . . . . . . . . . . . . . . . . . . .  29
-   6.  Counter Capacity  . . . . . . . . . . . . . . . . . . . . . .  30
-   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  31
-   8.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .  31
-   9.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  32
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  33
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  33
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
 
-1.  Introduction
-
-   This section is non-normative.  It explains the concepts revocation
-   needs; the normative requirements are in Sections 2, 4, and 5.
 
 
 
@@ -114,6 +114,45 @@ Gallo                         Informational                     [Page 2]
                              PIC Revocation                    July 2026
 
 
+     1.1.  What Is a Lineage . . . . . . . . . . . . . . . . . . . .   3
+     1.2.  Three Kinds of Revocation State . . . . . . . . . . . . .   4
+     1.3.  Requirements Notation . . . . . . . . . . . . . . . . . .   5
+   2.  Revocation Coordinates  . . . . . . . . . . . . . . . . . . .   5
+     2.1.  Origin PCA (PCA0) . . . . . . . . . . . . . . . . . . . .   5
+     2.2.  Successor PCA . . . . . . . . . . . . . . . . . . . . . .   7
+     2.3.  Verifier Hop Validation . . . . . . . . . . . . . . . . .   8
+     2.4.  Branch Identification . . . . . . . . . . . . . . . . . .   9
+   3.  Revocation Strategies . . . . . . . . . . . . . . . . . . . .  13
+     3.1.  Native Causal Revocations . . . . . . . . . . . . . . . .  14
+     3.2.  Identity and Evidence Selectors . . . . . . . . . . . . .  15
+     3.3.  Dynamic Restrictions  . . . . . . . . . . . . . . . . . .  16
+     3.4.  Retrospective Annotation  . . . . . . . . . . . . . . . .  16
+     3.5.  Summary . . . . . . . . . . . . . . . . . . . . . . . . .  17
+   4.  Making Selectors Causal . . . . . . . . . . . . . . . . . . .  17
+     4.1.  Position Witness  . . . . . . . . . . . . . . . . . . . .  19
+     4.2.  Cutoff Authorization  . . . . . . . . . . . . . . . . . .  21
+     4.3.  Known Positions . . . . . . . . . . . . . . . . . . . . .  22
+     4.4.  Historical Position Index . . . . . . . . . . . . . . . .  23
+     4.5.  Not Carrying Full History . . . . . . . . . . . . . . . .  23
+   5.  Revocation Authorization and State  . . . . . . . . . . . . .  23
+     5.1.  Who May Revoke  . . . . . . . . . . . . . . . . . . . . .  24
+     5.2.  Dynamic Restriction Requirements  . . . . . . . . . . . .  26
+     5.3.  Monotonicity  . . . . . . . . . . . . . . . . . . . . . .  29
+     5.4.  Revocation State and Availability . . . . . . . . . . . .  29
+     5.5.  Trusted Time and Key Compromise . . . . . . . . . . . . .  30
+     5.6.  Limitations . . . . . . . . . . . . . . . . . . . . . . .  30
+   6.  Counter Capacity  . . . . . . . . . . . . . . . . . . . . . .  31
+   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  32
+   8.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .  32
+   9.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  33
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  34
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  34
+
+1.  Introduction
+
+   This section is non-normative.  It explains the concepts revocation
+   needs; the normative requirements are in Sections 2, 4, and 5.
+
 1.1.  What Is a Lineage
 
    An *execution lineage* is simply the sequence of PCAs produced as one
@@ -121,6 +160,15 @@ Gallo                         Informational                     [Page 2]
    *PCA0*, and each later PCA continues exactly one predecessor:
 
    PCA0  ->  PCA1  ->  PCA2  ->  …  ->  PCAn
+
+
+
+
+
+Gallo                         Informational                     [Page 3]
+
+                             PIC Revocation                    July 2026
+
 
    When an executor hands off to more than one successor (fan-out), the
    lineage branches — but each branch still continues a single
@@ -159,17 +207,6 @@ Gallo                         Informational                     [Page 2]
    *Hop-local evidence* validates one concrete transition and does not
    become a permanent property of every descendant:
 
-
-
-
-
-
-
-Gallo                         Informational                     [Page 3]
-
-                             PIC Revocation                    July 2026
-
-
    executor
    signing key
    executorAttestation
@@ -179,6 +216,15 @@ Gallo                         Informational                     [Page 3]
 
    Revoking hop-local evidence has direct effect only while that
    evidence is still _presented_ to a Verifier.
+
+
+
+
+
+Gallo                         Informational                     [Page 4]
+
+                             PIC Revocation                    July 2026
+
 
    *Derived causal revocation* bridges the two.  A historical revocation
    of a KEY, DELEGATE, ATTESTATION, or ISSUER reaches descendants only
@@ -215,17 +261,6 @@ Gallo                         Informational                     [Page 3]
    covered by the same single PCA signature; they do not change its non-
    expansion or Proof-of-Relationship rules.
 
-
-
-
-
-
-
-Gallo                         Informational                     [Page 4]
-
-                             PIC Revocation                    July 2026
-
-
 2.1.  Origin PCA (PCA0)
 
    A revocable PCA0 carries profile, originNonce, lineageId,
@@ -238,6 +273,14 @@ Gallo                         Informational                     [Page 4]
    cannot hash _itself_ to obtain its own identifier, so lineageId is
    the hash of a canonical projection of PCA0 that excludes lineageId
    and proof:
+
+
+
+
+Gallo                         Informational                     [Page 5]
+
+                             PIC Revocation                    July 2026
+
 
    originCore = the profile-defined canonical projection of PCA0, excluding lineageId and proof
    lineageId  = H( "PIC-Lineage-v0" || canonical(originCore) )
@@ -270,18 +313,6 @@ Gallo                         Informational                     [Page 4]
    shared state, but the no-reuse rule remains a requirement of the
    origin issuer.
 
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 5]
-
-                             PIC Revocation                    July 2026
-
-
    *grantId* — present when the origin derives from a separately
    revocable grant.  The binding between grantId, its grant authority,
    and the authority context MUST be verifiable during PCA0 validation.
@@ -298,6 +329,14 @@ Gallo                         Informational                     [Page 5]
 
    *profile* identifies the revocable profile in force. *lineageCounter*
    MUST be 0.
+
+
+
+
+Gallo                         Informational                     [Page 6]
+
+                             PIC Revocation                    July 2026
+
 
    *Branch coordinate* — in a branch-capable profile (Section 2.4), PCA0
    carries the root branch domain branchId, derived from lineageId as
@@ -327,17 +366,6 @@ Gallo                         Informational                     [Page 5]
    the origin authorization, and verify the grant binding when grantId
    is present.
 
-
-
-
-
-
-
-Gallo                         Informational                     [Page 6]
-
-                             PIC Revocation                    July 2026
-
-
 2.2.  Successor PCA
 
    Every non-origin PCA MUST propagate profile, lineageId, the presence
@@ -358,6 +386,13 @@ Gallo                         Informational                     [Page 6]
       A lineage created under a revocable profile remains revocable for
       its entire lifetime.  A successor cannot downgrade it by omitting
       the profile or its revocation coordinates.
+
+
+
+Gallo                         Informational                     [Page 7]
+
+                             PIC Revocation                    July 2026
+
 
 2.3.  Verifier Hop Validation
 
@@ -380,19 +415,6 @@ Gallo                         Informational                     [Page 6]
                                          current MUST NOT carry branchCreationNonce
    if branch-capable, branch creation:   current.branchId == H("PIC-Branch-v0" || current.previousPcaHash || current.branchCreationNonce)
                                          AND valid branch-creation authorization (Section 2.4)
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 7]
-
-                             PIC Revocation                    July 2026
-
 
    The Verifier MUST reject when profile is missing or unknown, when
    current.profile != predecessor.profile, when required revocation
@@ -419,6 +441,15 @@ Gallo                         Informational                     [Page 7]
    validates the concrete transition PCA[n-1] -> PCA[n], not merely the
    signature of PCA[n].
 
+
+
+
+
+Gallo                         Informational                     [Page 8]
+
+                             PIC Revocation                    July 2026
+
+
 2.4.  Branch Identification
 
    Branch-capable profiles add one fixed-size persistent field
@@ -441,15 +472,6 @@ Gallo                         Informational                     [Page 7]
    lineageCounter  identifies causal depth on one path
    branchId        identifies the current branch domain
 
-
-
-
-
-Gallo                         Informational                     [Page 8]
-
-                             PIC Revocation                    July 2026
-
-
    *branchId is a derived commitment, not a free choice.* A freely
    chosen identifier would reintroduce, one level down, the intentional-
    collision problem the origin commitment removes for lineageId: branch
@@ -466,6 +488,23 @@ Gallo                         Informational                     [Page 8]
                                 branch domain, present only in that creation PCA
 
    This gives three properties:
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                             PIC Revocation                    July 2026
+
 
    Locally verifiable    a Verifier holding the creation transition recomputes branchId from
                          previousPcaHash and branchCreationNonce; no registry is needed for the
@@ -498,14 +537,6 @@ Gallo                         Informational                     [Page 8]
       the recomputed lineageId; every later hop uses the ordinary
       equality or creation-derivation check.
 
-
-
-
-Gallo                         Informational                     [Page 9]
-
-                             PIC Revocation                    July 2026
-
-
    Anyone can _compute_ the rootBranchId of a known lineage; this is
    consistent with the rule that knowledge of lineageId, branchId, or
    fromCounter MUST NOT by itself authorize revocation (Section 5.1).
@@ -521,6 +552,15 @@ Gallo                         Informational                     [Page 9]
    *Fan-out.* At a fan-out point each new branch domain is created by an
    authorized successor, which generates its own fresh
    branchCreationNonce, hence a fresh derived branchId:
+
+
+
+
+
+Gallo                         Informational                    [Page 10]
+
+                             PIC Revocation                    July 2026
+
 
    PCA100
     ├── PCA101-A  branchCreationNonce = nA  ->  branchId = H(dsep || H(PCA100) || nA)
@@ -554,14 +594,6 @@ Gallo                         Informational                     [Page 9]
    branch-creation PCA establishing a new branchId.  It is not
    necessarily the predecessor executor, the origin issuer, or a
    coordinator aware of all sibling successors: in the open-continuation
-
-
-
-Gallo                         Informational                    [Page 10]
-
-                             PIC Revocation                    July 2026
-
-
    model each authorized successor may independently create its own
    branch domain when the applicable execution contract or delegated
    authority permits it.
@@ -576,6 +608,15 @@ Gallo                         Informational                    [Page 10]
    The profile MUST define that evidence — for example a branch-creation
    permission in the predecessor executionContract, or a signed grant
    from the branch or origin authority.
+
+
+
+
+
+Gallo                         Informational                    [Page 11]
+
+                             PIC Revocation                    July 2026
+
 
    *Anti-escape validation order.* A branch-creation transition is
    itself part of the causal future of the predecessor's branch domain.
@@ -610,14 +651,6 @@ Gallo                         Informational                    [Page 10]
    branchId, and its children remain part of the same revocation domain
    — this is intentional:
 
-
-
-
-Gallo                         Informational                    [Page 11]
-
-                             PIC Revocation                    July 2026
-
-
    branchId = A
     ├── child 1: branchId = A
     └── child 2: branchId = A
@@ -633,6 +666,14 @@ Gallo                         Informational                    [Page 11]
    MUST NOT require a parentBranchId field, a branch ancestry array, or
    a growing path.  The base representation therefore keeps PCA state
    constant-size and directly supports revocation of the currently
+
+
+
+Gallo                         Informational                    [Page 12]
+
+                             PIC Revocation                    July 2026
+
+
    propagated branch domain; it does not carry recursive branch
    ancestry.  When an authorized nested continuation creates a new
    branch domain, causal ancestry between the old and new branch
@@ -666,14 +707,6 @@ Gallo                         Informational                    [Page 11]
    materialization rules, monotonicity, and revocation-state
    requirements are already normative.  The complete interoperable
    revocation-object format, its serialization, distribution endpoints,
-
-
-
-Gallo                         Informational                    [Page 12]
-
-                             PIC Revocation                    July 2026
-
-
    and status-retrieval protocol are defined by a later revision.  All
    examples share one minimal format:
 
@@ -688,6 +721,14 @@ Gallo                         Informational                    [Page 12]
    The proof field is omitted for brevity.  A valid revocation is signed
    by an authorized authority (Section 5.1); an object signed by an
    unauthorized party has no effect.
+
+
+
+
+Gallo                         Informational                    [Page 13]
+
+                             PIC Revocation                    July 2026
+
 
 3.1.  Native Causal Revocations
 
@@ -718,18 +759,6 @@ Gallo                         Informational                    [Page 12]
 
    *GRANT* — every lineage created from one grant.
 
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 13]
-
-                             PIC Revocation                    July 2026
-
-
    {
      "type": "PIC-Revocation-v0",
      "strategy": "GRANT",
@@ -743,6 +772,19 @@ Gallo                         Informational                    [Page 13]
 
    *BRANCH-SUFFIX* — one branch domain and everything causally after a
    position, in *branch-capable* profiles (Section 2.4).
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 14]
+
+                             PIC Revocation                    July 2026
+
 
    {
      "type": "PIC-Revocation-v0",
@@ -774,18 +816,6 @@ Gallo                         Informational                    [Page 13]
    (Section 2.4), so BRANCH-SUFFIX(lineageId, rootBranchId, fromCounter)
    is a well-formed target like any other branch domain.
 
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 14]
-
-                             PIC Revocation                    July 2026
-
-
 3.2.  Identity and Evidence Selectors
 
    These target *hop-local evidence* — a key, a delegate, an
@@ -804,6 +834,13 @@ Gallo                         Informational                    [Page 14]
    not hop-local.  When it is not propagated, ISSUER is a historical
    selector and must be resolved into LINEAGE-SUFFIX(lineageId, 0) for
    the issuer's known lineages (Section 4).
+
+
+
+Gallo                         Informational                    [Page 15]
+
+                             PIC Revocation                    July 2026
+
 
    *Why "presented only".* In the incremental profile a Verifier holds
    only the immediate transition — the predecessor and the current PCA:
@@ -834,14 +871,6 @@ Gallo                         Informational                    [Page 14]
    chain.  AUTHORITY removes operations; EXECUTION-CONTRACT restricts
    who or what may continue.
 
-
-
-
-Gallo                         Informational                    [Page 15]
-
-                             PIC Revocation                    July 2026
-
-
    signed operations    = { READ, WRITE }
    active restrictions  = { remove WRITE }
    effective operations = { READ }
@@ -859,6 +888,15 @@ Gallo                         Informational                    [Page 15]
 
    *AUDIT-RANGE* marks a historical interval as compromised, for audit
    or incident response.  It is _not_ a forward-validity rule:
+
+
+
+
+
+Gallo                         Informational                    [Page 16]
+
+                             PIC Revocation                    July 2026
+
 
    PCA0 -> PCA1 -> PCA2 -> PCA3 -> PCA4 -> PCA5
                     [ affected incident interval ]
@@ -890,14 +928,6 @@ Gallo                         Informational                    [Page 15]
     |               |                    | resolution and authorized  |
     |               |                    | suffix materialization     |
     +---------------+--------------------+----------------------------+
-
-
-
-Gallo                         Informational                    [Page 16]
-
-                             PIC Revocation                    July 2026
-
-
     | Dynamic       | AUTHORITY,         | Restricts effective        |
     | restriction   | EXECUTION-CONTRACT | authority or conformance   |
     |               |                    | without rewriting the      |
@@ -916,6 +946,13 @@ Gallo                         Informational                    [Page 16]
    This section is normative.  It defines how an identity/evidence
    selector (Section 3.2) becomes causal cutoffs that reach descendants
    no longer carrying the evidence:
+
+
+
+Gallo                         Informational                    [Page 17]
+
+                             PIC Revocation                    July 2026
+
 
    KEY / DELEGATE / ATTESTATION / ISSUER
            |  authenticated historical resolution
@@ -946,14 +983,6 @@ Gallo                         Informational                    [Page 16]
    The ordinary incremental revocation check remains O(1) in lineage
    length, assuming the applicable revocation state is already
    authenticated and indexed.  O(1) does not include network retrieval,
-
-
-
-Gallo                         Informational                    [Page 17]
-
-                             PIC Revocation                    July 2026
-
-
    revocation-state synchronization, historical resolution, batch
    generation, witness construction, or index construction.  After
    materialization, the downstream check of LINEAGE-SUFFIX, BRANCH-
@@ -967,6 +996,19 @@ Gallo                         Informational                    [Page 17]
 
    A key controller is not, by that fact alone, a lineage revocation
    authority.
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 18]
+
+                             PIC Revocation                    July 2026
+
 
 4.1.  Position Witness
 
@@ -996,20 +1038,6 @@ Gallo                         Informational                    [Page 17]
      }
    }
 
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 18]
-
-                             PIC Revocation                    July 2026
-
-
    The witness MUST cryptographically bind the selector, the lineageId,
    the lineageCounter, the PCA content or digest, the witness issuer,
    and its own integrity.  The Verifier or materializer MUST verify that
@@ -1018,6 +1046,25 @@ Gallo                         Informational                    [Page 18]
    the witness cryptographic integrity is valid, and the witness belongs
    to the claimed PCA or authenticated history.  A hash accompanied by
    unauthenticated fields MUST NOT be accepted.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 19]
+
+                             PIC Revocation                    July 2026
+
 
    *Branch binding.* When a position witness is used to materialize
    BRANCH-SUFFIX, the witness MUST also cryptographically bind the
@@ -1061,7 +1108,16 @@ Gallo                         Informational                    [Page 18]
 
 
 
-Gallo                         Informational                    [Page 19]
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 20]
 
                              PIC Revocation                    July 2026
 
@@ -1117,7 +1173,7 @@ Gallo                         Informational                    [Page 19]
 
 
 
-Gallo                         Informational                    [Page 20]
+Gallo                         Informational                    [Page 21]
 
                              PIC Revocation                    July 2026
 
@@ -1173,7 +1229,7 @@ Gallo                         Informational                    [Page 20]
 
 
 
-Gallo                         Informational                    [Page 21]
+Gallo                         Informational                    [Page 22]
 
                              PIC Revocation                    July 2026
 
@@ -1229,7 +1285,7 @@ Gallo                         Informational                    [Page 21]
 
 
 
-Gallo                         Informational                    [Page 22]
+Gallo                         Informational                    [Page 23]
 
                              PIC Revocation                    July 2026
 
@@ -1285,7 +1341,7 @@ Gallo                         Informational                    [Page 22]
 
 
 
-Gallo                         Informational                    [Page 23]
+Gallo                         Informational                    [Page 24]
 
                              PIC Revocation                    July 2026
 
@@ -1341,7 +1397,7 @@ Gallo                         Informational                    [Page 23]
 
 
 
-Gallo                         Informational                    [Page 24]
+Gallo                         Informational                    [Page 25]
 
                              PIC Revocation                    July 2026
 
@@ -1397,7 +1453,7 @@ Gallo                         Informational                    [Page 24]
 
 
 
-Gallo                         Informational                    [Page 25]
+Gallo                         Informational                    [Page 26]
 
                              PIC Revocation                    July 2026
 
@@ -1453,7 +1509,7 @@ Gallo                         Informational                    [Page 25]
 
 
 
-Gallo                         Informational                    [Page 26]
+Gallo                         Informational                    [Page 27]
 
                              PIC Revocation                    July 2026
 
@@ -1509,7 +1565,7 @@ Gallo                         Informational                    [Page 26]
 
 
 
-Gallo                         Informational                    [Page 27]
+Gallo                         Informational                    [Page 28]
 
                              PIC Revocation                    July 2026
 
@@ -1565,7 +1621,7 @@ Gallo                         Informational                    [Page 27]
 
 
 
-Gallo                         Informational                    [Page 28]
+Gallo                         Informational                    [Page 29]
 
                              PIC Revocation                    July 2026
 
@@ -1621,7 +1677,7 @@ Gallo                         Informational                    [Page 28]
 
 
 
-Gallo                         Informational                    [Page 29]
+Gallo                         Informational                    [Page 30]
 
                              PIC Revocation                    July 2026
 
@@ -1677,7 +1733,7 @@ Gallo                         Informational                    [Page 29]
 
 
 
-Gallo                         Informational                    [Page 30]
+Gallo                         Informational                    [Page 31]
 
                              PIC Revocation                    July 2026
 
@@ -1733,7 +1789,7 @@ Gallo                         Informational                    [Page 30]
 
 
 
-Gallo                         Informational                    [Page 31]
+Gallo                         Informational                    [Page 32]
 
                              PIC Revocation                    July 2026
 
@@ -1789,7 +1845,7 @@ Gallo                         Informational                    [Page 31]
 
 
 
-Gallo                         Informational                    [Page 32]
+Gallo                         Informational                    [Page 33]
 
                              PIC Revocation                    July 2026
 
@@ -1845,4 +1901,4 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 33]
+Gallo                         Informational                    [Page 34]
