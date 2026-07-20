@@ -80,12 +80,12 @@ Gallo                         Informational                     [Page 1]
    | Document                  | Description       |Status| Date       |
    +===========================+===================+======+============+
    | PIC Prover and Verifier   | Normative         |Draft | 2026-07-15 |
-   | Specification             | requirements for  |0.2   |            |
-   | (https://github.com/pic-  | PIC Provers and   |      |            |
-   | protocol/pic-             | Verifiers: the    |      |            |
-   | spec/blob/main/draft/0.2/ | per-hop Proof of  |      |            |
-   | pic-prover-verifier-      | Relationship and  |      |            |
-   | spec.md)                  | successor-PCA     |      |            |
+   | (https://github.com/pic-  | requirements for  |0.2   |            |
+   | protocol/pic-             | PIC Provers and   |      |            |
+   | spec/blob/main/draft/0.2/ | Verifiers: the    |      |            |
+   | pic-prover-verifier-      | per-hop Proof of  |      |            |
+   | spec.md)                  | Relationship and  |      |            |
+   |                           | successor-PCA     |      |            |
    |                           | construction,     |      |            |
    |                           | the ordered       |      |            |
    |                           | Verifier checks   |      |            |
@@ -117,11 +117,11 @@ Gallo                         Informational                     [Page 2]
    |                           | proofs.           |      |            |
    +---------------------------+-------------------+------+------------+
    | PIC Revocation            | Revocation        |Draft | 2026-07-18 |
-   | Specification             | coordinates       |0.2   |            |
-   | (https://github.com/pic-  | (lineageId,       |      |            |
-   | protocol/pic-             | grantId,          |      |            |
-   | spec/blob/main/draft/0.2/ | lineageCounter,   |      |            |
-   | pic-revocation-spec.md)   | originIssuer,     |      |            |
+   | (https://github.com/pic-  | coordinates       |0.2   |            |
+   | protocol/pic-             | (lineageId,       |      |            |
+   | spec/blob/main/draft/0.2/ | grantId,          |      |            |
+   | pic-revocation-spec.md)   | lineageCounter,   |      |            |
+   |                           | originIssuer,     |      |            |
    |                           | and branchId in   |      |            |
    |                           | branch-capable    |      |            |
    |                           | profiles) and     |      |            |
@@ -139,12 +139,12 @@ Gallo                         Informational                     [Page 2]
    |                           | requirements.     |      |            |
    +---------------------------+-------------------+------+------------+
    | PIC Execution Guardrail   | A *Lineage        |Draft | 2026-07-19 |
-   | Specification             | Execution* is a   |0.2   |            |
-   | (https://github.com/pic-  | single-origin     |      |            |
-   | protocol/pic-             | PIC execution; a  |      |            |
-   | spec/blob/main/draft/0.2/ | *Multi-Lineage    |      |            |
-   | pic-lineage-guardrail-    | Execution*        |      |            |
-   | spec.md)                  | carries one or    |      |            |
+   | (https://github.com/pic-  | Execution* is a   |0.2   |            |
+   | protocol/pic-             | single-origin     |      |            |
+   | spec/blob/main/draft/0.2/ | PIC execution; a  |      |            |
+   | pic-lineage-guardrail-    | *Multi-Lineage    |      |            |
+   | spec.md)                  | Execution*        |      |            |
+   |                           | carries one or    |      |            |
    |                           | more of them      |      |            |
    |                           | together for one  |      |            |
    |                           | proposed          |      |            |
@@ -179,7 +179,7 @@ Gallo                         Informational                     [Page 3]
    |                           | mixing._          |      |            |
    +---------------------------+-------------------+------+------------+
    | PIC Architecture and      | Centralized       |Draft | 2026-07-19 |
-   | Deployment Specification  | (*Trust Plane*)   |0.2   |            |
+   | Deployment                | (*Trust Plane*)   |0.2   |            |
    | (https://github.com/pic-  | and               |      |            |
    | protocol/pic-             | decentralized     |      |            |
    | spec/blob/main/draft/0.2/ | architectures,    |      |            |

@@ -2060,11 +2060,10 @@ predecessor. The trade-offs of that trust — and when to carry the full chain o
 how the chain is represented is a profile choice (Section 5).<a href="#section-2.5-8" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-2.5-9.1">
-            <p id="section-2.5-9.1.1"><strong>Normative guarded-crossing requirement.</strong> A profile that applies an Execution Guardrail
-(<a href="pic-lineage-guardrail-spec.html">PIC Execution Guardrail Specification</a>) MAY replace the ordinary forwarding envelope with a
-non-nested guardrail forwarding envelope, provided it preserves the PCA bytes, digest recomputation, forwarding attribution, and all
-normative handoff semantics of this section. In such a profile, forwarding attribution and guardrail validation MAY be represented by
-separate signatures over the same envelope; neither signature replaces the executor signature on any PCA.<a href="#section-2.5-9.1.1" class="pilcrow">¶</a></p>
+            <p id="section-2.5-9.1.1"><strong>Normative guarded-crossing requirement.</strong> A Sandboxed Execution profile
+(<a href="pic-lineage-guardrail-spec.html">PIC Sandboxed Execution Specification</a>) MAY
+carry a <code>multiLineage</code> field in an ordinary PCA and extend the ordinary request binding as defined by that specification; this does not
+replace the executor signature, Proof of Relationship, or ordinary handoff semantics of any PCA.<a href="#section-2.5-9.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>

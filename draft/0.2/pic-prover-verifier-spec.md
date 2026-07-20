@@ -579,11 +579,10 @@ which already catches any single misbehaving hop. It does not re-verify the earl
 predecessor. The trade-offs of that trust — and when to carry the full chain or a succinct proof instead — are covered in Section 6.8, and
 how the chain is represented is a profile choice (Section 5).
 
-> **Normative guarded-crossing requirement.** A profile that applies an Execution Guardrail
-> ([PIC Execution Guardrail Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md)) MAY replace the ordinary forwarding envelope with a
-> non-nested guardrail forwarding envelope, provided it preserves the PCA bytes, digest recomputation, forwarding attribution, and all
-> normative handoff semantics of this section. In such a profile, forwarding attribution and guardrail validation MAY be represented by
-> separate signatures over the same envelope; neither signature replaces the executor signature on any PCA.
+> **Normative guarded-crossing requirement.** A Sandboxed Execution profile
+> ([PIC Sandboxed Execution Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md)) MAY
+> carry a `multiLineage` field in an ordinary PCA and extend the ordinary request binding as defined by that specification; this does not
+> replace the executor signature, Proof of Relationship, or ordinary handoff semantics of any PCA.
 
 # Verifier Requirements
 
