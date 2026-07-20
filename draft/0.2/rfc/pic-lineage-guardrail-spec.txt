@@ -96,16 +96,16 @@ Table of Contents
      2.6.  Guardrail Prover and Verifier Profile . . . . . . . . . .  14
      2.7.  Operation Profile . . . . . . . . . . . . . . . . . . . .  17
    3.  Acceptance  . . . . . . . . . . . . . . . . . . . . . . . . .  18
-   4.  Bypass  . . . . . . . . . . . . . . . . . . . . . . . . . . .  19
+   4.  Bypass  . . . . . . . . . . . . . . . . . . . . . . . . . . .  20
      4.1.  Non-PIC-Aware Target  . . . . . . . . . . . . . . . . . .  20
      4.2.  Relationship to Service Meshes and Deployment
-           Infrastructure  . . . . . . . . . . . . . . . . . . . . .  21
-     4.3.  Consecutive Collusion . . . . . . . . . . . . . . . . . .  22
-   5.  Recursion . . . . . . . . . . . . . . . . . . . . . . . . . .  22
-   6.  Security Boundary . . . . . . . . . . . . . . . . . . . . . .  23
-     6.1.  Model Guarantee . . . . . . . . . . . . . . . . . . . . .  23
-     6.2.  Implementation Failure  . . . . . . . . . . . . . . . . .  24
-     6.3.  Semantic Divergence . . . . . . . . . . . . . . . . . . .  24
+           Infrastructure  . . . . . . . . . . . . . . . . . . . . .  22
+     4.3.  Consecutive Collusion . . . . . . . . . . . . . . . . . .  23
+   5.  Recursion . . . . . . . . . . . . . . . . . . . . . . . . . .  23
+   6.  Security Boundary . . . . . . . . . . . . . . . . . . . . . .  24
+     6.1.  Model Guarantee . . . . . . . . . . . . . . . . . . . . .  24
+     6.2.  Implementation Failure  . . . . . . . . . . . . . . . . .  25
+     6.3.  Semantic Divergence . . . . . . . . . . . . . . . . . . .  25
 
 
 
@@ -114,11 +114,11 @@ Gallo                         Informational                     [Page 2]
                          PIC Sandboxed Execution               July 2026
 
 
-   7.  Model Summary . . . . . . . . . . . . . . . . . . . . . . . .  24
-   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  25
-   9.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  25
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  26
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  26
+   7.  Model Summary . . . . . . . . . . . . . . . . . . . . . . . .  25
+   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  26
+   9.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  26
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  27
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  27
 
 1.  Introduction
 
@@ -754,7 +754,8 @@ Gallo                         Informational                    [Page 13]
    PCA1-G
      ordinary PIC successor
      request.operation: ENFORCE
-     request.multiLineageDigest: H(multiLineage)
+     request.multiLineageDigest:
+       H("PIC-Multi-Lineage-v0" || canonical(multiLineage))
      multiLineage: exact evaluated inner execution
      request.enforcementResult: permit
      continuation: challenge for next guardrail
@@ -777,7 +778,6 @@ Gallo                         Informational                    [Page 13]
    PIC Verifier for the outer execution:
 
    1.  validate the outer predecessor;
-
 
 
 
@@ -976,32 +976,32 @@ Gallo                         Informational                    [Page 17]
    continuation only if:
 
    ValidOuterPIC(PCA-G[n-1], PCA-G[n])
-   AND ValidSandboxOriginForSelectedProfile
+   AND ValidSandboxOrigin(PCA0-G)
    AND ENFORCE in PCA-G[n].invariants.operations
    AND PCA-G[n].proofOfRelationship.request.operation == ENFORCE
    AND PCA-G[n].proofOfRelationship.request.multiLineageDigest
-         == H(canonical(PCA-G[n].multiLineage))
+         == H(
+              "PIC-Multi-Lineage-v0"
+              ||
+              canonical(PCA-G[n].multiLineage)
+            )
    AND ValidMultiLineage(PCA-G[n].multiLineage)
    AND ExactPresentedExecutionBinding
-   AND EnforcementResult == permit
+   AND PCA-G[n].proofOfRelationship.request.enforcementResult == permit
    AND Fresh
    AND NotRevoked
 
-   For PCA0-G, only the ordinary PCA0 origin validation and the presence
-   of ENFORCE in its origin authority context apply; it has no PoR
-   request.
+   For PCA0-G, the ordinary PCA0 origin validation, the presence of
+   ENFORCE in its origin authority context, and the sandbox-origin
+   authorization defined below apply; it has no PoR request.
 
-   Origin authorization is part of acceptance.  For a full-chain
-   profile:
+   Origin authorization is part of acceptance:
 
    ValidSandboxOrigin(PCA0-G)
        =
    ValidOrdinaryPCA0(PCA0-G)
    AND AuthorizedSandboxOrigin(PCA0-G)
 
-   For an incremental profile, authorization of the sandbox origin is
-   established inductively from the authenticated validation state
-   accepted by the selected chain-validation profile; a deployment MAY
 
 
 
@@ -1010,9 +1010,12 @@ Gallo                         Informational                    [Page 18]
                          PIC Sandboxed Execution               July 2026
 
 
-   additionally require direct evidence of PCA0-G, an authenticated
-   checkpoint, a Trust Plane validation, a full-chain proof, or a
-   succinct proof.  Not every incremental receiver carries PCA0-G.
+   ValidSandboxOrigin(PCA0-G) is established according to the selected
+   chain-validation profile.  A full-chain Verifier may establish it
+   directly; an incremental Verifier may rely on authenticated
+   validation state, checkpoints, Trust Plane validation, an approved
+   succinct proof, or another mechanism permitted by that profile.  Not
+   every incremental receiver carries PCA0-G.
 
    A receiving deployment MAY restrict the sandbox origins it accepts
    and MAY require a minimum outer execution contract.  Such
@@ -1021,11 +1024,47 @@ Gallo                         Informational                    [Page 18]
    ValidMultiLineage means every presented leg validates independently
    under its own PIC lineage and selected validation profile.
 
+   ExactPresentedExecutionBinding means that the complete presented leg
+   set and crossing context are reconstructed from the presented
+   objects, every supplied digest is recomputed, and the result matches
+   the signed outer request commitments under the exactness and
+   canonical-binding rules of this specification.
+
+   ExactPresentedExecutionBinding
+       =
+   PresentedLegSetMatchesCommitment
+   AND PresentedContextMatchesCommitment
+   AND RecomputedMultiLineageDigestMatches
+   AND RecomputedRequestAndPayloadCommitmentsMatch
+   AND NoHiddenSubstitutionWithinPresentedObjects
+
+   This predicate covers the authenticated execution presented to the
+   Verifier; detecting inputs hidden before presentation requires the
+   profile-defined authenticated input manifest, observation source,
+   attested context, or equivalent mechanism already described by this
+   specification.  The two predicates remain distinct:
+
+   ValidMultiLineage
+       validates every leg independently
+
+   ExactPresentedExecutionBinding
+       validates completeness and exact binding
+       of the presented multi-lineage execution
+       and its crossing context
+
    The receiving component MUST recompute all digests and MUST reject:
 
    *  a missing multiLineage;
 
    *  an invalid outer continuation;
+
+
+
+
+Gallo                         Informational                    [Page 19]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    *  an invalid inner leg;
 
@@ -1059,13 +1098,6 @@ Gallo                         Informational                    [Page 18]
       The failure is not prevented at the faulty hop; it is blocked at
       the next conforming one.
 
-
-
-Gallo                         Informational                    [Page 19]
-
-                         PIC Sandboxed Execution               July 2026
-
-
 4.1.  Non-PIC-Aware Target
 
    A non-PIC-aware target cannot verify the outer Sandboxed Execution.
@@ -1081,6 +1113,14 @@ Gallo                         Informational                    [Page 19]
    1.  verifies its outer predecessor;
 
    2.  verifies every inner leg;
+
+
+
+
+Gallo                         Informational                    [Page 20]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    3.  evaluates the enforcement function;
 
@@ -1114,14 +1154,6 @@ Gallo                         Informational                    [Page 19]
    The materializing guardrail is not a new trusted authority, a special
    PCA type, a required service mesh, a universal gateway, or a
    protocol-level physical sandbox; it remains an ordinary executor of
-
-
-
-Gallo                         Informational                    [Page 20]
-
-                         PIC Sandboxed Execution               July 2026
-
-
    the outer PIC lineage.  For a non-PIC-aware target, ensuring that the
    target cannot also be reached through unrelated credentials,
    alternate routes, direct network access, or other physical paths
@@ -1133,6 +1165,18 @@ Gallo                         Informational                    [Page 20]
    PIC determines whether an execution may continue as valid PIC state;
    network infrastructure may prevent ungoverned physical access.  These
    are separate guarantees, and one does not replace the other.
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 21]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    PIC validity boundary:
        Is this a valid recursive PIC continuation?
@@ -1170,14 +1214,6 @@ Gallo                         Informational                    [Page 20]
      outer continuation.              - operational path restriction;
                                       - resilience and availability.
 
-
-
-
-Gallo                         Informational                    [Page 21]
-
-                         PIC Sandboxed Execution               July 2026
-
-
    A service mesh does not make an invalid PCA valid, does not replace
    PIC verification, and does not create a Sandboxed Execution merely by
    forcing traffic through a proxy.  Conversely, PIC does not replace
@@ -1187,6 +1223,16 @@ Gallo                         Informational                    [Page 21]
    guarantee.
 
       A service mesh may carry the sandbox, but it is not the sandbox.
+
+
+
+
+
+
+Gallo                         Informational                    [Page 22]
+
+                         PIC Sandboxed Execution               July 2026
+
 
 4.3.  Consecutive Collusion
 
@@ -1227,18 +1273,22 @@ Gallo                         Informational                    [Page 21]
    *  validation recursively invokes the appropriate PIC Verifier
       profile;
 
-
-
-Gallo                         Informational                    [Page 22]
-
-                         PIC Sandboxed Execution               July 2026
-
-
    *  each level has exactly one predecessor in its own lineage;
 
    *  an inner PCA is never an additional predecessor of the outer PCA;
 
    *  no authority flows upward from inner lineages.
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 23]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    At every recursive level the same separation holds: one predecessor
    in the local lineage, origin-bounded authority, ordinary PoR,
@@ -1282,20 +1332,19 @@ Gallo                         Informational                    [Page 22]
 
    *  the outer authority cannot expand beyond ENFORCE;
 
-
-
-
-Gallo                         Informational                    [Page 23]
-
-                         PIC Sandboxed Execution               July 2026
-
-
    *  an invalid inner PCA causes rejection;
 
    *  a different inner execution cannot be substituted without
       invalidating the signed binding;
 
    *  skipping guardrails cannot produce a valid outer continuation.
+
+
+
+Gallo                         Informational                    [Page 24]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    This specification adds no independent trust primitive.  The trusted
    elements remain those already required by the PIC Prover and Verifier
@@ -1341,7 +1390,14 @@ Gallo                         Informational                    [Page 23]
 
 
 
-Gallo                         Informational                    [Page 24]
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 25]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1397,7 +1453,7 @@ Gallo                         Informational                    [Page 24]
 
 
 
-Gallo                         Informational                    [Page 25]
+Gallo                         Informational                    [Page 26]
 
                          PIC Sandboxed Execution               July 2026
 
@@ -1453,4 +1509,4 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 26]
+Gallo                         Informational                    [Page 27]

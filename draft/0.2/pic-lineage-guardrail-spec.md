@@ -517,7 +517,8 @@ FIRST GUARDRAIL
 PCA1-G
   ordinary PIC successor
   request.operation: ENFORCE
-  request.multiLineageDigest: H(multiLineage)
+  request.multiLineageDigest:
+    H("PIC-Multi-Lineage-v0" || canonical(multiLineage))
   multiLineage: exact evaluated inner execution
   request.enforcementResult: permit
   continuation: challenge for next guardrail
@@ -656,22 +657,26 @@ if:
 
 ~~~text
 ValidOuterPIC(PCA-G[n-1], PCA-G[n])
-AND ValidSandboxOriginForSelectedProfile
+AND ValidSandboxOrigin(PCA0-G)
 AND ENFORCE in PCA-G[n].invariants.operations
 AND PCA-G[n].proofOfRelationship.request.operation == ENFORCE
 AND PCA-G[n].proofOfRelationship.request.multiLineageDigest
-      == H(canonical(PCA-G[n].multiLineage))
+      == H(
+           "PIC-Multi-Lineage-v0"
+           ||
+           canonical(PCA-G[n].multiLineage)
+         )
 AND ValidMultiLineage(PCA-G[n].multiLineage)
 AND ExactPresentedExecutionBinding
-AND EnforcementResult == permit
+AND PCA-G[n].proofOfRelationship.request.enforcementResult == permit
 AND Fresh
 AND NotRevoked
 ~~~
 
-For `PCA0-G`, only the ordinary PCA0 origin validation and the presence of `ENFORCE` in its origin authority context apply; it has no PoR
-request.
+For `PCA0-G`, the ordinary PCA0 origin validation, the presence of `ENFORCE` in its origin authority context, and the sandbox-origin
+authorization defined below apply; it has no PoR request.
 
-Origin authorization is part of acceptance. For a full-chain profile:
+Origin authorization is part of acceptance:
 
 ~~~text
 ValidSandboxOrigin(PCA0-G)
@@ -680,14 +685,42 @@ ValidOrdinaryPCA0(PCA0-G)
 AND AuthorizedSandboxOrigin(PCA0-G)
 ~~~
 
-For an incremental profile, authorization of the sandbox origin is established inductively from the authenticated validation state accepted
-by the selected chain-validation profile; a deployment MAY additionally require direct evidence of `PCA0-G`, an authenticated checkpoint, a
-Trust Plane validation, a full-chain proof, or a succinct proof. Not every incremental receiver carries `PCA0-G`.
+`ValidSandboxOrigin(PCA0-G)` is established according to the selected chain-validation profile. A full-chain Verifier may establish it
+directly; an incremental Verifier may rely on authenticated validation state, checkpoints, Trust Plane validation, an approved succinct
+proof, or another mechanism permitted by that profile. Not every incremental receiver carries `PCA0-G`.
 
 A receiving deployment MAY restrict the sandbox origins it accepts and MAY require a minimum outer execution contract. Such restrictions
 narrow acceptance; they do not create outer authority.
 
 `ValidMultiLineage` means every presented leg validates independently under its own PIC lineage and selected validation profile.
+
+`ExactPresentedExecutionBinding` means that the complete presented leg set and crossing context are reconstructed from the presented objects,
+every supplied digest is recomputed, and the result matches the signed outer request commitments under the exactness and canonical-binding
+rules of this specification.
+
+~~~text
+ExactPresentedExecutionBinding
+    =
+PresentedLegSetMatchesCommitment
+AND PresentedContextMatchesCommitment
+AND RecomputedMultiLineageDigestMatches
+AND RecomputedRequestAndPayloadCommitmentsMatch
+AND NoHiddenSubstitutionWithinPresentedObjects
+~~~
+
+This predicate covers the authenticated execution presented to the Verifier; detecting inputs hidden before presentation requires the
+profile-defined authenticated input manifest, observation source, attested context, or equivalent mechanism already described by this
+specification. The two predicates remain distinct:
+
+~~~text
+ValidMultiLineage
+    validates every leg independently
+
+ExactPresentedExecutionBinding
+    validates completeness and exact binding
+    of the presented multi-lineage execution
+    and its crossing context
+~~~
 
 The receiving component MUST recompute all digests and MUST reject:
 

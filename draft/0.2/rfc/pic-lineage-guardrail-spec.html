@@ -1967,7 +1967,8 @@ FIRST GUARDRAIL
 PCA1-G
   ordinary PIC successor
   request.operation: ENFORCE
-  request.multiLineageDigest: H(multiLineage)
+  request.multiLineageDigest:
+    H("PIC-Multi-Lineage-v0" || canonical(multiLineage))
   multiLineage: exact evaluated inner execution
   request.enforcementResult: permit
   continuation: challenge for next guardrail
@@ -2177,21 +2178,25 @@ if:<a href="#section-3-3" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-3-4">
 <pre>
 ValidOuterPIC(PCA-G[n-1], PCA-G[n])
-AND ValidSandboxOriginForSelectedProfile
+AND ValidSandboxOrigin(PCA0-G)
 AND ENFORCE in PCA-G[n].invariants.operations
 AND PCA-G[n].proofOfRelationship.request.operation == ENFORCE
 AND PCA-G[n].proofOfRelationship.request.multiLineageDigest
-      == H(canonical(PCA-G[n].multiLineage))
+      == H(
+           "PIC-Multi-Lineage-v0"
+           ||
+           canonical(PCA-G[n].multiLineage)
+         )
 AND ValidMultiLineage(PCA-G[n].multiLineage)
 AND ExactPresentedExecutionBinding
-AND EnforcementResult == permit
+AND PCA-G[n].proofOfRelationship.request.enforcementResult == permit
 AND Fresh
 AND NotRevoked
 </pre><a href="#section-3-4" class="pilcrow">¶</a>
 </div>
-<p id="section-3-5">For <code>PCA0-G</code>, only the ordinary PCA0 origin validation and the presence of <code>ENFORCE</code> in its origin authority context apply; it has no PoR
-request.<a href="#section-3-5" class="pilcrow">¶</a></p>
-<p id="section-3-6">Origin authorization is part of acceptance. For a full-chain profile:<a href="#section-3-6" class="pilcrow">¶</a></p>
+<p id="section-3-5">For <code>PCA0-G</code>, the ordinary PCA0 origin validation, the presence of <code>ENFORCE</code> in its origin authority context, and the sandbox-origin
+authorization defined below apply; it has no PoR request.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-6">Origin authorization is part of acceptance:<a href="#section-3-6" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-3-7">
 <pre>
 ValidSandboxOrigin(PCA0-G)
@@ -2200,41 +2205,69 @@ ValidOrdinaryPCA0(PCA0-G)
 AND AuthorizedSandboxOrigin(PCA0-G)
 </pre><a href="#section-3-7" class="pilcrow">¶</a>
 </div>
-<p id="section-3-8">For an incremental profile, authorization of the sandbox origin is established inductively from the authenticated validation state accepted
-by the selected chain-validation profile; a deployment MAY additionally require direct evidence of <code>PCA0-G</code>, an authenticated checkpoint, a
-Trust Plane validation, a full-chain proof, or a succinct proof. Not every incremental receiver carries <code>PCA0-G</code>.<a href="#section-3-8" class="pilcrow">¶</a></p>
+<p id="section-3-8"><code>ValidSandboxOrigin(PCA0-G)</code> is established according to the selected chain-validation profile. A full-chain Verifier may establish it
+directly; an incremental Verifier may rely on authenticated validation state, checkpoints, Trust Plane validation, an approved succinct
+proof, or another mechanism permitted by that profile. Not every incremental receiver carries <code>PCA0-G</code>.<a href="#section-3-8" class="pilcrow">¶</a></p>
 <p id="section-3-9">A receiving deployment MAY restrict the sandbox origins it accepts and MAY require a minimum outer execution contract. Such restrictions
 narrow acceptance; they do not create outer authority.<a href="#section-3-9" class="pilcrow">¶</a></p>
 <p id="section-3-10"><code>ValidMultiLineage</code> means every presented leg validates independently under its own PIC lineage and selected validation profile.<a href="#section-3-10" class="pilcrow">¶</a></p>
-<p id="section-3-11">The receiving component MUST recompute all digests and MUST reject:<a href="#section-3-11" class="pilcrow">¶</a></p>
+<p id="section-3-11"><code>ExactPresentedExecutionBinding</code> means that the complete presented leg set and crossing context are reconstructed from the presented objects,
+every supplied digest is recomputed, and the result matches the signed outer request commitments under the exactness and canonical-binding
+rules of this specification.<a href="#section-3-11" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3-12">
+<pre>
+ExactPresentedExecutionBinding
+    =
+PresentedLegSetMatchesCommitment
+AND PresentedContextMatchesCommitment
+AND RecomputedMultiLineageDigestMatches
+AND RecomputedRequestAndPayloadCommitmentsMatch
+AND NoHiddenSubstitutionWithinPresentedObjects
+</pre><a href="#section-3-12" class="pilcrow">¶</a>
+</div>
+<p id="section-3-13">This predicate covers the authenticated execution presented to the Verifier; detecting inputs hidden before presentation requires the
+profile-defined authenticated input manifest, observation source, attested context, or equivalent mechanism already described by this
+specification. The two predicates remain distinct:<a href="#section-3-13" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3-14">
+<pre>
+ValidMultiLineage
+    validates every leg independently
+
+ExactPresentedExecutionBinding
+    validates completeness and exact binding
+    of the presented multi-lineage execution
+    and its crossing context
+</pre><a href="#section-3-14" class="pilcrow">¶</a>
+</div>
+<p id="section-3-15">The receiving component MUST recompute all digests and MUST reject:<a href="#section-3-15" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3-12.1">
-          <p id="section-3-12.1.1">a missing <code>multiLineage</code>;<a href="#section-3-12.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3-16.1">
+          <p id="section-3-16.1.1">a missing <code>multiLineage</code>;<a href="#section-3-16.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-12.2">
-          <p id="section-3-12.2.1">an invalid outer continuation;<a href="#section-3-12.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-16.2">
+          <p id="section-3-16.2.1">an invalid outer continuation;<a href="#section-3-16.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-12.3">
-          <p id="section-3-12.3.1">an invalid inner leg;<a href="#section-3-12.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-16.3">
+          <p id="section-3-16.3.1">an invalid inner leg;<a href="#section-3-16.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-12.4">
-          <p id="section-3-12.4.1">an added, removed, or substituted presented leg;<a href="#section-3-12.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-16.4">
+          <p id="section-3-16.4.1">an added, removed, or substituted presented leg;<a href="#section-3-16.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-12.5">
-          <p id="section-3-12.5.1">a mismatched request, destination, or payload;<a href="#section-3-12.5.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-16.5">
+          <p id="section-3-16.5.1">a mismatched request, destination, or payload;<a href="#section-3-16.5.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-12.6">
-          <p id="section-3-12.6.1">an invalid policy or input commitment;<a href="#section-3-12.6.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-16.6">
+          <p id="section-3-16.6.1">an invalid policy or input commitment;<a href="#section-3-16.6.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-12.7">
-          <p id="section-3-12.7.1">a non-permit decision;<a href="#section-3-12.7.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-16.7">
+          <p id="section-3-16.7.1">a non-permit decision;<a href="#section-3-16.7.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-12.8">
-          <p id="section-3-12.8.1">stale, replayed, or revoked state.<a href="#section-3-12.8.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-16.8">
+          <p id="section-3-16.8.1">stale, replayed, or revoked state.<a href="#section-3-16.8.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-3-13">This profile adds no second signature system: guardrail approval is the ordinary outer PCA signature, nothing else. Each <code>permit</code> is
-hop-specific: it authorizes only the exact crossing bound by its own outer PCA, never a later hop or a changed crossing.<a href="#section-3-13" class="pilcrow">¶</a></p>
+<p id="section-3-17">This profile adds no second signature system: guardrail approval is the ordinary outer PCA signature, nothing else. Each <code>permit</code> is
+hop-specific: it authorizes only the exact crossing bound by its own outer PCA, never a later hop or a changed crossing.<a href="#section-3-17" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="bypass">
