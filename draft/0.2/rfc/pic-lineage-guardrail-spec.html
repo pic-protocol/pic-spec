@@ -21,11 +21,14 @@ one proposed transition, each retaining its own origin, PCA chain, authority con
 distinct, and no new authority or lineage is created by their joint carriage.  Participation, not authority mixing. 
        An  Execution Guardrail  is an externally configured runtime control at an execution boundary that evaluates the proposed transition of a
 Multi-Lineage Execution against configured policy and permits or denies it. Guardrails do not make an invalid PCA valid, do not merge
-authorities, and do not alter lineage invariants. 
+authorities, and do not alter lineage invariants. A guardrail's own authority to enforce is itself a PIC continuation — a dedicated
+ Enforcement Lineage  for the operation  ENFORCE , originated by an authorized enforcement origin — not possession of a separately
+recognized key:  guardrail authority is not recognized; it is continued. 
        This revision establishes the concepts and the standard requirements notation shared by the PIC specification set. It also defines the
-execution model — untrusted executors inside trusted sandboxes that invoke the guardrail — the guardrail envelope in which permitted
-crossings travel, and the enforcement order over semantic scopes and configured policies (Sections 2–5); the normative guardrail
-construction and enforcement requirements will be defined in forthcoming revisions. Guardrails build on the PCA format of the
+execution model — untrusted executors whose governed external effects are gated by  enforced acceptance  — the  Enforcement PCA  that
+carries a guardrail decision as a signed continuation of an Enforcement Lineage, and the enforcement order over semantic scopes and
+configured policies (Sections 2–6); the canonical serialization and interoperable, keyword-level conformance requirements will be defined
+in forthcoming revisions. Guardrails build on the PCA format of the
  PIC Prover and Verifier Specification  and are consistent with the
  PIC Revocation Specification ; they do not alter non-expansion of the signed state, Proof of Relationship, or the
 rule that every PCA continues exactly one predecessor. In case of conflict, the  PIC Specification  is authoritative. 
@@ -1275,11 +1278,14 @@ one proposed transition, each retaining its own origin, PCA chain, authority con
 distinct, and no new authority or lineage is created by their joint carriage. <em>Participation, not authority mixing.</em><a href="#section-abstract-3" class="pilcrow">¶</a></p>
 <p id="section-abstract-4">An <strong>Execution Guardrail</strong> is an externally configured runtime control at an execution boundary that evaluates the proposed transition of a
 Multi-Lineage Execution against configured policy and permits or denies it. Guardrails do not make an invalid PCA valid, do not merge
-authorities, and do not alter lineage invariants.<a href="#section-abstract-4" class="pilcrow">¶</a></p>
+authorities, and do not alter lineage invariants. A guardrail's own authority to enforce is itself a PIC continuation — a dedicated
+<strong>Enforcement Lineage</strong> for the operation <code>ENFORCE</code>, originated by an authorized enforcement origin — not possession of a separately
+recognized key: <em>guardrail authority is not recognized; it is continued.</em><a href="#section-abstract-4" class="pilcrow">¶</a></p>
 <p id="section-abstract-5">This revision establishes the concepts and the standard requirements notation shared by the PIC specification set. It also defines the
-execution model — untrusted executors inside trusted sandboxes that invoke the guardrail — the guardrail envelope in which permitted
-crossings travel, and the enforcement order over semantic scopes and configured policies (Sections 2–5); the normative guardrail
-construction and enforcement requirements will be defined in forthcoming revisions. Guardrails build on the PCA format of the
+execution model — untrusted executors whose governed external effects are gated by <strong>enforced acceptance</strong> — the <strong>Enforcement PCA</strong> that
+carries a guardrail decision as a signed continuation of an Enforcement Lineage, and the enforcement order over semantic scopes and
+configured policies (Sections 2–6); the canonical serialization and interoperable, keyword-level conformance requirements will be defined
+in forthcoming revisions. Guardrails build on the PCA format of the
 <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> and are consistent with the
 <a href="pic-revocation-spec.html">PIC Revocation Specification</a>; they do not alter non-expansion of the signed state, Proof of Relationship, or the
 rule that every PCA continues exactly one predecessor. In case of conflict, the <strong>PIC Specification</strong> is authoritative.<a href="#section-abstract-5" class="pilcrow">¶</a></p>
@@ -1302,7 +1308,7 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
           <p id="section-note.2-1.1.1"><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor<a href="#section-note.2-1.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal note" id="section-note.2-1.2">
-          <p id="section-note.2-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 6</a>).</em><a href="#section-note.2-1.2.1" class="pilcrow">¶</a></p>
+          <p id="section-note.2-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 7</a>).</em><a href="#section-note.2-1.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1312,7 +1318,7 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
       </h2>
 <ul class="normal note">
 <li class="normal note" id="section-note.3-1.1">
-          <p id="section-note.3-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 6</a>).</em><a href="#section-note.3-1.1.1" class="pilcrow">¶</a></p>
+          <p id="section-note.3-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 7</a>).</em><a href="#section-note.3-1.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1346,10 +1352,10 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
                 <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-executors-deterministic-and" class="internal xref">Executors: Deterministic and Non-Deterministic</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
-                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-the-invocation-problem" class="internal xref">The Invocation Problem</a></p>
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-the-enforcement-problem" class="internal xref">The Enforcement Problem</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
-                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-the-sandbox" class="internal xref">The Sandbox</a></p>
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-the-enforcement-lineage" class="internal xref">The Enforcement Lineage</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4">
                 <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="auto internal xref">2.4</a>.  <a href="#name-discrete-multi-hop-executio" class="internal xref">Discrete Multi-Hop Execution</a></p>
@@ -1358,7 +1364,7 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
                 <p id="section-toc.1-1.2.2.5.1"><a href="#section-2.5" class="auto internal xref">2.5</a>.  <a href="#name-the-abstraction-step" class="internal xref">The Abstraction Step</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.6">
-                <p id="section-toc.1-1.2.2.6.1"><a href="#section-2.6" class="auto internal xref">2.6</a>.  <a href="#name-lineage-executions-through-" class="internal xref">Lineage Executions Through the Sandbox</a></p>
+                <p id="section-toc.1-1.2.2.6.1"><a href="#section-2.6" class="auto internal xref">2.6</a>.  <a href="#name-lineage-executions-at-a-gua" class="internal xref">Lineage Executions at a Guarded Crossing</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.7">
                 <p id="section-toc.1-1.2.2.7.1"><a href="#section-2.7" class="auto internal xref">2.7</a>.  <a href="#name-model-summary" class="internal xref">Model Summary</a></p>
@@ -1375,13 +1381,16 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-selection" class="internal xref">Selection</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
-                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-the-guardrail-envelope" class="internal xref">The Guardrail Envelope</a></p>
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-the-enforcement-pca" class="internal xref">The Enforcement PCA</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
-                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-sandbox-mode-and-non-sandbo" class="internal xref">Sandbox Mode and Non-Sandbox Mode</a></p>
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-enforced-acceptance-mode" class="internal xref">Enforced-Acceptance Mode</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
-                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="auto internal xref">3.5</a>.  <a href="#name-architecture-and-deployment" class="internal xref">Architecture and Deployment Profiles</a></p>
+                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="auto internal xref">3.5</a>.  <a href="#name-non-pic-aware-targets-the-e" class="internal xref">Non-PIC-Aware Targets: The Egress Enforcer</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.6">
+                <p id="section-toc.1-1.3.2.6.1"><a href="#section-3.6" class="auto internal xref">3.6</a>.  <a href="#name-architecture-and-deployment" class="internal xref">Architecture and Deployment Profiles</a></p>
 </li>
             </ul>
 </li>
@@ -1397,22 +1406,36 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
                 <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-policies" class="internal xref">Policies</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-concurrency" class="internal xref">Concurrency</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-lineage-executions-in-trans" class="internal xref">Lineage Executions in Transit</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-boundary" class="internal xref">Security Boundary</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-implementation-failure" class="internal xref">Implementation Failure</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-pdp-semantic-divergence" class="internal xref">PDP Semantic Divergence</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-legal-notices" class="internal xref">Legal Notices</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-legal-notices" class="internal xref">Legal Notices</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-references" class="internal xref">References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1460,6 +1483,8 @@ at an execution boundary
 - input: one Multi-Lineage Execution
 - evaluate configured policy
 - enforce permit or deny
+- its authority is a continued
+  Enforcement Lineage (ENFORCE)
 </pre><a href="#section-1-2" class="pilcrow">¶</a>
 </div>
 <div id="lineage-execution-and-execution-lineage-safety">
@@ -1528,7 +1553,7 @@ Authority only narrows.
 <p id="section-1.1-6">These properties structurally eliminate the confused deputy from the PIC state model: authority from one Lineage Execution cannot appear
 as a valid continuation of another. The claim is limited to valid PIC state and authority propagation; the physical boundary is stated
 below. Distinct authorities may travel together in the same message or process; they remain logically distinct and are never merged. The formal definitions and proofs are in the PIC Model
-<span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 8</a>)</span>; the construction — Provers, Verifiers, and the PCA format — is defined by the
+<span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 9</a>)</span>; the construction — Provers, Verifiers, and the PCA format — is defined by the
 <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, and revocation by the
 <a href="pic-revocation-spec.html">PIC Revocation Specification</a>. This document builds on them and restates none of them.<a href="#section-1.1-6" class="pilcrow">¶</a></p>
 <p id="section-1.1-7">What these properties provide is <strong>execution lineage safety</strong>, distinct from physical executor behavior:<a href="#section-1.1-7" class="pilcrow">¶</a></p>
@@ -1830,7 +1855,7 @@ Execution. Participation, not authority mixing.<a href="#section-1.3-21" class="
 <a href="#section-1.4" class="section-number selfRef">1.4. </a><a href="#name-requirements-notation" class="section-name selfRef">Requirements Notation</a>
         </h3>
 <p id="section-1.4-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 8</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 8</a>)</span> when, and only when, they appear in all capitals,
+"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 9</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 9</a>)</span> when, and only when, they appear in all capitals,
 and only within the normative sections of this document. Examples are illustrative and non-normative.<a href="#section-1.4-1" class="pilcrow">¶</a></p>
 <p id="section-1.4-2">The normative guardrail construction and enforcement requirements will be defined in forthcoming revisions of this specification.<a href="#section-1.4-2" class="pilcrow">¶</a></p>
 </section>
@@ -1842,8 +1867,9 @@ and only within the normative sections of this document. Examples are illustrati
       <h2 id="name-execution-model">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-execution-model" class="section-name selfRef">Execution Model</a>
       </h2>
-<p id="section-2-1">This section is non-normative. It defines the execution model — executor, sandbox, guardrail — and one point must be clear by its end:
-the executor, deterministic or not, is never trusted to invoke its own control; the sandbox is.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-1">This section is non-normative. It defines the execution model — executor, Enforcement Lineage, guardrail — and one point must be clear by
+its end: the executor is never the source of enforcement authority. Enforcement authority is a continued Enforcement Lineage, and a
+governed crossing is accepted by the next conforming hop only when it carries a valid Enforcement PCA for that exact crossing.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <div id="executors-deterministic-and-non-deterministic">
 <section id="section-2.1">
         <h3 id="name-executors-deterministic-and">
@@ -1866,61 +1892,89 @@ the sense of Section 1.1, outside execution lineage safety, for PIC as for any s
 two failure modes are operationally equivalent.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="the-invocation-problem">
+<div id="the-enforcement-problem">
 <section id="section-2.2">
-        <h3 id="name-the-invocation-problem">
-<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-the-invocation-problem" class="section-name selfRef">The Invocation Problem</a>
+        <h3 id="name-the-enforcement-problem">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-the-enforcement-problem" class="section-name selfRef">The Enforcement Problem</a>
         </h3>
-<p id="section-2.2-1">Section 1 defined the Execution Guardrail but left one question open: who invokes it?<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-1">Section 1 defined the Execution Guardrail but left two questions open: what authorizes it, and what makes its decision unskippable?<a href="#section-2.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-2.2-2.1">
-            <p id="section-2.2-2.1.1">If the executor's own code is responsible for calling the guardrail, a deterministic executor with a bug may simply never make the
-call: the control silently does not run.<a href="#section-2.2-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-2.2-2.1.1">If the executor's own code is responsible for calling the guardrail, a deterministic executor with a bug may simply never make the call,
+and a non-deterministic executor may decide not to — precisely because it does not want to be limited.<a href="#section-2.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-2.2-2.2">
-            <p id="section-2.2-2.2.1">A non-deterministic executor may decide not to make the call — precisely because it does not want to be limited.<a href="#section-2.2-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-2.2-2.2.1">If the guardrail were authorized merely by holding a key the receiver recognizes, a compromised executor that obtained or invoked that
+key could manufacture its own approvals.<a href="#section-2.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.2-3">The flaw is the same in both cases: trusting the executor to invoke its own control is circular — the component whose behavior is in
-question would be the enforcement point of its own limits. The invocation of the guardrail cannot live inside the executor.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+<p id="section-2.2-3">Both failures share one root: trusting the executor to invoke, or to authorize, its own control is circular — the component whose behavior
+is in question would be the source of its own limits. Enforcement can be neither invoked nor authorized from inside the executor.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+<p id="section-2.2-4">The resolution is not a trusted invoker enclosing the executor. It is to make enforcement authority a PIC continuation, and to make each
+decision a signed continuation that the next conforming hop checks before it accepts the crossing.<a href="#section-2.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="the-sandbox">
+<div id="the-enforcement-lineage">
 <section id="section-2.3">
-        <h3 id="name-the-sandbox">
-<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-the-sandbox" class="section-name selfRef">The Sandbox</a>
+        <h3 id="name-the-enforcement-lineage">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-the-enforcement-lineage" class="section-name selfRef">The Enforcement Lineage</a>
         </h3>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-2.3-1.1">
-            <p id="section-2.3-1.1.1">A <strong>sandbox</strong> is a fixed, trusted execution boundary that encloses an executor. The executor has no path to governed external effect
-except through the boundary, and it is the sandbox — not the executor — that invokes the Execution Guardrail on every governed boundary
-crossing.<a href="#section-2.3-1.1.1" class="pilcrow">¶</a></p>
+            <p id="section-2.3-1.1.1">An <strong>Enforcement Lineage</strong> is a normal Lineage Execution dedicated to the operation <code>ENFORCE</code>. Its origin PCA, <code>PCA0-G</code>, is minted by an
+explicitly authorized enforcement origin — policy governance, the protected application, the deployment owner, or another authorized
+origin. A candidate guardrail does not mint its own <code>PCA0-G</code>.<a href="#section-2.3-1.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.3-2">The sandbox is a trusted component: an explicit trust assumption of this specification, exactly as Verifier correctness is an explicit
-trust assumption of the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>. The gain is where the trust sits: it moves
-from the behavior of the executor, unverifiable per Section 2.1, to the structure of the boundary — fixed, implementable, attestable. In
-the execution model assumed by this specification, the sandbox is the only permitted path from the enclosed executor to a governed
-external effect; an implementation that permits an unmediated governed external path from the executor does not satisfy this
-execution-model assumption.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">An Enforcement Lineage is not a new primitive: it is an ordinary Lineage Execution (Section 1.1) whose origin authority context carries the
+single operation <code>ENFORCE</code> together with the execution contract the enforcing executor must satisfy.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.3-3">
 <pre>
-+ - - - - - - - - - - - - - - - +
-|  SANDBOX                      |
-|                               |
-|   +-----------------------+   |
-|   |       EXECUTOR        |   |
-|   | (deterministic /      |   |
-|   |  non-deterministic)   |   |
-|   +-----------------------+   |
-|                               |
-+ - - - - - - - - - - - - - - - +
+PCA0-G {
+  operations: [ ENFORCE ],
+  executionContract: {
+    role: guardrail,
+    policyEngine: ...,
+    environment: ...,
+    executionModel: ...,
+    requiredAttestations: ...
+  }
+}
 </pre><a href="#section-2.3-3" class="pilcrow">¶</a>
 </div>
-<p id="section-2.3-4">This closes a gap Section 1.1 left open: a purely local physical action may be invisible to the protocol. Within the external-effect
-channels governed by this execution model, an action that does not cross the sandbox boundary cannot produce an external effect through
-those channels, and an action with such an effect necessarily crosses the boundary — and is therefore mediated. The claim stops there:
-the sandbox does not make the executor behave correctly; it makes governed external effect impossible without mediation.<a href="#section-2.3-4" class="pilcrow">¶</a></p>
+<p id="section-2.3-4">A future guardrail becomes authorized exactly as any executor becomes authorized in PIC: by producing a valid successor PCA in this
+lineage. That successor satisfies the ordinary PIC continuation requirements
+(<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>):<a href="#section-2.3-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3-5.1">
+            <p id="section-2.3-5.1.1">exactly one predecessor;<a href="#section-2.3-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.3-5.2">
+            <p id="section-2.3-5.2.1">valid PoR;<a href="#section-2.3-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.3-5.3">
+            <p id="section-2.3-5.3.1">a conforming executor attestation against the inherited execution contract;<a href="#section-2.3-5.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.3-5.4">
+            <p id="section-2.3-5.4.1"><code>ENFORCE</code> authority, unexpanded;<a href="#section-2.3-5.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.3-5.5">
+            <p id="section-2.3-5.5.1">complete request binding;<a href="#section-2.3-5.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.3-5.6">
+            <p id="section-2.3-5.6.1">a signature over the whole PCA.<a href="#section-2.3-5.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.3-6">Nothing here is recognized by fiat. The guardrail holds no standing that a key alone could confer; it holds a position in a lineage that
+traces back to an authorized enforcement origin.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-2.3-7.1">
+            <p id="section-2.3-7.1.1">Guardrail authority is not recognized; it is continued.<a href="#section-2.3-7.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.3-8">This is where the trust moves. It no longer rests on the behavior of the executor (unverifiable, Section 2.1) or on a receiver's
+recognition of a key. It rests on the same continuation the rest of PIC already secures: an executor that does not continue a valid
+Enforcement Lineage cannot produce a valid Enforcement PCA, whatever keys it holds.<a href="#section-2.3-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="discrete-multi-hop-execution">
@@ -1928,18 +1982,17 @@ the sandbox does not make the executor behave correctly; it makes governed exter
         <h3 id="name-discrete-multi-hop-executio">
 <a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-discrete-multi-hop-executio" class="section-name selfRef">Discrete Multi-Hop Execution</a>
         </h3>
-<p id="section-2.4-1">Execution is discrete and multi-hop: a chain of sandboxed executors, each hop continuing the Lineage Execution under PoR and non-expansion
-as defined by the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.4-1">Execution is discrete and multi-hop: a chain of executors, each hop continuing its Lineage Execution under PoR and non-expansion as defined
+by the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.4-2">
 <pre>
-+ - - - - - - - - +      + - - - - - - - - +      + - - - - - - - - +
-|  SANDBOX        |      |  SANDBOX        |      |  SANDBOX        |
-|  +-----------+  |      |  +-----------+  |      |  +-----------+  |
-|  | EXECUTOR  |  |-----&gt;|  | EXECUTOR  |  |-----&gt;|  | EXECUTOR  |  |
-|  +-----------+  | PoR  |  +-----------+  | PoR  |  +-----------+  |
-+ - - - - - - - - +      + - - - - - - - - +      + - - - - - - - - +
++-----------+       +-----------+       +-----------+
+| EXECUTOR  |------&gt;| EXECUTOR  |------&gt;| EXECUTOR  |
++-----------+  PoR  +-----------+  PoR  +-----------+
 </pre><a href="#section-2.4-2" class="pilcrow">¶</a>
 </div>
+<p id="section-2.4-3">A guarded crossing between hops is evaluated by a guardrail — itself an executor continuing an Enforcement Lineage — and the receiving hop
+accepts it only against a valid Enforcement PCA (Section 3).<a href="#section-2.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="the-abstraction-step">
@@ -1947,52 +2000,51 @@ as defined by the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifie
         <h3 id="name-the-abstraction-step">
 <a href="#section-2.5" class="section-number selfRef">2.5. </a><a href="#name-the-abstraction-step" class="section-name selfRef">The Abstraction Step</a>
         </h3>
-<p id="section-2.5-1">Whether the executor inside a sandbox is deterministic or non-deterministic does not matter. Bug or decision, the failure mode is the same
-(Section 2.1); the invocation problem is the same (Section 2.2); the answer is the same (Section 2.3). The model therefore discards the
-executor's nature and keeps only the invariant element: the sandbox is fixed, and the sandbox invokes the guardrail.<a href="#section-2.5-1" class="pilcrow">¶</a></p>
+<p id="section-2.5-1">Whether the executor is deterministic or non-deterministic does not matter. Bug or decision, the failure mode is the same (Section 2.1);
+the enforcement problem is the same (Section 2.2); the answer is the same (Section 2.3). The model therefore discards the executor's nature
+and keeps only the invariant element: a governed crossing carries a valid Enforcement PCA continuing an authorized Enforcement Lineage, or
+the next conforming hop does not accept it.<a href="#section-2.5-1" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.5-2">
 <pre>
-+ - - - - - - - - - - - - - - - +
-|  SANDBOX                      |
-|                               |
-|   +-----------------------+   |
-|   |     ANY EXECUTOR      |   |
-|   +-----------------------+   |
-|                               |
-+ - - - - - - - - - - - - - - - +
+ANY EXECUTOR
+  proposes a crossing (Multi-Lineage Execution)
 
-The sandbox is the fixed, trusted element.
-The executor inside it is untrusted, whatever its nature.
-The sandbox invokes the guardrail; the executor cannot skip it.
+GUARDRAIL (executor of an Enforcement Lineage)
+  validates, evaluates policy, and — on permit —
+  emits an Enforcement PCA bound to that exact crossing
+
+NEXT CONFORMING HOP
+  accepts only with a valid Enforcement PCA for that crossing
 </pre><a href="#section-2.5-2" class="pilcrow">¶</a>
 </div>
+<p id="section-2.5-3">The executor's nature is discarded; the Enforcement PCA is the fixed, checkable element.<a href="#section-2.5-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="lineage-executions-through-the-sandbox">
+<div id="lineage-executions-at-a-guarded-crossing">
 <section id="section-2.6">
-        <h3 id="name-lineage-executions-through-">
-<a href="#section-2.6" class="section-number selfRef">2.6. </a><a href="#name-lineage-executions-through-" class="section-name selfRef">Lineage Executions Through the Sandbox</a>
+        <h3 id="name-lineage-executions-at-a-gua">
+<a href="#section-2.6" class="section-number selfRef">2.6. </a><a href="#name-lineage-executions-at-a-gua" class="section-name selfRef">Lineage Executions at a Guarded Crossing</a>
         </h3>
-<p id="section-2.6-1">At each hop, a Multi-Lineage Execution (Section 1.2) enters, traverses, and leaves the sandbox. Every governed crossing passes through
-the Execution Guardrail, which evaluates the proposed transition against configured policy (Section 1.3); the decision gates continuation.<a href="#section-2.6-1" class="pilcrow">¶</a></p>
+<p id="section-2.6-1">At each hop a Multi-Lineage Execution (Section 1.2) is proposed, evaluated at the guarded crossing, and — if permitted — continues to the
+next hop. The guardrail evaluates the proposed transition against configured policy (Section 1.3) and, on permit, emits an Enforcement PCA
+that binds the decision to the exact crossing; the decision gates continuation.<a href="#section-2.6-1" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.6-2">
 <pre>
-L1 ----+                                                      +----&gt; L1'
-       |    + - - - - - - - - +                               |
-L2 ----+---&gt;|     SANDBOX     |     +-------------+  permit   +----&gt; L2'
-       |    |  [ EXECUTOR ]   |----&gt;|  GUARDRAIL  |-----------+
-LN ----+    |                 |     +-------------+           +----&gt; LN'
-            + - - - - - - - - +            |
-                                           | deny
-                                           v
-                                           X
+L1 ----+                                                        +----&gt; L1'
+       |                    +-------------+                      |
+L2 ----+---&gt; proposed  ----&gt;|  GUARDRAIL  |----- permit --------+----&gt; L2'
+       |     crossing       |  (ENFORCE)  |  + Enforcement PCA   |
+LN ----+                    +-------------+                      +----&gt; LN'
+                                   |
+                                   | deny
+                                   v
+                                   X
 
-Every governed external effect crosses the sandbox boundary.
-Every governed crossing passes through the guardrail.
+The guardrail is an executor of an Enforcement Lineage.
+On permit it emits an Enforcement PCA bound to this crossing.
 </pre><a href="#section-2.6-2" class="pilcrow">¶</a>
 </div>
-<p id="section-2.6-3">The decision verbs are those of Section 1.3: permit and deny. Richer runtime-control taxonomies are deferred to the normative sections of
-this specification.<a href="#section-2.6-3" class="pilcrow">¶</a></p>
+<p id="section-2.6-3">The decision verbs are those of Section 1.3: permit and deny. Richer runtime-control taxonomies are deferred to forthcoming revisions.<a href="#section-2.6-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="model-summary">
@@ -2005,19 +2057,22 @@ this specification.<a href="#section-2.6-3" class="pilcrow">¶</a></p>
             <p id="section-2.7-1.1.1"><strong>executor</strong> — untrusted, deterministic or non-deterministic; the source of bugs and unwanted decisions;<a href="#section-2.7-1.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-2.7-1.2">
-            <p id="section-2.7-1.2.1"><strong>sandbox</strong> — fixed, trusted execution boundary; the only path to governed external effect; invokes the guardrail on every governed
-crossing;<a href="#section-2.7-1.2.1" class="pilcrow">¶</a></p>
+            <p id="section-2.7-1.2.1"><strong>Enforcement Lineage</strong> — a normal Lineage Execution for the operation <code>ENFORCE</code>, originated by an authorized enforcement origin; a
+guardrail is authorized by validly continuing it, not by holding a recognized key;<a href="#section-2.7-1.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-2.7-1.3">
-            <p id="section-2.7-1.3.1"><strong>Execution Guardrail</strong> — evaluates every proposed crossing against configured policy (Section 1.3); permits or denies;<a href="#section-2.7-1.3.1" class="pilcrow">¶</a></p>
+            <p id="section-2.7-1.3.1"><strong>Execution Guardrail</strong> — an executor of an Enforcement Lineage that evaluates every proposed crossing against configured policy
+(Section 1.3) and, on permit, emits an <strong>Enforcement PCA</strong> bound to that crossing;<a href="#section-2.7-1.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-2.7-1.4">
-            <p id="section-2.7-1.4.1"><strong>Lineage Executions</strong> — the secured authority inputs and outputs of each hop (Sections 1.1, 1.2); never merged, and every externally
-relevant action keeps an authorizing Lineage Execution.<a href="#section-2.7-1.4.1" class="pilcrow">¶</a></p>
+            <p id="section-2.7-1.4.1"><strong>enforced acceptance</strong> — the next conforming hop accepts a guarded crossing only with a valid Enforcement PCA for that exact crossing;<a href="#section-2.7-1.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.7-1.5">
+            <p id="section-2.7-1.5.1"><strong>Lineage Executions</strong> — the secured authority inputs and outputs of each hop (Sections 1.1, 1.2); never merged, and every externally
+relevant action keeps an authorizing Lineage Execution.<a href="#section-2.7-1.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.7-2">With the model in place, Section 3 describes how crossings are carried and Section 4 how the guardrail enforces them; the formal
-requirements remain deferred to the normative sections.<a href="#section-2.7-2" class="pilcrow">¶</a></p>
+<p id="section-2.7-2">With the model in place, Section 3 describes how crossings are carried and accepted, and Section 4 how the guardrail enforces them.<a href="#section-2.7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2027,20 +2082,20 @@ requirements remain deferred to the normative sections.<a href="#section-2.7-2" 
       <h2 id="name-guarded-crossings">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-guarded-crossings" class="section-name selfRef">Guarded Crossings</a>
       </h2>
-<p id="section-3-1">This section is non-normative. It describes how Lineage Executions reach a hop, how the executor selects the ones that continue, and how
-the next hop knows that a crossing was guarded.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">This section is non-normative. It describes how Lineage Executions reach a hop, how the executor selects the ones that continue, how the
+guardrail's decision travels as an Enforcement PCA, and how the next hop accepts a crossing only when that decision is present and exact.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <div id="input-and-output">
 <section id="section-3.1">
         <h3 id="name-input-and-output">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-input-and-output" class="section-name selfRef">Input and Output</a>
         </h3>
-<p id="section-3.1-1">At each hop the sandbox receives a Multi-Lineage Execution as input and emits a Multi-Lineage Execution as output — n &gt;= 1 on both sides.
-No new machinery is required for PCA validity: each PCA remains subject to the
+<p id="section-3.1-1">At each hop a guarded crossing takes a Multi-Lineage Execution as input and produces a Multi-Lineage Execution as output — n &gt;= 1 on both
+sides. No new machinery is required for PCA validity: each PCA remains subject to the
 <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, and an invalid PCA is rejected by a conforming PIC Verifier
-function. What sandbox mode adds is a guarded-crossing acceptance requirement through the guardrail envelope (Sections 3.3 and 3.4),
-without changing PCA validity, PoR, or non-expansion. What this specification governs is the proposed output crossing presented to the
-successor hop: it may carry several independently attributable Lineage Executions, and it does not become a combined authority state.
-That is what must pass through the guardrail.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+function. What enforced acceptance adds is a guarded-crossing acceptance requirement — a valid Enforcement PCA for that exact crossing
+(Sections 3.3 and 3.4) — without changing PCA validity, PoR, or non-expansion. What this specification governs is the proposed output
+crossing presented to the successor hop: it may carry several independently attributable Lineage Executions, and it does not become a
+combined authority state. That is what the guardrail evaluates and what the Enforcement PCA binds.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="selection">
@@ -2060,198 +2115,326 @@ That is what must pass through the guardrail.<a href="#section-3.1-1" class="pil
         </ul>
 <p id="section-3.2-3">Which ones the executor selects cannot be dictated from outside. A deterministic executor with a bug departs from any instruction; a
 non-deterministic executor may simply choose otherwise (Section 2.1) — and either way the result would still need verification. The model
-therefore does not force the selection: the executor selects freely, the sandbox guarantees that the selection reaches the guardrail
-(Section 2.3), and the guardrail decides whether it may cross. The division of responsibility is exact: the executor constructs the
-proposed transition and selects its participating Lineage Executions; the sandbox captures the resulting crossing and presents the
-Multi-Lineage Execution to the Execution Guardrail.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+therefore does not force the selection: the executor selects freely and proposes the crossing; the guardrail — an executor of an
+Enforcement Lineage (Section 2.3) — validates the participating PCAs, evaluates configured policy, and, on permit, binds exactly that
+crossing into an Enforcement PCA. The division of responsibility is exact: the executor constructs the proposed transition and selects its
+participating Lineage Executions; the guardrail evaluates it and, if it permits, attests exactly that crossing — no more, no fewer
+participants — as a continuation of its Enforcement Lineage.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-3.2-4">
 <pre>
 INPUT (n &gt;= 1)              ENVIRONMENT
 Multi-Lineage Execution     authorities at the hop
         |                        |
         v                        v
-+ - - - - - - - - - - - - - - - - - - - +
-|  SANDBOX                              |
-|                                       |
-|   the executor freely selects the     |
-|   Lineage Executions of the output    |
-|                                       |
-+ - - - - - - - - - - - - - - - - - - - +
+   the executor freely selects the participating
+   Lineage Executions and proposes the crossing
                     |
-                    | proposed output:
-                    | Multi-Lineage Execution (n &gt;= 1)
                     v
              +-------------+
-             |  GUARDRAIL  |
-             +-------------+
+             |  GUARDRAIL  |  validates, evaluates,
+             |  (ENFORCE)  |  and on permit emits an
+             +-------------+  Enforcement PCA
 </pre><a href="#section-3.2-4" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
-<div id="the-guardrail-envelope">
+<div id="the-enforcement-pca">
 <section id="section-3.3">
-        <h3 id="name-the-guardrail-envelope">
-<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-the-guardrail-envelope" class="section-name selfRef">The Guardrail Envelope</a>
+        <h3 id="name-the-enforcement-pca">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-the-enforcement-pca" class="section-name selfRef">The Enforcement PCA</a>
         </h3>
-<p id="section-3.3-1">One question remains: the successor receives Lineage Executions — how does it know they passed through a guardrail? Because a permitted
-crossing is delivered in a <strong>guardrail forwarding envelope</strong> carrying the validated Lineage Executions together with the forwarding and
-guardrail attestations defined below. It follows the forwarding-envelope pattern of the
-<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> (Section 2.5), and binds both forwarding attribution and the
-guardrail decision to the crossing context defined by the applicable profile. The profile defines which crossing elements are bound,
-including any required destination, signed request, participant, freshness, replay-protection, and decision information.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
-<p id="section-3.3-2">For a guarded crossing, the guardrail envelope is the applicable forwarding envelope of that crossing: it replaces, rather than contains,
-the ordinary forwarding envelope — envelopes are never nested — and it preserves the handoff semantics of the forwarding pattern: the
-carried PCAs unaltered, digests recomputable, forwarding attribution intact.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">Forwarding attribution and guardrail validation are separate attestations over the same non-nested envelope. A <strong><code>forwardingProof</code></strong>
-attributes presentation of the crossing to <code>forwardedBy</code> — the authenticated workload, sandbox, gateway, or equivalent enforcement
-component that presents the guarded crossing under the applicable profile, which need not be the executor that signed the current PCA. A
-<strong><code>guardrailProof</code></strong> attests validation of the participating PCAs, policy evaluation, and permission of that exact crossing, and covers
-the digest of the <code>forwardingProof</code>, so the guardrail attests exactly the crossing the forwarder presented. Neither proof replaces the
-executor signature on any carried PCA.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<p id="section-3.3-4">Both proofs cover, directly or through commitment, the carried PCAs and their digests, the participants, destination, concrete signed
-requests, crossing context, freshness and replay-protection fields, and the decision identifier when present. The profile defines which
-subjects may appear in <code>forwardedBy</code>, the keys or trust anchors that verify each proof, the envelope fields covered by both signatures,
-how the guardrail verifies that the crossing it evaluates is the one the forwarder signed, and how the successor verifies both
-attestations. A permit is bound to its crossing and is not reusable for another; the guardrail does not replace either proof with its own
-signature over a different crossing, does not modify the carried PCAs, and does not become the Prover of any PCA. The successor verifies
-the PCA signatures and recomputed digests, both proofs, the identity between presented, evaluated, and delivered crossing, and the
-freshness semantics of the profile.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
-<p id="section-3.3-5">Transport is not presentation. A transport intermediary — a message broker, a queue, a proxy, or any relay that carries the envelope
-without exercising enforcement responsibility for the crossing — is not a forwarder: it does not produce a <code>forwardingProof</code>, does not
-re-sign or re-bind the envelope, and its transit does not create a new presentation of the crossing. The <code>forwardingProof</code> belongs
-exclusively to the enforcement component that presents the guarded crossing, and the envelope travels through any medium unchanged,
-exactly as a PCA does (<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Section 6.7).<a href="#section-3.3-5" class="pilcrow">¶</a></p>
-<p id="section-3.3-6">An illustrative guardrail forwarding envelope:<a href="#section-3.3-6" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-3.3-7">
+<p id="section-3.3-1">One question remains: the successor receives a Multi-Lineage Execution — how does it know the crossing was guarded, and by an authorized
+guardrail? Because a permitted crossing carries an <strong>Enforcement PCA</strong>: a PCA in an Enforcement Lineage (Section 2.3) whose request is the
+evaluation of one concrete guarded crossing. The Enforcement PCA is both the proof of guardrail authorization — it is a valid continuation
+of an authorized Enforcement Lineage — and the record of the decision. There is no separate authority to recognize.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">The Enforcement PCA commits to the participating Lineage Executions through a bounded list, <code>guardedLineages</code>:<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-3.3-3">
+<pre>
+"guardedLineages": [
+  {
+    "pcaDigest": "sha256:...",
+    "lineageId": "...",
+    "lineageCounter": 42,
+    "branchId": "sha256:...",
+    "scopesCommitment": "sha256:..."
+  }
+]
+</pre><a href="#section-3.3-3" class="pilcrow">¶</a>
+</div>
+<p id="section-3.3-4"><code>guardedLineages</code> is a list of commitments to the participating Lineage Executions. It does not, and must not:<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.3-5.1">
+            <p id="section-3.3-5.1.1">contain or merge their authority;<a href="#section-3.3-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-5.2">
+            <p id="section-3.3-5.2.1">make an invalid PCA valid;<a href="#section-3.3-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-5.3">
+            <p id="section-3.3-5.3.1">create a new participant lineage;<a href="#section-3.3-5.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-5.4">
+            <p id="section-3.3-5.4.1">become part of the Enforcement Lineage authority context.<a href="#section-3.3-5.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.3-6">The Enforcement Lineage authority context retains only:<a href="#section-3.3-6" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.3-7">
+<pre>
+{ ENFORCE }
+</pre><a href="#section-3.3-7" class="pilcrow">¶</a>
+</div>
+<p id="section-3.3-8">The Enforcement PCA request binding covers at least:<a href="#section-3.3-8" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.3-9.1">
+            <p id="section-3.3-9.1.1"><code>operation = ENFORCE</code>;<a href="#section-3.3-9.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-9.2">
+            <p id="section-3.3-9.2.1">the exact participant set;<a href="#section-3.3-9.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-9.3">
+            <p id="section-3.3-9.3.1">the destination;<a href="#section-3.3-9.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-9.4">
+            <p id="section-3.3-9.4.1">the concrete signed requests and relevant payload digests;<a href="#section-3.3-9.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-9.5">
+            <p id="section-3.3-9.5.1">the crossing-context digest;<a href="#section-3.3-9.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-9.6">
+            <p id="section-3.3-9.6.1">the policy identifier, version, and digest;<a href="#section-3.3-9.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-9.7">
+            <p id="section-3.3-9.7.1">the committed evaluation inputs;<a href="#section-3.3-9.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-9.8">
+            <p id="section-3.3-9.8.1">the verdict;<a href="#section-3.3-9.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-9.9">
+            <p id="section-3.3-9.9.1">freshness and replay-protection data.<a href="#section-3.3-9.9.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.3-10">Every digest is recomputed from the presented objects; a digest is never trusted as supplied. The carried participant PCA bytes may remain
+in the existing crossing carrier: <code>guardedLineages</code> holds commitments, not duplicated PCA history.<a href="#section-3.3-10" class="pilcrow">¶</a></p>
+<p id="section-3.3-11"><strong>Carrier.</strong> The guardrail forwarding envelope of the previous revision is retained only as a carrier for the crossing. Its semantics are
+now those of the Enforcement PCA:<a href="#section-3.3-11" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.3-12.1">
+            <p id="section-3.3-12.1.1">the Enforcement PCA is the proof of guardrail authorization and of the decision;<a href="#section-3.3-12.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-12.2">
+            <p id="section-3.3-12.2.1">a separate <code>guardrailProof</code> does not establish any independent guardrail authority; authorization is the Enforcement Lineage
+continuation, nothing else;<a href="#section-3.3-12.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-12.3">
+            <p id="section-3.3-12.3.1">a <code>forwardingProof</code> may remain, but only as presentation attribution — it attributes who presented the crossing, not who authorized it;<a href="#section-3.3-12.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-12.4">
+            <p id="section-3.3-12.4.1">transport and forwarding create no enforcement authority.<a href="#section-3.3-12.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.3-13">Envelopes are not nested and participant PCAs are not duplicated; the carrier travels through any medium unchanged, exactly as a PCA does
+(<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Section 6.7). An illustrative carrier:<a href="#section-3.3-13" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-3.3-14">
 <pre>
 {
-  "envelope": {
-    "forwardedBy": "did:example:sandbox-or-workload",
-    "predecessor":       { "…": "signed PCA[n-1]" },
+  "crossing": {
+    "participants": ["A", "B"],
+    "destination": "…",
+    "requestsDigest": "sha256:…",
+    "crossingContextDigest": "sha256:…"
+  },
+  "enforcementPca": {
+    "operation": "ENFORCE",
     "predecessorDigest": "sha256:…",
-    "current":           { "…": "signed PCA[n]" },
-    "currentDigest":     "sha256:…",
-    "crossingContext": {
-      "participants": ["A", "B"],
-      "destination": "…",
-      "requestsDigest": "sha256:…",
-      "freshness": { "…": "…" }
-    },
-    "decisionId": "…"
+    "guardedLineages": [
+      { "pcaDigest": "sha256:…", "lineageId": "…", "lineageCounter": 42,
+        "branchId": "sha256:…", "scopesCommitment": "sha256:…" }
+    ],
+    "policy": { "id": "…", "version": "…", "digest": "sha256:…" },
+    "inputsCommitment": "sha256:…",
+    "verdict": "permit",
+    "freshness": { "…": "…" },
+    "proof": { "verificationMethod": "…", "signature": "…" }
   },
   "forwardingProof": {
     "verificationMethod": "…",
     "signature": "…"
-  },
-  "guardrailProof": {
-    "verificationMethod": "…",
-    "forwardingProofDigest": "sha256:…",
-    "signature": "…"
   }
 }
-</pre><a href="#section-3.3-7" class="pilcrow">¶</a>
+</pre><a href="#section-3.3-14" class="pilcrow">¶</a>
 </div>
-<p id="section-3.3-8">The example is illustrative and non-normative. The canonical serialization and interoperable verification rules will be defined by a
-future normative revision or profile.<a href="#section-3.3-8" class="pilcrow">¶</a></p>
-<p id="section-3.3-9">The guardrail signing capability lies outside the executor's reach and within the trust domain of the sandbox and guardrail enforcement
-components; an executor that can access or invoke it independently of the enforced guardrail decision violates this trust assumption.<a href="#section-3.3-9" class="pilcrow">¶</a></p>
-<p id="section-3.3-10">The envelope is what defeats bypass. An attacker that escapes a sandbox, or skips it entirely, can still call the next hop directly; the
-call arrives without an envelope, with an envelope that does not validate, or with one not signed by a guardrail authority the receiver
-recognizes — and the receiving hop rejects it. As with invalid authority in Section 1.1, the failure is not prevented at the faulty hop;
-it is blocked at the next conforming one.<a href="#section-3.3-10" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-3.3-11">
+<p id="section-3.3-15">The example is illustrative and non-normative. The canonical serialization and interoperable verification rules will be defined by a
+future normative revision or profile.<a href="#section-3.3-15" class="pilcrow">¶</a></p>
+<p id="section-3.3-16">The Enforcement PCA is what defeats bypass. An attacker that skips the guardrail can still call the next hop directly; the call arrives
+with no Enforcement PCA, with one that does not validate, or with one that does not continue an Enforcement Lineage the receiver accepts —
+and the receiving hop rejects it. As with invalid authority in Section 1.1, the failure is not prevented at the faulty hop; it is blocked
+at the next conforming one.<a href="#section-3.3-16" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.3-17">
 <pre>
 GUARDED PATH
 
-+-------------+   permit + sign   +------------------------------+
-|  GUARDRAIL  |------------------&gt;|  GUARDRAIL ENVELOPE          |
-+-------------+                   |  [ L1' ... LN' ] validated   |
-                                  +------------------------------+
-                                                 |
-                                                 v
-                                           EXECUTOR N+1
-                                accepts: the envelope is signed by
-                                a recognized guardrail authority
++-------------+  permit + sign   +--------------------------------+
+|  GUARDRAIL  |-----------------&gt;|  ENFORCEMENT PCA                |
+|  (ENFORCE)  |                  |  continues an Enforcement       |
++-------------+                  |  Lineage; binds this crossing   |
+                                 +--------------------------------+
+                                                |
+                                                v
+                                          EXECUTOR N+1
+                              accepts: valid Enforcement PCA for
+                              exactly this crossing
 
 
 BYPASS ATTEMPT
 
-ATTACKER ---- direct call, no envelope ----&gt;  EXECUTOR N+1
-                                              rejects the crossing
-</pre><a href="#section-3.3-11" class="pilcrow">¶</a>
+ATTACKER ---- direct call, no Enforcement PCA ----&gt;  EXECUTOR N+1
+                                                     rejects the crossing
+</pre><a href="#section-3.3-17" class="pilcrow">¶</a>
 </div>
-<p id="section-3.3-12">For a target that does not validate guardrail envelopes — a conventional storage or network service — the sandbox is responsible for
-materializing or forwarding exactly the crossing permitted by the guardrail, without returning control of that crossing to the executor:
-the action, destination, participants, and other context bound to the permit decision are not replaceable by the executor after the
-decision. For a PIC-aware successor, the envelope itself provides this binding.<a href="#section-3.3-12" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-3.3-13">
-<pre>
-guardrail permits action X          not:   guardrail permits action X
-        |                                          |
-        v                                          v
-sandbox performs or                        executor substitutes action Y
-forwards action X
-</pre><a href="#section-3.3-13" class="pilcrow">¶</a>
-</div>
-<p id="section-3.3-14">How guardrail authorities are established and recognized — including key generation, storage, attestation, rotation, revocation, algorithm
-selection, and trust-anchor distribution — will be defined by a future normative revision or profile.<a href="#section-3.3-14" class="pilcrow">¶</a></p>
+<p id="section-3.3-18">How Enforcement Lineage origins are authorized, and how enforcing keys are generated, stored, attested, rotated, and revoked, will be
+defined by a future normative revision or profile; none of it grants authority independent of a valid Enforcement Lineage continuation.<a href="#section-3.3-18" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="sandbox-mode-and-non-sandbox-mode">
+<div id="enforced-acceptance-mode">
 <section id="section-3.4">
-        <h3 id="name-sandbox-mode-and-non-sandbo">
-<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-sandbox-mode-and-non-sandbo" class="section-name selfRef">Sandbox Mode and Non-Sandbox Mode</a>
+        <h3 id="name-enforced-acceptance-mode">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-enforced-acceptance-mode" class="section-name selfRef">Enforced-Acceptance Mode</a>
         </h3>
-<p id="section-3.4-1">A PIC-compliant hop may operate in <strong>sandbox mode</strong> or in <strong>non-sandbox mode</strong>. In sandbox mode the hop accepts only guarded crossings: a
-valid guardrail envelope is required, plain PCA delivery is insufficient, and bypass attempts are rejected (Section 3.3). In non-sandbox
-mode the hop may accept a plain PCA, as defined by the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>: PCA
-validity, PoR, origin binding, and non-expansion remain enforced, but guardrail enforcement is not required for that crossing and the
-envelope bypass guarantee does not apply.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-3.4-2">
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-3.4-1.1">
+            <p id="section-3.4-1.1.1">A conforming receiving hop accepts a guarded crossing only when it carries a valid Enforcement PCA for that exact crossing.<a href="#section-3.4-1.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.4-2">A hop requiring enforcement accepts a crossing only when all of the following hold:<a href="#section-3.4-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.4-3">
+<li id="section-3.4-3.1">
+            <p id="section-3.4-3.1.1">every participating PCA is valid;<a href="#section-3.4-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-3.2">
+            <p id="section-3.4-3.2.1">the accompanying Enforcement PCA is valid;<a href="#section-3.4-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-3.3">
+            <p id="section-3.4-3.3.1">it continues an accepted Enforcement Lineage;<a href="#section-3.4-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-3.4">
+            <p id="section-3.4-3.4.1">its authority remains limited to <code>ENFORCE</code>;<a href="#section-3.4-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-3.5">
+            <p id="section-3.4-3.5.1">its executor satisfies the inherited execution contract;<a href="#section-3.4-3.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-3.6">
+            <p id="section-3.4-3.6.1"><code>guardedLineages</code> commits to exactly the presented participants — none omitted, none added;<a href="#section-3.4-3.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-3.7">
+            <p id="section-3.4-3.7.1">its request binding matches the exact presented crossing;<a href="#section-3.4-3.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-3.8">
+            <p id="section-3.4-3.8.1">its policy and input commitments match;<a href="#section-3.4-3.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-3.9">
+            <p id="section-3.4-3.9.1">its verdict is <code>permit</code>;<a href="#section-3.4-3.9.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-3.10">
+            <p id="section-3.4-3.10.1">freshness and replay checks pass.<a href="#section-3.4-3.10.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-3.4-4">A missing Enforcement PCA, an omitted or additional participant, or a mismatched destination, request, payload, policy, verdict, or
+crossing context causes rejection. Every digest is recomputed from the presented objects.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.4-5">
 <pre>
-SANDBOX MODE                          NON-SANDBOX MODE
-------------                          ----------------
-guardrail envelope required           plain PCA accepted, per the
-plain PCA insufficient                Prover and Verifier Specification
+AcceptGuardedCrossing(P, G) iff
+  ValidParticipants(P)
+  AND ValidEnforcementContinuation(G)
+  AND G.operation = ENFORCE
+  AND G.guardedLineages = CommitExactly(P)
+  AND G.crossingBinding = CommitExactCrossing(P)
+  AND G.verdict = permit
+  AND Fresh(G)
+</pre><a href="#section-3.4-5" class="pilcrow">¶</a>
+</div>
+<p id="section-3.4-6">Not every hop requires enforcement. A hop may instead accept a plain PCA, as defined by the
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>: PCA validity, PoR, origin binding, and non-expansion remain
+enforced, but a guarded crossing is not required and the bypass guarantee does not apply. The bypass resistance of enforced acceptance
+holds only across topology segments whose receiving hops require it — a deployment choice with a weaker profile where enforcement is not
+required, not a defect.<a href="#section-3.4-6" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.4-7">
+<pre>
+ENFORCED-ACCEPTANCE HOP               BASELINE HOP
+-----------------------               ------------
+valid Enforcement PCA required        plain PCA accepted, per the
+for the exact crossing                Prover and Verifier Specification
 bypass rejected                       baseline PIC enforcement only
 guarded-crossing enforcement          no guarded-crossing claim
-</pre><a href="#section-3.4-2" class="pilcrow">¶</a>
+</pre><a href="#section-3.4-7" class="pilcrow">¶</a>
 </div>
-<p id="section-3.4-3">The bypass resistance provided by guardrail envelopes applies only across topology segments in which receiving hops require sandbox mode.
-A non-sandbox hop intentionally preserves baseline PIC interoperability without claiming guarded-crossing enforcement: a deployment choice
-with a weaker enforcement profile, not a defect.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="non-pic-aware-targets-the-egress-enforcer">
+<section id="section-3.5">
+        <h3 id="name-non-pic-aware-targets-the-e">
+<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-non-pic-aware-targets-the-e" class="section-name selfRef">Non-PIC-Aware Targets: The Egress Enforcer</a>
+        </h3>
+<p id="section-3.5-1">Some targets cannot verify PIC at all — object storage, legacy services, and other systems with no notion of an Enforcement PCA. For these,
+a deployment places an <strong>egress enforcer</strong> at the boundary to the target.<a href="#section-3.5-1" class="pilcrow">¶</a></p>
+<p id="section-3.5-2">The egress enforcer:<a href="#section-3.5-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5-3.1">
+            <p id="section-3.5-3.1.1">is itself an executor of an Enforcement Lineage;<a href="#section-3.5-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.5-3.2">
+            <p id="section-3.5-3.2.1">validates the guarded crossing (the participating PCAs and the proposed transition);<a href="#section-3.5-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.5-3.3">
+            <p id="section-3.5-3.3.1">produces the Enforcement PCA for the decision;<a href="#section-3.5-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.5-3.4">
+            <p id="section-3.5-3.4.1">physically materializes exactly the permitted action — the action, destination, participants, and other bound context are not
+replaceable after the decision.<a href="#section-3.5-3.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<div class="lang-text sourcecode" id="section-3.5-4">
+<pre>
+guarded crossing ---&gt; EGRESS ENFORCER ---&gt; non-PIC-aware target
+                      (Enforcement Lineage executor)
+                      validates, decides (Enforcement PCA),
+                      materializes exactly the permitted action
+</pre><a href="#section-3.5-4" class="pilcrow">¶</a>
+</div>
+<p id="section-3.5-5">Preventing ungoverned paths to the target — direct credentials, alternate routes, or physical access that never reaches the egress
+enforcer — is a deployment responsibility, not a protocol primitive, and is addressed by the
+<a href="pic-architecture-deployment-spec.html">PIC Architecture and Deployment Specification</a>.<a href="#section-3.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="architecture-and-deployment-profiles">
-<section id="section-3.5">
+<section id="section-3.6">
         <h3 id="name-architecture-and-deployment">
-<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-architecture-and-deployment" class="section-name selfRef">Architecture and Deployment Profiles</a>
+<a href="#section-3.6" class="section-number selfRef">3.6. </a><a href="#name-architecture-and-deployment" class="section-name selfRef">Architecture and Deployment Profiles</a>
         </h3>
-<p id="section-3.5-1">Deployments select the mode per topology segment, following its trust and risk characteristics:<a href="#section-3.5-1" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-3.5-2">
+<p id="section-3.6-1">Deployments select, per topology segment, whether receiving hops require enforced acceptance, following the segment's trust and risk
+characteristics:<a href="#section-3.6-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.6-2">
 <pre>
 TRUSTED OR CONTROLLED SEGMENT          UNTRUSTED OR HIGH-RISK SEGMENT
 -----------------------------          ------------------------------
-baseline PIC validation                sandbox mediation and guardrail
-may be sufficient                      envelopes provide runtime
-                                       transition enforcement
-non-sandbox mode may be
-selected when guarded                  sandbox mode is used
+baseline PIC validation                enforced acceptance: a valid
+may be sufficient                      Enforcement PCA is required for
+                                       each guarded crossing
+baseline acceptance may be
+selected when guarded                  enforced acceptance is required
 execution is not required
-</pre><a href="#section-3.5-2" class="pilcrow">¶</a>
+</pre><a href="#section-3.6-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.5-3">Higher-risk executors include AI agents, third-party workloads, plugin or tool execution, user-supplied code, partially trusted services,
+<p id="section-3.6-3">Higher-risk executors include AI agents, third-party workloads, plugin or tool execution, user-supplied code, partially trusted services,
 and components outside the operator's administrative domain; deterministic internal software is not automatically trusted. The selection
 is an architecture and deployment decision: trust boundary, threat model, required assurance, executor control, external-effect risk, and
-interoperability requirements.<a href="#section-3.5-3" class="pilcrow">¶</a></p>
+interoperability requirements.<a href="#section-3.6-3" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-3.5-4.1">
-            <p id="section-3.5-4.1.1">PIC defines authority validity independently of deployment mode. Architecture and deployment determine where Execution Guardrails are
-required in addition to baseline PIC validation.<a href="#section-3.5-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-3.6-4.1">
+            <p id="section-3.6-4.1.1">PIC defines authority validity independently of deployment mode. Architecture and deployment determine where enforced acceptance is
+required in addition to baseline PIC validation.<a href="#section-3.6-4.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-3.5-5">Guidance for selecting sandbox mode, non-sandbox mode, and mixed deployment profiles is defined by the
-<a href="pic-architecture-deployment-spec.html">PIC Architecture and Deployment Specification</a>.<a href="#section-3.5-5" class="pilcrow">¶</a></p>
+<p id="section-3.6-5">Guidance for selecting enforced-acceptance segments, baseline segments, and mixed deployment profiles is defined by the
+<a href="pic-architecture-deployment-spec.html">PIC Architecture and Deployment Specification</a>.<a href="#section-3.6-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2268,49 +2451,62 @@ decision.<a href="#section-4-1" class="pilcrow">¶</a></p>
         <h3 id="name-enforcement-order">
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-enforcement-order" class="section-name selfRef">Enforcement Order</a>
         </h3>
-<p id="section-4.1-1">The guardrail enforces a proposed crossing in a fixed order:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-1">The guardrail is an executor of an Enforcement Lineage (Section 2.3), and emitting an Enforcement PCA follows the ordinary PIC Prover
+procedure (<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Section 2.1) with the profile-specific steps below.
+Before emitting an Enforcement PCA, the guardrail:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-4.1-2">
 <li id="section-4.1-2.1">
-            <p id="section-4.1-2.1.1"><strong>validate</strong> — before policy evaluation, each participating PCA is validated by a conforming PIC Verifier function
-(<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>); if any is invalid, deny is enforced without evaluating policy;<a href="#section-4.1-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-2.1.1">validates its Enforcement Lineage predecessor;<a href="#section-4.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.1-2.2">
-            <p id="section-4.1-2.2.1"><strong>evaluate</strong> — the configured policy is evaluated over the participating Lineage Executions;<a href="#section-4.1-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-2.2.1">proves PoR and execution-contract conformance;<a href="#section-4.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.1-2.3">
-            <p id="section-4.1-2.3.1"><strong>enforce</strong> — the decision, permit or deny, is enforced at the boundary (Section 1.3).<a href="#section-4.1-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-2.3.1">validates every participating PCA with a conforming PIC Verifier function;<a href="#section-4.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-2.4">
+            <p id="section-4.1-2.4.1">denies immediately if any participant is invalid, without evaluating policy;<a href="#section-4.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-2.5">
+            <p id="section-4.1-2.5.1">evaluates the configured policy through its PDP or policy engine;<a href="#section-4.1-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-2.6">
+            <p id="section-4.1-2.6.1">constructs <code>guardedLineages</code> (Section 3.3);<a href="#section-4.1-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-2.7">
+            <p id="section-4.1-2.7.1">binds the exact crossing, policy, inputs, and verdict into the request;<a href="#section-4.1-2.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-2.8">
+            <p id="section-4.1-2.8.1">adds freshness and a new continuation;<a href="#section-4.1-2.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-2.9">
+            <p id="section-4.1-2.9.1">signs the complete Enforcement PCA.<a href="#section-4.1-2.9.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<div class="lang-text sourcecode" id="section-4.1-3">
+<p id="section-4.1-3">Policy failure, an unavailable policy, indeterminate evaluation, or non-reproducible inputs produce deny. Validation precedes policy, and
+policy evaluation cannot override PIC invalidity.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4.1-4">
 <pre>
 proposed crossing
         |
         v
-validate every PCA ---- any invalid ----&gt; enforce deny
+validate predecessor + every participant PCA ---- any invalid ----&gt; deny
         |
     all valid
         |
         v
-evaluate configured policy
+evaluate configured policy (deny on failure / indeterminate)
         |
         v
-enforce permit / deny
-</pre><a href="#section-4.1-3" class="pilcrow">¶</a>
+construct guardedLineages; bind crossing + policy + inputs + verdict
+        |
+        v
+add freshness + continuation; sign the Enforcement PCA
+</pre><a href="#section-4.1-4" class="pilcrow">¶</a>
 </div>
-<p id="section-4.1-4">The Verifier function may be integrated into the guardrail implementation or invoked as a separate component; the architectural packaging
-is an implementation choice, and policy evaluation cannot override PIC invalidity.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-4.1-5">
-<pre>
-PIC VERIFIER FUNCTION
-determines whether each PCA and continuation is valid
-
-POLICY EVALUATION
-determines whether the proposed crossing is permitted
-
-EXECUTION GUARDRAIL
-enforces the resulting permit or deny decision
-</pre><a href="#section-4.1-5" class="pilcrow">¶</a>
-</div>
+<p id="section-4.1-5">The PIC Verifier function may be integrated into the guardrail or invoked as a separate component; the packaging is an implementation
+choice. The PDP or policy engine is invoked as step 5 of this procedure — it informs the decision the guardrail signs; it is not an
+independent source of authority.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
 <p id="section-4.1-6">The executed-vs-signed rule of the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> (Section 3.3) applies per
 participating Lineage Execution: each executed operation must match the signed request of its own Lineage Execution and remains attributed
 to it. Policy authorizes joint participation only; it does not compose the authority sets into a common one.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
@@ -2379,6 +2575,16 @@ C does not satisfy the condition            -&gt; enforce deny
 specification; the example — including its CEL-like condition language — is illustrative only.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="concurrency">
+<section id="section-4.4">
+        <h3 id="name-concurrency">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-concurrency" class="section-name selfRef">Concurrency</a>
+        </h3>
+<p id="section-4.4-1">Enforcement is not forced through a single, globally serialized Enforcement Lineage. A deployment may use separate Enforcement Lineages, or
+authorized fan-out or branch profiles (<a href="pic-revocation-spec.html">PIC Revocation Specification</a>, Section 1.1), to evaluate concurrent
+crossings. These reuse the existing PIC continuation and revocation rules unchanged; this revision defines no new concurrency model.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="lineage-executions-in-transit">
@@ -2389,8 +2595,8 @@ specification; the example — including its CEL-like condition language — is 
 <p id="section-5-1">This section is non-normative. It closes the conceptual model.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">A crossing is an execution in transit: it may happen in process, across a network, or over any other medium. The transport does not
 matter — the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> already separates the security model from transport,
-and this specification inherits that separation. In a guarded crossing, what travels is the guardrail envelope, and inside it travel the
-Lineage Executions of the crossing: bound together, never merged.<a href="#section-5-2" class="pilcrow">¶</a></p>
+and this specification inherits that separation. In a guarded crossing, what travels is the crossing carrier with its Enforcement PCA, and
+inside it travel the Lineage Executions of the crossing: bound together, never merged.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-5-3">
 <pre>
 HOP N                                                            HOP N+1
@@ -2398,15 +2604,15 @@ HOP N                                                            HOP N+1
 GUARDRAIL                                                        VERIFIER
     |                                                               ^
     |     +----------------------------------------------+          |
-    +----&gt;| GUARDRAIL ENVELOPE                           |----------+
+    +----&gt;| CROSSING + ENFORCEMENT PCA                   |----------+
           | [ L1 | L2 | ... | LN ]  bound, never merged  |
           +----------------------------------------------+
 
           ------ in process | network | any medium ------
 </pre><a href="#section-5-3" class="pilcrow">¶</a>
 </div>
-<p id="section-5-4">The originating guardrail validates the proposed crossing before issuing the envelope; the receiving hop validates the envelope and
-performs the PIC validation required by its acceptance profile (Section 3.4).<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-4">The originating guardrail validates the proposed crossing before signing the Enforcement PCA; the receiving hop validates the Enforcement
+PCA and the participants as required by enforced acceptance (Section 3.4).<a href="#section-5-4" class="pilcrow">¶</a></p>
 <p id="section-5-5">PIC does not represent authority from several Lineage Executions as one lineage authority state: a successor PCA cannot import or merge
 authority, and that prohibition is what eliminates the confused deputy by construction (Section 1.1). The execution model may carry
 several independent Lineage Executions together for one crossing without changing any of them: each remains separately attributable, the
@@ -2427,58 +2633,106 @@ another Lineage Execution              no combined authority state is created
 <p id="section-5-7">This closes the conceptual model of this revision; the normative sections define the representations and the enforcement requirements.<a href="#section-5-7" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="contributors">
+<div id="security-boundary">
 <section id="section-6">
-      <h2 id="name-contributors-2">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
+      <h2 id="name-security-boundary">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-boundary" class="section-name selfRef">Security Boundary</a>
       </h2>
-<p id="section-6-1">The editors and contributors of this document are listed in the <strong>document header</strong> above. Listing is governed by Appendix B.7 of the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a>.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">This section is non-normative. It states what the model guarantees and what it does not.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">Within the model, an unauthorized guardrail cannot produce a valid Enforcement Lineage continuation, and an enforcing executor cannot
+validly expand its authority beyond <code>ENFORCE</code>. Two residual failure classes remain.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<div id="implementation-failure">
+<section id="section-6.1">
+        <h3 id="name-implementation-failure">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-implementation-failure" class="section-name selfRef">Implementation Failure</a>
+        </h3>
+<p id="section-6.1-1">An implementation may be compromised, ignore verification, misuse its keys, execute an action different from the signed request, or rely on
+broken cryptography, hashing, canonicalization, attestations, or trust anchors. That breaks the implementation or its assumptions, not the
+PIC model — the same boundary that applies to physical executor behavior throughout PIC (Section 1.1).<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="pdp-semantic-divergence">
+<section id="section-6.2">
+        <h3 id="name-pdp-semantic-divergence">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-pdp-semantic-divergence" class="section-name selfRef">PDP Semantic Divergence</a>
+        </h3>
+<p id="section-6.2-1">A validly continuing enforcement executor may use an incorrect, dishonest, or semantically divergent policy engine. The Enforcement PCA
+makes the decision attributable and checkable by signing:<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.2-2.1">
+            <p id="section-6.2-2.1.1">the policy identifier, version, and digest;<a href="#section-6.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.2-2.2">
+            <p id="section-6.2-2.2.1">the evaluation profile;<a href="#section-6.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.2-2.3">
+            <p id="section-6.2-2.3.1">the committed inputs;<a href="#section-6.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.2-2.4">
+            <p id="section-6.2-2.4.1">the semantic or translation profile, where applicable;<a href="#section-6.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.2-2.5">
+            <p id="section-6.2-2.5.1">the verdict.<a href="#section-6.2-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-6.2-3">PIC guarantees the continuity, integrity, attribution, and scope of the enforcement decision. It does not prove that the selected policy,
+or its semantic interpretation, expresses the intended governance outcome.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="contributors">
+<section id="section-7">
+      <h2 id="name-contributors-2">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
+      </h2>
+<p id="section-7-1">The editors and contributors of this document are listed in the <strong>document header</strong> above. Listing is governed by Appendix B.7 of the
+<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a>.<a href="#section-7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="legal-notices">
-<section id="section-7">
+<section id="section-8">
       <h2 id="name-legal-notices">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-legal-notices" class="section-name selfRef">Legal Notices</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-legal-notices" class="section-name selfRef">Legal Notices</a>
       </h2>
-<p id="section-7-1">The appendices governing:<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-8-1">The appendices governing:<a href="#section-8-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7-2.1">
-          <p id="section-7-2.1.1"><strong>A.</strong> Use of Automated Language Assistance,<a href="#section-7-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-8-2.1">
+          <p id="section-8-2.1.1"><strong>A.</strong> Use of Automated Language Assistance,<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-7-2.2">
-          <p id="section-7-2.2.1"><strong>B.</strong> Authorship, Stewardship, Attribution, and Derivative Works,<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-8-2.2">
+          <p id="section-8-2.2.1"><strong>B.</strong> Authorship, Stewardship, Attribution, and Derivative Works,<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-7-2.3">
-          <p id="section-7-2.3.1"><strong>C.</strong> Disclaimer and Limitation of Liability,<a href="#section-7-2.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-8-2.3">
+          <p id="section-8-2.3.1"><strong>C.</strong> Disclaimer and Limitation of Liability,<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-7-2.4">
-          <p id="section-7-2.4.1"><strong>D.</strong> Acknowledgements,<a href="#section-7-2.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-8-2.4">
+          <p id="section-8-2.4.1"><strong>D.</strong> Acknowledgements,<a href="#section-8-2.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-7-3">are maintained in a single canonical document, the <strong><a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a></strong> (<code>draft/0.2/pic-legal.md</code>), and are
-<strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-7-3" class="pilcrow">¶</a></p>
-<p id="section-7-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
-and attribution matters.<a href="#section-7-4" class="pilcrow">¶</a></p>
-<p id="section-7-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
+<p id="section-8-3">are maintained in a single canonical document, the <strong><a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a></strong> (<code>draft/0.2/pic-legal.md</code>), and are
+<strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
+and attribution matters.<a href="#section-8-4" class="pilcrow">¶</a></p>
+<p id="section-8-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
 the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or authorship claims beyond
-those defined in the PIC Legal Appendices.<a href="#section-7-5" class="pilcrow">¶</a></p>
+those defined in the PIC Legal Appendices.<a href="#section-8-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="references">
-<section id="section-8">
+<section id="section-9">
       <h2 id="name-references">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <ul class="normal">
-<li class="normal" id="section-8-1.1">
-          <p id="section-8-1.1.1">[1] Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-8-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-9-1.1">
+          <p id="section-9-1.1.1">[1] Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-9-1.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-8-1.2">
-          <p id="section-8-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-8-1.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-9-1.2">
+          <p id="section-9-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-9-1.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-8-1.3">
-          <p id="section-8-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-8-1.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-9-1.3">
+          <p id="section-9-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-9-1.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>

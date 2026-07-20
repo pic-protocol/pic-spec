@@ -50,12 +50,15 @@ distinct, and no new authority or lineage is created by their joint carriage. <e
 
 <t>An <strong>Execution Guardrail</strong> is an externally configured runtime control at an execution boundary that evaluates the proposed transition of a
 Multi-Lineage Execution against configured policy and permits or denies it. Guardrails do not make an invalid PCA valid, do not merge
-authorities, and do not alter lineage invariants.</t>
+authorities, and do not alter lineage invariants. A guardrail's own authority to enforce is itself a PIC continuation — a dedicated
+<strong>Enforcement Lineage</strong> for the operation <spanx style="verb">ENFORCE</spanx>, originated by an authorized enforcement origin — not possession of a separately
+recognized key: <em>guardrail authority is not recognized; it is continued.</em></t>
 
 <t>This revision establishes the concepts and the standard requirements notation shared by the PIC specification set. It also defines the
-execution model — untrusted executors inside trusted sandboxes that invoke the guardrail — the guardrail envelope in which permitted
-crossings travel, and the enforcement order over semantic scopes and configured policies (Sections 2–5); the normative guardrail
-construction and enforcement requirements will be defined in forthcoming revisions. Guardrails build on the PCA format of the
+execution model — untrusted executors whose governed external effects are gated by <strong>enforced acceptance</strong> — the <strong>Enforcement PCA</strong> that
+carries a guardrail decision as a signed continuation of an Enforcement Lineage, and the enforcement order over semantic scopes and
+configured policies (Sections 2–6); the canonical serialization and interoperable, keyword-level conformance requirements will be defined
+in forthcoming revisions. Guardrails build on the PCA format of the
 <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref> and are consistent with the
 <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</eref>; they do not alter non-expansion of the signed state, Proof of Relationship, or the
 rule that every PCA continues exactly one predecessor. In case of conflict, the <strong>PIC Specification</strong> is authoritative.</t>
@@ -112,7 +115,7 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
   <middle>
 
 
-<?line 67?>
+<?line 70?>
 
 <section anchor="introduction"><name>Introduction</name>
 
@@ -153,6 +156,8 @@ at an execution boundary
 - input: one Multi-Lineage Execution
 - evaluate configured policy
 - enforce permit or deny
+- its authority is a continued
+  Enforcement Lineage (ENFORCE)
 ]]></sourcecode></figure>
 
 <section anchor="lineage-execution-and-execution-lineage-safety"><name>Lineage Execution and Execution Lineage Safety</name>
@@ -508,8 +513,9 @@ and only within the normative sections of this document. Examples are illustrati
 </section>
 <section anchor="execution-model"><name>Execution Model</name>
 
-<t>This section is non-normative. It defines the execution model — executor, sandbox, guardrail — and one point must be clear by its end:
-the executor, deterministic or not, is never trusted to invoke its own control; the sandbox is.</t>
+<t>This section is non-normative. It defines the execution model — executor, Enforcement Lineage, guardrail — and one point must be clear by
+its end: the executor is never the source of enforcement authority. Enforcement authority is a continued Enforcement Lineage, and a
+governed crossing is accepted by the next conforming hop only when it carries a valid Enforcement PCA for that exact crossing.</t>
 
 <section anchor="executors-deterministic-and-non-deterministic"><name>Executors: Deterministic and Non-Deterministic</name>
 
@@ -528,145 +534,165 @@ the sense of Section 1.1, outside execution lineage safety, for PIC as for any s
 two failure modes are operationally equivalent.</t>
 
 </section>
-<section anchor="the-invocation-problem"><name>The Invocation Problem</name>
+<section anchor="the-enforcement-problem"><name>The Enforcement Problem</name>
 
-<t>Section 1 defined the Execution Guardrail but left one question open: who invokes it?</t>
+<t>Section 1 defined the Execution Guardrail but left two questions open: what authorizes it, and what makes its decision unskippable?</t>
 
 <t><list style="symbols">
-  <t>If the executor's own code is responsible for calling the guardrail, a deterministic executor with a bug may simply never make the
-call: the control silently does not run.</t>
-  <t>A non-deterministic executor may decide not to make the call — precisely because it does not want to be limited.</t>
+  <t>If the executor's own code is responsible for calling the guardrail, a deterministic executor with a bug may simply never make the call,
+and a non-deterministic executor may decide not to — precisely because it does not want to be limited.</t>
+  <t>If the guardrail were authorized merely by holding a key the receiver recognizes, a compromised executor that obtained or invoked that
+key could manufacture its own approvals.</t>
 </list></t>
 
-<t>The flaw is the same in both cases: trusting the executor to invoke its own control is circular — the component whose behavior is in
-question would be the enforcement point of its own limits. The invocation of the guardrail cannot live inside the executor.</t>
+<t>Both failures share one root: trusting the executor to invoke, or to authorize, its own control is circular — the component whose behavior
+is in question would be the source of its own limits. Enforcement can be neither invoked nor authorized from inside the executor.</t>
+
+<t>The resolution is not a trusted invoker enclosing the executor. It is to make enforcement authority a PIC continuation, and to make each
+decision a signed continuation that the next conforming hop checks before it accepts the crossing.</t>
 
 </section>
-<section anchor="the-sandbox"><name>The Sandbox</name>
+<section anchor="the-enforcement-lineage"><name>The Enforcement Lineage</name>
 
 <ul empty="true"><li>
-  <t>A <strong>sandbox</strong> is a fixed, trusted execution boundary that encloses an executor. The executor has no path to governed external effect
-except through the boundary, and it is the sandbox — not the executor — that invokes the Execution Guardrail on every governed boundary
-crossing.</t>
+  <t>An <strong>Enforcement Lineage</strong> is a normal Lineage Execution dedicated to the operation <spanx style="verb">ENFORCE</spanx>. Its origin PCA, <spanx style="verb">PCA0-G</spanx>, is minted by an
+explicitly authorized enforcement origin — policy governance, the protected application, the deployment owner, or another authorized
+origin. A candidate guardrail does not mint its own <spanx style="verb">PCA0-G</spanx>.</t>
 </li></ul>
 
-<t>The sandbox is a trusted component: an explicit trust assumption of this specification, exactly as Verifier correctness is an explicit
-trust assumption of the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>. The gain is where the trust sits: it moves
-from the behavior of the executor, unverifiable per Section 2.1, to the structure of the boundary — fixed, implementable, attestable. In
-the execution model assumed by this specification, the sandbox is the only permitted path from the enclosed executor to a governed
-external effect; an implementation that permits an unmediated governed external path from the executor does not satisfy this
-execution-model assumption.</t>
+<t>An Enforcement Lineage is not a new primitive: it is an ordinary Lineage Execution (Section 1.1) whose origin authority context carries the
+single operation <spanx style="verb">ENFORCE</spanx> together with the execution contract the enforcing executor must satisfy.</t>
 
 <figure><sourcecode type="text"><![CDATA[
-+ - - - - - - - - - - - - - - - +
-|  SANDBOX                      |
-|                               |
-|   +-----------------------+   |
-|   |       EXECUTOR        |   |
-|   | (deterministic /      |   |
-|   |  non-deterministic)   |   |
-|   +-----------------------+   |
-|                               |
-+ - - - - - - - - - - - - - - - +
+PCA0-G {
+  operations: [ ENFORCE ],
+  executionContract: {
+    role: guardrail,
+    policyEngine: ...,
+    environment: ...,
+    executionModel: ...,
+    requiredAttestations: ...
+  }
+}
 ]]></sourcecode></figure>
 
-<t>This closes a gap Section 1.1 left open: a purely local physical action may be invisible to the protocol. Within the external-effect
-channels governed by this execution model, an action that does not cross the sandbox boundary cannot produce an external effect through
-those channels, and an action with such an effect necessarily crosses the boundary — and is therefore mediated. The claim stops there:
-the sandbox does not make the executor behave correctly; it makes governed external effect impossible without mediation.</t>
+<t>A future guardrail becomes authorized exactly as any executor becomes authorized in PIC: by producing a valid successor PCA in this
+lineage. That successor satisfies the ordinary PIC continuation requirements
+(<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>):</t>
+
+<t><list style="symbols">
+  <t>exactly one predecessor;</t>
+  <t>valid PoR;</t>
+  <t>a conforming executor attestation against the inherited execution contract;</t>
+  <t><spanx style="verb">ENFORCE</spanx> authority, unexpanded;</t>
+  <t>complete request binding;</t>
+  <t>a signature over the whole PCA.</t>
+</list></t>
+
+<t>Nothing here is recognized by fiat. The guardrail holds no standing that a key alone could confer; it holds a position in a lineage that
+traces back to an authorized enforcement origin.</t>
+
+<ul empty="true"><li>
+  <t>Guardrail authority is not recognized; it is continued.</t>
+</li></ul>
+
+<t>This is where the trust moves. It no longer rests on the behavior of the executor (unverifiable, Section 2.1) or on a receiver's
+recognition of a key. It rests on the same continuation the rest of PIC already secures: an executor that does not continue a valid
+Enforcement Lineage cannot produce a valid Enforcement PCA, whatever keys it holds.</t>
 
 </section>
 <section anchor="discrete-multi-hop-execution"><name>Discrete Multi-Hop Execution</name>
 
-<t>Execution is discrete and multi-hop: a chain of sandboxed executors, each hop continuing the Lineage Execution under PoR and non-expansion
-as defined by the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>.</t>
+<t>Execution is discrete and multi-hop: a chain of executors, each hop continuing its Lineage Execution under PoR and non-expansion as defined
+by the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>.</t>
 
 <figure><sourcecode type="text"><![CDATA[
-+ - - - - - - - - +      + - - - - - - - - +      + - - - - - - - - +
-|  SANDBOX        |      |  SANDBOX        |      |  SANDBOX        |
-|  +-----------+  |      |  +-----------+  |      |  +-----------+  |
-|  | EXECUTOR  |  |----->|  | EXECUTOR  |  |----->|  | EXECUTOR  |  |
-|  +-----------+  | PoR  |  +-----------+  | PoR  |  +-----------+  |
-+ - - - - - - - - +      + - - - - - - - - +      + - - - - - - - - +
++-----------+       +-----------+       +-----------+
+| EXECUTOR  |------>| EXECUTOR  |------>| EXECUTOR  |
++-----------+  PoR  +-----------+  PoR  +-----------+
 ]]></sourcecode></figure>
+
+<t>A guarded crossing between hops is evaluated by a guardrail — itself an executor continuing an Enforcement Lineage — and the receiving hop
+accepts it only against a valid Enforcement PCA (Section 3).</t>
 
 </section>
 <section anchor="the-abstraction-step"><name>The Abstraction Step</name>
 
-<t>Whether the executor inside a sandbox is deterministic or non-deterministic does not matter. Bug or decision, the failure mode is the same
-(Section 2.1); the invocation problem is the same (Section 2.2); the answer is the same (Section 2.3). The model therefore discards the
-executor's nature and keeps only the invariant element: the sandbox is fixed, and the sandbox invokes the guardrail.</t>
+<t>Whether the executor is deterministic or non-deterministic does not matter. Bug or decision, the failure mode is the same (Section 2.1);
+the enforcement problem is the same (Section 2.2); the answer is the same (Section 2.3). The model therefore discards the executor's nature
+and keeps only the invariant element: a governed crossing carries a valid Enforcement PCA continuing an authorized Enforcement Lineage, or
+the next conforming hop does not accept it.</t>
 
 <figure><sourcecode type="text"><![CDATA[
-+ - - - - - - - - - - - - - - - +
-|  SANDBOX                      |
-|                               |
-|   +-----------------------+   |
-|   |     ANY EXECUTOR      |   |
-|   +-----------------------+   |
-|                               |
-+ - - - - - - - - - - - - - - - +
+ANY EXECUTOR
+  proposes a crossing (Multi-Lineage Execution)
 
-The sandbox is the fixed, trusted element.
-The executor inside it is untrusted, whatever its nature.
-The sandbox invokes the guardrail; the executor cannot skip it.
+GUARDRAIL (executor of an Enforcement Lineage)
+  validates, evaluates policy, and — on permit —
+  emits an Enforcement PCA bound to that exact crossing
+
+NEXT CONFORMING HOP
+  accepts only with a valid Enforcement PCA for that crossing
 ]]></sourcecode></figure>
+
+<t>The executor's nature is discarded; the Enforcement PCA is the fixed, checkable element.</t>
 
 </section>
-<section anchor="lineage-executions-through-the-sandbox"><name>Lineage Executions Through the Sandbox</name>
+<section anchor="lineage-executions-at-a-guarded-crossing"><name>Lineage Executions at a Guarded Crossing</name>
 
-<t>At each hop, a Multi-Lineage Execution (Section 1.2) enters, traverses, and leaves the sandbox. Every governed crossing passes through
-the Execution Guardrail, which evaluates the proposed transition against configured policy (Section 1.3); the decision gates continuation.</t>
+<t>At each hop a Multi-Lineage Execution (Section 1.2) is proposed, evaluated at the guarded crossing, and — if permitted — continues to the
+next hop. The guardrail evaluates the proposed transition against configured policy (Section 1.3) and, on permit, emits an Enforcement PCA
+that binds the decision to the exact crossing; the decision gates continuation.</t>
 
 <figure><sourcecode type="text"><![CDATA[
-L1 ----+                                                      +----> L1'
-       |    + - - - - - - - - +                               |
-L2 ----+--->|     SANDBOX     |     +-------------+  permit   +----> L2'
-       |    |  [ EXECUTOR ]   |---->|  GUARDRAIL  |-----------+
-LN ----+    |                 |     +-------------+           +----> LN'
-            + - - - - - - - - +            |
-                                           | deny
-                                           v
-                                           X
+L1 ----+                                                        +----> L1'
+       |                    +-------------+                      |
+L2 ----+---> proposed  ---->|  GUARDRAIL  |----- permit --------+----> L2'
+       |     crossing       |  (ENFORCE)  |  + Enforcement PCA   |
+LN ----+                    +-------------+                      +----> LN'
+                                   |
+                                   | deny
+                                   v
+                                   X
 
-Every governed external effect crosses the sandbox boundary.
-Every governed crossing passes through the guardrail.
+The guardrail is an executor of an Enforcement Lineage.
+On permit it emits an Enforcement PCA bound to this crossing.
 ]]></sourcecode></figure>
 
-<t>The decision verbs are those of Section 1.3: permit and deny. Richer runtime-control taxonomies are deferred to the normative sections of
-this specification.</t>
+<t>The decision verbs are those of Section 1.3: permit and deny. Richer runtime-control taxonomies are deferred to forthcoming revisions.</t>
 
 </section>
 <section anchor="model-summary"><name>Model Summary</name>
 
 <t><list style="symbols">
   <t><strong>executor</strong> — untrusted, deterministic or non-deterministic; the source of bugs and unwanted decisions;</t>
-  <t><strong>sandbox</strong> — fixed, trusted execution boundary; the only path to governed external effect; invokes the guardrail on every governed
-crossing;</t>
-  <t><strong>Execution Guardrail</strong> — evaluates every proposed crossing against configured policy (Section 1.3); permits or denies;</t>
+  <t><strong>Enforcement Lineage</strong> — a normal Lineage Execution for the operation <spanx style="verb">ENFORCE</spanx>, originated by an authorized enforcement origin; a
+guardrail is authorized by validly continuing it, not by holding a recognized key;</t>
+  <t><strong>Execution Guardrail</strong> — an executor of an Enforcement Lineage that evaluates every proposed crossing against configured policy
+(Section 1.3) and, on permit, emits an <strong>Enforcement PCA</strong> bound to that crossing;</t>
+  <t><strong>enforced acceptance</strong> — the next conforming hop accepts a guarded crossing only with a valid Enforcement PCA for that exact crossing;</t>
   <t><strong>Lineage Executions</strong> — the secured authority inputs and outputs of each hop (Sections 1.1, 1.2); never merged, and every externally
 relevant action keeps an authorizing Lineage Execution.</t>
 </list></t>
 
-<t>With the model in place, Section 3 describes how crossings are carried and Section 4 how the guardrail enforces them; the formal
-requirements remain deferred to the normative sections.</t>
+<t>With the model in place, Section 3 describes how crossings are carried and accepted, and Section 4 how the guardrail enforces them.</t>
 
 </section>
 </section>
 <section anchor="guarded-crossings"><name>Guarded Crossings</name>
 
-<t>This section is non-normative. It describes how Lineage Executions reach a hop, how the executor selects the ones that continue, and how
-the next hop knows that a crossing was guarded.</t>
+<t>This section is non-normative. It describes how Lineage Executions reach a hop, how the executor selects the ones that continue, how the
+guardrail's decision travels as an Enforcement PCA, and how the next hop accepts a crossing only when that decision is present and exact.</t>
 
 <section anchor="input-and-output"><name>Input and Output</name>
 
-<t>At each hop the sandbox receives a Multi-Lineage Execution as input and emits a Multi-Lineage Execution as output — n &gt;= 1 on both sides.
-No new machinery is required for PCA validity: each PCA remains subject to the
+<t>At each hop a guarded crossing takes a Multi-Lineage Execution as input and produces a Multi-Lineage Execution as output — n &gt;= 1 on both
+sides. No new machinery is required for PCA validity: each PCA remains subject to the
 <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>, and an invalid PCA is rejected by a conforming PIC Verifier
-function. What sandbox mode adds is a guarded-crossing acceptance requirement through the guardrail envelope (Sections 3.3 and 3.4),
-without changing PCA validity, PoR, or non-expansion. What this specification governs is the proposed output crossing presented to the
-successor hop: it may carry several independently attributable Lineage Executions, and it does not become a combined authority state.
-That is what must pass through the guardrail.</t>
+function. What enforced acceptance adds is a guarded-crossing acceptance requirement — a valid Enforcement PCA for that exact crossing
+(Sections 3.3 and 3.4) — without changing PCA validity, PoR, or non-expansion. What this specification governs is the proposed output
+crossing presented to the successor hop: it may carry several independently attributable Lineage Executions, and it does not become a
+combined authority state. That is what the guardrail evaluates and what the Enforcement PCA binds.</t>
 
 </section>
 <section anchor="selection"><name>Selection</name>
@@ -681,93 +707,118 @@ That is what must pass through the guardrail.</t>
 
 <t>Which ones the executor selects cannot be dictated from outside. A deterministic executor with a bug departs from any instruction; a
 non-deterministic executor may simply choose otherwise (Section 2.1) — and either way the result would still need verification. The model
-therefore does not force the selection: the executor selects freely, the sandbox guarantees that the selection reaches the guardrail
-(Section 2.3), and the guardrail decides whether it may cross. The division of responsibility is exact: the executor constructs the
-proposed transition and selects its participating Lineage Executions; the sandbox captures the resulting crossing and presents the
-Multi-Lineage Execution to the Execution Guardrail.</t>
+therefore does not force the selection: the executor selects freely and proposes the crossing; the guardrail — an executor of an
+Enforcement Lineage (Section 2.3) — validates the participating PCAs, evaluates configured policy, and, on permit, binds exactly that
+crossing into an Enforcement PCA. The division of responsibility is exact: the executor constructs the proposed transition and selects its
+participating Lineage Executions; the guardrail evaluates it and, if it permits, attests exactly that crossing — no more, no fewer
+participants — as a continuation of its Enforcement Lineage.</t>
 
 <figure><sourcecode type="text"><![CDATA[
 INPUT (n >= 1)              ENVIRONMENT
 Multi-Lineage Execution     authorities at the hop
         |                        |
         v                        v
-+ - - - - - - - - - - - - - - - - - - - +
-|  SANDBOX                              |
-|                                       |
-|   the executor freely selects the     |
-|   Lineage Executions of the output    |
-|                                       |
-+ - - - - - - - - - - - - - - - - - - - +
+   the executor freely selects the participating
+   Lineage Executions and proposes the crossing
                     |
-                    | proposed output:
-                    | Multi-Lineage Execution (n >= 1)
                     v
              +-------------+
-             |  GUARDRAIL  |
-             +-------------+
+             |  GUARDRAIL  |  validates, evaluates,
+             |  (ENFORCE)  |  and on permit emits an
+             +-------------+  Enforcement PCA
 ]]></sourcecode></figure>
 
 </section>
-<section anchor="the-guardrail-envelope"><name>The Guardrail Envelope</name>
+<section anchor="the-enforcement-pca"><name>The Enforcement PCA</name>
 
-<t>One question remains: the successor receives Lineage Executions — how does it know they passed through a guardrail? Because a permitted
-crossing is delivered in a <strong>guardrail forwarding envelope</strong> carrying the validated Lineage Executions together with the forwarding and
-guardrail attestations defined below. It follows the forwarding-envelope pattern of the
-<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref> (Section 2.5), and binds both forwarding attribution and the
-guardrail decision to the crossing context defined by the applicable profile. The profile defines which crossing elements are bound,
-including any required destination, signed request, participant, freshness, replay-protection, and decision information.</t>
+<t>One question remains: the successor receives a Multi-Lineage Execution — how does it know the crossing was guarded, and by an authorized
+guardrail? Because a permitted crossing carries an <strong>Enforcement PCA</strong>: a PCA in an Enforcement Lineage (Section 2.3) whose request is the
+evaluation of one concrete guarded crossing. The Enforcement PCA is both the proof of guardrail authorization — it is a valid continuation
+of an authorized Enforcement Lineage — and the record of the decision. There is no separate authority to recognize.</t>
 
-<t>For a guarded crossing, the guardrail envelope is the applicable forwarding envelope of that crossing: it replaces, rather than contains,
-the ordinary forwarding envelope — envelopes are never nested — and it preserves the handoff semantics of the forwarding pattern: the
-carried PCAs unaltered, digests recomputable, forwarding attribution intact.</t>
+<t>The Enforcement PCA commits to the participating Lineage Executions through a bounded list, <spanx style="verb">guardedLineages</spanx>:</t>
 
-<t>Forwarding attribution and guardrail validation are separate attestations over the same non-nested envelope. A <strong><spanx style="verb">forwardingProof</spanx></strong>
-attributes presentation of the crossing to <spanx style="verb">forwardedBy</spanx> — the authenticated workload, sandbox, gateway, or equivalent enforcement
-component that presents the guarded crossing under the applicable profile, which need not be the executor that signed the current PCA. A
-<strong><spanx style="verb">guardrailProof</spanx></strong> attests validation of the participating PCAs, policy evaluation, and permission of that exact crossing, and covers
-the digest of the <spanx style="verb">forwardingProof</spanx>, so the guardrail attests exactly the crossing the forwarder presented. Neither proof replaces the
-executor signature on any carried PCA.</t>
+<figure><sourcecode type="json"><![CDATA[
+"guardedLineages": [
+  {
+    "pcaDigest": "sha256:...",
+    "lineageId": "...",
+    "lineageCounter": 42,
+    "branchId": "sha256:...",
+    "scopesCommitment": "sha256:..."
+  }
+]
+]]></sourcecode></figure>
 
-<t>Both proofs cover, directly or through commitment, the carried PCAs and their digests, the participants, destination, concrete signed
-requests, crossing context, freshness and replay-protection fields, and the decision identifier when present. The profile defines which
-subjects may appear in <spanx style="verb">forwardedBy</spanx>, the keys or trust anchors that verify each proof, the envelope fields covered by both signatures,
-how the guardrail verifies that the crossing it evaluates is the one the forwarder signed, and how the successor verifies both
-attestations. A permit is bound to its crossing and is not reusable for another; the guardrail does not replace either proof with its own
-signature over a different crossing, does not modify the carried PCAs, and does not become the Prover of any PCA. The successor verifies
-the PCA signatures and recomputed digests, both proofs, the identity between presented, evaluated, and delivered crossing, and the
-freshness semantics of the profile.</t>
+<t><spanx style="verb">guardedLineages</spanx> is a list of commitments to the participating Lineage Executions. It does not, and must not:</t>
 
-<t>Transport is not presentation. A transport intermediary — a message broker, a queue, a proxy, or any relay that carries the envelope
-without exercising enforcement responsibility for the crossing — is not a forwarder: it does not produce a <spanx style="verb">forwardingProof</spanx>, does not
-re-sign or re-bind the envelope, and its transit does not create a new presentation of the crossing. The <spanx style="verb">forwardingProof</spanx> belongs
-exclusively to the enforcement component that presents the guarded crossing, and the envelope travels through any medium unchanged,
-exactly as a PCA does (<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>, Section 6.7).</t>
+<t><list style="symbols">
+  <t>contain or merge their authority;</t>
+  <t>make an invalid PCA valid;</t>
+  <t>create a new participant lineage;</t>
+  <t>become part of the Enforcement Lineage authority context.</t>
+</list></t>
 
-<t>An illustrative guardrail forwarding envelope:</t>
+<t>The Enforcement Lineage authority context retains only:</t>
+
+<figure><sourcecode type="text"><![CDATA[
+{ ENFORCE }
+]]></sourcecode></figure>
+
+<t>The Enforcement PCA request binding covers at least:</t>
+
+<t><list style="symbols">
+  <t><spanx style="verb">operation = ENFORCE</spanx>;</t>
+  <t>the exact participant set;</t>
+  <t>the destination;</t>
+  <t>the concrete signed requests and relevant payload digests;</t>
+  <t>the crossing-context digest;</t>
+  <t>the policy identifier, version, and digest;</t>
+  <t>the committed evaluation inputs;</t>
+  <t>the verdict;</t>
+  <t>freshness and replay-protection data.</t>
+</list></t>
+
+<t>Every digest is recomputed from the presented objects; a digest is never trusted as supplied. The carried participant PCA bytes may remain
+in the existing crossing carrier: <spanx style="verb">guardedLineages</spanx> holds commitments, not duplicated PCA history.</t>
+
+<t><strong>Carrier.</strong> The guardrail forwarding envelope of the previous revision is retained only as a carrier for the crossing. Its semantics are
+now those of the Enforcement PCA:</t>
+
+<t><list style="symbols">
+  <t>the Enforcement PCA is the proof of guardrail authorization and of the decision;</t>
+  <t>a separate <spanx style="verb">guardrailProof</spanx> does not establish any independent guardrail authority; authorization is the Enforcement Lineage
+continuation, nothing else;</t>
+  <t>a <spanx style="verb">forwardingProof</spanx> may remain, but only as presentation attribution — it attributes who presented the crossing, not who authorized it;</t>
+  <t>transport and forwarding create no enforcement authority.</t>
+</list></t>
+
+<t>Envelopes are not nested and participant PCAs are not duplicated; the carrier travels through any medium unchanged, exactly as a PCA does
+(<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>, Section 6.7). An illustrative carrier:</t>
 
 <figure><sourcecode type="json"><![CDATA[
 {
-  "envelope": {
-    "forwardedBy": "did:example:sandbox-or-workload",
-    "predecessor":       { "…": "signed PCA[n-1]" },
+  "crossing": {
+    "participants": ["A", "B"],
+    "destination": "…",
+    "requestsDigest": "sha256:…",
+    "crossingContextDigest": "sha256:…"
+  },
+  "enforcementPca": {
+    "operation": "ENFORCE",
     "predecessorDigest": "sha256:…",
-    "current":           { "…": "signed PCA[n]" },
-    "currentDigest":     "sha256:…",
-    "crossingContext": {
-      "participants": ["A", "B"],
-      "destination": "…",
-      "requestsDigest": "sha256:…",
-      "freshness": { "…": "…" }
-    },
-    "decisionId": "…"
+    "guardedLineages": [
+      { "pcaDigest": "sha256:…", "lineageId": "…", "lineageCounter": 42,
+        "branchId": "sha256:…", "scopesCommitment": "sha256:…" }
+    ],
+    "policy": { "id": "…", "version": "…", "digest": "sha256:…" },
+    "inputsCommitment": "sha256:…",
+    "verdict": "permit",
+    "freshness": { "…": "…" },
+    "proof": { "verificationMethod": "…", "signature": "…" }
   },
   "forwardingProof": {
     "verificationMethod": "…",
-    "signature": "…"
-  },
-  "guardrailProof": {
-    "verificationMethod": "…",
-    "forwardingProofDigest": "sha256:…",
     "signature": "…"
   }
 }
@@ -776,85 +827,127 @@ exactly as a PCA does (<eref target="https://github.com/pic-protocol/pic-spec/bl
 <t>The example is illustrative and non-normative. The canonical serialization and interoperable verification rules will be defined by a
 future normative revision or profile.</t>
 
-<t>The guardrail signing capability lies outside the executor's reach and within the trust domain of the sandbox and guardrail enforcement
-components; an executor that can access or invoke it independently of the enforced guardrail decision violates this trust assumption.</t>
-
-<t>The envelope is what defeats bypass. An attacker that escapes a sandbox, or skips it entirely, can still call the next hop directly; the
-call arrives without an envelope, with an envelope that does not validate, or with one not signed by a guardrail authority the receiver
-recognizes — and the receiving hop rejects it. As with invalid authority in Section 1.1, the failure is not prevented at the faulty hop;
-it is blocked at the next conforming one.</t>
+<t>The Enforcement PCA is what defeats bypass. An attacker that skips the guardrail can still call the next hop directly; the call arrives
+with no Enforcement PCA, with one that does not validate, or with one that does not continue an Enforcement Lineage the receiver accepts —
+and the receiving hop rejects it. As with invalid authority in Section 1.1, the failure is not prevented at the faulty hop; it is blocked
+at the next conforming one.</t>
 
 <figure><sourcecode type="text"><![CDATA[
 GUARDED PATH
 
-+-------------+   permit + sign   +------------------------------+
-|  GUARDRAIL  |------------------>|  GUARDRAIL ENVELOPE          |
-+-------------+                   |  [ L1' ... LN' ] validated   |
-                                  +------------------------------+
-                                                 |
-                                                 v
-                                           EXECUTOR N+1
-                                accepts: the envelope is signed by
-                                a recognized guardrail authority
++-------------+  permit + sign   +--------------------------------+
+|  GUARDRAIL  |----------------->|  ENFORCEMENT PCA                |
+|  (ENFORCE)  |                  |  continues an Enforcement       |
++-------------+                  |  Lineage; binds this crossing   |
+                                 +--------------------------------+
+                                                |
+                                                v
+                                          EXECUTOR N+1
+                              accepts: valid Enforcement PCA for
+                              exactly this crossing
 
 
 BYPASS ATTEMPT
 
-ATTACKER ---- direct call, no envelope ---->  EXECUTOR N+1
-                                              rejects the crossing
+ATTACKER ---- direct call, no Enforcement PCA ---->  EXECUTOR N+1
+                                                     rejects the crossing
 ]]></sourcecode></figure>
 
-<t>For a target that does not validate guardrail envelopes — a conventional storage or network service — the sandbox is responsible for
-materializing or forwarding exactly the crossing permitted by the guardrail, without returning control of that crossing to the executor:
-the action, destination, participants, and other context bound to the permit decision are not replaceable by the executor after the
-decision. For a PIC-aware successor, the envelope itself provides this binding.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-guardrail permits action X          not:   guardrail permits action X
-        |                                          |
-        v                                          v
-sandbox performs or                        executor substitutes action Y
-forwards action X
-]]></sourcecode></figure>
-
-<t>How guardrail authorities are established and recognized — including key generation, storage, attestation, rotation, revocation, algorithm
-selection, and trust-anchor distribution — will be defined by a future normative revision or profile.</t>
+<t>How Enforcement Lineage origins are authorized, and how enforcing keys are generated, stored, attested, rotated, and revoked, will be
+defined by a future normative revision or profile; none of it grants authority independent of a valid Enforcement Lineage continuation.</t>
 
 </section>
-<section anchor="sandbox-mode-and-non-sandbox-mode"><name>Sandbox Mode and Non-Sandbox Mode</name>
+<section anchor="enforced-acceptance-mode"><name>Enforced-Acceptance Mode</name>
 
-<t>A PIC-compliant hop may operate in <strong>sandbox mode</strong> or in <strong>non-sandbox mode</strong>. In sandbox mode the hop accepts only guarded crossings: a
-valid guardrail envelope is required, plain PCA delivery is insufficient, and bypass attempts are rejected (Section 3.3). In non-sandbox
-mode the hop may accept a plain PCA, as defined by the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>: PCA
-validity, PoR, origin binding, and non-expansion remain enforced, but guardrail enforcement is not required for that crossing and the
-envelope bypass guarantee does not apply.</t>
+<ul empty="true"><li>
+  <t>A conforming receiving hop accepts a guarded crossing only when it carries a valid Enforcement PCA for that exact crossing.</t>
+</li></ul>
+
+<t>A hop requiring enforcement accepts a crossing only when all of the following hold:</t>
+
+<t><list style="numbers" type="1">
+  <t>every participating PCA is valid;</t>
+  <t>the accompanying Enforcement PCA is valid;</t>
+  <t>it continues an accepted Enforcement Lineage;</t>
+  <t>its authority remains limited to <spanx style="verb">ENFORCE</spanx>;</t>
+  <t>its executor satisfies the inherited execution contract;</t>
+  <t><spanx style="verb">guardedLineages</spanx> commits to exactly the presented participants — none omitted, none added;</t>
+  <t>its request binding matches the exact presented crossing;</t>
+  <t>its policy and input commitments match;</t>
+  <t>its verdict is <spanx style="verb">permit</spanx>;</t>
+  <t>freshness and replay checks pass.</t>
+</list></t>
+
+<t>A missing Enforcement PCA, an omitted or additional participant, or a mismatched destination, request, payload, policy, verdict, or
+crossing context causes rejection. Every digest is recomputed from the presented objects.</t>
 
 <figure><sourcecode type="text"><![CDATA[
-SANDBOX MODE                          NON-SANDBOX MODE
-------------                          ----------------
-guardrail envelope required           plain PCA accepted, per the
-plain PCA insufficient                Prover and Verifier Specification
+AcceptGuardedCrossing(P, G) iff
+  ValidParticipants(P)
+  AND ValidEnforcementContinuation(G)
+  AND G.operation = ENFORCE
+  AND G.guardedLineages = CommitExactly(P)
+  AND G.crossingBinding = CommitExactCrossing(P)
+  AND G.verdict = permit
+  AND Fresh(G)
+]]></sourcecode></figure>
+
+<t>Not every hop requires enforcement. A hop may instead accept a plain PCA, as defined by the
+<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>: PCA validity, PoR, origin binding, and non-expansion remain
+enforced, but a guarded crossing is not required and the bypass guarantee does not apply. The bypass resistance of enforced acceptance
+holds only across topology segments whose receiving hops require it — a deployment choice with a weaker profile where enforcement is not
+required, not a defect.</t>
+
+<figure><sourcecode type="text"><![CDATA[
+ENFORCED-ACCEPTANCE HOP               BASELINE HOP
+-----------------------               ------------
+valid Enforcement PCA required        plain PCA accepted, per the
+for the exact crossing                Prover and Verifier Specification
 bypass rejected                       baseline PIC enforcement only
 guarded-crossing enforcement          no guarded-crossing claim
 ]]></sourcecode></figure>
 
-<t>The bypass resistance provided by guardrail envelopes applies only across topology segments in which receiving hops require sandbox mode.
-A non-sandbox hop intentionally preserves baseline PIC interoperability without claiming guarded-crossing enforcement: a deployment choice
-with a weaker enforcement profile, not a defect.</t>
+</section>
+<section anchor="non-pic-aware-targets-the-egress-enforcer"><name>Non-PIC-Aware Targets: The Egress Enforcer</name>
+
+<t>Some targets cannot verify PIC at all — object storage, legacy services, and other systems with no notion of an Enforcement PCA. For these,
+a deployment places an <strong>egress enforcer</strong> at the boundary to the target.</t>
+
+<t>The egress enforcer:</t>
+
+<t><list style="symbols">
+  <t>is itself an executor of an Enforcement Lineage;</t>
+  <t>validates the guarded crossing (the participating PCAs and the proposed transition);</t>
+  <t>produces the Enforcement PCA for the decision;</t>
+  <t>physically materializes exactly the permitted action — the action, destination, participants, and other bound context are not
+replaceable after the decision.</t>
+</list></t>
+
+<figure><sourcecode type="text"><![CDATA[
+guarded crossing ---> EGRESS ENFORCER ---> non-PIC-aware target
+                      (Enforcement Lineage executor)
+                      validates, decides (Enforcement PCA),
+                      materializes exactly the permitted action
+]]></sourcecode></figure>
+
+<t>Preventing ungoverned paths to the target — direct credentials, alternate routes, or physical access that never reaches the egress
+enforcer — is a deployment responsibility, not a protocol primitive, and is addressed by the
+<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md">PIC Architecture and Deployment Specification</eref>.</t>
 
 </section>
 <section anchor="architecture-and-deployment-profiles"><name>Architecture and Deployment Profiles</name>
 
-<t>Deployments select the mode per topology segment, following its trust and risk characteristics:</t>
+<t>Deployments select, per topology segment, whether receiving hops require enforced acceptance, following the segment's trust and risk
+characteristics:</t>
 
 <figure><sourcecode type="text"><![CDATA[
 TRUSTED OR CONTROLLED SEGMENT          UNTRUSTED OR HIGH-RISK SEGMENT
 -----------------------------          ------------------------------
-baseline PIC validation                sandbox mediation and guardrail
-may be sufficient                      envelopes provide runtime
-                                       transition enforcement
-non-sandbox mode may be
-selected when guarded                  sandbox mode is used
+baseline PIC validation                enforced acceptance: a valid
+may be sufficient                      Enforcement PCA is required for
+                                       each guarded crossing
+baseline acceptance may be
+selected when guarded                  enforced acceptance is required
 execution is not required
 ]]></sourcecode></figure>
 
@@ -864,11 +957,11 @@ is an architecture and deployment decision: trust boundary, threat model, requir
 interoperability requirements.</t>
 
 <ul empty="true"><li>
-  <t>PIC defines authority validity independently of deployment mode. Architecture and deployment determine where Execution Guardrails are
+  <t>PIC defines authority validity independently of deployment mode. Architecture and deployment determine where enforced acceptance is
 required in addition to baseline PIC validation.</t>
 </li></ul>
 
-<t>Guidance for selecting sandbox mode, non-sandbox mode, and mixed deployment profiles is defined by the
+<t>Guidance for selecting enforced-acceptance segments, baseline segments, and mixed deployment profiles is defined by the
 <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md">PIC Architecture and Deployment Specification</eref>.</t>
 
 </section>
@@ -880,43 +973,46 @@ decision.</t>
 
 <section anchor="enforcement-order"><name>Enforcement Order</name>
 
-<t>The guardrail enforces a proposed crossing in a fixed order:</t>
+<t>The guardrail is an executor of an Enforcement Lineage (Section 2.3), and emitting an Enforcement PCA follows the ordinary PIC Prover
+procedure (<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>, Section 2.1) with the profile-specific steps below.
+Before emitting an Enforcement PCA, the guardrail:</t>
 
 <t><list style="numbers" type="1">
-  <t><strong>validate</strong> — before policy evaluation, each participating PCA is validated by a conforming PIC Verifier function
-(<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>); if any is invalid, deny is enforced without evaluating policy;</t>
-  <t><strong>evaluate</strong> — the configured policy is evaluated over the participating Lineage Executions;</t>
-  <t><strong>enforce</strong> — the decision, permit or deny, is enforced at the boundary (Section 1.3).</t>
+  <t>validates its Enforcement Lineage predecessor;</t>
+  <t>proves PoR and execution-contract conformance;</t>
+  <t>validates every participating PCA with a conforming PIC Verifier function;</t>
+  <t>denies immediately if any participant is invalid, without evaluating policy;</t>
+  <t>evaluates the configured policy through its PDP or policy engine;</t>
+  <t>constructs <spanx style="verb">guardedLineages</spanx> (Section 3.3);</t>
+  <t>binds the exact crossing, policy, inputs, and verdict into the request;</t>
+  <t>adds freshness and a new continuation;</t>
+  <t>signs the complete Enforcement PCA.</t>
 </list></t>
+
+<t>Policy failure, an unavailable policy, indeterminate evaluation, or non-reproducible inputs produce deny. Validation precedes policy, and
+policy evaluation cannot override PIC invalidity.</t>
 
 <figure><sourcecode type="text"><![CDATA[
 proposed crossing
         |
         v
-validate every PCA ---- any invalid ----> enforce deny
+validate predecessor + every participant PCA ---- any invalid ----> deny
         |
     all valid
         |
         v
-evaluate configured policy
+evaluate configured policy (deny on failure / indeterminate)
         |
         v
-enforce permit / deny
+construct guardedLineages; bind crossing + policy + inputs + verdict
+        |
+        v
+add freshness + continuation; sign the Enforcement PCA
 ]]></sourcecode></figure>
 
-<t>The Verifier function may be integrated into the guardrail implementation or invoked as a separate component; the architectural packaging
-is an implementation choice, and policy evaluation cannot override PIC invalidity.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-PIC VERIFIER FUNCTION
-determines whether each PCA and continuation is valid
-
-POLICY EVALUATION
-determines whether the proposed crossing is permitted
-
-EXECUTION GUARDRAIL
-enforces the resulting permit or deny decision
-]]></sourcecode></figure>
+<t>The PIC Verifier function may be integrated into the guardrail or invoked as a separate component; the packaging is an implementation
+choice. The PDP or policy engine is invoked as step 5 of this procedure — it informs the decision the guardrail signs; it is not an
+independent source of authority.</t>
 
 <t>The executed-vs-signed rule of the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref> (Section 3.3) applies per
 participating Lineage Execution: each executed operation must match the signed request of its own Lineage Execution and remains attributed
@@ -980,6 +1076,13 @@ C does not satisfy the condition            -> enforce deny
 specification; the example — including its CEL-like condition language — is illustrative only.</t>
 
 </section>
+<section anchor="concurrency"><name>Concurrency</name>
+
+<t>Enforcement is not forced through a single, globally serialized Enforcement Lineage. A deployment may use separate Enforcement Lineages, or
+authorized fan-out or branch profiles (<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</eref>, Section 1.1), to evaluate concurrent
+crossings. These reuse the existing PIC continuation and revocation rules unchanged; this revision defines no new concurrency model.</t>
+
+</section>
 </section>
 <section anchor="lineage-executions-in-transit"><name>Lineage Executions in Transit</name>
 
@@ -987,8 +1090,8 @@ specification; the example — including its CEL-like condition language — is 
 
 <t>A crossing is an execution in transit: it may happen in process, across a network, or over any other medium. The transport does not
 matter — the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref> already separates the security model from transport,
-and this specification inherits that separation. In a guarded crossing, what travels is the guardrail envelope, and inside it travel the
-Lineage Executions of the crossing: bound together, never merged.</t>
+and this specification inherits that separation. In a guarded crossing, what travels is the crossing carrier with its Enforcement PCA, and
+inside it travel the Lineage Executions of the crossing: bound together, never merged.</t>
 
 <figure><sourcecode type="text"><![CDATA[
 HOP N                                                            HOP N+1
@@ -996,15 +1099,15 @@ HOP N                                                            HOP N+1
 GUARDRAIL                                                        VERIFIER
     |                                                               ^
     |     +----------------------------------------------+          |
-    +---->| GUARDRAIL ENVELOPE                           |----------+
+    +---->| CROSSING + ENFORCEMENT PCA                   |----------+
           | [ L1 | L2 | ... | LN ]  bound, never merged  |
           +----------------------------------------------+
 
           ------ in process | network | any medium ------
 ]]></sourcecode></figure>
 
-<t>The originating guardrail validates the proposed crossing before issuing the envelope; the receiving hop validates the envelope and
-performs the PIC validation required by its acceptance profile (Section 3.4).</t>
+<t>The originating guardrail validates the proposed crossing before signing the Enforcement PCA; the receiving hop validates the Enforcement
+PCA and the participants as required by enforced acceptance (Section 3.4).</t>
 
 <t>PIC does not represent authority from several Lineage Executions as one lineage authority state: a successor PCA cannot import or merge
 authority, and that prohibition is what eliminates the confused deputy by construction (Section 1.1). The execution model may carry
@@ -1025,6 +1128,38 @@ another Lineage Execution              no combined authority state is created
 
 <t>This closes the conceptual model of this revision; the normative sections define the representations and the enforcement requirements.</t>
 
+</section>
+<section anchor="security-boundary"><name>Security Boundary</name>
+
+<t>This section is non-normative. It states what the model guarantees and what it does not.</t>
+
+<t>Within the model, an unauthorized guardrail cannot produce a valid Enforcement Lineage continuation, and an enforcing executor cannot
+validly expand its authority beyond <spanx style="verb">ENFORCE</spanx>. Two residual failure classes remain.</t>
+
+<section anchor="implementation-failure"><name>Implementation Failure</name>
+
+<t>An implementation may be compromised, ignore verification, misuse its keys, execute an action different from the signed request, or rely on
+broken cryptography, hashing, canonicalization, attestations, or trust anchors. That breaks the implementation or its assumptions, not the
+PIC model — the same boundary that applies to physical executor behavior throughout PIC (Section 1.1).</t>
+
+</section>
+<section anchor="pdp-semantic-divergence"><name>PDP Semantic Divergence</name>
+
+<t>A validly continuing enforcement executor may use an incorrect, dishonest, or semantically divergent policy engine. The Enforcement PCA
+makes the decision attributable and checkable by signing:</t>
+
+<t><list style="symbols">
+  <t>the policy identifier, version, and digest;</t>
+  <t>the evaluation profile;</t>
+  <t>the committed inputs;</t>
+  <t>the semantic or translation profile, where applicable;</t>
+  <t>the verdict.</t>
+</list></t>
+
+<t>PIC guarantees the continuity, integrity, attribution, and scope of the enforcement decision. It does not prove that the selected policy,
+or its semantic interpretation, expresses the intended governance outcome.</t>
+
+</section>
 </section>
 <section anchor="contributors"><name>Contributors</name>
 
@@ -1079,314 +1214,345 @@ those defined in the PIC Legal Appendices.</t>
   </back>
 
 <!-- ##markdown-source:
-H4sIAAAAAAAAA9V92XYbR5bge3xFHPrBIpWATMpld4Fj9wEXSzxFkRyS8nJ0
-1KUEkCCzlMhEZyZIoSzX6X+Y+Yb5sP6SuVtsuYCUy1P2oKtlAhkZy40bd783
-BoOBqtM6S0Z66+LkUB9/SKarOi1y/WIVl7MyTjN9tUym6Tydxvj7loonkzK5
-62+/pWbFNI8X0CV8n9eDZTodJKbd4Ma0G2RxnVS1gn6Tm6Jcj3SazwuVLsuR
-zos8UdVqskirCl6q18sEH8+SZQL/5LWq6jif/TXOoN1Ir5NKVYu4rP/6n6sC
-+hzpeZxViVqmI/2mLqaRroqyLpN5BX+tF/jHWzWDYUd674u9rwZffD3Y/bNS
-8aq+LcqR0noAY0EvZ0P9Is6yAn7Rmld0lk6LLPZ+Lsob/LUuCz2+SbO0Xuur
-YTnMhkrlRbkAmN3Baz//onBx/vcBQB7/gbXWyV+PiulqAQv761Ud16tKqZ2d
-75MS1z7a2dFfDPf0kyME5jY84CY7OyNNP+n//q//pc+KWsf6CqEC4IVGR7g8
-eNVbILxZrMop/fzmJq1vV5PhtFg8w/1ZlgUAqsjoSwUb/oz27hmMTD9laZ7E
-N4m3e9houJi9fXJb18tq9OzZgz1OsmLybBGn+WP73vYAdDxL66IEwAz0zo6/
-C7CYJ13w39anSTzT/B6+NZ7N9BoAQDup79JYL1dZpsvkP1eAhvoJoFd6l85W
-cQabivsa5+nfCee3AcT/W2dpVaf5jU4rDZj5t2Ra67rQCfWv4yWs9w5efVIl
-iX5zCDhbppMVTvntk8+m3tft7eGOty6/pfpDTjOeVHUZT2ulrm+h05lgKg5Q
-3yawG4+iGzs7ESAozKgoZ2kOyKkr/7Eu5tTbG+wsePE3QDCDTkN1UgMga2hR
-6bSuNKwH1goDIXyXRYUwWut5miUE/CfvNqLnu+19mnO5yusUmgP4AFIrAHha
-61kyh/cqAyULH2XhAxRiDNA75e5dC0BoeAlgBbuYJQOY302aa4SLJaJAnvT9
-bTq91cldAjO+OBzj6LDvgCPQDHYrW2ugjXpZJrNkmlQVbn4+00zj8JSUyYLg
-MClWQFJnarKmicpwrh32m3yohxqHWCyzBLYOJ5Pi34gIvH8VTK3EwWOYVWtN
-hJnS9QQxOL+J9EVZwK7D/y6TjDqpbtOljmvFi7otlhEyAuAdyzivTC9VAasH
-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
+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
 
 -->
 
