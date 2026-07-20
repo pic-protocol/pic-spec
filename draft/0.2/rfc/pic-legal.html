@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>PIC Legal Appendices</title>
+<meta content="Nicola Gallo" name="author">
+<meta content="
+       This document collects the shared legal, governance, and attribution appendices that are incorporated by reference into every
+PIC specification document. It records the separation between the PIC Model and the PIC Documents, authorship and stewardship,
+licensing and mandatory attribution, terms for derivative works and contributors, the disclaimer and limitation of liability,
+and acknowledgements. 
+    " name="description">
+<meta content="xml2rfc 3.32.0" name="generator">
+<meta content="pic-legal-appendices-02" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.32.0
+    Python 3.14.5
+    ConfigArgParse 1.7.5
+    google-i18n-address 3.1.1
+    intervaltree 3.2.1
+    Jinja2 3.1.6
+    lxml 6.1.1
+    platformdirs 4.10.1
+    pycountry 26.2.16
+    PyYAML 6.0.3
+    requests 2.34.2
+    wcwidth 0.8.2
+-->
+<link href="0.2-pic-legal.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">/*
+
+  NOTE: Changes at the bottom of this file overrides some earlier settings.
+
+  Once the style has stabilized and has been adopted as an official RFC style,
+  this can be consolidated so that style settings occur only in one place, but
+  for now the contents of this file consists first of the initial CSS work as
+  provided to the RFC Formatter (xml2rfc) work, followed by itemized and
+  commented changes found necessary during the development of the v3
+  formatters.
+
+*/
+
+/* fonts */
+@import url('https://static.ietf.org/fonts/noto-sans/import.css'); /* Sans-serif */
+@import url('https://static.ietf.org/fonts/noto-serif/import.css'); /* Serif (print) */
+@import url('https://static.ietf.org/fonts/roboto-mono/import.css'); /* Monospace */
+
+:root {
+  --font-sans: 'Noto Sans', Arial, Helvetica, sans-serif;
+  --font-serif: 'Noto Serif', 'Times', 'Times New Roman', serif;
+  --font-mono: 'Roboto Mono', Courier, 'Courier New', monospace;
+}
+
+@viewport {
+  zoom: 1.0;
+}
+@-ms-viewport {
+  width: extend-to-zoom;
+  zoom: 1.0;
+}
+/* general and mobile first */
+html {
+}
+body {
+  max-width: 90%;
+  margin: 1.5em auto;
+  color: #222;
+  background-color: #fff;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  overflow-wrap: break-word;
+}
+.ears {
+  display: none;
+}
+
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  margin: 1em 0 0.5em;
+  font-weight: bold;
+  line-height: 1.3;
+}
+#title {
+  clear: both;
+  border-bottom: 1px solid #ddd;
+  margin: 0 0 0.5em 0;
+  padding: 1em 0 0.5em;
+}
+.author {
+  padding-bottom: 4px;
+}
+h1 {
+  font-size: 26px;
+  margin: 1em 0;
+}
+h2 {
+  font-size: 22px;
+  margin-top: -20px;  /* provide offset for in-page anchors */
+  padding-top: 33px;
+}
+h3 {
+  font-size: 18px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h4 {
+  font-size: 16px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h5, h6 {
+  font-size: 14px;
+}
+#n-copyright-notice {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+/* general structure */
+p {
+  padding: 0;
+  margin: 0 0 1em 0;
+  text-align: left;
+}
+div, span {
+  position: relative;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+@media print {
+  svg {
+    max-height: 850px;
+    max-width: 660px;
+  }
+}
+svg[font-family~="serif" i], svg [font-family~="serif" i] {
+  font-family: var(--font-serif);
+}
+svg[font-family~="sans-serif" i], svg [font-family~="sans-serif" i] {
+  font-family: var(--font-sans);
+}
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  display: table;
+  border: none;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 1em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.ulBare, li.ulBare {
+  margin-left: 0em !important;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+/* 
+dl.nohang > dt {
+  float: none;
+}
+*/
+dl > dd {
+  margin-bottom: .8em;
+  min-height: 1.3em;
+}
+dl.compact > dd, .dlCompact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+
+/* links */
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #22e; /* Arlen: WCAG 2019 */
+}
+a[href]:hover {
+  background-color: #f2f2f2;
+}
+figcaption a[href],
+a[href].selfRef {
+  color: #222;
+}
+/* XXX probably not this:
+a.selfRef:hover {
+  background-color: transparent;
+  cursor: default;
+} */
+
+/* Figures */
+tt, code, pre {
+  background-color: #f9f9f9;
+  font-family: var(--font-mono);
+}
+pre {
+  border: 1px solid #eee;
+  margin: 0;
+  padding: 1em;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption {
+  font-style: italic;
+  margin: 0 0 1em 0;
+}
+@media screen {
+  pre {
+    overflow-x: auto;
+    max-width: 100%;
+    max-width: calc(100% - 22px);
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 1.2em 2em;
+}
+blockquote {
+  background-color: #f9f9f9;
+  color: #111; /* Arlen: WCAG 2019 */
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin: 1em 0;
+}
+blockquote > *:last-child {
+  margin-bottom: 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+.xref {
+  overflow-wrap: normal;
+}
+
+/* tables */
+table {
+  width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  border: 1px solid #eee;
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.5em 0.75em;
+}
+th {
+  text-align: left;
+  background-color: #e9e9e9;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f5f5f5;
+}
+table caption {
+  font-style: italic;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+table p {
+  /* XXX to avoid bottom margin on table row signifiers. If paragraphs should
+     be allowed within tables more generally, it would be far better to select on a class. */
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  color: #666; /* Arlen: AHDJ 2019 */
+  text-decoration: none;
+  visibility: hidden;
+  user-select: none;
+  -ms-user-select: none;
+  -o-user-select:none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+@media screen {
+  aside:hover > a.pilcrow,
+  p:hover > a.pilcrow,
+  blockquote:hover > a.pilcrow,
+  div:hover > a.pilcrow,
+  li:hover > a.pilcrow,
+  pre:hover > a.pilcrow {
+    visibility: visible;
+  }
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: 0.9em;
+}
+#identifiers dt {
+  width: 3em;
+  clear: left;
+}
+#identifiers dd {
+  float: left;
+  margin-bottom: 0;
+}
+/* Fix PDF info block run off issue */
+@media print {
+  #identifiers dd {
+    max-width: 100%;
+  }
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #666; /* Arlen: WCAG 2019 */
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc  {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+nav.toc ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+nav.toc li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.refSubseries {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 600px) {
+  .index ul {
+    -moz-column-count: 2;
+    -moz-column-gap: 20px;
+  }
+  .index ul ul {
+    -moz-column-count: 1;
+    -moz-column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  font-family: var(--font-sans);
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+
+/* temporary notes */
+.rfcEditorRemove::before {
+  position: absolute;
+  top: 0.2em;
+  right: 0.2em;
+  padding: 0.2em;
+  content: "The RFC Editor will remove this note";
+  color: #9e2a00; /* Arlen: WCAG 2019 */
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+}
+.rfcEditorRemove {
+  position: relative;
+  padding-top: 1.8em;
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  border-radius: 3px;
+}
+.cref {
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 1023px) {
+  body {
+    padding-top: 2em;
+  }
+  #title {
+    padding: 1em 0;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  h2 {
+    font-size: 20px;
+    margin-top: -18px;  /* provide offset for in-page anchors */
+    padding-top: 38px;
+  }
+  #identifiers dd {
+    max-width: 60%;
+  }
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    background-color: inherit;
+    border-bottom: 1px solid #ccc;
+  }
+  #toc h2 {
+    margin: -1px 0 0 0;
+    padding: 4px 0 4px 6px;
+    padding-right: 1em;
+    min-width: 190px;
+    font-size: 1.1em;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 6px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 1024px) {
+  body {
+    max-width: 724px;
+    margin: 42px auto;
+    padding-left: 1.5em;
+    padding-right: 29em;
+  }
+  #toc {
+    position: fixed;
+    top: 42px;
+    right: 42px;
+    width: 25%;
+    margin: 0;
+    padding: 0 1em;
+    z-index: 1;
+  }
+  #toc h2 {
+    border-top: none;
+    border-bottom: 1px solid #ddd;
+    font-size: 1em;
+    font-weight: normal;
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 0;
+    overflow: auto;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  .breakable pre {
+    break-inside: auto;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+/* This is commented out here, as the string-set: doesn't
+   pass W3C validation currently */
+/*
+.ears thead .left {
+  string-set: ears-top-left content();
+}
+
+.ears thead .center {
+  string-set: ears-top-center content();
+}
+
+.ears thead .right {
+  string-set: ears-top-right content();
+}
+
+.ears tfoot .left {
+  string-set: ears-bottom-left content();
+}
+
+.ears tfoot .center {
+  string-set: ears-bottom-center content();
+}
+
+.ears tfoot .right {
+  string-set: ears-bottom-right content();
+}
+*/
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+  /* The following is commented out here, but set appropriately by in code, as
+     the content depends on the document */
+  /*
+  @top-left {
+    content: 'Internet-Draft';
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-left {
+    content: string(ears-top-left);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-center {
+    content: string(ears-top-center);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-right {
+    content: string(ears-top-right);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @bottom-left {
+    content: string(ears-bottom-left);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-center {
+    content: string(ears-bottom-center);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-right {
+      content: '[Page ' counter(page) ']';
+      vertical-align: top;
+      border-top: solid 1px #ccc;
+  }
+  */
+
+}
+
+/* Changes introduced to fix issues found during implementation */
+/* Make sure links are clickable even if overlapped by following H* */
+a {
+  z-index: 2;
+}
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Leave room in document info to show Internet-Draft on one line */
+#identifiers dt {
+  width: 8em;
+}
+
+/* Don't waste quite as much whitespace between label and value in doc info */
+#identifiers dd {
+  margin-left: 1em;
+}
+
+/* Give floating toc a background color (needed when it's a div inside section */
+#toc {
+  background-color: white;
+}
+
+/* Make the collapsed ToC header render white on gray also when it's a link */
+@media screen and (max-width: 1023px) {
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+}
+
+/* Give the bottom of the ToC some whitespace */
+@media screen and (min-width: 1024px) {
+  #toc {
+    padding: 0 0 1em 1em;
+  }
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* prevent monospace from becoming overly large */
+tt, code, pre {
+  font-size: 95%;
+}
+
+/* Fix the height/width aspect for ascii art*/
+.sourcecode pre,
+.art-text pre {
+  line-height: 1.12;
+}
+
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin-right: 0.5em;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table td.text-left,
+table th.text-left {
+  text-align: left;
+}
+table td.text-center,
+table th.text-center {
+  text-align: center;
+}
+table td.text-right,
+table th.text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 30em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Provide table alignment support.  We can't use the alignX classes above
+   since they do unwanted things with caption and other styling. */
+table.right {
+ margin-left: auto;
+ margin-right: 0;
+}
+table.center {
+ margin-left: auto;
+ margin-right: auto;
+}
+table.left {
+ margin-left: 0;
+ margin-right: auto;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+caption a[href] {
+  color: #222;
+}
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+/* Tweak the invisible space above H* in order not to overlay links in text above */
+ h2 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 31px;
+ }
+ h3 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+ h4 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+/* Float artwork pilcrow to the right */
+@media screen {
+  .artwork a.pilcrow {
+    display: block;
+    line-height: 0.7;
+    margin-top: 0.15em;
+  }
+}
+/* Make pilcrows on dd visible */
+@media screen {
+  dd:hover > a.pilcrow {
+    visibility: visible;
+  }
+}
+/* Make the placement of figcaption match that of a table's caption
+   by removing the figure's added bottom margin */
+.alignLeft.art-text,
+.alignCenter.art-text,
+.alignRight.art-text {
+   margin-bottom: 0;
+}
+.alignLeft,
+.alignCenter,
+.alignRight {
+  margin: 1em 0 0 0;
+}
+/* In print, the pilcrow won't show on hover, so prevent it from taking up space,
+   possibly even requiring a new line */
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+/* Styling for the external metadata */
+div#external-metadata {
+  background-color: #eee;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  display: none;
+}
+div#internal-metadata {
+  padding: 0.5em;                       /* to match the external-metadata padding */
+}
+/* Styling for title RFC Number */
+h1#rfcnum {
+  clear: both;
+  margin: 0 0 -1em;
+  padding: 1em 0 0 0;
+}
+/* Make .olPercent look the same as <ol><li> */
+dl.olPercent > dd {
+  margin-bottom: 0.25em;
+  min-height: initial;
+}
+/* Give aside some styling to set it apart */
+aside {
+  border-left: 1px solid #ddd;
+  margin: 1em 0 1em 2em;
+  padding: 0.2em 2em;
+}
+aside > dl,
+aside > ol,
+aside > ul,
+aside > table,
+aside > p {
+  margin-bottom: 0.5em;
+}
+/* Additional page break settings */
+@media print {
+  figcaption, table caption {
+    page-break-before: avoid;
+  }
+}
+/* Font size adjustments for print */
+@media print {
+  body  { font-size: 10pt;      line-height: normal; max-width: 96%; }
+  h1    { font-size: 1.72em;    padding-top: 1.5em; } /* 1*1.2*1.2*1.2 */
+  h2    { font-size: 1.44em;    padding-top: 1.5em; } /* 1*1.2*1.2 */
+  h3    { font-size: 1.2em;     padding-top: 1.5em; } /* 1*1.2 */
+  h4    { font-size: 1em;       padding-top: 1.5em; }
+  h5, h6 { font-size: 1em;      margin: initial; padding: 0.5em 0 0.3em; }
+}
+/* Sourcecode margin in print, when there's no pilcrow */
+@media print {
+  .artwork,
+  .artwork > pre,
+  .sourcecode {
+    margin-bottom: 1em;
+  }
+}
+/* Avoid narrow tables forcing too narrow table captions, which may render badly */
+table {
+  min-width: 20em;
+}
+/* ol type a */
+ol.type-a { list-style-type: lower-alpha; }
+ol.type-A { list-style-type: upper-alpha; }
+ol.type-i { list-style-type: lower-roman; }
+ol.type-I { list-style-type: upper-roman; }
+/* Apply the print table and row borders in general, on request from the RPC,
+and increase the contrast between border and odd row background slightly */
+table {
+  border: 1px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+}
+tr {
+  break-inside: avoid;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f8f8f8;
+}
+/* Use style rules to govern display of the TOC. */
+@media screen and (max-width: 1023px) {
+  #toc nav { display: none; }
+  #toc.active nav { display: block; }
+}
+/* Add support for keepWithNext */
+.keepWithNext {
+  break-after: avoid-page;
+  break-after: avoid-page;
+}
+/* Add support for keepWithPrevious */
+.keepWithPrevious {
+  break-before: avoid-page;
+}
+/* Change the approach to avoiding breaks inside artwork etc. */
+figure, pre, table, .artwork, .sourcecode  {
+  break-before: auto;
+  break-after: auto;
+}
+/* Avoid breaks between <dt> and <dd> */
+dl {
+  break-before: auto;
+  break-inside: auto;
+}
+dt {
+  break-before: auto;
+  break-after: avoid-page;
+}
+dd {
+  break-before: avoid-page;
+  break-after: auto;
+  orphans: 3;
+  widows: 3
+}
+span.break, dd.break {
+  margin-bottom: 0;
+  min-height: 0;
+  break-before: auto;
+  break-inside: auto;
+  break-after: auto;
+}
+/* Undo break-before ToC */
+@media print {
+  #toc {
+    break-before: auto;
+  }
+}
+/* Text in compact lists should not get extra bottom margin space,
+   since that would makes the list not compact */
+ul.compact p, .ulCompact p,
+ol.compact p, .olCompact p {
+ margin: 0;
+}
+/* But the list as a whole needs the extra space at the end */
+section ul.compact,
+section .ulCompact,
+section ol.compact,
+section .olCompact {
+  margin-bottom: 1em;                    /* same as p not within ul.compact etc. */
+}
+/* The tt and code background above interferes with for instance table cell
+   backgrounds.  Changed to something a bit more selective. */
+tt, code {
+  background-color: transparent;
+}
+p tt, p code, li tt, li code, dt tt, dt code {
+  background-color: #f8f8f8;
+}
+/* Tweak the pre margin -- 0px doesn't come out well */
+pre {
+   margin-top: 0.5px;
+}
+/* Tweak the compact list text */
+ul.compact, .ulCompact,
+ol.compact, .olCompact,
+dl.compact, .dlCompact {
+  line-height: normal;
+}
+/* Don't add top margin for nested lists */
+li > ul, li > ol, li > dl,
+dd > ul, dd > ol, dd > dl,
+dl > dd > dl {
+  margin-top: initial;
+}
+/* Elements that should not be rendered on the same line as a <dt> */
+/* This should match the element list in writer.text.TextWriter.render_dl() */
+dd > div.artwork:first-child,
+dd > aside:first-child,
+dd > blockquote:first-child,
+dd > figure:first-child,
+dd > ol:first-child,
+dd > div.sourcecode:first-child,
+dd > table:first-child,
+dd > ul:first-child {
+  clear: left;
+}
+/* fix for weird browser behaviour when <dd/> is empty */
+dt+dd:empty::before{
+  content: "\00a0";
+}
+/* Make paragraph spacing inside <li> smaller than in body text, to fit better within the list */
+li > p {
+  margin-bottom: 0.5em
+}
+/* Don't let p margin spill out from inside list items */
+li > p:last-of-type:only-child {
+  margin-bottom: 0;
+}
+</style>
+<link href="rfc-local.css" rel="stylesheet" type="text/css">
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left"></td>
+<td class="center">PIC Legal Appendices</td>
+<td class="right">July 2026</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Gallo</td>
+<td class="center">Informational</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2026-07-15" class="published">15 July 2026</time>
+    </dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">N. Gallo</div>
+<div class="org">Nitro Agility S.r.l.</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">PIC Legal Appendices</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document collects the shared legal, governance, and attribution appendices that are incorporated by reference into every
+PIC specification document. It records the separation between the PIC Model and the PIC Documents, authorship and stewardship,
+licensing and mandatory attribution, terms for derivative works and contributors, the disclaimer and limitation of liability,
+and acknowledgements.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.1">
+      <h2 id="name-document-status">
+<a href="#name-document-status" class="section-name selfRef">Document Status</a>
+      </h2>
+<p id="section-note.1-1"><strong>Project:</strong> PIC Protocol
+<strong>Project Website:</strong> <a href="https://www.pic-protocol.org/">www.pic-protocol.org</a>
+        <strong>Document:</strong> pic-legal-appendices-02
+<strong>Version:</strong> 0.2 (Draft)
+<strong>Document Status:</strong> Public Draft
+<strong>Intended Use:</strong> Informational and Experimental
+<strong>Published:</strong> 2026-07-15
+<strong>Editor(s):</strong> Nicola Gallo (Nitro Agility S.r.l.)
+<strong>Steward:</strong> Nitro Agility S.r.l.
+<strong>Source:</strong> <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">github.com/pic-protocol/pic-spec/draft/0.2/pic-legal.md</a><a href="#section-note.1-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.2">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<ul class="normal note ulEmpty">
+<li class="normal note ulEmpty" id="section-note.2-1.1">
+          <p id="section-note.2-1.1.1"><strong>Public Draft — Not a Standard</strong><a href="#section-note.2-1.1.1" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.2">This document is an independently developed specification published as part of the PIC Protocol and maintained by Nitro Agility
+S.r.l. in its role as Specification Steward.<a href="#section-note.2-1.1.2" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.3">It has not been adopted, endorsed, approved, or published by the IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
+Foundation, or any other standards-development organization, unless a later version explicitly states otherwise.<a href="#section-note.2-1.1.3" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.4">It is not an RFC, an Internet Standard, or an official work item of any working group or standards body.<a href="#section-note.2-1.1.4" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.5">This document is published for public review, research, experimentation, implementation feedback, and possible future
+standardization work. It may be revised, replaced, or withdrawn at any time.<a href="#section-note.2-1.1.5" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.6">Implementers use this draft at their own risk. Any implementation, interoperability statement, or conformance claim applies only
+to the exact document version identified above.<a href="#section-note.2-1.1.6" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.7">Publication of this draft does not constitute certification, endorsement, security approval, interoperability assurance,
+regulatory approval, or standards-body recognition.<a href="#section-note.2-1.1.7" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.8">Current project information and published specifications are available at <code>https://www.pic-protocol.org/</code>.<a href="#section-note.2-1.1.8" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-scope-and-applicability" class="internal xref">Scope and Applicability</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-use-of-automated-language-a" class="internal xref">Use of Automated Language Assistance</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-authorship-stewardship-attr" class="internal xref">Authorship, Stewardship, Attribution, and Derivative Works</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-scope-and-roles" class="internal xref">Scope and Roles</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-pic-model-authorship-theore" class="internal xref">PIC Model — Authorship (Theoretical Framework)</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#appendix-B.3" class="auto internal xref">B.3</a>.  <a href="#name-pic-documents-stewardship-p" class="internal xref">PIC Documents — Stewardship, Publication, and Canonical Status</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#appendix-B.4" class="auto internal xref">B.4</a>.  <a href="#name-license" class="internal xref">License</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
+                <p id="section-toc.1-1.3.2.5.1"><a href="#appendix-B.5" class="auto internal xref">B.5</a>.  <a href="#name-mandatory-attribution-and-c" class="internal xref">Mandatory Attribution and Correct Referencing</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.6">
+                <p id="section-toc.1-1.3.2.6.1"><a href="#appendix-B.6" class="auto internal xref">B.6</a>.  <a href="#name-derivative-works-forks-and-" class="internal xref">Derivative Works, Forks, and Implementations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.7">
+                <p id="section-toc.1-1.3.2.7.1"><a href="#appendix-B.7" class="auto internal xref">B.7</a>.  <a href="#name-contributors-and-responsibi" class="internal xref">Contributors and Responsibility Boundaries</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.7.2.1">
+                    <p id="section-toc.1-1.3.2.7.2.1.1"><a href="#appendix-B.7.1" class="auto internal xref">B.7.1</a>.  <a href="#name-pic-spec-contributors" class="internal xref">PIC Spec Contributors</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.7.2.2">
+                    <p id="section-toc.1-1.3.2.7.2.2.1"><a href="#appendix-B.7.2" class="auto internal xref">B.7.2</a>.  <a href="#name-external-contributors" class="internal xref">External Contributors</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.7.2.3">
+                    <p id="section-toc.1-1.3.2.7.2.3.1"><a href="#appendix-B.7.3" class="auto internal xref">B.7.3</a>.  <a href="#name-contributor-listing-in-pic-" class="internal xref">Contributor Listing in PIC Documents</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.8">
+                <p id="section-toc.1-1.3.2.8.1"><a href="#appendix-B.8" class="auto internal xref">B.8</a>.  <a href="#name-credits" class="internal xref">Credits</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.9">
+                <p id="section-toc.1-1.3.2.9.1"><a href="#appendix-B.9" class="auto internal xref">B.9</a>.  <a href="#name-stewardship-transfer" class="internal xref">Stewardship Transfer</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-disclaimer-and-limitation-o" class="internal xref">Disclaimer and Limitation of Liability</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#appendix-C.1" class="auto internal xref">C.1</a>.  <a href="#name-responsibility-and-legal-co" class="internal xref">Responsibility and Legal Context</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#appendix-C.2" class="auto internal xref">C.2</a>.  <a href="#name-exclusion-of-personal-liabi" class="internal xref">Exclusion of Personal Liability (PIC Model Author)</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#appendix-D" class="auto internal xref">Appendix D</a>.  <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#appendix-D.1" class="auto internal xref">D.1</a>.  <a href="#name-acknowledged-individuals" class="internal xref">Acknowledged Individuals</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#appendix-D.2" class="auto internal xref">D.2</a>.  <a href="#name-scope-and-limitations-of-ac" class="internal xref">Scope and Limitations of Acknowledgement</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#appendix-D.3" class="auto internal xref">D.3</a>.  <a href="#name-disclaimer-for-acknowledged" class="internal xref">Disclaimer for Acknowledged Individuals</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#appendix-E" class="auto internal xref"></a><a href="#name-references" class="internal xref">References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#appendix-F" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="scope-and-applicability">
+<section id="section-1">
+      <h2 id="name-scope-and-applicability">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-scope-and-applicability" class="section-name selfRef">Scope and Applicability</a>
+      </h2>
+<p id="section-1-1">This document contains the legal, governance, and attribution appendices shared
+by all PIC specification documents. It is <strong>incorporated by reference</strong> into
+each of the following documents (collectively, the "<strong>PIC Documents</strong>"):<a href="#section-1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1-2.1">
+          <p id="section-1-2.1.1"><a href="pic-spec.html">PIC Specification</a> — <code>draft/0.2/pic-spec.md</code><a href="#section-1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-2.2">
+          <p id="section-1-2.2.1"><a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> — <code>draft/0.2/pic-prover-verifier-spec.md</code><a href="#section-1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-2.3">
+          <p id="section-1-2.3.1">any other document published in the official PIC Spec repositories that
+explicitly incorporates these appendices by reference.<a href="#section-1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-1-3">For the purposes of these appendices, the terms "<strong>this specification</strong>",
+"<strong>this document</strong>", and "<strong>the PIC Specification</strong>" refer to each and all of
+the PIC Documents, individually and collectively, including this document
+itself.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">In case of conflict between these appendices and any individual PIC Document,
+these appendices prevail for legal, governance, licensing, and attribution
+matters.<a href="#section-1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="use-of-automated-language-assistance">
+<section id="appendix-A">
+      <h2 id="name-use-of-automated-language-a">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-use-of-automated-language-a" class="section-name selfRef">Use of Automated Language Assistance</a>
+      </h2>
+<p id="appendix-A-1">The PIC Documents have used automated language assistance tools solely to improve grammar, clarity, and phrasing. All substantive technical content and editorial decisions remain the responsibility of the PIC Spec Contributors under the stewardship of Nitro Agility S.r.l.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authorship-stewardship-attribution-and-derivative-works">
+<section id="appendix-B">
+      <h2 id="name-authorship-stewardship-attr">
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-authorship-stewardship-attr" class="section-name selfRef">Authorship, Stewardship, Attribution, and Derivative Works</a>
+      </h2>
+<div id="scope-and-roles">
+<section id="appendix-B.1">
+        <h3 id="name-scope-and-roles">
+<a href="#appendix-B.1" class="section-number selfRef">B.1. </a><a href="#name-scope-and-roles" class="section-name selfRef">Scope and Roles</a>
+        </h3>
+<p id="appendix-B.1-1">This appendix defines the separation between:<a href="#appendix-B.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.1-2.1">
+            <p id="appendix-B.1-2.1.1">the <strong>PIC Model</strong> (theoretical framework and foundational results), and<a href="#appendix-B.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.1-2.2">
+            <p id="appendix-B.1-2.2.1">the <strong>PIC Documents</strong> (the specifications listed in "Scope and Applicability": terminology, normative requirements, structure, examples, and maintenance process).<a href="#appendix-B.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-B.1-3">This separation is intentional and MUST be preserved in references, derivative works, and claims of conformance.<a href="#appendix-B.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="pic-model-authorship-theoretical-framework">
+<section id="appendix-B.2">
+        <h3 id="name-pic-model-authorship-theore">
+<a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-pic-model-authorship-theore" class="section-name selfRef">PIC Model — Authorship (Theoretical Framework)</a>
+        </h3>
+<p id="appendix-B.2-1">The <strong>Provenance Identity Continuity (PIC) Model</strong>, including its formal definitions, invariants, execution semantics, and foundational proofs (including the structural resolution of the confused deputy class under the PIC assumptions), originates from the original theoretical work of <strong>Nicola Gallo</strong>.<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.2-2">Authorship of the PIC Model is independent of repository ownership, maintainer status, stewardship of the specification, or any publishing entity.<a href="#appendix-B.2-2" class="pilcrow">¶</a></p>
+<p id="appendix-B.2-3">Primary references for the PIC Model include:<a href="#appendix-B.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.2-4.1">
+            <p id="appendix-B.2-4.1.1">Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#appendix-B.2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.2-4.2">
+            <p id="appendix-B.2-4.2.1">Gallo, N. (2025). <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>. Zenodo. DOI: 10.5281/zenodo.17833000<a href="#appendix-B.2-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.2-4.3">
+            <p id="appendix-B.2-4.3.1">Gallo, N. (2025). <em>Authority is a Continuous System</em>. Zenodo. DOI: 10.5281/zenodo.17860199<a href="#appendix-B.2-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.2-4.4">
+            <p id="appendix-B.2-4.4.1">Gallo, N. (2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Zenodo. DOI: 10.5281/zenodo.17777421<a href="#appendix-B.2-4.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="pic-documents-stewardship-publication-and-canonical-status">
+<section id="appendix-B.3">
+        <h3 id="name-pic-documents-stewardship-p">
+<a href="#appendix-B.3" class="section-number selfRef">B.3. </a><a href="#name-pic-documents-stewardship-p" class="section-name selfRef">PIC Documents — Stewardship, Publication, and Canonical Status</a>
+        </h3>
+<p id="appendix-B.3-1">The PIC Documents are authored, developed, published, maintained, and stewarded by:<a href="#appendix-B.3-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.3-2"><strong>Nitro Agility S.r.l.</strong> (the “Specification Steward”)<a href="#appendix-B.3-2" class="pilcrow">¶</a></p>
+<p id="appendix-B.3-3">All normative text of the PIC Documents — including structure, terminology, requirements, examples, editorial content, and all subsequent edits incorporated into the canonical versions — is produced and maintained under the stewardship of Nitro Agility S.r.l.<a href="#appendix-B.3-3" class="pilcrow">¶</a></p>
+<p id="appendix-B.3-4">The Specification Steward is responsible for:<a href="#appendix-B.3-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.3-5.1">
+            <p id="appendix-B.3-5.1.1">publication and maintenance of the PIC Documents,<a href="#appendix-B.3-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.3-5.2">
+            <p id="appendix-B.3-5.2.1">editorial decisions and normative text,<a href="#appendix-B.3-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.3-5.3">
+            <p id="appendix-B.3-5.3.1">contribution review and acceptance,<a href="#appendix-B.3-5.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.3-5.4">
+            <p id="appendix-B.3-5.4.1">release management and designation of canonical versions,<a href="#appendix-B.3-5.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.3-5.5">
+            <p id="appendix-B.3-5.5.1">specification governance and process.<a href="#appendix-B.3-5.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-B.3-6">The canonical version of each PIC Document is the version designated by the Specification Steward in the official PIC Spec repositories.<a href="#appendix-B.3-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="license">
+<section id="appendix-B.4">
+        <h3 id="name-license">
+<a href="#appendix-B.4" class="section-number selfRef">B.4. </a><a href="#name-license" class="section-name selfRef">License</a>
+        </h3>
+<p id="appendix-B.4-1">The PIC Model references and the PIC Documents are published under the <strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong> license.<a href="#appendix-B.4-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.4-2">CC BY 4.0 governs copyright and redistribution only.
+It does not imply any warranty, support obligation, operational responsibility, or professional services.<a href="#appendix-B.4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="mandatory-attribution-and-correct-referencing">
+<section id="appendix-B.5">
+        <h3 id="name-mandatory-attribution-and-c">
+<a href="#appendix-B.5" class="section-number selfRef">B.5. </a><a href="#name-mandatory-attribution-and-c" class="section-name selfRef">Mandatory Attribution and Correct Referencing</a>
+        </h3>
+<p id="appendix-B.5-1">Any academic, technical, or commercial work that references, implements, or claims conformance with PIC MUST clearly distinguish between:<a href="#appendix-B.5-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="appendix-B.5-2">
+<li id="appendix-B.5-2.1">
+            <p id="appendix-B.5-2.1.1"><strong>The PIC Model (theoretical framework)</strong>
+              <strong>Author:</strong> Nicola Gallo<a href="#appendix-B.5-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="appendix-B.5-2.2">
+            <p id="appendix-B.5-2.2.1"><strong>The PIC Documents (the specifications)</strong>
+              <strong>Publisher and Steward:</strong> Nitro Agility S.r.l.<a href="#appendix-B.5-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="appendix-B.5-3">A compliant reference MUST acknowledge both roles.<a href="#appendix-B.5-3" class="pilcrow">¶</a></p>
+<p id="appendix-B.5-4"><strong>Example attribution (acceptable):</strong><a href="#appendix-B.5-4" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="appendix-B.5-5.1">
+            <p id="appendix-B.5-5.1.1">“Based on the Provenance Identity Continuity (PIC) Model created by Nicola Gallo.
+Conforms to the PIC Specification published and maintained by Nitro Agility S.r.l.”<a href="#appendix-B.5-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-B.5-6">Attribution MUST NOT:<a href="#appendix-B.5-6" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.5-7.1">
+            <p id="appendix-B.5-7.1.1">omit the PIC Model author when referencing the PIC Model, or<a href="#appendix-B.5-7.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.5-7.2">
+            <p id="appendix-B.5-7.2.1">attribute the PIC Model’s foundational concepts and proofs to parties other than its author, or<a href="#appendix-B.5-7.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.5-7.3">
+            <p id="appendix-B.5-7.3.1">represent a fork or derivative as a canonical PIC Document without Steward designation.<a href="#appendix-B.5-7.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="derivative-works-forks-and-implementations">
+<section id="appendix-B.6">
+        <h3 id="name-derivative-works-forks-and-">
+<a href="#appendix-B.6" class="section-number selfRef">B.6. </a><a href="#name-derivative-works-forks-and-" class="section-name selfRef">Derivative Works, Forks, and Implementations</a>
+        </h3>
+<p id="appendix-B.6-1">Derivative works (modified specifications, extensions, profiles, or adaptations):<a href="#appendix-B.6-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.6-2.1">
+            <p id="appendix-B.6-2.1.1">MUST clearly state they are <strong>derivative works</strong> of the PIC Documents,<a href="#appendix-B.6-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.6-2.2">
+            <p id="appendix-B.6-2.2.1">MUST preserve the attribution requirements in B.5,<a href="#appendix-B.6-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.6-2.3">
+            <p id="appendix-B.6-2.3.1">SHOULD document any substantive semantic or security-relevant changes,<a href="#appendix-B.6-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.6-2.4">
+            <p id="appendix-B.6-2.4.1">MUST NOT claim to be a canonical PIC Document unless explicitly designated by the Specification Steward.<a href="#appendix-B.6-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-B.6-3">Implementations (software libraries, SDKs, middleware, gateways, services):<a href="#appendix-B.6-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.6-4.1">
+            <p id="appendix-B.6-4.1.1">MAY claim authorship of the implementation code,<a href="#appendix-B.6-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.6-4.2">
+            <p id="appendix-B.6-4.2.1">MUST NOT claim authorship of the PIC Model’s foundational concepts, invariants, or proofs.<a href="#appendix-B.6-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="contributors-and-responsibility-boundaries">
+<section id="appendix-B.7">
+        <h3 id="name-contributors-and-responsibi">
+<a href="#appendix-B.7" class="section-number selfRef">B.7. </a><a href="#name-contributors-and-responsibi" class="section-name selfRef">Contributors and Responsibility Boundaries</a>
+        </h3>
+<div id="pic-spec-contributors">
+<section id="appendix-B.7.1">
+          <h4 id="name-pic-spec-contributors">
+<a href="#appendix-B.7.1" class="section-number selfRef">B.7.1. </a><a href="#name-pic-spec-contributors" class="section-name selfRef">PIC Spec Contributors</a>
+          </h4>
+<p id="appendix-B.7.1-1">“PIC Spec Contributors” are individuals or organizations that contribute text, reviews, examples, or discussion to the PIC Specification repositories.<a href="#appendix-B.7.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.7.1-2">Contributions by <strong>Nicola Gallo</strong>, <strong>Antonio Radesca</strong>, and <strong>any other employee, associate, contractor, or co-founder of Nitro Agility S.r.l.</strong> to the PIC Documents are made <strong>on behalf of Nitro Agility S.r.l.</strong>, and <strong>not in a personal capacity</strong>. All such contributions are incorporated as part of the Nitro Agility–stewarded specifications.<a href="#appendix-B.7.1-2" class="pilcrow">¶</a></p>
+<p id="appendix-B.7.1-3">For avoidance of doubt: where Nicola Gallo contributes to the PIC Specification repositories, he does so as a representative of Nitro Agility S.r.l. for purposes of the specification text and its maintenance. This does not alter or diminish his independent authorship of the underlying <strong>PIC Model</strong>.<a href="#appendix-B.7.1-3" class="pilcrow">¶</a></p>
+<p id="appendix-B.7.1-4"><strong>Contribution does not imply:</strong><a href="#appendix-B.7.1-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.7.1-5.1">
+              <p id="appendix-B.7.1-5.1.1">authorship of the PIC Model, or<a href="#appendix-B.7.1-5.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-B.7.1-5.2">
+              <p id="appendix-B.7.1-5.2.1">acceptance of operational responsibility, warranty, or liability for the PIC Documents.<a href="#appendix-B.7.1-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="appendix-B.7.1-6">The Specification Steward (Nitro Agility S.r.l.) retains full editorial and governance control over what becomes normative in the PIC Documents.<a href="#appendix-B.7.1-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="external-contributors">
+<section id="appendix-B.7.2">
+          <h4 id="name-external-contributors">
+<a href="#appendix-B.7.2" class="section-number selfRef">B.7.2. </a><a href="#name-external-contributors" class="section-name selfRef">External Contributors</a>
+          </h4>
+<p id="appendix-B.7.2-1">External contributors (i.e., contributors not acting on behalf of Nitro Agility S.r.l.) contribute on an “as-is” basis.<a href="#appendix-B.7.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.7.2-2">External contributors:<a href="#appendix-B.7.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.7.2-3.1">
+              <p id="appendix-B.7.2-3.1.1">do not become stewards, publishers, or operators by contributing,<a href="#appendix-B.7.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-B.7.2-3.2">
+              <p id="appendix-B.7.2-3.2.1">do not provide warranties or professional advice,<a href="#appendix-B.7.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-B.7.2-3.3">
+              <p id="appendix-B.7.2-3.3.1">are not responsible for maintenance, release management, or governance of the PIC Documents.<a href="#appendix-B.7.2-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="appendix-B.7.2-4">Operational and editorial responsibility for the PIC Documents remains with the Specification Steward.<a href="#appendix-B.7.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="contributor-listing-in-pic-documents">
+<section id="appendix-B.7.3">
+          <h4 id="name-contributor-listing-in-pic-">
+<a href="#appendix-B.7.3" class="section-number selfRef">B.7.3. </a><a href="#name-contributor-listing-in-pic-" class="section-name selfRef">Contributor Listing in PIC Documents</a>
+          </h4>
+<p id="appendix-B.7.3-1">Each PIC Document MAY list its editors and contributors in its document header.<a href="#appendix-B.7.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.7.3-2.1">
+              <p id="appendix-B.7.3-2.1.1"><strong>Editors</strong> maintain the document text on behalf of the Specification Steward, which retains full editorial and governance control (B.7.1).<a href="#appendix-B.7.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-B.7.3-2.2">
+              <p id="appendix-B.7.3-2.2.1">Contributor lists are <strong>non-exhaustive</strong> and ordered by first appearance.<a href="#appendix-B.7.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-B.7.3-2.3">
+              <p id="appendix-B.7.3-2.3.1">Inclusion in a list requires a pull request accepted by the document's editors, who act on behalf of the Specification Steward; the editors retain full discretion over listing. Omission from a list does not diminish any contribution.<a href="#appendix-B.7.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-B.7.3-2.4">
+              <p id="appendix-B.7.3-2.4.1">Being listed as editor or contributor does <strong>not</strong> confer authorship of the PIC Model, stewardship of the specification, or any operational responsibility or liability (B.7.1, B.7.2).<a href="#appendix-B.7.3-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="credits">
+<section id="appendix-B.8">
+        <h3 id="name-credits">
+<a href="#appendix-B.8" class="section-number selfRef">B.8. </a><a href="#name-credits" class="section-name selfRef">Credits</a>
+        </h3>
+<p id="appendix-B.8-1"><strong>PIC Model Author (Theoretical Framework):</strong><a href="#appendix-B.8-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.8-2.1">
+            <p id="appendix-B.8-2.1.1"><strong>Nicola Gallo</strong> (in personal capacity)<a href="#appendix-B.8-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-B.8-3"><strong>PIC Documents Steward / Publisher:</strong><a href="#appendix-B.8-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.8-4.1">
+            <p id="appendix-B.8-4.1.1"><strong>Nitro Agility S.r.l.</strong><a href="#appendix-B.8-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-B.8-5"><strong>PIC Spec Contributors (non-exhaustive, in order of appearance):</strong><a href="#appendix-B.8-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="appendix-B.8-6">
+<li id="appendix-B.8-6.1">
+            <p id="appendix-B.8-6.1.1"><strong>Nicola Gallo (on behalf of Nitro Agility S.r.l.)</strong> — contributor to specification text and examples<a href="#appendix-B.8-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="appendix-B.8-6.2">
+            <p id="appendix-B.8-6.2.1"><strong>Nitro Agility S.r.l.</strong> — specification stewardship, editorial maintenance, governance<a href="#appendix-B.8-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="appendix-B.8-6.3">
+            <p id="appendix-B.8-6.3.1"><em>Add your name here via pull request (individual or organization)</em><a href="#appendix-B.8-6.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="stewardship-transfer">
+<section id="appendix-B.9">
+        <h3 id="name-stewardship-transfer">
+<a href="#appendix-B.9" class="section-number selfRef">B.9. </a><a href="#name-stewardship-transfer" class="section-name selfRef">Stewardship Transfer</a>
+        </h3>
+<p id="appendix-B.9-1">Stewardship of the PIC Documents MAY be transferred by Nitro Agility S.r.l. to another organization.<a href="#appendix-B.9-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.9-2">Such a transfer does not affect:<a href="#appendix-B.9-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.9-3.1">
+            <p id="appendix-B.9-3.1.1">authorship of the PIC Model (Nicola Gallo),<a href="#appendix-B.9-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.9-3.2">
+            <p id="appendix-B.9-3.2.1">the CC BY 4.0 license terms,<a href="#appendix-B.9-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.9-3.3">
+            <p id="appendix-B.9-3.3.1">the attribution requirements defined in this appendix.<a href="#appendix-B.9-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-B.9-4">The new steward (if any) becomes the Specification Steward for canonical designation and maintenance of the PIC Documents.<a href="#appendix-B.9-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="disclaimer-and-limitation-of-liability">
+<section id="appendix-C">
+      <h2 id="name-disclaimer-and-limitation-o">
+<a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-disclaimer-and-limitation-o" class="section-name selfRef">Disclaimer and Limitation of Liability</a>
+      </h2>
+<p id="appendix-C-1">THIS SPECIFICATION IS PROVIDED <strong>"AS IS" AND "AS AVAILABLE"</strong>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<p id="appendix-C-2">THIS SPECIFICATION <strong>DOES NOT GUARANTEE SECURITY, CORRECTNESS, OR FITNESS FOR ANY PARTICULAR IMPLEMENTATION OR DEPLOYMENT CONTEXT</strong>.
+SECURITY, SAFETY, AND CORRECT BEHAVIOR DEPEND ENTIRELY ON PROPER IMPLEMENTATION, CONFIGURATION, AND OPERATION.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
+<p id="appendix-C-3">IN NO EVENT SHALL THE AUTHORS, CONTRIBUTORS, ACKNOWLEDGED INDIVIDUALS, OR COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL, OR PUNITIVE DAMAGES (INCLUDING BUT NOT LIMITED TO PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, LOSS OF USE, DATA, PROFITS, OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SPECIFICATION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a href="#appendix-C-3" class="pilcrow">¶</a></p>
+<p id="appendix-C-4">USE OF THIS SPECIFICATION, INCLUDING ANY CLAIMS OF CONFORMANCE OR COMPATIBILITY, <strong>DOES NOT IMPLY ENDORSEMENT</strong> BY THE AUTHORS OR PIC SPEC CONTRIBUTORS UNLESS EXPLICITLY STATED IN WRITING.<a href="#appendix-C-4" class="pilcrow">¶</a></p>
+<p id="appendix-C-5">IMPLEMENTERS AND USERS ASSUME <strong>ALL RISKS</strong> ASSOCIATED WITH THE USE OF THIS SPECIFICATION AND ANY IMPLEMENTATIONS OR DERIVATIVE WORKS BASED UPON IT.<a href="#appendix-C-5" class="pilcrow">¶</a></p>
+<p id="appendix-C-6">THIS DISCLAIMER SHALL BE GOVERNED BY AND CONSTRUED IN ACCORDANCE WITH THE LAWS OF ITALY, WITHOUT REGARD TO CONFLICT OF LAW PRINCIPLES. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, ANY DISPUTE ARISING OUT OF OR IN CONNECTION WITH THIS SPECIFICATION SHALL BE SUBJECT TO THE EXCLUSIVE JURISDICTION OF THE COURTS OF MATERA, ITALY.<a href="#appendix-C-6" class="pilcrow">¶</a></p>
+<p id="appendix-C-7">IF ANY PROVISION OF THIS DISCLAIMER IS HELD TO BE UNENFORCEABLE, THE REMAINING PROVISIONS SHALL CONTINUE IN FULL FORCE AND EFFECT.<a href="#appendix-C-7" class="pilcrow">¶</a></p>
+<p id="appendix-C-8">THE AUTHORS AND CONTRIBUTORS HAVE NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, PATCHES, OR CORRECTIONS.<a href="#appendix-C-8" class="pilcrow">¶</a></p>
+<p id="appendix-C-9">THIS SPECIFICATION DOES NOT CONSTITUTE LEGAL, SECURITY, OR PROFESSIONAL ADVICE.<a href="#appendix-C-9" class="pilcrow">¶</a></p>
+<div id="responsibility-and-legal-context">
+<section id="appendix-C.1">
+        <h3 id="name-responsibility-and-legal-co">
+<a href="#appendix-C.1" class="section-number selfRef">C.1. </a><a href="#name-responsibility-and-legal-co" class="section-name selfRef">Responsibility and Legal Context</a>
+        </h3>
+<p id="appendix-C.1-1">The PIC Documents are published and maintained by <strong>Nitro Agility S.r.l.</strong> as the <strong>Specification Steward</strong>.<a href="#appendix-C.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-2">Nothing in this document creates a contractual relationship between any <strong>individual contributor</strong> and any user of this specification.
+No duty of care is assumed or created by publication of this document.<a href="#appendix-C.1-2" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-3">To the <strong>maximum extent permitted by applicable law</strong>, any claims, disputes, or legal actions arising from:<a href="#appendix-C.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-C.1-4.1">
+            <p id="appendix-C.1-4.1.1">the use of this specification,<a href="#appendix-C.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-C.1-4.2">
+            <p id="appendix-C.1-4.2.1">any claim of conformance, compatibility, or derivation from PIC,<a href="#appendix-C.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-C.1-4.3">
+            <p id="appendix-C.1-4.3.1">any implementation, deployment, product, or service that references or relies on this specification,<a href="#appendix-C.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-C.1-5">should be directed to the <strong>Specification Steward (Nitro Agility S.r.l.)</strong> and/or the relevant <strong>implementer</strong>, as applicable.<a href="#appendix-C.1-5" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-6">For avoidance of doubt, implementers and operators remain solely responsible for their own implementations, deployments, products, services, security, and compliance claims.<a href="#appendix-C.1-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="exclusion-of-personal-liability-pic-model-author">
+<section id="appendix-C.2">
+        <h3 id="name-exclusion-of-personal-liabi">
+<a href="#appendix-C.2" class="section-number selfRef">C.2. </a><a href="#name-exclusion-of-personal-liabi" class="section-name selfRef">Exclusion of Personal Liability (PIC Model Author)</a>
+        </h3>
+<p id="appendix-C.2-1"><strong>Nicola Gallo</strong>, as the author of the underlying <strong>PIC Model</strong> (theoretical framework), is recognized solely for <strong>academic authorship</strong> of that theoretical work.<a href="#appendix-C.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-C.2-2">This recognition does <strong>not</strong>:<a href="#appendix-C.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-C.2-3.1">
+            <p id="appendix-C.2-3.1.1">create any personal liability for this specification or its use,<a href="#appendix-C.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-C.2-3.2">
+            <p id="appendix-C.2-3.2.1">create any warranty, support, maintenance, or professional services obligation,<a href="#appendix-C.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-C.2-3.3">
+            <p id="appendix-C.2-3.3.1">create any contractual, fiduciary, advisory, or professional relationship with users,<a href="#appendix-C.2-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-C.2-3.4">
+            <p id="appendix-C.2-3.4.1">constitute endorsement of this specification or of any implementation or deployment.<a href="#appendix-C.2-3.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-C.2-4">To the maximum extent permitted by applicable law, <strong>Nicola Gallo</strong> disclaims all liability for any loss or damages arising from the use of this specification or from any implementation, deployment, product, or service based on it.<a href="#appendix-C.2-4" class="pilcrow">¶</a></p>
+<p id="appendix-C.2-5">The PIC Model author’s role is strictly limited to authorship of academic publications referenced by this specification.
+All operational, legal, and commercial responsibility for this specification rests with the <strong>Specification Steward (Nitro Agility S.r.l.)</strong>, and for implementations with their respective <strong>implementers/operators</strong>.<a href="#appendix-C.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgements">
+<section id="appendix-D">
+      <h2 id="name-acknowledgements">
+<a href="#appendix-D" class="section-number selfRef">Appendix D. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="appendix-D-1">The PIC Model author thanks the following individuals for discussions and feedback during the development of the theoretical framework.<a href="#appendix-D-1" class="pilcrow">¶</a></p>
+<div id="acknowledged-individuals">
+<section id="appendix-D.1">
+        <h3 id="name-acknowledged-individuals">
+<a href="#appendix-D.1" class="section-number selfRef">D.1. </a><a href="#name-acknowledged-individuals" class="section-name selfRef">Acknowledged Individuals</a>
+        </h3>
+<p id="appendix-D.1-1"><em>No individuals are acknowledged in this version.</em><a href="#appendix-D.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="scope-and-limitations-of-acknowledgement">
+<section id="appendix-D.2">
+        <h3 id="name-scope-and-limitations-of-ac">
+<a href="#appendix-D.2" class="section-number selfRef">D.2. </a><a href="#name-scope-and-limitations-of-ac" class="section-name selfRef">Scope and Limitations of Acknowledgement</a>
+        </h3>
+<p id="appendix-D.2-1">Acknowledgement in this appendix:<a href="#appendix-D.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="appendix-D.2-2">
+<li id="appendix-D.2-2.1">
+            <p id="appendix-D.2-2.1.1"><strong>Recognizes informal contribution</strong> to early-stage theoretical discussions only<a href="#appendix-D.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="appendix-D.2-2.2">
+            <p id="appendix-D.2-2.2.1"><strong>Does NOT imply</strong>:<a href="#appendix-D.2-2.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-D.2-2.2.2.1">
+                <p id="appendix-D.2-2.2.2.1.1">co-authorship of the PIC Model<a href="#appendix-D.2-2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="appendix-D.2-2.2.2.2">
+                <p id="appendix-D.2-2.2.2.2.1">co-authorship of the PIC Documents<a href="#appendix-D.2-2.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="appendix-D.2-2.2.2.3">
+                <p id="appendix-D.2-2.2.2.3.1">contribution to the PIC Documents' text, structure, or normative content<a href="#appendix-D.2-2.2.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="appendix-D.2-2.2.2.4">
+                <p id="appendix-D.2-2.2.2.4.1">endorsement of the PIC Model, the PIC Documents, or any implementation<a href="#appendix-D.2-2.2.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="appendix-D.2-2.2.2.5">
+                <p id="appendix-D.2-2.2.2.5.1">affiliation with the Specification Steward (Nitro Agility S.r.l.)<a href="#appendix-D.2-2.2.2.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="appendix-D.2-2.2.2.6">
+                <p id="appendix-D.2-2.2.2.6.1">any ongoing involvement or advisory role<a href="#appendix-D.2-2.2.2.6.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li id="appendix-D.2-2.3">
+            <p id="appendix-D.2-2.3.1"><strong>Does NOT create</strong>:<a href="#appendix-D.2-2.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-D.2-2.3.2.1">
+                <p id="appendix-D.2-2.3.2.1.1">any legal, contractual, or fiduciary relationship<a href="#appendix-D.2-2.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="appendix-D.2-2.3.2.2">
+                <p id="appendix-D.2-2.3.2.2.1">any responsibility for errors, omissions, or defects in the PIC Model or the PIC Documents<a href="#appendix-D.2-2.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="appendix-D.2-2.3.2.3">
+                <p id="appendix-D.2-2.3.2.3.1">any liability for implementations, deployments, or uses of this specification<a href="#appendix-D.2-2.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="appendix-D.2-2.3.2.4">
+                <p id="appendix-D.2-2.3.2.4.1">any obligation to provide support, maintenance, or updates<a href="#appendix-D.2-2.3.2.4.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+        </ol>
+</section>
+</div>
+<div id="disclaimer-for-acknowledged-individuals">
+<section id="appendix-D.3">
+        <h3 id="name-disclaimer-for-acknowledged">
+<a href="#appendix-D.3" class="section-number selfRef">D.3. </a><a href="#name-disclaimer-for-acknowledged" class="section-name selfRef">Disclaimer for Acknowledged Individuals</a>
+        </h3>
+<p id="appendix-D.3-1">ACKNOWLEDGED INDIVIDUALS ARE RECOGNIZED SOLELY FOR INFORMAL DISCUSSIONS RELATED TO THE THEORETICAL PIC MODEL.<a href="#appendix-D.3-1" class="pilcrow">¶</a></p>
+<p id="appendix-D.3-2">THEY BEAR <strong>NO RESPONSIBILITY</strong> FOR:<a href="#appendix-D.3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-D.3-3.1">
+            <p id="appendix-D.3-3.1.1">the correctness, completeness, or security of the PIC Model,<a href="#appendix-D.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-D.3-3.2">
+            <p id="appendix-D.3-3.2.1">the content, accuracy, or fitness of the PIC Documents,<a href="#appendix-D.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-D.3-3.3">
+            <p id="appendix-D.3-3.3.1">any implementation, deployment, or use based on this specification,<a href="#appendix-D.3-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-D.3-3.4">
+            <p id="appendix-D.3-3.4.1">any claims, damages, or liabilities arising from the PIC Model or the PIC Documents.<a href="#appendix-D.3-3.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-D.3-4">ACKNOWLEDGEMENT IS <strong>INFORMATIONAL ONLY</strong> AND SHALL NOT BE CONSTRUED AS CREATING ANY LEGAL OBLIGATION, WARRANTY, OR LIABILITY ON THE PART OF ACKNOWLEDGED INDIVIDUALS.<a href="#appendix-D.3-4" class="pilcrow">¶</a></p>
+<p id="appendix-D.3-5">Any claims, disputes, or legal actions related to the <strong>PIC Documents</strong> or any implementation, deployment, or use thereof
+MUST be directed exclusively to the <strong>Specification Steward (Nitro Agility S.r.l.)</strong>.<a href="#appendix-D.3-5" class="pilcrow">¶</a></p>
+<p id="appendix-D.3-6">Any reference to the <strong>original theoretical PIC Model</strong> is made solely in its capacity as an <strong>academic work of authorship</strong>.
+The PIC Model is provided <strong>for scholarly and informational purposes only</strong>, and <strong>creates no warranty, duty of care, or legal obligation of any kind</strong> toward any third party.<a href="#appendix-D.3-6" class="pilcrow">¶</a></p>
+<p id="appendix-D.3-7">To the <strong>maximum extent permitted by applicable law</strong>, the PIC Model author <strong>disclaims all liability</strong> for any claim, loss, or damages arising from any specification, implementation, deployment, product, service, security outcome, or commercial use that references or relies on this specification or the PIC Model, <strong>whether framed in contract, tort, negligence, strict liability, or any other theory of liability</strong>.<a href="#appendix-D.3-7" class="pilcrow">¶</a></p>
+<p id="appendix-D.3-8">Accordingly, responsibility for any such claims rests with the <strong>Specification Steward</strong> and/or the relevant <strong>implementer or operator</strong>, as applicable.<a href="#appendix-D.3-8" class="pilcrow">¶</a></p>
+<p id="appendix-D.3-9">Acknowledged individuals are explicitly excluded from <strong>all</strong> such claims.<a href="#appendix-D.3-9" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="references">
+<section id="appendix-E">
+      <h2 id="name-references">
+<a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<ul class="normal">
+<li class="normal" id="appendix-E-1.1">
+          <p id="appendix-E-1.1.1">[1] Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#appendix-E-1.1.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-F">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Nicola Gallo</span></div>
+<div dir="auto" class="left"><span class="org">Nitro Agility S.r.l.</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:nicola.gallo@nitroagility.com" class="email">nicola.gallo@nitroagility.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>

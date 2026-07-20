@@ -1,17 +1,39 @@
-# PIC Legal Appendices
+---
+title: "PIC Legal Appendices"
+abbrev: "PIC Legal Appendices"
+docname: pic-legal-appendices-02
+category: info
+ipr: none
+submissiontype: independent
+stand_alone: yes
+smart_quotes: false
+pi: [toc, sortrefs, symrefs]
+date: 2026-07-15
 
-**Project:** PIC Protocol  
-**Project Website:** [www.pic-protocol.org](https://www.pic-protocol.org/)  
-**Document:** pic-legal-appendices-02  
-**Version:** 0.2 (Draft)  
-**Document Status:** Public Draft  
-**Intended Use:** Informational and Experimental  
-**Published:** 2026-07-15  
-**Editor(s):** Nicola Gallo (Nitro Agility S.r.l.)  
-**Steward:** Nitro Agility S.r.l.  
+author:
+  - ins: N. Gallo
+    name: Nicola Gallo
+    org: Nitro Agility S.r.l.
+    email: nicola.gallo@nitroagility.com
+
+normative: {}
+informative: {}
+---
+
+--- note_Document_Status
+
+**Project:** PIC Protocol
+**Project Website:** [www.pic-protocol.org](https://www.pic-protocol.org/)
+**Document:** pic-legal-appendices-02
+**Version:** 0.2 (Draft)
+**Document Status:** Public Draft
+**Intended Use:** Informational and Experimental
+**Published:** 2026-07-15
+**Editor(s):** Nicola Gallo (Nitro Agility S.r.l.)
+**Steward:** Nitro Agility S.r.l.
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-legal.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md)
 
-## About This Document
+--- note_About_This_Document
 
 > **Public Draft — Not a Standard**
 >
@@ -34,14 +56,23 @@
 >
 > Current project information and published specifications are available at `https://www.pic-protocol.org/`.
 
-## Scope and Applicability
+--- abstract
+
+This document collects the shared legal, governance, and attribution appendices that are incorporated by reference into every
+PIC specification document. It records the separation between the PIC Model and the PIC Documents, authorship and stewardship,
+licensing and mandatory attribution, terms for derivative works and contributors, the disclaimer and limitation of liability,
+and acknowledgements.
+
+--- middle
+
+# Scope and Applicability
 
 This document contains the legal, governance, and attribution appendices shared
 by all PIC specification documents. It is **incorporated by reference** into
 each of the following documents (collectively, the "**PIC Documents**"):
 
-- [PIC Specification](./pic-spec.md) — `draft/0.2/pic-spec.md`
-- [PIC Prover and Verifier Specification](./pic-prover-verifier-spec.md) — `draft/0.2/pic-prover-verifier-spec.md`
+- [PIC Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md) — `draft/0.2/pic-spec.md`
+- [PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md) — `draft/0.2/pic-prover-verifier-spec.md`
 - any other document published in the official PIC Spec repositories that
   explicitly incorporates these appendices by reference.
 
@@ -54,13 +85,15 @@ In case of conflict between these appendices and any individual PIC Document,
 these appendices prevail for legal, governance, licensing, and attribution
 matters.
 
-## Appendix A. Use of Automated Language Assistance
+--- back
+
+# Use of Automated Language Assistance
 
 The PIC Documents have used automated language assistance tools solely to improve grammar, clarity, and phrasing. All substantive technical content and editorial decisions remain the responsibility of the PIC Spec Contributors under the stewardship of Nitro Agility S.r.l.
 
-## Appendix B. Authorship, Stewardship, Attribution, and Derivative Works
+# Authorship, Stewardship, Attribution, and Derivative Works
 
-### B.1 Scope and Roles
+## Scope and Roles
 
 This appendix defines the separation between:
 
@@ -69,7 +102,7 @@ This appendix defines the separation between:
 
 This separation is intentional and MUST be preserved in references, derivative works, and claims of conformance.
 
-### B.2 PIC Model — Authorship (Theoretical Framework)
+## PIC Model — Authorship (Theoretical Framework)
 
 The **Provenance Identity Continuity (PIC) Model**, including its formal definitions, invariants, execution semantics, and foundational proofs (including the structural resolution of the confused deputy class under the PIC assumptions), originates from the original theoretical work of **Nicola Gallo**.
 
@@ -77,12 +110,12 @@ Authorship of the PIC Model is independent of repository ownership, maintainer s
 
 Primary references for the PIC Model include:
 
-- Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. arXiv:2607.08906 [cs.CR]. [arxiv.org/abs/2607.08906](https://arxiv.org/abs/2607.08906)  
-- Gallo, N. (2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. DOI: 10.5281/zenodo.17833000  
-- Gallo, N. (2025). *Authority is a Continuous System*. Zenodo. DOI: 10.5281/zenodo.17860199  
-- Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Zenodo. DOI: 10.5281/zenodo.17777421  
+- Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. arXiv:2607.08906 [cs.CR]. [arxiv.org/abs/2607.08906](https://arxiv.org/abs/2607.08906)
+- Gallo, N. (2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. DOI: 10.5281/zenodo.17833000
+- Gallo, N. (2025). *Authority is a Continuous System*. Zenodo. DOI: 10.5281/zenodo.17860199
+- Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Zenodo. DOI: 10.5281/zenodo.17777421
 
-### B.3 PIC Documents — Stewardship, Publication, and Canonical Status
+## PIC Documents — Stewardship, Publication, and Canonical Status
 
 The PIC Documents are authored, developed, published, maintained, and stewarded by:
 
@@ -100,28 +133,28 @@ The Specification Steward is responsible for:
 
 The canonical version of each PIC Document is the version designated by the Specification Steward in the official PIC Spec repositories.
 
-### B.4 License
+## License
 
 The PIC Model references and the PIC Documents are published under the **Creative Commons Attribution 4.0 International (CC BY 4.0)** license.
 
-CC BY 4.0 governs copyright and redistribution only.  
+CC BY 4.0 governs copyright and redistribution only.
 It does not imply any warranty, support obligation, operational responsibility, or professional services.
 
-### B.5 Mandatory Attribution and Correct Referencing
+## Mandatory Attribution and Correct Referencing
 
 Any academic, technical, or commercial work that references, implements, or claims conformance with PIC MUST clearly distinguish between:
 
-1. **The PIC Model (theoretical framework)**  
+1. **The PIC Model (theoretical framework)**
    **Author:** Nicola Gallo
 
-2. **The PIC Documents (the specifications)**  
+2. **The PIC Documents (the specifications)**
    **Publisher and Steward:** Nitro Agility S.r.l.
 
 A compliant reference MUST acknowledge both roles.
 
 **Example attribution (acceptable):**
 
-> “Based on the Provenance Identity Continuity (PIC) Model created by Nicola Gallo.  
+> “Based on the Provenance Identity Continuity (PIC) Model created by Nicola Gallo.
 > Conforms to the PIC Specification published and maintained by Nitro Agility S.r.l.”
 
 Attribution MUST NOT:
@@ -130,7 +163,7 @@ Attribution MUST NOT:
 - attribute the PIC Model’s foundational concepts and proofs to parties other than its author, or
 - represent a fork or derivative as a canonical PIC Document without Steward designation.
 
-### B.6 Derivative Works, Forks, and Implementations
+## Derivative Works, Forks, and Implementations
 
 Derivative works (modified specifications, extensions, profiles, or adaptations):
 
@@ -144,9 +177,9 @@ Implementations (software libraries, SDKs, middleware, gateways, services):
 - MAY claim authorship of the implementation code,
 - MUST NOT claim authorship of the PIC Model’s foundational concepts, invariants, or proofs.
 
-### B.7 Contributors and Responsibility Boundaries
+## Contributors and Responsibility Boundaries
 
-#### B.7.1 PIC Spec Contributors
+### PIC Spec Contributors
 
 “PIC Spec Contributors” are individuals or organizations that contribute text, reviews, examples, or discussion to the PIC Specification repositories.
 
@@ -161,7 +194,7 @@ For avoidance of doubt: where Nicola Gallo contributes to the PIC Specification 
 
 The Specification Steward (Nitro Agility S.r.l.) retains full editorial and governance control over what becomes normative in the PIC Documents.
 
-#### B.7.2 External Contributors
+### External Contributors
 
 External contributors (i.e., contributors not acting on behalf of Nitro Agility S.r.l.) contribute on an “as-is” basis.
 
@@ -173,7 +206,7 @@ External contributors:
 
 Operational and editorial responsibility for the PIC Documents remains with the Specification Steward.
 
-#### B.7.3 Contributor Listing in PIC Documents
+### Contributor Listing in PIC Documents
 
 Each PIC Document MAY list its editors and contributors in its document header.
 
@@ -182,7 +215,7 @@ Each PIC Document MAY list its editors and contributors in its document header.
 - Inclusion in a list requires a pull request accepted by the document's editors, who act on behalf of the Specification Steward; the editors retain full discretion over listing. Omission from a list does not diminish any contribution.
 - Being listed as editor or contributor does **not** confer authorship of the PIC Model, stewardship of the specification, or any operational responsibility or liability (B.7.1, B.7.2).
 
-### B.8 Credits
+## Credits
 
 **PIC Model Author (Theoretical Framework):**
 
@@ -194,11 +227,11 @@ Each PIC Document MAY list its editors and contributors in its document header.
 
 **PIC Spec Contributors (non-exhaustive, in order of appearance):**
 
-1. **Nicola Gallo (on behalf of Nitro Agility S.r.l.)** — contributor to specification text and examples  
-2. **Nitro Agility S.r.l.** — specification stewardship, editorial maintenance, governance  
+1. **Nicola Gallo (on behalf of Nitro Agility S.r.l.)** — contributor to specification text and examples
+2. **Nitro Agility S.r.l.** — specification stewardship, editorial maintenance, governance
 3. *Add your name here via pull request (individual or organization)*
 
-### B.9 Stewardship Transfer
+## Stewardship Transfer
 
 Stewardship of the PIC Documents MAY be transferred by Nitro Agility S.r.l. to another organization.
 
@@ -210,11 +243,11 @@ Such a transfer does not affect:
 
 The new steward (if any) becomes the Specification Steward for canonical designation and maintenance of the PIC Documents.
 
-## Appendix C. Disclaimer and Limitation of Liability
+# Disclaimer and Limitation of Liability
 
 THIS SPECIFICATION IS PROVIDED **"AS IS" AND "AS AVAILABLE"**, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
 
-THIS SPECIFICATION **DOES NOT GUARANTEE SECURITY, CORRECTNESS, OR FITNESS FOR ANY PARTICULAR IMPLEMENTATION OR DEPLOYMENT CONTEXT**.  
+THIS SPECIFICATION **DOES NOT GUARANTEE SECURITY, CORRECTNESS, OR FITNESS FOR ANY PARTICULAR IMPLEMENTATION OR DEPLOYMENT CONTEXT**.
 SECURITY, SAFETY, AND CORRECT BEHAVIOR DEPEND ENTIRELY ON PROPER IMPLEMENTATION, CONFIGURATION, AND OPERATION.
 
 IN NO EVENT SHALL THE AUTHORS, CONTRIBUTORS, ACKNOWLEDGED INDIVIDUALS, OR COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL, OR PUNITIVE DAMAGES (INCLUDING BUT NOT LIMITED TO PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, LOSS OF USE, DATA, PROFITS, OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SPECIFICATION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -231,11 +264,11 @@ THE AUTHORS AND CONTRIBUTORS HAVE NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT,
 
 THIS SPECIFICATION DOES NOT CONSTITUTE LEGAL, SECURITY, OR PROFESSIONAL ADVICE.
 
-### Responsibility and Legal Context
+## Responsibility and Legal Context
 
 The PIC Documents are published and maintained by **Nitro Agility S.r.l.** as the **Specification Steward**.
 
-Nothing in this document creates a contractual relationship between any **individual contributor** and any user of this specification.  
+Nothing in this document creates a contractual relationship between any **individual contributor** and any user of this specification.
 No duty of care is assumed or created by publication of this document.
 
 To the **maximum extent permitted by applicable law**, any claims, disputes, or legal actions arising from:
@@ -248,7 +281,7 @@ should be directed to the **Specification Steward (Nitro Agility S.r.l.)** and/o
 
 For avoidance of doubt, implementers and operators remain solely responsible for their own implementations, deployments, products, services, security, and compliance claims.
 
-### Exclusion of Personal Liability (PIC Model Author)
+## Exclusion of Personal Liability (PIC Model Author)
 
 **Nicola Gallo**, as the author of the underlying **PIC Model** (theoretical framework), is recognized solely for **academic authorship** of that theoretical work.
 
@@ -261,18 +294,18 @@ This recognition does **not**:
 
 To the maximum extent permitted by applicable law, **Nicola Gallo** disclaims all liability for any loss or damages arising from the use of this specification or from any implementation, deployment, product, or service based on it.
 
-The PIC Model author’s role is strictly limited to authorship of academic publications referenced by this specification.  
+The PIC Model author’s role is strictly limited to authorship of academic publications referenced by this specification.
 All operational, legal, and commercial responsibility for this specification rests with the **Specification Steward (Nitro Agility S.r.l.)**, and for implementations with their respective **implementers/operators**.
 
-## Appendix D. Acknowledgements
+# Acknowledgements
 
 The PIC Model author thanks the following individuals for discussions and feedback during the development of the theoretical framework.
 
-### D.1 Acknowledged Individuals
+## Acknowledged Individuals
 
 *No individuals are acknowledged in this version.*
 
-### D.2 Scope and Limitations of Acknowledgement
+## Scope and Limitations of Acknowledgement
 
 Acknowledgement in this appendix:
 
@@ -290,7 +323,7 @@ Acknowledgement in this appendix:
    - any liability for implementations, deployments, or uses of this specification
    - any obligation to provide support, maintenance, or updates
 
-### D.3 Disclaimer for Acknowledged Individuals
+## Disclaimer for Acknowledged Individuals
 
 ACKNOWLEDGED INDIVIDUALS ARE RECOGNIZED SOLELY FOR INFORMAL DISCUSSIONS RELATED TO THE THEORETICAL PIC MODEL.
 
@@ -303,10 +336,10 @@ THEY BEAR **NO RESPONSIBILITY** FOR:
 
 ACKNOWLEDGEMENT IS **INFORMATIONAL ONLY** AND SHALL NOT BE CONSTRUED AS CREATING ANY LEGAL OBLIGATION, WARRANTY, OR LIABILITY ON THE PART OF ACKNOWLEDGED INDIVIDUALS.
 
-Any claims, disputes, or legal actions related to the **PIC Documents** or any implementation, deployment, or use thereof  
+Any claims, disputes, or legal actions related to the **PIC Documents** or any implementation, deployment, or use thereof
 MUST be directed exclusively to the **Specification Steward (Nitro Agility S.r.l.)**.
 
-Any reference to the **original theoretical PIC Model** is made solely in its capacity as an **academic work of authorship**.  
+Any reference to the **original theoretical PIC Model** is made solely in its capacity as an **academic work of authorship**.
 The PIC Model is provided **for scholarly and informational purposes only**, and **creates no warranty, duty of care, or legal obligation of any kind** toward any third party.
 
 To the **maximum extent permitted by applicable law**, the PIC Model author **disclaims all liability** for any claim, loss, or damages arising from any specification, implementation, deployment, product, service, security outcome, or commercial use that references or relies on this specification or the PIC Model, **whether framed in contract, tort, negligence, strict liability, or any other theory of liability**.
@@ -315,6 +348,7 @@ Accordingly, responsibility for any such claims rests with the **Specification S
 
 Acknowledged individuals are explicitly excluded from **all** such claims.
 
-## References
+# References
+{:numbered="false"}
 
 - [1] Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. arXiv:2607.08906 [cs.CR]. [arxiv.org/abs/2607.08906](https://arxiv.org/abs/2607.08906)

@@ -4,10 +4,12 @@
 # build run updates every version listed here. When a new version directory
 # is created (e.g. draft/0.3/), add its specs below; keep the old versions
 # listed so their outputs stay up to date.
-# pic-legal.md is intentionally excluded: it is the legal appendices document,
-# not a technical specification.
 draft/0.2/pic-spec.md
 draft/0.2/pic-prover-verifier-spec.md
 draft/0.2/pic-revocation-spec.md
 draft/0.2/pic-lineage-guardrail-spec.md
 draft/0.2/pic-architecture-deployment-spec.md
+# pic-legal.md (the shared legal appendices) is built too, so its rendered
+# HTML sits next to the specs and every cross-link to it is rewritten to the
+# relative .html like any other sibling.
+draft/0.2/pic-legal.md
