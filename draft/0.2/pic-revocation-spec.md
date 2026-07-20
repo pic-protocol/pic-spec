@@ -1,5 +1,5 @@
 ---
-title: "PIC Revocation Specification"
+title: "PIC Revocation"
 abbrev: "PIC Revocation"
 docname: draft-pic-revocation-latest
 category: info

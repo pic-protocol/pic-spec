@@ -1,5 +1,5 @@
 ---
-title: "PIC Prover and Verifier Specification"
+title: "PIC Prover and Verifier"
 abbrev: "PIC Prover and Verifier"
 docname: draft-pic-prover-verifier-latest
 category: info

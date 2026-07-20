@@ -1,5 +1,5 @@
 ---
-title: "PIC Sandboxed Execution Specification"
+title: "PIC Sandboxed Execution"
 abbrev: "PIC Sandboxed Execution"
 docname: draft-pic-sandboxed-execution-latest
 category: info

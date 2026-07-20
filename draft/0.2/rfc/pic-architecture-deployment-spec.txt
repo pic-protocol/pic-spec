@@ -7,7 +7,7 @@
                                                             19 July 2026
 
 
-             PIC Architecture and Deployment Specification
+                    PIC Architecture and Deployment
                 draft-pic-architecture-deployment-latest
 
 Abstract

@@ -7,7 +7,7 @@
                                                             18 July 2026
 
 
-                      PIC Revocation Specification
+                             PIC Revocation
                       draft-pic-revocation-latest
 
 Abstract

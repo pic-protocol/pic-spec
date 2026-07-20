@@ -7,7 +7,7 @@
                                                             15 July 2026
 
 
-                 PIC Prover and Verifier Specification
+                        PIC Prover and Verifier
                     draft-pic-prover-verifier-latest
 
 Abstract

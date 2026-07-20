@@ -1,5 +1,5 @@
 ---
-title: "PIC Architecture and Deployment Specification"
+title: "PIC Architecture and Deployment"
 abbrev: "PIC Architecture and Deployment"
 docname: draft-pic-architecture-deployment-latest
 category: info
