@@ -57,7 +57,13 @@ task rfc:rebuild   # clean + build
 Builds are atomic per document: outputs land in the version's `rfc/` directory only if that document
 converts and renders without errors; per-document logs are written to `.cache/rfc-logs/`. The list of
 specs to build is `scripts/rfc/sources.txt` (`pic-legal.md` is intentionally excluded: it is a legal
-appendix incorporated by reference, not a specification). When a new draft version is created (e.g.
+appendix incorporated by reference, not a specification).
+
+In the generated HTML, cross-references between the built specs are relative `.html` links, so the
+set is navigable wherever it is served: a static host, a local checkout, or directly from GitHub via
+[htmlpreview](https://htmlpreview.github.io/), e.g.
+`https://htmlpreview.github.io/?https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/rfc/pic-spec.html`.
+Each document's *Source* link and `pic-legal.md` keep pointing to the canonical markdown on GitHub. When a new draft version is created (e.g.
 `draft/0.3/`), add its specs to `sources.txt` and keep the old versions listed: a single
 `task rfc:build` then rebuilds every configured version — `draft/0.2/rfc/`, `draft/0.3/rfc/`, and so on.
 

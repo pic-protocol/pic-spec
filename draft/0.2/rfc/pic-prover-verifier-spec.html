@@ -1258,7 +1258,7 @@ li > p:last-of-type:only-child {
 <h1 id="title">PIC Prover and Verifier Specification</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document is the <strong>PIC Prover and Verifier Specification</strong>, a subordinate specification of the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>. It
+<p id="section-abstract-1">This document is the <strong>PIC Prover and Verifier Specification</strong>, a subordinate specification of the <a href="pic-spec.html">PIC Specification</a>. It
 defines the normative requirements for the two complementary components of Proof of Continuity handling:<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-abstract-2.1">
@@ -2061,7 +2061,7 @@ how the chain is represented is a profile choice (Section 5).<a href="#section-2
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-2.5-9.1">
             <p id="section-2.5-9.1.1"><strong>Normative guarded-crossing requirement.</strong> A profile that applies an Execution Guardrail
-(<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md">PIC Execution Guardrail Specification</a>) MAY replace the ordinary forwarding envelope with a
+(<a href="pic-lineage-guardrail-spec.html">PIC Execution Guardrail Specification</a>) MAY replace the ordinary forwarding envelope with a
 non-nested guardrail forwarding envelope, provided it preserves the PCA bytes, digest recomputation, forwarding attribution, and all
 normative handoff semantics of this section. In such a profile, forwarding attribution and guardrail validation MAY be represented by
 separate signatures over the same envelope; neither signature replaces the executor signature on any PCA.<a href="#section-2.5-9.1.1" class="pilcrow">¶</a></p>
@@ -2410,7 +2410,7 @@ distinct from unauthorized replay: the difference is declared by <code>mode</cod
 <p id="section-6.1-6">Three consumption semantics are therefore distinct; the base decentralized profile provides only the first. <strong>Local single-use</strong>: the
 challenge is consumed once per Verifier state; independent Verifiers without shared state can each accept the same continuation.
 <strong>Coordinated single-use</strong>: the challenge is consumed once across Verifiers; it requires shared state or a coordinating component — the
-Trust Plane of the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md">PIC Architecture and Deployment Specification</a>, or a future federation profile.
+Trust Plane of the <a href="pic-architecture-deployment-spec.html">PIC Architecture and Deployment Specification</a>, or a future federation profile.
 <strong>Bounded multi-use (fan-out)</strong>: reuse explicitly authorized and declared by <code>mode</code>/<code>maxUses</code>. A property that depends exclusively on local
 Verifier state MUST NOT be described as global single-use. Replay never expands authority, but it can duplicate effects or continuations;
 coordination adds the bound on their global cardinality.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
@@ -2690,7 +2690,7 @@ nothing" as a slogan but a model where trust is <em>earned per hop, verified exp
 <strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-10-3" class="pilcrow">¶</a></p>
 <p id="section-10-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
 and attribution matters.<a href="#section-10-4" class="pilcrow">¶</a></p>
-<p id="section-10-5">This specification is subordinate to the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
+<p id="section-10-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
 the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or authorship claims beyond
 those defined in the PIC Legal Appendices.<a href="#section-10-5" class="pilcrow">¶</a></p>
 </section>

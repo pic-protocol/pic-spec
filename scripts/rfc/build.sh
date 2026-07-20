@@ -58,6 +58,23 @@ while IFS= read -r src; do
     continue
   fi
 
+  # Cross-spec links in the rendered HTML: the sources link to the canonical
+  # .md files on GitHub (correct when reading the markdown there). Links to
+  # sibling specs built by this pipeline are rewritten to relative .html
+  # links, so the generated set is navigable wherever it is served — a static
+  # host, a local checkout, or htmlpreview.github.io (which resolves relative
+  # links through the <base> it injects). The document's own "Source:" link
+  # and unbuilt documents (e.g. pic-legal.md) keep pointing to GitHub.
+  # XML and TXT keep the .md URLs: a relative .html link is meaningless there.
+  src_dir_re="$(dirname "${src}" | sed 's/[.[\*^$()+?{|]/\\&/g')"
+  while IFS= read -r sib; do
+    [ "$(dirname "${sib}")" = "$(dirname "${src}")" ] || continue
+    sib_base="$(out_base "${sib}")"
+    [ "${sib_base}" = "${base}" ] && continue
+    sed "s#href=\"[^\"]*/${src_dir_re}/${sib_base}\.md\"#href=\"${sib_base}.html\"#g" \
+      "${thtml}" > "${thtml}.tmp" && mv "${thtml}.tmp" "${thtml}"
+  done < <(read_sources)
+
   if [ "${CHECK_ONLY}" -eq 1 ]; then
     echo "   OK (validated; outputs untouched)"
   else

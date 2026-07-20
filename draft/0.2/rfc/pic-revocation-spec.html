@@ -1250,7 +1250,7 @@ li > p:last-of-type:only-child {
 <h1 id="title">PIC Revocation Specification</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document is the <strong>PIC Revocation Specification</strong>, a subordinate specification of the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>. It defines how
+<p id="section-abstract-1">This document is the <strong>PIC Revocation Specification</strong>, a subordinate specification of the <a href="pic-spec.html">PIC Specification</a>. It defines how
 <strong>authority is revoked</strong> within the Provenance Identity Continuity (PIC) Model.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">Expiry bounds <em>how long</em> a PCA is valid; revocation withdraws validity <em>before</em> that bound. The profile supports grant-, key-, delegate-,
 attestation-, issuer-, and policy-based revocation, and adds a property specific to PIC: <strong>causal execution cutoffs</strong> — revoking a lineage,
@@ -1258,7 +1258,7 @@ a branch, or its future from a given position.<a href="#section-abstract-2" clas
 <p id="section-abstract-3">This revision normatively defines the <strong>revocation coordinates</strong> and their hop-by-hop continuity (Section 2), the requirements for turning a
 historical selector into a causal cutoff (Section 4), and the revocation-authorization and revocation-state requirements (Section 5). It
 illustrates candidate revocation strategies (Section 3, non-normative). The coordinates extend the PCA format of the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>; they do not alter the PIC Model invariants — non-expansion of the
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>; they do not alter the PIC Model invariants — non-expansion of the
 signed state and Proof of Relationship are unchanged, and every PCA still continues exactly one predecessor. In case of conflict, the
 <strong>PIC Specification</strong> is authoritative.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
 </section>
@@ -1509,7 +1509,7 @@ and only within the normative sections. Examples are illustrative and non-normat
       </h2>
 <p id="section-2-1">This section is normative. It defines the structural fields a <strong>revocable</strong> PCA carries and the continuity a Verifier checks. A profile that
 does not support revocation MAY omit them; a revocable profile MUST include them. They extend the PCA format of the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a> and are covered by the same single PCA signature; they do not change
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> and are covered by the same single PCA signature; they do not change
 its non-expansion or Proof-of-Relationship rules.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <div id="origin-pca-pca0">
 <section id="section-2.1">
@@ -1532,7 +1532,7 @@ lineageId  = H( "PIC-Lineage-v0" || canonical(originCore) )
 suite, and the domain separator.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
 <p id="section-2.1-5">The origin commitment binds <code>lineageId</code> to the declared issuer, nonce, profile, grant binding, and origin authority context. Copying those
 public fields does not create a valid colliding lineage, because the resulting PCA0 must also satisfy the origin trust boundary
-(<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Section 6.2) and carry a valid signature (or equivalent origin
+(<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Section 6.2) and carry a valid signature (or equivalent origin
 authorization) for the committed issuer:<a href="#section-2.1-5" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.1-6">
 <pre>
@@ -1603,7 +1603,7 @@ profile or its revocation coordinates.<a href="#section-2.2-3.1.1" class="pilcro
         <h3 id="name-verifier-hop-validation">
 <a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-verifier-hop-validation" class="section-name selfRef">Verifier Hop Validation</a>
         </h3>
-<p id="section-2.3-1">In addition to the hop checks of the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a> (Section 3.3), a
+<p id="section-2.3-1">In addition to the hop checks of the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> (Section 3.3), a
 revocation-aware Verifier MUST, for each non-origin hop, reject the PCA unless all of the following hold against the already-validated
 predecessor:<a href="#section-2.3-1" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.3-2">
@@ -2666,7 +2666,7 @@ proofs and cryptographic audit of the prefix.<a href="#section-6-7" class="pilcr
 <strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-8-3" class="pilcrow">¶</a></p>
 <p id="section-8-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
 and attribution matters.<a href="#section-8-4" class="pilcrow">¶</a></p>
-<p id="section-8-5">This specification is subordinate to the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
+<p id="section-8-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
 the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or authorship claims beyond
 those defined in the PIC Legal Appendices.<a href="#section-8-5" class="pilcrow">¶</a></p>
 </section>

@@ -1261,7 +1261,7 @@ li > p:last-of-type:only-child {
 <h1 id="title">PIC Execution Guardrail Specification</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document is the <strong>PIC Execution Guardrail Specification</strong>, a subordinate specification of the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>.
+<p id="section-abstract-1">This document is the <strong>PIC Execution Guardrail Specification</strong>, a subordinate specification of the <a href="pic-spec.html">PIC Specification</a>.
 It retains its historical repository filename (<code>pic-lineage-guardrail-spec.md</code>); the runtime construct it defines is the Execution
 Guardrail.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">A <strong>Lineage Execution</strong> is a single-origin PIC execution in which every PCA continues exactly one predecessor and authority remains bounded
@@ -1280,8 +1280,8 @@ authorities, and do not alter lineage invariants.<a href="#section-abstract-4" c
 execution model — untrusted executors inside trusted sandboxes that invoke the guardrail — the guardrail envelope in which permitted
 crossings travel, and the enforcement order over semantic scopes and configured policies (Sections 2–5); the normative guardrail
 construction and enforcement requirements will be defined in forthcoming revisions. Guardrails build on the PCA format of the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a> and are consistent with the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</a>; they do not alter non-expansion of the signed state, Proof of Relationship, or the
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> and are consistent with the
+<a href="pic-revocation-spec.html">PIC Revocation Specification</a>; they do not alter non-expansion of the signed state, Proof of Relationship, or the
 rule that every PCA continues exactly one predecessor. In case of conflict, the <strong>PIC Specification</strong> is authoritative.<a href="#section-abstract-5" class="pilcrow">¶</a></p>
 </section>
 <section class="note" id="section-note.1">
@@ -1477,8 +1477,8 @@ bounded by the origin authority context.<a href="#section-1.1-1.1.1" class="pilc
 account, or another authenticated entity associated with permissions — expresses an <strong>intent</strong> and selects an <strong>origin authority context</strong>
 from its permissions. The result is PCA0. Every later PCA is produced by an executor and continues exactly one predecessor through PoR, and
 successors need not be known in advance: each hop delegates to an N+1 executor that may not yet exist when its predecessor completes
-(<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Section 1.3).<a href="#section-1.1-2" class="pilcrow">¶</a></p>
-<p id="section-1.1-3">The topology may branch under fan-out (<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</a>, Section 1.1), so a Lineage Execution is
+(<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Section 1.3).<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-3">The topology may branch under fan-out (<a href="pic-revocation-spec.html">PIC Revocation Specification</a>, Section 1.1), so a Lineage Execution is
 not necessarily one linear chain. Even when execution branches:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.1-4.1">
@@ -1529,8 +1529,8 @@ Authority only narrows.
 as a valid continuation of another. The claim is limited to valid PIC state and authority propagation; the physical boundary is stated
 below. Distinct authorities may travel together in the same message or process; they remain logically distinct and are never merged. The formal definitions and proofs are in the PIC Model
 <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 8</a>)</span>; the construction — Provers, Verifiers, and the PCA format — is defined by the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, and revocation by the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</a>. This document builds on them and restates none of them.<a href="#section-1.1-6" class="pilcrow">¶</a></p>
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, and revocation by the
+<a href="pic-revocation-spec.html">PIC Revocation Specification</a>. This document builds on them and restates none of them.<a href="#section-1.1-6" class="pilcrow">¶</a></p>
 <p id="section-1.1-7">What these properties provide is <strong>execution lineage safety</strong>, distinct from physical executor behavior:<a href="#section-1.1-7" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-1.1-8">
 <pre>
@@ -1898,7 +1898,7 @@ crossing.<a href="#section-2.3-1.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-2.3-2">The sandbox is a trusted component: an explicit trust assumption of this specification, exactly as Verifier correctness is an explicit
-trust assumption of the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>. The gain is where the trust sits: it moves
+trust assumption of the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>. The gain is where the trust sits: it moves
 from the behavior of the executor, unverifiable per Section 2.1, to the structure of the boundary — fixed, implementable, attestable. In
 the execution model assumed by this specification, the sandbox is the only permitted path from the enclosed executor to a governed
 external effect; an implementation that permits an unmediated governed external path from the executor does not satisfy this
@@ -1929,7 +1929,7 @@ the sandbox does not make the executor behave correctly; it makes governed exter
 <a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-discrete-multi-hop-executio" class="section-name selfRef">Discrete Multi-Hop Execution</a>
         </h3>
 <p id="section-2.4-1">Execution is discrete and multi-hop: a chain of sandboxed executors, each hop continuing the Lineage Execution under PoR and non-expansion
-as defined by the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+as defined by the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.4-2">
 <pre>
 + - - - - - - - - +      + - - - - - - - - +      + - - - - - - - - +
@@ -2036,7 +2036,7 @@ the next hop knows that a crossing was guarded.<a href="#section-3-1" class="pil
         </h3>
 <p id="section-3.1-1">At each hop the sandbox receives a Multi-Lineage Execution as input and emits a Multi-Lineage Execution as output — n &gt;= 1 on both sides.
 No new machinery is required for PCA validity: each PCA remains subject to the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, and an invalid PCA is rejected by a conforming PIC Verifier
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, and an invalid PCA is rejected by a conforming PIC Verifier
 function. What sandbox mode adds is a guarded-crossing acceptance requirement through the guardrail envelope (Sections 3.3 and 3.4),
 without changing PCA validity, PoR, or non-expansion. What this specification governs is the proposed output crossing presented to the
 successor hop: it may carry several independently attributable Lineage Executions, and it does not become a combined authority state.
@@ -2096,7 +2096,7 @@ Multi-Lineage Execution     authorities at the hop
 <p id="section-3.3-1">One question remains: the successor receives Lineage Executions — how does it know they passed through a guardrail? Because a permitted
 crossing is delivered in a <strong>guardrail forwarding envelope</strong> carrying the validated Lineage Executions together with the forwarding and
 guardrail attestations defined below. It follows the forwarding-envelope pattern of the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a> (Section 2.5), and binds both forwarding attribution and the
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> (Section 2.5), and binds both forwarding attribution and the
 guardrail decision to the crossing context defined by the applicable profile. The profile defines which crossing elements are bound,
 including any required destination, signed request, participant, freshness, replay-protection, and decision information.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">For a guarded crossing, the guardrail envelope is the applicable forwarding envelope of that crossing: it replaces, rather than contains,
@@ -2120,7 +2120,7 @@ freshness semantics of the profile.<a href="#section-3.3-4" class="pilcrow">¶</
 without exercising enforcement responsibility for the crossing — is not a forwarder: it does not produce a <code>forwardingProof</code>, does not
 re-sign or re-bind the envelope, and its transit does not create a new presentation of the crossing. The <code>forwardingProof</code> belongs
 exclusively to the enforcement component that presents the guarded crossing, and the envelope travels through any medium unchanged,
-exactly as a PCA does (<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Section 6.7).<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+exactly as a PCA does (<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Section 6.7).<a href="#section-3.3-5" class="pilcrow">¶</a></p>
 <p id="section-3.3-6">An illustrative guardrail forwarding envelope:<a href="#section-3.3-6" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-3.3-7">
 <pre>
@@ -2204,7 +2204,7 @@ selection, and trust-anchor distribution — will be defined by a future normati
         </h3>
 <p id="section-3.4-1">A PIC-compliant hop may operate in <strong>sandbox mode</strong> or in <strong>non-sandbox mode</strong>. In sandbox mode the hop accepts only guarded crossings: a
 valid guardrail envelope is required, plain PCA delivery is insufficient, and bypass attempts are rejected (Section 3.3). In non-sandbox
-mode the hop may accept a plain PCA, as defined by the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>: PCA
+mode the hop may accept a plain PCA, as defined by the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>: PCA
 validity, PoR, origin binding, and non-expansion remain enforced, but guardrail enforcement is not required for that crossing and the
 envelope bypass guarantee does not apply.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-3.4-2">
@@ -2251,7 +2251,7 @@ required in addition to baseline PIC validation.<a href="#section-3.5-4.1.1" cla
 </li>
         </ul>
 <p id="section-3.5-5">Guidance for selecting sandbox mode, non-sandbox mode, and mixed deployment profiles is defined by the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md">PIC Architecture and Deployment Specification</a>.<a href="#section-3.5-5" class="pilcrow">¶</a></p>
+<a href="pic-architecture-deployment-spec.html">PIC Architecture and Deployment Specification</a>.<a href="#section-3.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2272,7 +2272,7 @@ decision.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-4.1-2">
 <li id="section-4.1-2.1">
             <p id="section-4.1-2.1.1"><strong>validate</strong> — before policy evaluation, each participating PCA is validated by a conforming PIC Verifier function
-(<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>); if any is invalid, deny is enforced without evaluating policy;<a href="#section-4.1-2.1.1" class="pilcrow">¶</a></p>
+(<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>); if any is invalid, deny is enforced without evaluating policy;<a href="#section-4.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.1-2.2">
             <p id="section-4.1-2.2.1"><strong>evaluate</strong> — the configured policy is evaluated over the participating Lineage Executions;<a href="#section-4.1-2.2.1" class="pilcrow">¶</a></p>
@@ -2311,7 +2311,7 @@ EXECUTION GUARDRAIL
 enforces the resulting permit or deny decision
 </pre><a href="#section-4.1-5" class="pilcrow">¶</a>
 </div>
-<p id="section-4.1-6">The executed-vs-signed rule of the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a> (Section 3.3) applies per
+<p id="section-4.1-6">The executed-vs-signed rule of the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> (Section 3.3) applies per
 participating Lineage Execution: each executed operation must match the signed request of its own Lineage Execution and remains attributed
 to it. Policy authorizes joint participation only; it does not compose the authority sets into a common one.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
 </section>
@@ -2388,7 +2388,7 @@ specification; the example — including its CEL-like condition language — is 
       </h2>
 <p id="section-5-1">This section is non-normative. It closes the conceptual model.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">A crossing is an execution in transit: it may happen in process, across a network, or over any other medium. The transport does not
-matter — the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a> already separates the security model from transport,
+matter — the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> already separates the security model from transport,
 and this specification inherits that separation. In a guarded crossing, what travels is the guardrail envelope, and inside it travel the
 Lineage Executions of the crossing: bound together, never merged.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-5-3">
@@ -2460,7 +2460,7 @@ another Lineage Execution              no combined authority state is created
 <strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-7-3" class="pilcrow">¶</a></p>
 <p id="section-7-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
 and attribution matters.<a href="#section-7-4" class="pilcrow">¶</a></p>
-<p id="section-7-5">This specification is subordinate to the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
+<p id="section-7-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
 the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or authorship claims beyond
 those defined in the PIC Legal Appendices.<a href="#section-7-5" class="pilcrow">¶</a></p>
 </section>

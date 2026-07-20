@@ -1251,9 +1251,9 @@ li > p:last-of-type:only-child {
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document is the <strong>PIC Architecture and Deployment Specification</strong>, a subordinate specification of the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>. It describes how the components defined by the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a> and the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md">PIC Execution Guardrail Specification</a> are arranged and operated in concrete systems: the two deployment
+<a href="pic-spec.html">PIC Specification</a>. It describes how the components defined by the
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> and the
+<a href="pic-lineage-guardrail-spec.html">PIC Execution Guardrail Specification</a> are arranged and operated in concrete systems: the two deployment
 architectures — <strong>centralized</strong>, where a trusted central server, the <strong>Trust Plane</strong>, validates every transition against the lineage
 history it holds, and <strong>decentralized</strong>, where every hop proves and verifies locally — their fit to trusted and untrusted environments,
 hybrid enterprise compositions of the two,
@@ -1361,8 +1361,8 @@ does not redefine, extend, or alter the PIC Model or the normative semantics def
 <p id="section-1-2">This specification describes the architectures of PIC systems and their deployment types: centralized and decentralized (Section 2),
 their fit to trusted and untrusted environments (Section 3), hybrid enterprise compositions (Section 4), and interoperability with
 existing token infrastructures (Section 5). The components deployed are those of the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a> and the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md">PIC Execution Guardrail Specification</a>.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a> and the
+<a href="pic-lineage-guardrail-spec.html">PIC Execution Guardrail Specification</a>.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <div id="requirements-notation">
 <section id="section-1.1">
         <h3 id="name-requirements-notation">
@@ -1381,7 +1381,7 @@ and only within the normative sections of this document. Examples are illustrati
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-architectures" class="section-name selfRef">Architectures</a>
       </h2>
 <p id="section-2-1">This section is non-normative. This specification defines two deployment topologies, centralized and decentralized; within each, different
-chain-validation profiles (<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Sections 5 and 7) provide different
+chain-validation profiles (<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Sections 5 and 7) provide different
 cost and assurance properties.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <div id="centralized">
 <section id="section-2.1">
@@ -1390,7 +1390,7 @@ cost and assurance properties.<a href="#section-2-1" class="pilcrow">¶</a></p>
         </h3>
 <p id="section-2.1-1">In the centralized architecture the hops work exactly as in the decentralized one — each executor constructs, signs, and remains the
 signer of its own PCA — but every proposed transition is submitted to a trusted central server, the <strong>Trust Plane</strong>, which acts as the
-Verifier of the <code>n+1</code> transition (<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Sections 3 and 5.2): it
+Verifier of the <code>n+1</code> transition (<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Sections 3 and 5.2): it
 validates the transition against the lineage history it holds and may add its own signature — a validation attestation, receipt, envelope,
 or checkpoint. That signature attests Trust Plane validation; it does not replace, and must not be interpreted as, the executor signature.
 Where a profile lets the Trust Plane materially construct a PCA, the final signature is still produced by the executor or through an
@@ -1441,7 +1441,7 @@ no central component; every hop proves and verifies locally
 <a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-consecutive-collusion-and-h" class="section-name selfRef">Consecutive Collusion and History</a>
         </h3>
 <p id="section-2.3-1">The decentralized incremental profile is secure hop by hop, with one documented limit
-(<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Section 6.8): two or more consecutive colluding hops cannot be
+(<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Section 6.8): two or more consecutive colluding hops cannot be
 detected when the receiving Verifier lacks authenticated evidence of the earlier lineage prefix.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.3-2">
 <pre>
@@ -1454,7 +1454,7 @@ cannot re-check the step from HOP 1 to HOP 2
 </pre><a href="#section-2.3-2" class="pilcrow">¶</a>
 </div>
 <p id="section-2.3-3">The history can be held by the Trust Plane, carried inside the PCA chain, or committed to by a succinct proof
-(<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Sections 5.1–5.3). Carrying the complete prefix makes size and
+(<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Sections 5.1–5.3). Carrying the complete prefix makes size and
 validation cost grow linearly with lineage length, so it is unsuitable as the default lightweight profile; a deployment may nevertheless
 select full-chain validation when its stronger independent-verification property justifies the O(n) cost. A succinct proof keeps
 verification cheap but moves the cost to proof generation and adds the proof-system, setup, and availability assumptions.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
@@ -1500,7 +1500,7 @@ verification cheap but moves the cost to proof generation and adds the proof-sys
             </tr>
           </tbody>
         </table>
-<p id="section-2.3-5">The profile trade-offs are analyzed in the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Sections 6.8 and 7.<a href="#section-2.3-5" class="pilcrow">¶</a></p>
+<p id="section-2.3-5">The profile trade-offs are analyzed in the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Sections 6.8 and 7.<a href="#section-2.3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1541,7 +1541,7 @@ trusted by itself.<a href="#section-3-2" class="pilcrow">¶</a></p>
         </tbody>
       </table>
 <p id="section-3-4">The same segmentation drives the guardrail deployment modes of the
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md">PIC Execution Guardrail Specification</a> (Section 3.4): trusted segments may operate hops in non-sandbox
+<a href="pic-lineage-guardrail-spec.html">PIC Execution Guardrail Specification</a> (Section 3.4): trusted segments may operate hops in non-sandbox
 mode; untrusted or high-risk segments use sandbox mode.<a href="#section-3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1554,8 +1554,8 @@ mode; untrusted or high-risk segments use sandbox mode.<a href="#section-3-4" cl
 assumptions in the same chain. While execution crosses a segment in which consecutive collusion is out of scope, decentralized incremental
 verification may be used; when it enters a segment in which consecutive collusion is in scope, the deployment uses the selected
 collusion-resistant profile — Trust Plane validation, full-chain validation, or an approved succinct-proof profile (Section 3). The PIC
-invariants are the same everywhere (<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>;
-<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Sections 2.4 and 3.3); only the validation topology, the
+invariants are the same everywhere (<a href="pic-spec.html">PIC Specification</a>;
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Sections 2.4 and 3.3); only the validation topology, the
 chain-validation profile, and the resulting assurance assumptions change.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <p id="section-4-2">The following diagram illustrates the Trust Plane variant of a hybrid deployment.<a href="#section-4-2" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-4-3">
@@ -1601,7 +1601,7 @@ segment above.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
 <p id="section-5-1">This section is non-normative. For interoperability with existing token infrastructures, the definition of an <strong>OAuth Token Exchange
 profile</strong> is recommended: exchanging an Access Token for a PCA and a PCA for an Access Token, so that PIC enters and leaves existing
 systems without integration friction. This is consistent with PCA0 derivation from existing credentials
-(<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Section 1.8) and builds on OAuth 2.0 Token Exchange
+(<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Section 1.8) and builds on OAuth 2.0 Token Exchange
 <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 8</a>)</span>. The profile will be defined in a future specification.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-5-2">
 <pre>
@@ -1653,7 +1653,7 @@ one profile, both directions
 <strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-7-3" class="pilcrow">¶</a></p>
 <p id="section-7-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
 and attribution matters.<a href="#section-7-4" class="pilcrow">¶</a></p>
-<p id="section-7-5">This specification is subordinate to the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
+<p id="section-7-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
 the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or authorship claims beyond
 those defined in the PIC Legal Appendices.<a href="#section-7-5" class="pilcrow">¶</a></p>
 </section>
