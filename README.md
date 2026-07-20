@@ -35,6 +35,34 @@ Together, these documents define what it means for a system to be
 
 ---
 
+## Building RFC documents
+
+The specifications under `draft/0.2/` are authored in kramdown-rfc markdown and compile to RFC-style
+XML (RFCXML v3), HTML, and plain text next to their sources, under `draft/<version>/rfc/`, which is
+committed. The pipeline uses
+[kramdown-rfc2629](https://github.com/cabo/kramdown-rfc) (Ruby) and [xml2rfc](https://github.com/ietf-tools/xml2rfc)
+(Python), both installed locally under `.tools/` — nothing is installed system-wide and `sudo` is never used.
+
+Prerequisites: [Task](https://taskfile.dev), `python3`, and a Ruby ≥ 3.0 (e.g. `brew install ruby`; the
+setup script finds the Homebrew Ruby automatically and never uses the macOS system Ruby for gems).
+
+```sh
+task rfc:setup     # one-time (idempotent): kramdown-rfc into .tools/gems, xml2rfc into .tools/xml2rfc-venv
+task rfc:check     # verify toolchain + validate all configured specs (no outputs written)
+task rfc:build     # build draft/<version>/rfc/<name>.{xml,html,txt} for every spec in scripts/rfc/sources.txt
+task rfc:clean     # remove generated outputs and logs
+task rfc:rebuild   # clean + build
+```
+
+Builds are atomic per document: outputs land in the version's `rfc/` directory only if that document
+converts and renders without errors; per-document logs are written to `.cache/rfc-logs/`. The list of
+specs to build is `scripts/rfc/sources.txt` (`pic-legal.md` is intentionally excluded: it is a legal
+appendix incorporated by reference, not a specification). When a new draft version is created (e.g.
+`draft/0.3/`), add its specs to `sources.txt` and keep the old versions listed: a single
+`task rfc:build` then rebuilds every configured version — `draft/0.2/rfc/`, `draft/0.3/rfc/`, and so on.
+
+---
+
 ## License
 
 This project is licensed under the  

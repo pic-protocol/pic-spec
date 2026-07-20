@@ -179,3 +179,11 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/osx,linux,windows,visualstudiocode,intellij+all
+### RFC toolchain (scripts/rfc) ###
+# local toolchain and caches — never committed
+.tools/
+.cache/
+.refcache/
+*.log
+*.tmp
+# NOTE: generated RFC outputs in draft/<version>/rfc/ ARE committed — do not add rfc/ here

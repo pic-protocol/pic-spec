@@ -1,0 +1,2712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>PIC Revocation Specification</title>
+<meta content="Nicola Gallo" name="author">
+<meta content="
+       This document is the  PIC Revocation Specification , a subordinate specification of the  PIC Specification . It defines how
+ authority is revoked  within the Provenance Identity Continuity (PIC) Model. 
+       Expiry bounds  how long  a PCA is valid; revocation withdraws validity  before  that bound. The profile supports grant-, key-, delegate-,
+attestation-, issuer-, and policy-based revocation, and adds a property specific to PIC:  causal execution cutoffs  — revoking a lineage,
+a branch, or its future from a given position. 
+       This revision normatively defines the  revocation coordinates  and their hop-by-hop continuity (Section 2), the requirements for turning a
+historical selector into a causal cutoff (Section 4), and the revocation-authorization and revocation-state requirements (Section 5). It
+illustrates candidate revocation strategies (Section 3, non-normative). The coordinates extend the PCA format of the
+ PIC Prover and Verifier Specification ; they do not alter the PIC Model invariants — non-expansion of the
+signed state and Proof of Relationship are unchanged, and every PCA still continues exactly one predecessor. In case of conflict, the
+ PIC Specification  is authoritative. 
+    " name="description">
+<meta content="xml2rfc 3.32.0" name="generator">
+<meta content="draft-pic-revocation-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.32.0
+    Python 3.14.5
+    ConfigArgParse 1.7.5
+    google-i18n-address 3.1.1
+    intervaltree 3.2.1
+    Jinja2 3.1.6
+    lxml 6.1.1
+    platformdirs 4.10.1
+    pycountry 26.2.16
+    PyYAML 6.0.3
+    requests 2.34.2
+    wcwidth 0.8.2
+-->
+<link href="0.2-pic-revocation-spec.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">/*
+
+  NOTE: Changes at the bottom of this file overrides some earlier settings.
+
+  Once the style has stabilized and has been adopted as an official RFC style,
+  this can be consolidated so that style settings occur only in one place, but
+  for now the contents of this file consists first of the initial CSS work as
+  provided to the RFC Formatter (xml2rfc) work, followed by itemized and
+  commented changes found necessary during the development of the v3
+  formatters.
+
+*/
+
+/* fonts */
+@import url('https://static.ietf.org/fonts/noto-sans/import.css'); /* Sans-serif */
+@import url('https://static.ietf.org/fonts/noto-serif/import.css'); /* Serif (print) */
+@import url('https://static.ietf.org/fonts/roboto-mono/import.css'); /* Monospace */
+
+:root {
+  --font-sans: 'Noto Sans', Arial, Helvetica, sans-serif;
+  --font-serif: 'Noto Serif', 'Times', 'Times New Roman', serif;
+  --font-mono: 'Roboto Mono', Courier, 'Courier New', monospace;
+}
+
+@viewport {
+  zoom: 1.0;
+}
+@-ms-viewport {
+  width: extend-to-zoom;
+  zoom: 1.0;
+}
+/* general and mobile first */
+html {
+}
+body {
+  max-width: 90%;
+  margin: 1.5em auto;
+  color: #222;
+  background-color: #fff;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  overflow-wrap: break-word;
+}
+.ears {
+  display: none;
+}
+
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  margin: 1em 0 0.5em;
+  font-weight: bold;
+  line-height: 1.3;
+}
+#title {
+  clear: both;
+  border-bottom: 1px solid #ddd;
+  margin: 0 0 0.5em 0;
+  padding: 1em 0 0.5em;
+}
+.author {
+  padding-bottom: 4px;
+}
+h1 {
+  font-size: 26px;
+  margin: 1em 0;
+}
+h2 {
+  font-size: 22px;
+  margin-top: -20px;  /* provide offset for in-page anchors */
+  padding-top: 33px;
+}
+h3 {
+  font-size: 18px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h4 {
+  font-size: 16px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h5, h6 {
+  font-size: 14px;
+}
+#n-copyright-notice {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+/* general structure */
+p {
+  padding: 0;
+  margin: 0 0 1em 0;
+  text-align: left;
+}
+div, span {
+  position: relative;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+@media print {
+  svg {
+    max-height: 850px;
+    max-width: 660px;
+  }
+}
+svg[font-family~="serif" i], svg [font-family~="serif" i] {
+  font-family: var(--font-serif);
+}
+svg[font-family~="sans-serif" i], svg [font-family~="sans-serif" i] {
+  font-family: var(--font-sans);
+}
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  display: table;
+  border: none;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 1em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.ulBare, li.ulBare {
+  margin-left: 0em !important;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+/* 
+dl.nohang > dt {
+  float: none;
+}
+*/
+dl > dd {
+  margin-bottom: .8em;
+  min-height: 1.3em;
+}
+dl.compact > dd, .dlCompact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+
+/* links */
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #22e; /* Arlen: WCAG 2019 */
+}
+a[href]:hover {
+  background-color: #f2f2f2;
+}
+figcaption a[href],
+a[href].selfRef {
+  color: #222;
+}
+/* XXX probably not this:
+a.selfRef:hover {
+  background-color: transparent;
+  cursor: default;
+} */
+
+/* Figures */
+tt, code, pre {
+  background-color: #f9f9f9;
+  font-family: var(--font-mono);
+}
+pre {
+  border: 1px solid #eee;
+  margin: 0;
+  padding: 1em;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption {
+  font-style: italic;
+  margin: 0 0 1em 0;
+}
+@media screen {
+  pre {
+    overflow-x: auto;
+    max-width: 100%;
+    max-width: calc(100% - 22px);
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 1.2em 2em;
+}
+blockquote {
+  background-color: #f9f9f9;
+  color: #111; /* Arlen: WCAG 2019 */
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin: 1em 0;
+}
+blockquote > *:last-child {
+  margin-bottom: 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+.xref {
+  overflow-wrap: normal;
+}
+
+/* tables */
+table {
+  width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  border: 1px solid #eee;
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.5em 0.75em;
+}
+th {
+  text-align: left;
+  background-color: #e9e9e9;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f5f5f5;
+}
+table caption {
+  font-style: italic;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+table p {
+  /* XXX to avoid bottom margin on table row signifiers. If paragraphs should
+     be allowed within tables more generally, it would be far better to select on a class. */
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  color: #666; /* Arlen: AHDJ 2019 */
+  text-decoration: none;
+  visibility: hidden;
+  user-select: none;
+  -ms-user-select: none;
+  -o-user-select:none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+@media screen {
+  aside:hover > a.pilcrow,
+  p:hover > a.pilcrow,
+  blockquote:hover > a.pilcrow,
+  div:hover > a.pilcrow,
+  li:hover > a.pilcrow,
+  pre:hover > a.pilcrow {
+    visibility: visible;
+  }
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: 0.9em;
+}
+#identifiers dt {
+  width: 3em;
+  clear: left;
+}
+#identifiers dd {
+  float: left;
+  margin-bottom: 0;
+}
+/* Fix PDF info block run off issue */
+@media print {
+  #identifiers dd {
+    max-width: 100%;
+  }
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #666; /* Arlen: WCAG 2019 */
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc  {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+nav.toc ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+nav.toc li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.refSubseries {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 600px) {
+  .index ul {
+    -moz-column-count: 2;
+    -moz-column-gap: 20px;
+  }
+  .index ul ul {
+    -moz-column-count: 1;
+    -moz-column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  font-family: var(--font-sans);
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+
+/* temporary notes */
+.rfcEditorRemove::before {
+  position: absolute;
+  top: 0.2em;
+  right: 0.2em;
+  padding: 0.2em;
+  content: "The RFC Editor will remove this note";
+  color: #9e2a00; /* Arlen: WCAG 2019 */
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+}
+.rfcEditorRemove {
+  position: relative;
+  padding-top: 1.8em;
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  border-radius: 3px;
+}
+.cref {
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 1023px) {
+  body {
+    padding-top: 2em;
+  }
+  #title {
+    padding: 1em 0;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  h2 {
+    font-size: 20px;
+    margin-top: -18px;  /* provide offset for in-page anchors */
+    padding-top: 38px;
+  }
+  #identifiers dd {
+    max-width: 60%;
+  }
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    background-color: inherit;
+    border-bottom: 1px solid #ccc;
+  }
+  #toc h2 {
+    margin: -1px 0 0 0;
+    padding: 4px 0 4px 6px;
+    padding-right: 1em;
+    min-width: 190px;
+    font-size: 1.1em;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 6px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 1024px) {
+  body {
+    max-width: 724px;
+    margin: 42px auto;
+    padding-left: 1.5em;
+    padding-right: 29em;
+  }
+  #toc {
+    position: fixed;
+    top: 42px;
+    right: 42px;
+    width: 25%;
+    margin: 0;
+    padding: 0 1em;
+    z-index: 1;
+  }
+  #toc h2 {
+    border-top: none;
+    border-bottom: 1px solid #ddd;
+    font-size: 1em;
+    font-weight: normal;
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 0;
+    overflow: auto;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  .breakable pre {
+    break-inside: auto;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+/* This is commented out here, as the string-set: doesn't
+   pass W3C validation currently */
+/*
+.ears thead .left {
+  string-set: ears-top-left content();
+}
+
+.ears thead .center {
+  string-set: ears-top-center content();
+}
+
+.ears thead .right {
+  string-set: ears-top-right content();
+}
+
+.ears tfoot .left {
+  string-set: ears-bottom-left content();
+}
+
+.ears tfoot .center {
+  string-set: ears-bottom-center content();
+}
+
+.ears tfoot .right {
+  string-set: ears-bottom-right content();
+}
+*/
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+  /* The following is commented out here, but set appropriately by in code, as
+     the content depends on the document */
+  /*
+  @top-left {
+    content: 'Internet-Draft';
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-left {
+    content: string(ears-top-left);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-center {
+    content: string(ears-top-center);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-right {
+    content: string(ears-top-right);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @bottom-left {
+    content: string(ears-bottom-left);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-center {
+    content: string(ears-bottom-center);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-right {
+      content: '[Page ' counter(page) ']';
+      vertical-align: top;
+      border-top: solid 1px #ccc;
+  }
+  */
+
+}
+
+/* Changes introduced to fix issues found during implementation */
+/* Make sure links are clickable even if overlapped by following H* */
+a {
+  z-index: 2;
+}
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Leave room in document info to show Internet-Draft on one line */
+#identifiers dt {
+  width: 8em;
+}
+
+/* Don't waste quite as much whitespace between label and value in doc info */
+#identifiers dd {
+  margin-left: 1em;
+}
+
+/* Give floating toc a background color (needed when it's a div inside section */
+#toc {
+  background-color: white;
+}
+
+/* Make the collapsed ToC header render white on gray also when it's a link */
+@media screen and (max-width: 1023px) {
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+}
+
+/* Give the bottom of the ToC some whitespace */
+@media screen and (min-width: 1024px) {
+  #toc {
+    padding: 0 0 1em 1em;
+  }
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* prevent monospace from becoming overly large */
+tt, code, pre {
+  font-size: 95%;
+}
+
+/* Fix the height/width aspect for ascii art*/
+.sourcecode pre,
+.art-text pre {
+  line-height: 1.12;
+}
+
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin-right: 0.5em;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table td.text-left,
+table th.text-left {
+  text-align: left;
+}
+table td.text-center,
+table th.text-center {
+  text-align: center;
+}
+table td.text-right,
+table th.text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 30em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Provide table alignment support.  We can't use the alignX classes above
+   since they do unwanted things with caption and other styling. */
+table.right {
+ margin-left: auto;
+ margin-right: 0;
+}
+table.center {
+ margin-left: auto;
+ margin-right: auto;
+}
+table.left {
+ margin-left: 0;
+ margin-right: auto;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+caption a[href] {
+  color: #222;
+}
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+/* Tweak the invisible space above H* in order not to overlay links in text above */
+ h2 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 31px;
+ }
+ h3 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+ h4 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+/* Float artwork pilcrow to the right */
+@media screen {
+  .artwork a.pilcrow {
+    display: block;
+    line-height: 0.7;
+    margin-top: 0.15em;
+  }
+}
+/* Make pilcrows on dd visible */
+@media screen {
+  dd:hover > a.pilcrow {
+    visibility: visible;
+  }
+}
+/* Make the placement of figcaption match that of a table's caption
+   by removing the figure's added bottom margin */
+.alignLeft.art-text,
+.alignCenter.art-text,
+.alignRight.art-text {
+   margin-bottom: 0;
+}
+.alignLeft,
+.alignCenter,
+.alignRight {
+  margin: 1em 0 0 0;
+}
+/* In print, the pilcrow won't show on hover, so prevent it from taking up space,
+   possibly even requiring a new line */
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+/* Styling for the external metadata */
+div#external-metadata {
+  background-color: #eee;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  display: none;
+}
+div#internal-metadata {
+  padding: 0.5em;                       /* to match the external-metadata padding */
+}
+/* Styling for title RFC Number */
+h1#rfcnum {
+  clear: both;
+  margin: 0 0 -1em;
+  padding: 1em 0 0 0;
+}
+/* Make .olPercent look the same as <ol><li> */
+dl.olPercent > dd {
+  margin-bottom: 0.25em;
+  min-height: initial;
+}
+/* Give aside some styling to set it apart */
+aside {
+  border-left: 1px solid #ddd;
+  margin: 1em 0 1em 2em;
+  padding: 0.2em 2em;
+}
+aside > dl,
+aside > ol,
+aside > ul,
+aside > table,
+aside > p {
+  margin-bottom: 0.5em;
+}
+/* Additional page break settings */
+@media print {
+  figcaption, table caption {
+    page-break-before: avoid;
+  }
+}
+/* Font size adjustments for print */
+@media print {
+  body  { font-size: 10pt;      line-height: normal; max-width: 96%; }
+  h1    { font-size: 1.72em;    padding-top: 1.5em; } /* 1*1.2*1.2*1.2 */
+  h2    { font-size: 1.44em;    padding-top: 1.5em; } /* 1*1.2*1.2 */
+  h3    { font-size: 1.2em;     padding-top: 1.5em; } /* 1*1.2 */
+  h4    { font-size: 1em;       padding-top: 1.5em; }
+  h5, h6 { font-size: 1em;      margin: initial; padding: 0.5em 0 0.3em; }
+}
+/* Sourcecode margin in print, when there's no pilcrow */
+@media print {
+  .artwork,
+  .artwork > pre,
+  .sourcecode {
+    margin-bottom: 1em;
+  }
+}
+/* Avoid narrow tables forcing too narrow table captions, which may render badly */
+table {
+  min-width: 20em;
+}
+/* ol type a */
+ol.type-a { list-style-type: lower-alpha; }
+ol.type-A { list-style-type: upper-alpha; }
+ol.type-i { list-style-type: lower-roman; }
+ol.type-I { list-style-type: upper-roman; }
+/* Apply the print table and row borders in general, on request from the RPC,
+and increase the contrast between border and odd row background slightly */
+table {
+  border: 1px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+}
+tr {
+  break-inside: avoid;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f8f8f8;
+}
+/* Use style rules to govern display of the TOC. */
+@media screen and (max-width: 1023px) {
+  #toc nav { display: none; }
+  #toc.active nav { display: block; }
+}
+/* Add support for keepWithNext */
+.keepWithNext {
+  break-after: avoid-page;
+  break-after: avoid-page;
+}
+/* Add support for keepWithPrevious */
+.keepWithPrevious {
+  break-before: avoid-page;
+}
+/* Change the approach to avoiding breaks inside artwork etc. */
+figure, pre, table, .artwork, .sourcecode  {
+  break-before: auto;
+  break-after: auto;
+}
+/* Avoid breaks between <dt> and <dd> */
+dl {
+  break-before: auto;
+  break-inside: auto;
+}
+dt {
+  break-before: auto;
+  break-after: avoid-page;
+}
+dd {
+  break-before: avoid-page;
+  break-after: auto;
+  orphans: 3;
+  widows: 3
+}
+span.break, dd.break {
+  margin-bottom: 0;
+  min-height: 0;
+  break-before: auto;
+  break-inside: auto;
+  break-after: auto;
+}
+/* Undo break-before ToC */
+@media print {
+  #toc {
+    break-before: auto;
+  }
+}
+/* Text in compact lists should not get extra bottom margin space,
+   since that would makes the list not compact */
+ul.compact p, .ulCompact p,
+ol.compact p, .olCompact p {
+ margin: 0;
+}
+/* But the list as a whole needs the extra space at the end */
+section ul.compact,
+section .ulCompact,
+section ol.compact,
+section .olCompact {
+  margin-bottom: 1em;                    /* same as p not within ul.compact etc. */
+}
+/* The tt and code background above interferes with for instance table cell
+   backgrounds.  Changed to something a bit more selective. */
+tt, code {
+  background-color: transparent;
+}
+p tt, p code, li tt, li code, dt tt, dt code {
+  background-color: #f8f8f8;
+}
+/* Tweak the pre margin -- 0px doesn't come out well */
+pre {
+   margin-top: 0.5px;
+}
+/* Tweak the compact list text */
+ul.compact, .ulCompact,
+ol.compact, .olCompact,
+dl.compact, .dlCompact {
+  line-height: normal;
+}
+/* Don't add top margin for nested lists */
+li > ul, li > ol, li > dl,
+dd > ul, dd > ol, dd > dl,
+dl > dd > dl {
+  margin-top: initial;
+}
+/* Elements that should not be rendered on the same line as a <dt> */
+/* This should match the element list in writer.text.TextWriter.render_dl() */
+dd > div.artwork:first-child,
+dd > aside:first-child,
+dd > blockquote:first-child,
+dd > figure:first-child,
+dd > ol:first-child,
+dd > div.sourcecode:first-child,
+dd > table:first-child,
+dd > ul:first-child {
+  clear: left;
+}
+/* fix for weird browser behaviour when <dd/> is empty */
+dt+dd:empty::before{
+  content: "\00a0";
+}
+/* Make paragraph spacing inside <li> smaller than in body text, to fit better within the list */
+li > p {
+  margin-bottom: 0.5em
+}
+/* Don't let p margin spill out from inside list items */
+li > p:last-of-type:only-child {
+  margin-bottom: 0;
+}
+</style>
+<link href="rfc-local.css" rel="stylesheet" type="text/css">
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left"></td>
+<td class="center">PIC Revocation</td>
+<td class="right">July 2026</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Gallo</td>
+<td class="center">Informational</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2026-07-18" class="published">18 July 2026</time>
+    </dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">N. Gallo</div>
+<div class="org">Nitro Agility S.r.l.</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">PIC Revocation Specification</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document is the <strong>PIC Revocation Specification</strong>, a subordinate specification of the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>. It defines how
+<strong>authority is revoked</strong> within the Provenance Identity Continuity (PIC) Model.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">Expiry bounds <em>how long</em> a PCA is valid; revocation withdraws validity <em>before</em> that bound. The profile supports grant-, key-, delegate-,
+attestation-, issuer-, and policy-based revocation, and adds a property specific to PIC: <strong>causal execution cutoffs</strong> — revoking a lineage,
+a branch, or its future from a given position.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-3">This revision normatively defines the <strong>revocation coordinates</strong> and their hop-by-hop continuity (Section 2), the requirements for turning a
+historical selector into a causal cutoff (Section 4), and the revocation-authorization and revocation-state requirements (Section 5). It
+illustrates candidate revocation strategies (Section 3, non-normative). The coordinates extend the PCA format of the
+<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>; they do not alter the PIC Model invariants — non-expansion of the
+signed state and Proof of Relationship are unchanged, and every PCA still continues exactly one predecessor. In case of conflict, the
+<strong>PIC Specification</strong> is authoritative.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.1">
+      <h2 id="name-document-status">
+<a href="#name-document-status" class="section-name selfRef">Document Status</a>
+      </h2>
+<p id="section-note.1-1"><strong>Version:</strong> 0.2 (Draft)
+<strong>Status</strong>: Draft – Not a Standard
+<strong>Date:</strong> 2026-07-18
+<strong>Source:</strong> <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">github.com/pic-protocol/pic-spec/draft/0.2/pic-revocation-spec.md</a><a href="#section-note.1-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.2">
+      <h2 id="name-editors">
+<a href="#name-editors" class="section-name selfRef">Editors</a>
+      </h2>
+<ul class="normal note">
+<li class="normal note" id="section-note.2-1.1">
+          <p id="section-note.2-1.1.1"><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor<a href="#section-note.2-1.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal note" id="section-note.2-1.2">
+          <p id="section-note.2-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 7</a>).</em><a href="#section-note.2-1.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+<section class="note" id="section-note.3">
+      <h2 id="name-contributors">
+<a href="#name-contributors" class="section-name selfRef">Contributors</a>
+      </h2>
+<ul class="normal note">
+<li class="normal note" id="section-note.3-1.1">
+          <p id="section-note.3-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 7</a>).</em><a href="#section-note.3-1.1.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-what-is-a-lineage" class="internal xref">What Is a Lineage</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-three-kinds-of-revocation-s" class="internal xref">Three Kinds of Revocation State</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
+                <p id="section-toc.1-1.1.2.3.1" class="keepWithNext"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-requirements-notation" class="internal xref">Requirements Notation</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-revocation-coordinates" class="internal xref">Revocation Coordinates</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-origin-pca-pca0" class="internal xref">Origin PCA (PCA0)</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-successor-pca" class="internal xref">Successor PCA</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-verifier-hop-validation" class="internal xref">Verifier Hop Validation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4">
+                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="auto internal xref">2.4</a>.  <a href="#name-branch-identification" class="internal xref">Branch Identification</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-revocation-strategies" class="internal xref">Revocation Strategies</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-native-causal-revocations" class="internal xref">Native Causal Revocations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-identity-and-evidence-selec" class="internal xref">Identity and Evidence Selectors</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-dynamic-restrictions" class="internal xref">Dynamic Restrictions</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-retrospective-annotation" class="internal xref">Retrospective Annotation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
+                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="auto internal xref">3.5</a>.  <a href="#name-summary" class="internal xref">Summary</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-making-selectors-causal" class="internal xref">Making Selectors Causal</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-position-witness" class="internal xref">Position Witness</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-cutoff-authorization" class="internal xref">Cutoff Authorization</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-known-positions" class="internal xref">Known Positions</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-historical-position-index" class="internal xref">Historical Position Index</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5">
+                <p id="section-toc.1-1.4.2.5.1"><a href="#section-4.5" class="auto internal xref">4.5</a>.  <a href="#name-not-carrying-full-history" class="internal xref">Not Carrying Full History</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-revocation-authorization-an" class="internal xref">Revocation Authorization and State</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-who-may-revoke" class="internal xref">Who May Revoke</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-dynamic-restriction-require" class="internal xref">Dynamic Restriction Requirements</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-monotonicity" class="internal xref">Monotonicity</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.4">
+                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-revocation-state-and-availa" class="internal xref">Revocation State and Availability</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.5">
+                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="auto internal xref">5.5</a>.  <a href="#name-trusted-time-and-key-compro" class="internal xref">Trusted Time and Key Compromise</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.6">
+                <p id="section-toc.1-1.5.2.6.1"><a href="#section-5.6" class="auto internal xref">5.6</a>.  <a href="#name-limitations" class="internal xref">Limitations</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-counter-capacity" class="internal xref">Counter Capacity</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-legal-notices" class="internal xref">Legal Notices</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-references" class="internal xref">References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">This section is non-normative. It explains the concepts revocation needs; the normative requirements are in Sections 2, 4, and 5.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<div id="what-is-a-lineage">
+<section id="section-1.1">
+        <h3 id="name-what-is-a-lineage">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-what-is-a-lineage" class="section-name selfRef">What Is a Lineage</a>
+        </h3>
+<p id="section-1.1-1">An <strong>execution lineage</strong> is simply the sequence of PCAs produced as one execution proceeds from hop to hop. It begins at the origin, the
+<strong>PCA0</strong>, and each later PCA continues exactly one predecessor:<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-1.1-2">
+<pre>
+PCA0  -&gt;  PCA1  -&gt;  PCA2  -&gt;  …  -&gt;  PCAn
+</pre><a href="#section-1.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-1.1-3">When an executor hands off to more than one successor (fan-out), the lineage branches — but each branch still continues a single
+predecessor:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-1.1-4">
+<pre>
+PCA100
+ ├── PCA101-A
+ └── PCA101-B
+</pre><a href="#section-1.1-4" class="pilcrow">¶</a>
+</div>
+<p id="section-1.1-5">Each individual lineage path is causally sequential; the lineage as a whole may form a tree under fan-out. Revocation operates on this
+structure: to revoke, one must be able to <em>name</em> a lineage, a branch domain within it, and a <em>position</em>.<a href="#section-1.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="three-kinds-of-revocation-state">
+<section id="section-1.2">
+        <h3 id="name-three-kinds-of-revocation-s">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-three-kinds-of-revocation-s" class="section-name selfRef">Three Kinds of Revocation State</a>
+        </h3>
+<p id="section-1.2-1">This is the one distinction a reader coming from OAuth or capability systems needs. Not everything a PCA touches can be revoked the same way,
+because not everything survives to the next hop.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.2-2"><strong>Lineage-persistent state</strong> is signed data propagated (or attenuated) along the lineage:<a href="#section-1.2-2" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-1.2-3">
+<pre>
+profile
+lineageId
+grantId
+lineageCounter
+originIssuer               (when propagated)
+branchId                   (when the profile is branch-capable)
+operations
+executionContract
+</pre><a href="#section-1.2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-1.2-4">A revocation or restriction over these can be applied downstream, because the Verifier still holds the data.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
+<p id="section-1.2-5"><strong>Hop-local evidence</strong> validates one concrete transition and does not become a permanent property of every descendant:<a href="#section-1.2-5" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-1.2-6">
+<pre>
+executor
+signing key
+executorAttestation
+request binding
+proofOfRelationship
+branchCreationNonce        (present only in a branch-creation PCA)
+</pre><a href="#section-1.2-6" class="pilcrow">¶</a>
+</div>
+<p id="section-1.2-7">Revoking hop-local evidence has direct effect only while that evidence is still <em>presented</em> to a Verifier.<a href="#section-1.2-7" class="pilcrow">¶</a></p>
+<p id="section-1.2-8"><strong>Derived causal revocation</strong> bridges the two. A historical revocation of a <code>KEY</code>, <code>DELEGATE</code>, <code>ATTESTATION</code>, or <code>ISSUER</code> reaches descendants
+only when the historical position is turned into a native cutoff:<a href="#section-1.2-8" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-1.2-9">
+<pre>
+LINEAGE-SUFFIX(lineageId, fromCounter)
+</pre><a href="#section-1.2-9" class="pilcrow">¶</a>
+</div>
+<p id="section-1.2-10">The key change is that historical evidence is converted into an <em>execution coordinate</em> that downstream Verifiers can still evaluate — a
+revocation is expressed as a position in an execution, not only as a revoked credential. A Verifier at a later hop applies the cutoff without
+seeing the historical key, identity, or attestation again.<a href="#section-1.2-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="requirements-notation">
+<section id="section-1.3">
+        <h3 id="name-requirements-notation">
+<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-requirements-notation" class="section-name selfRef">Requirements Notation</a>
+        </h3>
+<p id="section-1.3-1">The <strong>normative</strong> sections of this document are Sections 2, 4, and 5. Sections 1, 3, and 6 are <strong>non-normative</strong>.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<p id="section-1.3-2">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 9</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 9</a>)</span> when, and only when, they appear in all capitals,
+and only within the normative sections. Examples are illustrative and non-normative.<a href="#section-1.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="revocation-coordinates">
+<section id="section-2">
+      <h2 id="name-revocation-coordinates">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-revocation-coordinates" class="section-name selfRef">Revocation Coordinates</a>
+      </h2>
+<p id="section-2-1">This section is normative. It defines the structural fields a <strong>revocable</strong> PCA carries and the continuity a Verifier checks. A profile that
+does not support revocation MAY omit them; a revocable profile MUST include them. They extend the PCA format of the
+<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a> and are covered by the same single PCA signature; they do not change
+its non-expansion or Proof-of-Relationship rules.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<div id="origin-pca-pca0">
+<section id="section-2.1">
+        <h3 id="name-origin-pca-pca0">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-origin-pca-pca0" class="section-name selfRef">Origin PCA (PCA0)</a>
+        </h3>
+<p id="section-2.1-1">A revocable PCA0 carries <code>profile</code>, <code>originNonce</code>, <code>lineageId</code>, <code>lineageCounter</code>, <code>grantId</code> (when it derives from a separately revocable
+grant), and <code>originIssuer</code> (when the profile supports direct origin-issuer revocation). All are covered by the PCA0 signature, which itself
+includes <code>lineageId</code>.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-2"><strong><code>lineageId</code> is derived from a non-self-referential origin core.</strong> A PCA cannot hash <em>itself</em> to obtain its own identifier, so <code>lineageId</code>
+is the hash of a canonical projection of PCA0 that excludes <code>lineageId</code> and <code>proof</code>:<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.1-3">
+<pre>
+originCore = the profile-defined canonical projection of PCA0, excluding lineageId and proof
+lineageId  = H( "PIC-Lineage-v0" || canonical(originCore) )
+</pre><a href="#section-2.1-3" class="pilcrow">¶</a>
+</div>
+<p id="section-2.1-4"><code>originCore</code> MUST include at least <code>profile</code>, <code>issuer</code>, <code>originNonce</code>, the presence and value of <code>grantId</code>, the origin authority context,
+<code>issuedAt</code>, and <code>expiresAt</code>. The profile MUST define exactly the fields included, the fields excluded, the canonical encoding, the hash
+suite, and the domain separator.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
+<p id="section-2.1-5">The origin commitment binds <code>lineageId</code> to the declared issuer, nonce, profile, grant binding, and origin authority context. Copying those
+public fields does not create a valid colliding lineage, because the resulting PCA0 must also satisfy the origin trust boundary
+(<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a>, Section 6.2) and carry a valid signature (or equivalent origin
+authorization) for the committed issuer:<a href="#section-2.1-5" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.1-6">
+<pre>
+originNonce                     distinguishes intentionally separate origins by the same issuer
+issuer signature / origin authz  prevents another party from creating a valid origin as that issuer
+</pre><a href="#section-2.1-6" class="pilcrow">¶</a>
+</div>
+<p id="section-2.1-7"><strong><code>originNonce</code></strong> SHOULD contain at least 128 random bits; 256 random bits are RECOMMENDED. An issuer MUST generate a fresh <code>originNonce</code> for
+every intentionally distinct lineage and MUST NOT reuse one within the same origin-commitment namespace. Two PCA0 with the same origin
+commitment (hence the same <code>lineageId</code>) MUST be treated as the <em>same</em> origin, not as independent lineages. Global reuse detection MAY require
+an authenticated origin registry, a transparency log, or shared state, but the no-reuse rule remains a requirement of the origin issuer.<a href="#section-2.1-7" class="pilcrow">¶</a></p>
+<p id="section-2.1-8"><strong><code>grantId</code></strong> — present when the origin derives from a separately revocable grant. The binding between <code>grantId</code>, its grant authority, and
+the authority context MUST be verifiable during PCA0 validation. Possession or knowledge of a <code>grantId</code> does not authorize its revocation
+(Section 5.1). It MUST NOT be interpreted as authorization on its own, and MAY be shared by several PCA0.<a href="#section-2.1-8" class="pilcrow">¶</a></p>
+<p id="section-2.1-9"><strong><code>originIssuer</code></strong> — when the profile supports direct origin-issuer revocation, <code>PCA0.originIssuer == PCA0.issuer</code>, covered by the signature
+and propagated unchanged (Section 2.2). <code>originIssuer</code> is a revocation-administration coordinate: it does not grant execution authority, does
+not designate a successor, and does not replace Proof of Relationship or executor conformance.<a href="#section-2.1-9" class="pilcrow">¶</a></p>
+<p id="section-2.1-10"><strong><code>profile</code></strong> identifies the revocable profile in force. <strong><code>lineageCounter</code></strong> MUST be <code>0</code>.<a href="#section-2.1-10" class="pilcrow">¶</a></p>
+<p id="section-2.1-11"><strong>Branch coordinate</strong> — in a branch-capable profile (Section 2.4), PCA0 carries the root branch domain <code>branchId</code>, derived from <code>lineageId</code>
+as <code>rootBranchId = H( "PIC-Root-Branch-v0" || lineageId )</code> and covered by the PCA0 signature. There is no root nonce and no absent-root case.<a href="#section-2.1-11" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-2.1-12">
+<pre>
+{
+  "profile": "PIC-Revocable-v0",
+  "issuer": "did:example:users:alice",
+  "originIssuer": "did:example:users:alice",
+  "originNonce": "base64url-random-256-bit-value",
+  "grantId": "urn:uuid:11111111-1111-4111-8111-111111111111",
+  "lineageId": "sha256:…",
+  "branchId": "sha256:… (rootBranchId, derived from lineageId; Section 2.4)",
+  "lineageCounter": 0,
+  "invariants": { "…": "operations and executionContract (Prover/Verifier spec)" },
+  "continuation": { "…": "the emitted challenge" },
+  "issuedAt": "2026-07-17T10:00:00Z",
+  "expiresAt": "2026-07-18T10:00:00Z",
+  "proof": { "…": "signature covering the complete PCA0, including lineageId and branchId" }
+}
+</pre><a href="#section-2.1-12" class="pilcrow">¶</a>
+</div>
+<p id="section-2.1-13">To validate PCA0, the Verifier MUST reconstruct <code>originCore</code>, recompute <code>lineageId</code>, compare it with <code>PCA0.lineageId</code>, recompute
+<code>rootBranchId</code> from the recomputed <code>lineageId</code> and compare it with <code>PCA0.branchId</code> (in a branch-capable profile), verify the complete PCA0
+signature, verify the origin authorization, and verify the grant binding when <code>grantId</code> is present.<a href="#section-2.1-13" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="successor-pca">
+<section id="section-2.2">
+        <h3 id="name-successor-pca">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-successor-pca" class="section-name selfRef">Successor PCA</a>
+        </h3>
+<p id="section-2.2-1">Every non-origin PCA MUST propagate <code>profile</code>, <code>lineageId</code>, the presence and value of <code>grantId</code>, and <code>originIssuer</code> (when the profile
+propagates it) <strong>unchanged</strong>, MUST set <code>lineageCounter</code> to the predecessor's value plus one, and MUST cover all of them under the PCA
+signature. A Prover MUST NOT alter or drop these fields, MUST NOT introduce a <code>grantId</code> the predecessor lacks, and MUST NOT change the
+<code>profile</code>.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">In a branch-capable profile (Section 2.4) the successor MUST propagate <code>branchId</code> <strong>unchanged</strong>, except when it is itself an authorized
+branch-creation PCA, where it derives a fresh <code>branchId</code> and carries a fresh <code>branchCreationNonce</code> for that single transition. An ordinary
+successor MUST NOT carry <code>branchCreationNonce</code>. A branch-capable profile MUST prevent downgrade by omission: a successor MUST NOT drop
+<code>branchId</code>.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-2.2-3.1">
+            <p id="section-2.2-3.1.1">A lineage created under a revocable profile remains revocable for its entire lifetime. A successor cannot downgrade it by omitting the
+profile or its revocation coordinates.<a href="#section-2.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="verifier-hop-validation">
+<section id="section-2.3">
+        <h3 id="name-verifier-hop-validation">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-verifier-hop-validation" class="section-name selfRef">Verifier Hop Validation</a>
+        </h3>
+<p id="section-2.3-1">In addition to the hop checks of the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</a> (Section 3.3), a
+revocation-aware Verifier MUST, for each non-origin hop, reject the PCA unless all of the following hold against the already-validated
+predecessor:<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.3-2">
+<pre>
+current.previousPcaHash   == H(predecessor)
+current.profile           == predecessor.profile
+current.lineageId         == predecessor.lineageId
+presence(current.grantId) == presence(predecessor.grantId)
+if grantId is present:      current.grantId == predecessor.grantId
+if originIssuer propagated:  current.originIssuer == predecessor.originIssuer
+current.lineageCounter     == predecessor.lineageCounter + 1
+
+if branch-capable, ordinary hop:      current.branchId == predecessor.branchId
+                                      current MUST NOT carry branchCreationNonce
+if branch-capable, branch creation:   current.branchId == H("PIC-Branch-v0" || current.previousPcaHash || current.branchCreationNonce)
+                                      AND valid branch-creation authorization (Section 2.4)
+</pre><a href="#section-2.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-2.3-3">The Verifier MUST reject when <code>profile</code> is missing or unknown, when <code>current.profile != predecessor.profile</code>, when required revocation
+coordinates are omitted, or when a revocable lineage is presented under a non-revocable profile. The counter rule is exact: the Verifier
+MUST reject a <code>lineageCounter</code> that is missing, negative, fractional, non-canonical, less than or equal to the predecessor's, greater than
+<code>predecessor + 1</code>, or that overflows or wraps around.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
+<p id="section-2.3-4">In a branch-capable profile <code>branchId</code> is unconditionally present in every PCA. The Verifier MUST also reject when <code>branchId</code> is missing or
+removed, when <code>branchId</code> changes without a valid, authorized branch-creation transition, when <code>branchId</code> does not recompute from
+<code>current.previousPcaHash</code> and <code>current.branchCreationNonce</code> at a claimed branch-creation transition, when <code>branchCreationNonce</code> is present at
+an ordinary hop or absent at a branch-creation hop, or when <code>branchId</code> or <code>branchCreationNonce</code> has a non-canonical representation or an
+invalid size. At a branch-creation transition the Verifier MUST apply the validation order of Section 2.4, evaluating the revocations and
+restrictions inherited from the predecessor's branch domain before accepting a new domain.<a href="#section-2.3-4" class="pilcrow">¶</a></p>
+<p id="section-2.3-5">A valid signature is necessary but not sufficient: the Verifier validates the concrete transition <code>PCA[n-1] -&gt; PCA[n]</code>, not merely the
+signature of <code>PCA[n]</code>.<a href="#section-2.3-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="branch-identification">
+<section id="section-2.4">
+        <h3 id="name-branch-identification">
+<a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-branch-identification" class="section-name selfRef">Branch Identification</a>
+        </h3>
+<p id="section-2.4-1">Branch-capable profiles add one fixed-size persistent field (<code>branchId</code>) to every revocable PCA, plus one fixed-size nonce
+(<code>branchCreationNonce</code>) that appears only in branch-creation transitions. They make <code>BRANCH-SUFFIX</code> (Section 3.1) a native strategy without
+carrying branch ancestry:<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-2">
+<pre>
+branchId             fixed-size branch-domain identifier, present in every PCA,
+                     propagated unchanged within the branch domain
+branchCreationNonce  fixed-size random value, present only in the PCA that creates a branch
+                     domain, where it lets that transition's Verifier recompute the derivation;
+                     never propagated to descendants
+</pre><a href="#section-2.4-2" class="pilcrow">¶</a>
+</div>
+<p id="section-2.4-3">A PCA MUST NOT carry branch ancestry arrays, parent-branch lists, growing branch paths, full branch trees, or any unbounded branch metadata.
+The model stays three flat coordinates:<a href="#section-2.4-3" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-4">
+<pre>
+lineageId       identifies the overall execution lineage
+lineageCounter  identifies causal depth on one path
+branchId        identifies the current branch domain
+</pre><a href="#section-2.4-4" class="pilcrow">¶</a>
+</div>
+<p id="section-2.4-5"><strong><code>branchId</code> is a derived commitment, not a free choice.</strong> A freely chosen identifier would reintroduce, one level down, the
+intentional-collision problem the origin commitment removes for <code>lineageId</code>: branch identifiers travel in the clear, so a malicious executor
+at a different fan-out point of the same lineage could copy a victim branch's identifier and have a later <code>BRANCH-SUFFIX</code> strike the victim.
+A non-root <code>branchId</code> is therefore bound to its creation transition:<a href="#section-2.4-5" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-6">
+<pre>
+branchId = H( "PIC-Branch-v0" || current.previousPcaHash || current.branchCreationNonce )
+
+current.previousPcaHash      the digest of the creation PCA's predecessor, already checked to equal
+                             H(predecessor) in the same hop procedure (Section 2.3)
+current.branchCreationNonce  fresh random value generated by the authorized successor creating the
+                             branch domain, present only in that creation PCA
+</pre><a href="#section-2.4-6" class="pilcrow">¶</a>
+</div>
+<p id="section-2.4-7">This gives three properties:<a href="#section-2.4-7" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-8">
+<pre>
+Locally verifiable    a Verifier holding the creation transition recomputes branchId from
+                      previousPcaHash and branchCreationNonce; no registry is needed for the
+                      immediate transition
+Creation-point-bound  reusing a branchId at a different fan-out point requires the same predecessor
+                      digest or a hash collision; a branchId cannot be transplanted across creation
+                      points
+Verifiable binding    the construction makes the nonce-to-domain binding checkable; sibling
+                      distinctness itself remains a Prover obligation — distinct nonces under one
+                      predecessor give distinct domains, and an identical nonce gives the SAME
+                      domain, not a collision between distinct domains
+</pre><a href="#section-2.4-8" class="pilcrow">¶</a>
+</div>
+<p id="section-2.4-9"><strong>Root branch.</strong> PCA0 carries the root branch domain identifier, derived from <code>lineageId</code>:<a href="#section-2.4-9" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-10">
+<pre>
+rootBranchId = H( "PIC-Root-Branch-v0" || lineageId )
+</pre><a href="#section-2.4-10" class="pilcrow">¶</a>
+</div>
+<ul class="normal">
+<li class="normal" id="section-2.4-11.1">
+            <p id="section-2.4-11.1.1">No circularity: <code>lineageId</code> is already derived from <code>originCore</code>, which excludes the identifier and proof fields (Section 2.1).<a href="#section-2.4-11.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.4-11.2">
+            <p id="section-2.4-11.2.1">No root nonce: the root domain is unique per lineage and has no siblings to distinguish.<a href="#section-2.4-11.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.4-11.3">
+            <p id="section-2.4-11.3.1">Always present: <code>branchId</code> is unconditionally required in every PCA of a branch-capable profile, so the "required but missing" check is
+unconditional and the root domain is directly targetable by <code>BRANCH-SUFFIX</code>.<a href="#section-2.4-11.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.4-11.4">
+            <p id="section-2.4-11.4.1">Uniform validation: PCA0 validation recomputes <code>rootBranchId</code> from the recomputed <code>lineageId</code>; every later hop uses the ordinary equality
+or creation-derivation check.<a href="#section-2.4-11.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.4-12">Anyone can <em>compute</em> the <code>rootBranchId</code> of a known lineage; this is consistent with the rule that knowledge of <code>lineageId</code>, <code>branchId</code>, or
+<code>fromCounter</code> MUST NOT by itself authorize revocation (Section 5.1).<a href="#section-2.4-12" class="pilcrow">¶</a></p>
+<p id="section-2.4-13"><strong>Representation.</strong> The persistent added state is one hash-sized field, <code>branchId</code> (e.g. 32 bytes). <code>branchCreationNonce</code> appears only in
+creation transitions: it SHOULD contain at least 128 random bits, and 256 bits are RECOMMENDED (e.g. 16–32 bytes). The profile MUST define
+the canonical binary representation of both; no textual UUID representation is required. <code>branchId</code> (always) and <code>branchCreationNonce</code> (in a
+creation PCA) MUST be covered by the complete PCA signature.<a href="#section-2.4-13" class="pilcrow">¶</a></p>
+<p id="section-2.4-14"><strong>Fan-out.</strong> At a fan-out point each new branch domain is created by an authorized successor, which generates its own fresh
+<code>branchCreationNonce</code>, hence a fresh derived <code>branchId</code>:<a href="#section-2.4-14" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-15">
+<pre>
+PCA100
+ ├── PCA101-A  branchCreationNonce = nA  -&gt;  branchId = H(dsep || H(PCA100) || nA)
+ └── PCA101-B  branchCreationNonce = nB  -&gt;  branchId = H(dsep || H(PCA100) || nB)
+</pre><a href="#section-2.4-15" class="pilcrow">¶</a>
+</div>
+<p id="section-2.4-16">Each authorized successor creating a new branch domain MUST generate a fresh random <code>branchCreationNonce</code> and MUST NOT deliberately reuse
+another sibling's nonce. Sibling distinctness is a <strong>Prover obligation</strong>: a per-hop Verifier sees only one sibling per envelope and cannot
+compare siblings directly. In the open-continuation model the predecessor does not coordinate or mint its successors' PCAs; each continuing
+executor generates its own nonce. Cross-sibling detection beyond this construction requires fan-out-point evidence or shared state and is not
+a per-hop Verifier requirement.<a href="#section-2.4-16" class="pilcrow">¶</a></p>
+<p id="section-2.4-17"><strong>Branch-domain creation is a restricted operation.</strong> This is the central rule of the branch profile. Without it, branch revocation is
+evadable in one hop: an executor inside a revoked branch domain could mint a fresh branch domain and escape <code>BRANCH-SUFFIX</code> — and, since the
+base profile carries no branch ancestry, no downstream Verifier could relate the new domain to the revoked one. Therefore creating a new
+branch domain MUST be an authorized, authenticated operation. The base profile MUST restrict branch creation to parties authorized by the
+execution contract, the origin, or the branch-domain creator's explicitly delegated authority. A nested continuation that is NOT authorized
+to create a new branch domain MUST inherit the current <code>branchId</code> and MUST NOT carry a <code>branchCreationNonce</code>. Inheriting is the default;
+minting is the exception.<a href="#section-2.4-17" class="pilcrow">¶</a></p>
+<p id="section-2.4-18">The <strong>branch-domain creator</strong> is the executor that issues the valid branch-creation PCA establishing a new <code>branchId</code>. It is not necessarily
+the predecessor executor, the origin issuer, or a coordinator aware of all sibling successors: in the open-continuation model each authorized
+successor may independently create its own branch domain when the applicable execution contract or delegated authority permits it.<a href="#section-2.4-18" class="pilcrow">¶</a></p>
+<p id="section-2.4-19">A branch-domain change is valid only at a transition that both recomputes as a correct derivation from the presented predecessor and carries
+the profile-defined branch-creation authorization:<a href="#section-2.4-19" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-20">
+<pre>
+branchId == H( "PIC-Branch-v0" || current.previousPcaHash || current.branchCreationNonce )
+AND  profile-defined branch-creation evidence is present and valid
+</pre><a href="#section-2.4-20" class="pilcrow">¶</a>
+</div>
+<p id="section-2.4-21">The profile MUST define that evidence — for example a branch-creation permission in the predecessor <code>executionContract</code>, or a signed grant
+from the branch or origin authority.<a href="#section-2.4-21" class="pilcrow">¶</a></p>
+<p id="section-2.4-22"><strong>Anti-escape validation order.</strong> A branch-creation transition is itself part of the causal future of the predecessor's branch domain. The
+Verifier MUST therefore evaluate inherited revocations and restrictions against the predecessor's domain, at the current counter, BEFORE
+accepting the creation:<a href="#section-2.4-22" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-23">
+<pre>
+1. validate the predecessor and the transition linkage
+   (previousPcaHash, profile, lineageId, grantId, originIssuer, lineageCounter);
+2. apply the revocations and restrictions inherited from the predecessor — evaluated against the
+   predecessor's branchId and the current lineageCounter — including LINEAGE-SUFFIX, BRANCH-SUFFIX,
+   GRANT, and applicable dynamic restrictions and effective execution-contract requirements;
+3. only if step 2 permits continuation, determine whether this transition claims branch creation;
+4. validate the branch-creation authorization;
+5. validate the branchId derivation and accept the new branch domain.
+</pre><a href="#section-2.4-23" class="pilcrow">¶</a>
+</div>
+<p id="section-2.4-24">A <code>BRANCH-SUFFIX(lineageId, A, fromCounter)</code> therefore blocks any continuation from domain A at or beyond <code>fromCounter</code>, including a
+continuation that attempts to create a new branch domain: the creation transition is evaluated in the predecessor's domain before the new
+<code>branchId</code> exists for matching purposes. Branch creation cannot be used to exit a revoked domain.<a href="#section-2.4-24" class="pilcrow">¶</a></p>
+<p id="section-2.4-25"><strong>Backstop (defense in depth).</strong> Beyond the validation order above, <code>LINEAGE-SUFFIX</code> remains the escape-resistant cutoff: it strikes every
+branch of the lineage from the selected counter onward, regardless of <code>branchId</code>. <code>BRANCH-SUFFIX</code> is as strong as the branch-domain creation
+policy; <code>LINEAGE-SUFFIX</code> does not depend on it.<a href="#section-2.4-25" class="pilcrow">¶</a></p>
+<p id="section-2.4-26"><strong>Nested fan-out and the ancestry trade-off.</strong> By default a nested continuation inside an existing branch domain inherits the same <code>branchId</code>,
+and its children remain part of the same revocation domain — this is intentional:<a href="#section-2.4-26" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-27">
+<pre>
+branchId = A
+ ├── child 1: branchId = A
+ └── child 2: branchId = A
+</pre><a href="#section-2.4-27" class="pilcrow">¶</a>
+</div>
+<p id="section-2.4-28">A profile MAY allow an <em>authorized</em> nested continuation to create fresh branch domains:<a href="#section-2.4-28" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-29">
+<pre>
+branchId = A
+ ├── child C: branchId = C   (authorized creation)
+ └── child D: branchId = D   (authorized creation)
+</pre><a href="#section-2.4-29" class="pilcrow">¶</a>
+</div>
+<p id="section-2.4-30">The PCA still carries only the current <code>branchId</code>. The base profile MUST NOT require a <code>parentBranchId</code> field, a branch ancestry array, or a
+growing path. The base representation therefore keeps PCA state constant-size and directly supports revocation of the currently propagated
+branch domain; it does not carry recursive branch ancestry. When an authorized nested continuation creates a new branch domain, causal
+ancestry between the old and new branch identifiers requires authenticated historical resolution if revocation must cross that boundary —
+exactly as historical selectors require resolution into native cutoffs (Section 4). The derived <code>branchId</code> helps here: it commits to the
+digest of its creation-point PCA (its <code>previousPcaHash</code>). Proving that a new branch domain was created from an earlier one requires
+authenticating <strong>both</strong> the branch-creation PCA and its predecessor — or an authenticated record that binds <code>creationPCA.previousPcaHash</code> to
+the predecessor's <code>branchId</code> — and verifying:<a href="#section-2.4-30" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-31">
+<pre>
+creationPCA.previousPcaHash == H(predecessorPCA)
+predecessorPCA.branchId     == claimedParentBranchId
+creationPCA.branchId        == H( "PIC-Branch-v0" || creationPCA.previousPcaHash || creationPCA.branchCreationNonce )
+</pre><a href="#section-2.4-31" class="pilcrow">¶</a>
+</div>
+<p id="section-2.4-32">An authenticated historical-index record MAY replace transport of the complete predecessor PCA only when it cryptographically binds
+<code>creationPCA.previousPcaHash</code>, <code>claimedParentBranchId</code>, <code>creationPCA.branchId</code>, and <code>creationPCA.branchCreationNonce</code> or its authenticated
+commitment. Complete-chain transport is not required, and recursive ancestry remains external and optional.<a href="#section-2.4-32" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="revocation-strategies">
+<section id="section-3">
+      <h2 id="name-revocation-strategies">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-revocation-strategies" class="section-name selfRef">Revocation Strategies</a>
+      </h2>
+<p id="section-3-1">This section is non-normative and illustrative. It shows the revocation targets expressible with PIC coordinates. The requirements these
+strategies must satisfy are normative in Sections 4 and 5: coordinates, authorization constraints, witness rules, materialization rules,
+monotonicity, and revocation-state requirements are already normative. The complete interoperable revocation-object format, its
+serialization, distribution endpoints, and status-retrieval protocol are defined by a later revision. All examples share one minimal format:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-3-2">
+<pre>
+{
+  "type": "PIC-Revocation-v0",
+  "strategy": "…",
+  "target": { "…": "…" },
+  "issuedAt": "2026-07-18T10:00:00Z",
+  "issuer": "did:example:revocation-authority"
+}
+</pre><a href="#section-3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3-3">The <code>proof</code> field is omitted for brevity. A valid revocation is signed by an authorized authority (Section 5.1); an object signed by an
+unauthorized party has no effect.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<div id="native-causal-revocations">
+<section id="section-3.1">
+        <h3 id="name-native-causal-revocations">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-native-causal-revocations" class="section-name selfRef">Native Causal Revocations</a>
+        </h3>
+<p id="section-3.1-1">These strategies are directly enforceable from the propagated coordinates in the received transition once the applicable authenticated and
+sufficiently fresh revocation state is available. Whole-lineage revocation is the degenerate suffix from the origin:
+<code>LINEAGE(lineageId) = LINEAGE-SUFFIX(lineageId, 0)</code>.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2"><strong><code>LINEAGE-SUFFIX</code></strong> — a position and everything causally after it.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.1-3">
+<pre>
+lineageId L,  fromCounter = 42
+
+PCA0 … PCA41 -&gt; PCA42 -&gt; PCA43 -&gt; …
+ keep  keep     X        X
+</pre><a href="#section-3.1-3" class="pilcrow">¶</a>
+</div>
+<div class="lang-json sourcecode" id="section-3.1-4">
+<pre>
+{
+  "type": "PIC-Revocation-v0",
+  "strategy": "LINEAGE-SUFFIX",
+  "target": { "lineageId": "L1", "fromCounter": 42 },
+  "issuedAt": "2026-07-18T10:00:00Z",
+  "issuer": "did:example:revocation-authority"
+}
+</pre><a href="#section-3.1-4" class="pilcrow">¶</a>
+</div>
+<div class="lang-text sourcecode" id="section-3.1-5">
+<pre>
+reject if:
+  PCA.lineageId == target.lineageId
+  AND PCA.lineageCounter &gt;= target.fromCounter
+</pre><a href="#section-3.1-5" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-6"><strong><code>GRANT</code></strong> — every lineage created from one grant.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-3.1-7">
+<pre>
+{
+  "type": "PIC-Revocation-v0",
+  "strategy": "GRANT",
+  "target": { "grantId": "G1" },
+  "issuedAt": "2026-07-18T10:00:00Z",
+  "issuer": "did:example:grant-authority"
+}
+</pre><a href="#section-3.1-7" class="pilcrow">¶</a>
+</div>
+<div class="lang-text sourcecode" id="section-3.1-8">
+<pre>
+reject if:
+  PCA.grantId == target.grantId
+</pre><a href="#section-3.1-8" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-9"><strong><code>BRANCH-SUFFIX</code></strong> — one branch domain and everything causally after a position, in <strong>branch-capable</strong> profiles (Section 2.4).<a href="#section-3.1-9" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-3.1-10">
+<pre>
+{
+  "type": "PIC-Revocation-v0",
+  "strategy": "BRANCH-SUFFIX",
+  "target": {
+    "lineageId": "L1",
+    "branchId": "base64url-hash-value",
+    "fromCounter": 101
+  },
+  "issuedAt": "2026-07-18T10:00:00Z",
+  "issuer": "did:example:revocation-authority"
+}
+</pre><a href="#section-3.1-10" class="pilcrow">¶</a>
+</div>
+<div class="lang-text sourcecode" id="section-3.1-11">
+<pre>
+reject if:
+  PCA.lineageId          == target.lineageId
+  AND PCA.branchId       == target.branchId
+  AND PCA.lineageCounter &gt;= target.fromCounter
+</pre><a href="#section-3.1-11" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-12"><code>LINEAGE-SUFFIX</code> revokes every branch of a lineage from a counter onward; <code>BRANCH-SUFFIX</code> revokes only the matching branch domain from a
+counter onward.<a href="#section-3.1-12" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.1-13">
+<pre>
+PCA100
+ ├── PCA101-A  branchId=A   revoked by BRANCH-SUFFIX(L, A, 101)
+ └── PCA101-B  branchId=B   remains valid
+</pre><a href="#section-3.1-13" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-14">The root branch domain is directly targetable: its <code>branchId</code> is the derived <code>rootBranchId = H("PIC-Root-Branch-v0" || lineageId)</code>
+(Section 2.4), so <code>BRANCH-SUFFIX(lineageId, rootBranchId, fromCounter)</code> is a well-formed target like any other branch domain.<a href="#section-3.1-14" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="identity-and-evidence-selectors">
+<section id="section-3.2">
+        <h3 id="name-identity-and-evidence-selec">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-identity-and-evidence-selec" class="section-name selfRef">Identity and Evidence Selectors</a>
+        </h3>
+<p id="section-3.2-1">These target <strong>hop-local evidence</strong> — a key, a delegate, an attestation, or a historical issuer. They have direct effect while the element is
+<em>presented</em>; they are not automatically retroactive over descendants that no longer carry it. Reaching those descendants is Section 4.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.2-2">
+<pre>
+KEY          reject when the revoked verification method is present in the received transition
+DELEGATE     reject when the revoked executor is present in the received transition
+ATTESTATION  reject when the revoked attestation is presented as conformance evidence
+ISSUER       direct only if originIssuer or an equivalent propagated binding is available
+</pre><a href="#section-3.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2-3">When <code>originIssuer</code> is propagated (Section 2.1), issuer revocation is a <strong>direct, persistent</strong> selector — <code>PCA.originIssuer ==
+target.issuerId</code> — not hop-local. When it is not propagated, <code>ISSUER</code> is a historical selector and must be resolved into
+<code>LINEAGE-SUFFIX(lineageId, 0)</code> for the issuer's known lineages (Section 4).<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4"><strong>Why "presented only".</strong> In the incremental profile a Verifier holds only the immediate transition — the predecessor and the current PCA:<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.2-5">
+<pre>
++----------------+      |      +----------------+      |      +----------------+
+|  EXECUTOR n-1  |------|-----&gt;|   EXECUTOR n   |------|-----&gt;|  EXECUTOR n+1  |
++----------------+      |      +----------------+      |      +----------------+
+      hop n-1                       hop n                        hop n+1
+</pre><a href="#section-3.2-5" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2-6">If Bob signs <code>PCA1</code>:<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.2-7">
+<pre>
+PCA0 --Alice--&gt; PCA1 --Bob--&gt; PCA2 --Carol--&gt; PCA3 --Dave--&gt;
+
+verifier at hop 2 sees [PCA0, PCA1] : Bob is current
+verifier at hop 3 sees [PCA1, PCA2] : Bob is predecessor
+verifier at hop 4 sees [PCA2, PCA3] : Bob is no longer visible
+</pre><a href="#section-3.2-7" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2-8">So a selector revocation has three reaches:<a href="#section-3.2-8" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.2-9">
+<pre>
+PREVENTIVE          the revoked party can no longer produce a newly accepted hop
+IN-TRANSIT          a transition carrying the revoked evidence (current or predecessor) is rejected
+CAUSAL-RETROACTIVE  existing descendants are invalidated only after the historical position
+                    is converted into a lineage cutoff (Section 4)
+</pre><a href="#section-3.2-9" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="dynamic-restrictions">
+<section id="section-3.3">
+        <h3 id="name-dynamic-restrictions">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-dynamic-restrictions" class="section-name selfRef">Dynamic Restrictions</a>
+        </h3>
+<p id="section-3.3-1">These restrict <em>effective</em> authority without rewriting the signed chain. <code>AUTHORITY</code> removes operations; <code>EXECUTION-CONTRACT</code> restricts who
+or what may continue.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.3-2">
+<pre>
+signed operations    = { READ, WRITE }
+active restrictions  = { remove WRITE }
+effective operations = { READ }
+</pre><a href="#section-3.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3.3-3">A restriction may be scoped to a lineage suffix or a whole grant:<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-3.3-4">
+<pre>
+{ "strategy": "AUTHORITY", "target": { "lineageId": "L1", "fromCounter": 42, "operations": ["WRITE"] } }
+</pre><a href="#section-3.3-4" class="pilcrow">¶</a>
+</div>
+<div class="lang-json sourcecode" id="section-3.3-5">
+<pre>
+{ "strategy": "AUTHORITY", "target": { "grantId": "G1", "operations": ["WRITE"] } }
+</pre><a href="#section-3.3-5" class="pilcrow">¶</a>
+</div>
+<p id="section-3.3-6">The normative rules for scope, matching, effective authority, and the empty case are in Section 5.2.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="retrospective-annotation">
+<section id="section-3.4">
+        <h3 id="name-retrospective-annotation">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-retrospective-annotation" class="section-name selfRef">Retrospective Annotation</a>
+        </h3>
+<p id="section-3.4-1"><strong><code>AUDIT-RANGE</code></strong> marks a historical interval as compromised, for audit or incident response. It is <em>not</em> a forward-validity rule:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.4-2">
+<pre>
+PCA0 -&gt; PCA1 -&gt; PCA2 -&gt; PCA3 -&gt; PCA4 -&gt; PCA5
+                 [ affected incident interval ]
+</pre><a href="#section-3.4-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3.4-3">By Lemma 1 of the paper a PCA's validity is the composition of Proofs of Relationship back to PCA0, so no valid suffix can stand above an
+invalid segment. The forward consequence of flagging an interval from counter <code>k</code> is therefore <code>LINEAGE-SUFFIX(fromCounter = k)</code>.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="summary">
+<section id="section-3.5">
+        <h3 id="name-summary">
+<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-summary" class="section-name selfRef">Summary</a>
+        </h3>
+<table class="center" id="table-1">
+          <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Category</th>
+              <th class="text-left" rowspan="1" colspan="1">Strategies</th>
+              <th class="text-left" rowspan="1" colspan="1">Direct meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Native causal revocation</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>LINEAGE-SUFFIX</code>, <code>BRANCH-SUFFIX</code>, <code>GRANT</code>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Directly enforceable from propagated execution coordinates and authenticated revocation state</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Persistent issuer revocation</td>
+              <td class="text-left" rowspan="1" colspan="1">direct <code>ORIGIN-ISSUER</code>, when <code>originIssuer</code> is propagated</td>
+              <td class="text-left" rowspan="1" colspan="1">Directly enforceable from the propagated origin binding</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Identity/evidence selector</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>KEY</code>, <code>DELEGATE</code>, <code>ATTESTATION</code>, resolved <code>ISSUER</code>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Blocks presented evidence; historical causal effect requires authenticated resolution and authorized suffix materialization</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Dynamic restriction</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>AUTHORITY</code>, <code>EXECUTION-CONTRACT</code>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Restricts effective authority or conformance without rewriting the signed chain</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Retrospective annotation</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>AUDIT-RANGE</code>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Marks a historical incident interval; forward invalidity is represented by a suffix cutoff</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</div>
+</section>
+</div>
+<div id="making-selectors-causal">
+<section id="section-4">
+      <h2 id="name-making-selectors-causal">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-making-selectors-causal" class="section-name selfRef">Making Selectors Causal</a>
+      </h2>
+<p id="section-4-1">This section is normative. It defines how an identity/evidence selector (Section 3.2) becomes causal cutoffs that reach descendants no longer
+carrying the evidence:<a href="#section-4-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4-2">
+<pre>
+KEY / DELEGATE / ATTESTATION / ISSUER
+        |  authenticated historical resolution
+        v
+affected execution positions:
+
+    (lineageId, counter)
+    or, when branchId is authenticated:
+    (lineageId, branchId, counter)
+        |
+        v
+authorized native cutoff materialization:
+
+    LINEAGE-SUFFIX  or  BRANCH-SUFFIX
+        |
+        v
+O(1) downstream verification in lineage length
+</pre><a href="#section-4-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4-3">Historical resolution produces authenticated execution coordinates. A lineage-only position materializes <code>LINEAGE-SUFFIX</code>. A position that
+also carries an authenticated <code>branchId</code> MAY materialize <code>BRANCH-SUFFIX</code> when branch-selective revocation is authorized. The resolver falls
+back to <code>LINEAGE-SUFFIX</code> when branch identity is unavailable, unauthenticated, or when the entire causal future must be revoked.
+<code>LINEAGE-SUFFIX</code> crosses branch-domain changes; <code>BRANCH-SUFFIX</code> affects only the matching <code>branchId</code>.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-4">The ordinary incremental revocation check remains O(1) in lineage length, assuming the applicable revocation state is already authenticated
+and indexed. O(1) does not include network retrieval, revocation-state synchronization, historical resolution, batch generation, witness
+construction, or index construction. After materialization, the downstream check of <code>LINEAGE-SUFFIX</code>, <code>BRANCH-SUFFIX</code>, <code>GRANT</code>, and indexed
+restrictions is O(1) in lineage length.<a href="#section-4-4" class="pilcrow">¶</a></p>
+<p id="section-4-5">Three checks are kept separate throughout this section:<a href="#section-4-5" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4-6">
+<pre>
+Position authenticity:       Did the selector actually occur at this lineage position?
+Cutoff authorization:        Is this authority allowed to invalidate the causal future?
+Native suffix verification:  Does the current PCA match the authorized lineage and counter cutoff?
+</pre><a href="#section-4-6" class="pilcrow">¶</a>
+</div>
+<p id="section-4-7">A key controller is not, by that fact alone, a lineage revocation authority.<a href="#section-4-7" class="pilcrow">¶</a></p>
+<div id="position-witness">
+<section id="section-4.1">
+        <h3 id="name-position-witness">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-position-witness" class="section-name selfRef">Position Witness</a>
+        </h3>
+<p id="section-4.1-1">A position is proven by a <strong>position witness</strong>; a bare <code>(lineageId, atCounter)</code> assertion is not a witness. When a position must be proven, a
+valid position witness MUST be one of: a complete signed PCA, an authenticated PCA extract, a snapshot attestation, an authenticated
+historical-index record, a Merkle inclusion proof against an authenticated commitment, or a succinct proof. The base illustrative form is a
+complete PCA or an authenticated extract:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-4.1-2">
+<pre>
+{
+  "lineageId": "L1",
+  "atCounter": 7,
+  "positionWitness": {
+    "type": "SignedPCAExtract",
+    "pcaHash": "sha256:…",
+    "signedFields": {
+      "lineageId": "L1",
+      "lineageCounter": 7,
+      "branchId": "sha256:…",
+      "executor": "did:example:bob",
+      "verificationMethod": "did:example:bob#key-1"
+    },
+    "issuer": "did:example:bob",
+    "proof": { "…": "signature or authenticated inclusion proof" }
+  }
+}
+</pre><a href="#section-4.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4.1-3">The witness MUST cryptographically bind the selector, the <code>lineageId</code>, the <code>lineageCounter</code>, the PCA content or digest, the witness issuer,
+and its own integrity. The Verifier or materializer MUST verify that <code>witness.lineageId == position.lineageId</code>, <code>witness.lineageCounter ==
+position.atCounter</code>, the witness selector equals the revoked selector, the witness cryptographic integrity is valid, and the witness belongs
+to the claimed PCA or authenticated history. A hash accompanied by unauthenticated fields MUST NOT be accepted.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-4"><strong>Branch binding.</strong> When a position witness is used to materialize <code>BRANCH-SUFFIX</code>, the witness MUST also cryptographically bind the
+<code>branchId</code> carried by the historical PCA at that position, and the Verifier or materializer MUST additionally verify <code>witness.branchId ==
+position.branchId</code>. A bare assertion that a known historical position belonged to a given branch domain MUST NOT be sufficient; the witness
+MUST prove that the selector occurred at the claimed position, that the position belonged to the claimed lineage, that it carried the claimed
+<code>branchId</code>, and that it belongs to the authenticated PCA or authenticated history. <code>branchId</code> is OPTIONAL in a position witness that supports
+only <code>LINEAGE-SUFFIX</code>, and mandatory when the result is <code>BRANCH-SUFFIX</code>.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-5"><strong>Extract integrity.</strong> A <code>SignedPCAExtract</code> is not an arbitrary new object signed by the historical executor. It MUST be one of: a selective
+disclosure of fields covered by the original PCA signature, a proof derived from the original signed PCA, or an authenticated extract issued
+by a trusted historical index or snapshot authority. A <code>SignedPCAExtract</code> MUST prove that the disclosed fields were covered by the original
+PCA authentication; a new signature over reconstructed fields is not, by itself, proof that those fields appeared in the historical PCA. This
+rule applies even when the signing key is not compromised.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
+<p id="section-4.1-6"><strong>Compromised-key corroboration.</strong> For a <code>KEY</code> revocation caused by actual or suspected compromise, a position witness authenticated only by
+the revoked key MUST NOT be sufficient evidence that the claimed position was accepted into the lineage: an attacker controlling the
+compromised key could fabricate a PCA or <code>SignedPCAExtract</code> that claims an arbitrary <code>lineageId</code> and counter. Such a witness MUST be
+corroborated by evidence independent of the revoked key:<a href="#section-4.1-6" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4.1-7">
+<pre>
+the valid successor PCA that references the claimed PCA through previousPcaHash,
+    where the successor is not authenticated solely by the compromised key
+an authenticated historical position index
+an authenticated snapshot or checkpoint
+a transparency-log inclusion proof
+an attestation from an independently trusted materialization authority
+an equivalent independent cryptographic proof
+</pre><a href="#section-4.1-7" class="pilcrow">¶</a>
+</div>
+<p id="section-4.1-8">The simplest causal corroboration is <code>PCA[k+1].previousPcaHash == H(PCA[k])</code>. Corroboration proves that the claimed position was <em>accepted
+into the lineage</em> — whether the acceptance was caused by the legitimate holder or by the compromise adversary; in both cases the position is
+real and its causal future warrants the cutoff. Corroboration does not, and need not, prove that the position predates the compromise; that
+distinction requires trusted time (Section 5.5), not corroboration. It prevents cutoffs rooted in positions that were never part of the
+lineage at all.<a href="#section-4.1-8" class="pilcrow">¶</a></p>
+<p id="section-4.1-9">Independent corroboration is not universally mandatory. In the <strong>key-compromise case</strong> above it is mandatory. In the <strong>ordinary executor
+self-position case</strong>, an uncompromised executor proving its own current position to revoke its continuations MAY use its complete signed PCA
+or authenticated extract when the applicable policy recognizes that executor and its key as currently valid. In the <strong>delegate and
+attestation cases</strong>, a self-contained signed witness MAY be sufficient only when the signing key is not the evidence being treated as
+compromised, the profile accepts that issuer as authoritative for the claim, and the witness is cryptographically bound to the authenticated
+lineage. The selected profile MUST define the required independence assumptions.<a href="#section-4.1-9" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="cutoff-authorization">
+<section id="section-4.2">
+        <h3 id="name-cutoff-authorization">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-cutoff-authorization" class="section-name selfRef">Cutoff Authorization</a>
+        </h3>
+<p id="section-4.2-1">Every derived cutoff requires two independent proofs:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4.2-2">
+<pre>
+1. POSITION AUTHENTICITY  — the selector actually appeared in the named lineage at the stated counter (Section 4.1)
+2. CUTOFF AUTHORIZATION    — the party materializing the suffix is authorized to invalidate the causal future from that position
+</pre><a href="#section-4.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4.2-3">The base profile MUST use the conservative model:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4.2-4">
+<pre>
+identity/evidence revocation
+  -&gt; authenticated historical resolution
+  -&gt; authorized lineage or grant authority
+  -&gt; materialized LINEAGE-SUFFIX
+</pre><a href="#section-4.2-4" class="pilcrow">¶</a>
+</div>
+<p id="section-4.2-5"><strong>Conservative model (base).</strong> The final <code>LINEAGE-SUFFIX</code> is authorized directly by the lineage or grant authority. A position witness is
+RECOMMENDED as evidence <em>during</em> historical resolution and MAY be omitted from the final suffix object when the authorized materializing
+authority has independently established the position; that authority MUST NOT issue a cutoff from an untrusted or unauthenticated position
+assertion. The downstream Verifier checks the authorization and target of the resulting native <code>LINEAGE-SUFFIX</code> and does not need to
+re-evaluate the historical selector witness. The controller of a revoked key is <strong>not</strong> automatically a lineage revocation authority.<a href="#section-4.2-5" class="pilcrow">¶</a></p>
+<p id="section-4.2-6"><strong>Advanced evidence-authority model.</strong> A profile MAY explicitly authorize a key controller, delegate authority, attestation issuer, or
+equivalent evidence authority to invalidate suffixes rooted in proven uses of the revoked evidence. Then a valid position witness MUST
+accompany or be cryptographically referenced by every derived cutoff, the witness MUST prove that the revoked selector appeared in the
+claimed lineage at the claimed counter, and the profile MUST explicitly define why that evidence authority is also authorized to invalidate
+the resulting causal suffix.<a href="#section-4.2-6" class="pilcrow">¶</a></p>
+<p id="section-4.2-7">In short: a position witness is <strong>mandatory</strong> when the authority to create the cutoff is derived from the proven historical use itself; it is
+<strong>recommended, but need not be carried in the final suffix record</strong>, when an independently authorized lineage or grant authority materializes
+the cutoff. The provenance of cutoff authorization MUST NOT be left implicit.<a href="#section-4.2-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="known-positions">
+<section id="section-4.3">
+        <h3 id="name-known-positions">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-known-positions" class="section-name selfRef">Known Positions</a>
+        </h3>
+<p id="section-4.3-1">A selector MAY carry a bounded set of <code>knownPositions</code>. <code>knownPositions</code> MUST be OPTIONAL, MUST be bounded by the profile, MUST be used only
+for small sets, and MUST NOT be an unbounded array. Each entry MUST be authenticated or resolved through an authenticated process; an inline
+or referenced <code>positionWitness</code> (Section 4.1) MUST be present when the selected authorization model requires it (Section 4.2). Each authorized
+and verified position implies, by default:<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4.3-2">
+<pre>
+LINEAGE-SUFFIX(lineageId = position.lineageId, fromCounter = position.atCounter)
+</pre><a href="#section-4.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4.3-3">When <code>position.branchId</code> is cryptographically authenticated, branch-selective materialization is supported by the profile, and the
+materializing authority is authorized to revoke that branch domain, the position MAY instead imply:<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4.3-4">
+<pre>
+BRANCH-SUFFIX(lineageId = position.lineageId, branchId = position.branchId, fromCounter = position.atCounter)
+</pre><a href="#section-4.3-4" class="pilcrow">¶</a>
+</div>
+<p id="section-4.3-5"><code>LINEAGE-SUFFIX</code> is used when <code>branchId</code> is absent, unauthenticated, or unknown, or when every branch of the lineage must be invalidated;
+<code>BRANCH-SUFFIX</code> is used only when <code>branchId</code> is authenticated and the cutoff is intentionally limited to the selected branch domain. A bare or
+unauthenticated <code>branchId</code> MUST NOT justify branch-selective materialization. The position-witness requirements of Section 4.1 (including the
+branch binding for <code>BRANCH-SUFFIX</code>) and the cutoff-authorization requirements of Section 4.2 apply unchanged.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
+<p id="section-4.3-6">Large sets MUST instead be published as separate <code>LINEAGE-SUFFIX</code> records, separate <code>BRANCH-SUFFIX</code> records, an authenticated paginable batch,
+or an authenticated revocation feed, depending on the authenticated coordinates and authorized scope of each position.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="historical-position-index">
+<section id="section-4.4">
+        <h3 id="name-historical-position-index">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-historical-position-index" class="section-name selfRef">Historical Position Index</a>
+        </h3>
+<p id="section-4.4-1">A deployment that needs retroactive causal revocation SHOULD keep a minimal index mapping a selector to the positions where it occurred:<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-4.4-2">
+<pre>
+bob#key-1
+  -&gt; (L1, 1)
+  -&gt; (L8, 27)
+  -&gt; (L9, 4)
+</pre><a href="#section-4.4-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4.4-3">which yields <code>LINEAGE-SUFFIX(L1, 1)</code>, <code>LINEAGE-SUFFIX(L8, 27)</code>, <code>LINEAGE-SUFFIX(L9, 4)</code>. The index MUST be authenticated, MUST bind the
+selector to the position, and MUST have verifiable integrity; an unauthenticated log MUST NOT be treated as sufficient. It MAY be used to
+generate position witnesses. A deployment intending branch-selective materialization SHOULD also record the authenticated <code>branchId</code> of each
+position; an index that does not record it supports only lineage-wide cutoffs, because Section 4.1 requires an authenticated branch binding
+for <code>BRANCH-SUFFIX</code> materialization. It is not the full-chain profile, does not require keeping all PCA bytes, and keeps the ordinary
+downstream path O(1) after materialization. Retention, access control, and privacy are responsibilities of the deployment or the applicable profile.<a href="#section-4.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="not-carrying-full-history">
+<section id="section-4.5">
+        <h3 id="name-not-carrying-full-history">
+<a href="#section-4.5" class="section-number selfRef">4.5. </a><a href="#name-not-carrying-full-history" class="section-name selfRef">Not Carrying Full History</a>
+        </h3>
+<p id="section-4.5-1">The base incremental profile does not require each PCA to carry the complete list of historical executors, keys, or attestations. Doing so
+would cause unbounded growth, larger messages and signatures, correlation, duplicate data, and complex canonicalization. A future extension
+MAY instead use a cryptographic accumulator, a Merkle proof, an authenticated index, a transparency log, a snapshot commitment, or a succinct
+proof to show historical membership without transporting a full array.<a href="#section-4.5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="revocation-authorization-and-state">
+<section id="section-5">
+      <h2 id="name-revocation-authorization-an">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-revocation-authorization-an" class="section-name selfRef">Revocation Authorization and State</a>
+      </h2>
+<p id="section-5-1">This section is normative.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<div id="who-may-revoke">
+<section id="section-5.1">
+        <h3 id="name-who-may-revoke">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-who-may-revoke" class="section-name selfRef">Who May Revoke</a>
+        </h3>
+<p id="section-5.1-1">A revocation takes effect only if signed by an authorized issuer; an unauthorized object has no effect. There MUST be a <strong>verifiable
+binding</strong> between the revoker and the target — listing who may revoke is not enough, and the binding MUST be provable to the Verifier that
+receives the revocation.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-2">
+          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Revoker</th>
+              <th class="text-left" rowspan="1" colspan="1">May revoke</th>
+              <th class="text-left" rowspan="1" colspan="1">Binding proven by</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">The origin issuer</td>
+              <td class="text-left" rowspan="1" colspan="1">its own lineage</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>AuthorizedLineageRevoker(lineageId, revocation.issuer, revocation.proof)</code>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">An executor at counter <code>k</code>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>fromCounter = k+1</code> (its own future); <code>fromCounter = k</code> only if policy allows</td>
+              <td class="text-left" rowspan="1" colspan="1">its own signed PCA or extract, or an authenticated index</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">The branch-domain creator</td>
+              <td class="text-left" rowspan="1" colspan="1">the branch it created, after its creation point</td>
+              <td class="text-left" rowspan="1" colspan="1">the branch-creation PCA as position witness + proven authority-continuity with the creator (Section 5.1)</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">The grant authority</td>
+              <td class="text-left" rowspan="1" colspan="1">the grant and its contract terms</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <code>AuthorizedGrantRevoker(grantId, issuer)</code>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">The key controller</td>
+              <td class="text-left" rowspan="1" colspan="1">that key</td>
+              <td class="text-left" rowspan="1" colspan="1">control of the verification method</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">The attestation issuer</td>
+              <td class="text-left" rowspan="1" colspan="1">that attestation</td>
+              <td class="text-left" rowspan="1" colspan="1">the attestation's issuer signature</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-5.1-3"><strong>Origin-issuer authorization.</strong> For the direct origin case, <code>AuthorizedLineageRevoker</code> requires both <code>revocation.issuer == PCA.originIssuer</code>
+and a <code>revocation.proof</code> that validates under a currently authorized revocation method for that origin issuer. An identifier match without a
+valid proof MUST NOT authorize revocation.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-4"><strong>Counter semantics.</strong> <code>fromCounter = k</code> revokes hop <code>k</code> <em>and</em> its future; <code>fromCounter = k+1</code> keeps hop <code>k</code> valid and blocks every
+continuation. An executor at counter <code>k</code> MUST NOT revoke a position upstream of itself unless it separately holds the origin, grant, or
+revocation authority, and its position MUST be proven by a position witness, a validated PCA, an authenticated historical index, a snapshot
+attestation, or an equivalent cryptographic proof — never by an unproven claim of "its position in the chain".<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.1-5"><strong>Executor self-position.</strong> An executor requesting revocation of its own continuations normally already holds the simplest valid evidence:
+the PCA it produced. It MAY prove its position by presenting its complete signed PCA, or an authenticated extract carrying the <code>lineageId</code>,
+<code>lineageCounter</code>, executor identity, and verification method. The proof MUST establish that the PCA is valid, that it belongs to the claimed
+lineage, that it carries the claimed counter, and that the revocation issuer controls the executor identity or signing method bound to it:<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-5.1-6">
+<pre>
+{
+  "type": "ExecutorPositionWitness",
+  "pca": {
+    "lineageId": "L1",
+    "lineageCounter": 42,
+    "proofOfRelationship": { "executor": "did:example:bob" },
+    "proof": { "verificationMethod": "did:example:bob#key-1", "signature": "…" }
+  }
+}
+</pre><a href="#section-5.1-6" class="pilcrow">¶</a>
+</div>
+<p id="section-5.1-7">No external historical index or registry is required in this case; an authenticated index, snapshot, or equivalent proof remains valid when
+the original PCA is unavailable, or when another authority materializes the cutoff.<a href="#section-5.1-7" class="pilcrow">¶</a></p>
+<p id="section-5.1-8"><strong>Grant revocation.</strong> A <code>GRANT</code> revocation MUST be accepted only when the Verifier can establish <code>AuthorizedGrantRevoker(target.grantId,
+revocation.issuer)</code>. The profile MUST define how this predicate is proven — for example a signed grant credential, a grant-authority field
+committed in PCA0, an authenticated grant registry, or a profile-defined grant commitment. Possession or knowledge of a <code>grantId</code> alone MUST
+NOT authorize its revocation.<a href="#section-5.1-8" class="pilcrow">¶</a></p>
+<p id="section-5.1-9"><strong>Branch revocation.</strong> A <code>BRANCH-SUFFIX</code> MUST be accepted only when the revocation issuer is authorized to revoke the targeted branch domain,
+expressed as <code>AuthorizedBranchRevoker(lineageId, branchId, fromCounter, revocationIssuer, revocationProof)</code>. The profile MUST define how this
+binding is proven; possible authorities are the origin issuer (when policy grants branch-wide authority), the grant authority, the
+branch-domain creator, or an explicitly delegated branch revocation authority. Proof of branch creation consists of the branch-creation PCA
+itself: a valid PCA whose <code>branchId</code> correctly derives from its <code>previousPcaHash</code> and <code>branchCreationNonce</code>, whose signature verifies under
+the creator's key, and which carries valid branch-creation authorization (Section 2.4), serving as the position witness.<a href="#section-5.1-9" class="pilcrow">¶</a></p>
+<p id="section-5.1-10">Current control of the exact historical signing key is not the only permitted proof. The revocation issuer MUST prove continuity with the
+identity or authority that issued the branch-creation PCA, which MAY be established by current control of the original signing key, an
+authenticated key-rotation or key-successor proof accepted by the profile, a current verification method bound to the same executor identity,
+or an equivalent profile-defined authority-continuity proof. The proof MUST preserve continuity with the branch-domain creator. The nonce
+proves only that <code>branchId</code> was correctly derived from this creation transition; it proves nothing about who was authorized to perform it.
+Knowledge of <code>lineageId</code>, <code>branchId</code>, <code>branchCreationNonce</code>, or <code>fromCounter</code> MUST NOT by itself authorize branch revocation.<a href="#section-5.1-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="dynamic-restriction-requirements">
+<section id="section-5.2">
+        <h3 id="name-dynamic-restriction-require">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-dynamic-restriction-require" class="section-name selfRef">Dynamic Restriction Requirements</a>
+        </h3>
+<p id="section-5.2-1">A profile that supports dynamic restrictions MUST define the predicate <code>ApplicableRestriction(restriction, PCA, verificationContext)</code>,
+together with the restriction target syntax, the matching rules, the scope, the precedence, the authority of the restriction issuer, the
+composition of multiple restrictions, and the behavior on conflict. The minimal scopes are <code>lineageId</code>, <code>lineageId + fromCounter</code>, <code>grantId</code>,
+<code>originIssuer</code> (when supported), and resource or tenant in a resource-aware profile. A branch-capable profile that supports dynamic
+restrictions MUST additionally support <code>lineageId + branchId</code>, and SHOULD support <code>lineageId + branchId + fromCounter</code> for restrictions that
+begin at a specific causal position within the selected branch domain.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2"><strong><code>AUTHORITY</code>.</strong> Effective authority subtracts applicable restrictions from the signed authority:<a href="#section-5.2-2" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.2-3">
+<pre>
+effectiveAuthority(PCA) = signedAuthority(PCA) − ApplicableAuthorityRestrictions(PCA)
+</pre><a href="#section-5.2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-4">Non-expansion still compares the <em>signed</em> state — <code>signedAuthority(current) &lt;= signedAuthority(predecessor)</code> — so a PCA signed before a
+restriction does not become malformed; a PCA already attenuated to <code>{READ}</code> continues normally after <code>WRITE</code> is revoked. The concrete
+operation is authorized against <code>effectiveAuthority(current)</code>, downstream of chain validation, never as an input to the non-expansion check.
+When <code>effectiveAuthority</code> is <strong>empty</strong>, the base behavior is: the chain may remain cryptographically and semantically valid but authorizes no
+operation. A profile MAY require the hop to be rejected when effective authority is empty, but MUST declare this explicitly.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-5"><strong><code>EXECUTION-CONTRACT</code>.</strong> The effective contract combines the signed contract with applicable restrictions; the profile MUST define the
+composition operator and the restrictiveness order.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.2-6">
+<pre>
+signed executionModel = { deterministic, agentic }
+restriction removes   = { agentic }
+effective model       = { deterministic }
+</pre><a href="#section-5.2-6" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-7">An agentic executor is rejected; a deterministic one may continue.<a href="#section-5.2-7" class="pilcrow">¶</a></p>
+<p id="section-5.2-8"><strong>Branch-scoped restrictions.</strong> In a branch-capable profile a restriction MAY be scoped to a branch domain. It applies when:<a href="#section-5.2-8" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.2-9">
+<pre>
+PCA.lineageId    == restriction.target.lineageId
+AND PCA.branchId == restriction.target.branchId
+AND ( restriction.target.fromCounter is absent
+      OR PCA.lineageCounter &gt;= restriction.target.fromCounter )
+</pre><a href="#section-5.2-9" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-10">matching consistently with <code>ApplicableRestriction</code>. Both <code>AUTHORITY</code> and <code>EXECUTION-CONTRACT</code> MAY be branch-scoped:<a href="#section-5.2-10" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-5.2-11">
+<pre>
+{ "strategy": "AUTHORITY", "target": { "lineageId": "L1", "branchId": "B1", "fromCounter": 42, "operations": ["WRITE"] } }
+</pre><a href="#section-5.2-11" class="pilcrow">¶</a>
+</div>
+<div class="lang-json sourcecode" id="section-5.2-12">
+<pre>
+{ "strategy": "EXECUTION-CONTRACT", "target": { "lineageId": "L1", "branchId": "B1", "fromCounter": 42, "remove": { "executionModel": ["agentic"] } } }
+</pre><a href="#section-5.2-12" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-13">The <code>remove</code> wrapper makes the restriction direction explicit: the named execution model is removed from the effective execution contract,
+not declared as allowed. (<code>AUTHORITY</code> needs no wrapper: its <code>operations</code> are, by definition, the values removed from effective authority.)<a href="#section-5.2-13" class="pilcrow">¶</a></p>
+<p id="section-5.2-14">The scopes differ in effect:<a href="#section-5.2-14" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.2-15">
+<pre>
+BRANCH-SUFFIX                     invalidates the selected branch domain from a position onward
+branch-scoped AUTHORITY           removes selected operations from the effective authority of the branch domain
+branch-scoped EXECUTION-CONTRACT  restricts which executors, environments, or execution models may continue
+                                  within the branch domain
+</pre><a href="#section-5.2-15" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-16">Branch-scoped restrictions obey the same authorization, authentication, freshness, rollback-protection, composition, conflict-resolution,
+monotonicity, and availability requirements as all other dynamic restrictions. A branch-scoped restriction MUST NOT expand signed authority,
+modify the signed PCA, alter Proof of Relationship, alter predecessor uniqueness, or affect sibling branch domains carrying a different
+<code>branchId</code>. It is applied to effective authority or effective conformance only; signed-state non-expansion MUST continue to compare the
+signed current and predecessor states, not the dynamically restricted effective state.<a href="#section-5.2-16" class="pilcrow">¶</a></p>
+<p id="section-5.2-17"><strong>Branch creation and restriction inheritance.</strong> When a transition creates a new branch domain, all restrictions applicable to the
+predecessor domain MUST be evaluated before branch creation, under the anti-escape validation order of Section 2.4. A branch-scoped
+restriction may therefore prevent the continuation itself, the use of an operation the transition requires, the selected executor or
+execution model, or the creation of a new branch domain, when the applicable effective authority or execution contract no longer permits it.<a href="#section-5.2-17" class="pilcrow">¶</a></p>
+<p id="section-5.2-18">A newly created branch domain carries a new <code>branchId</code>, so a restriction scoped only to the predecessor <code>branchId</code> does not automatically
+match the new domain after the branch-creation transition has been validly accepted. To restrict the new branch domain, the restriction MUST
+be materialized for the new <code>branchId</code>, expressed at lineage scope, expressed at grant scope, or inherited through an explicit
+profile-defined rule. Any profile-defined inheritance rule MUST be explicit, authenticated, deterministic, and monotonic, and MUST avoid
+introducing implicit or unbounded branch ancestry; the base profile SHOULD NOT imply recursive restriction inheritance across branch-domain
+changes. Branch-domain scope, lineage-wide scope, and grant-wide scope remain distinct, and sibling branches carrying a different <code>branchId</code>
+remain unaffected by a branch-scoped restriction unless another applicable lineage-, grant-, or sibling-specific restriction matches them.<a href="#section-5.2-18" class="pilcrow">¶</a></p>
+<p id="section-5.2-19">Unlike <code>BRANCH-SUFFIX</code>, which categorically rejects a matching creation transition under the anti-escape validation order of Section 2.4, a
+branch-scoped dynamic restriction affects branch creation through the resulting effective authority or effective execution contract. It may
+therefore prevent the transition when the restricted operation, executor, environment, execution model, or branch-creation permission is no
+longer allowed. If the creation transition remains permitted and is validly accepted, the new domain does not automatically inherit a
+restriction scoped only to the predecessor <code>branchId</code>, unless the restriction is separately materialized for the new <code>branchId</code> or inherited
+through an explicit profile-defined rule. This asymmetry is intentional: it follows from the selected restriction scope and from the absence
+of recursive branch ancestry in the base profile.<a href="#section-5.2-19" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="monotonicity">
+<section id="section-5.3">
+        <h3 id="name-monotonicity">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-monotonicity" class="section-name selfRef">Monotonicity</a>
+        </h3>
+<p id="section-5.3-1">Security revocations and restrictions applied to an existing lineage or grant MUST be append-only and MUST become only equally or more
+restrictive over time:<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.3-2">
+<pre>
+effectiveRestrictions(t + 1) is at least as restrictive as effectiveRestrictions(t)
+</pre><a href="#section-5.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-5.3-3">under the profile-defined restriction order. A relaxation MUST require a new grant, a new PCA0, and a new lineage. It MUST NOT be implemented
+by deleting an existing revocation, replaying an older revocation view, replacing the active state with a less restrictive state, or silently
+un-revoking an existing lineage. A temporary operational suspension MAY be defined by a separate profile, but it MUST NOT weaken or remove a
+security revocation.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="revocation-state-and-availability">
+<section id="section-5.4">
+        <h3 id="name-revocation-state-and-availa">
+<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-revocation-state-and-availa" class="section-name selfRef">Revocation State and Availability</a>
+        </h3>
+<p id="section-5.4-1">Revocation state is append-only and identified by a monotonic version or commitment; it MAY be pulled by the Verifier or stapled by the
+Prover. A profile MUST specify how the revocation view is authenticated, how freshness is determined, who defines the minimum acceptable
+version and how that minimum is authenticated, how rollback is detected, and what happens when revocation state is unavailable. For
+unavailability the profile MUST choose one explicitly defined behavior — for example <strong>fail closed</strong>, accept only a fresh stapled proof,
+accept within a bounded offline window, or another explicitly defined behavior.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-5.4-2.1">
+            <p id="section-5.4-2.1.1">Short per-hop expiry bounds the interval in which a newly issued revocation may not yet have reached a Verifier, but does not eliminate
+that interval.<a href="#section-5.4-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="trusted-time-and-key-compromise">
+<section id="section-5.5">
+        <h3 id="name-trusted-time-and-key-compro">
+<a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-trusted-time-and-key-compro" class="section-name selfRef">Trusted Time and Key Compromise</a>
+        </h3>
+<p id="section-5.5-1">A self-declared <code>issuedAt</code> timestamp cannot prove that a signature was created before key compromise. Known historical positions are
+converted into suffix revocations (Section 4). Unknown or newly forged positions are blocked by the direct key-status check when the key is
+presented (Section 3.2), not by previously enumerated suffixes. A position witness offered as evidence for a compromised key MUST be
+corroborated by evidence independent of the revoked key (Section 4.1); such corroboration establishes that the position was accepted into the
+lineage, not that it predates the compromise. A future extension MAY use a trusted timestamp, a transparency log, hardware monotonic time, or
+forward-secure signatures.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="limitations">
+<section id="section-5.6">
+        <h3 id="name-limitations">
+<a href="#section-5.6" class="section-number selfRef">5.6. </a><a href="#name-limitations" class="section-name selfRef">Limitations</a>
+        </h3>
+<ul class="normal">
+<li class="normal" id="section-5.6-1.1">
+            <p id="section-5.6-1.1.1"><strong>Branch domains.</strong> Branch-domain revocation is supported through one fixed-size derived <code>branchId</code> (Section 2.4). The base profile does
+not carry recursive branch ancestry. When an authorized nested continuation creates a new branch domain, causal ancestry between the old
+and new branch identifiers requires authenticated historical resolution if revocation must cross that boundary. Nested children that inherit
+the same <code>branchId</code> are intentionally revoked as one branch domain. <code>BRANCH-SUFFIX</code> is as strong as the branch-domain creation policy;
+<code>LINEAGE-SUFFIX</code> strikes every branch of the matching lineage from the selected counter onward and remains the escape-resistant cutoff.
+Sibling branches with different <code>branchId</code> values are not struck by a <code>BRANCH-SUFFIX</code>.<a href="#section-5.6-1.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.6-1.2">
+            <p id="section-5.6-1.2.1"><strong>Domain aliasing.</strong> An authorized successor that deliberately reuses another sibling's branch-creation nonce at the same fan-out point
+obtains the same <code>branchId</code> and thereby joins that sibling's branch domain, accepting its shared revocation fate. This is voluntary domain
+sharing, not a forgery: it requires branch-creation authorization and the same creation point, and harming the co-domain sibling still
+requires a separately authorized revocation of the shared domain. Deployments that need strict per-successor isolation should rely on
+per-branch authorization policy or <code>LINEAGE-SUFFIX</code> granularity.<a href="#section-5.6-1.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.6-1.3">
+            <p id="section-5.6-1.3.1"><strong>Restriction scope across domain creation.</strong> A dynamic restriction scoped only to one <code>branchId</code> does not automatically match descendants
+of a newly created branch domain. The creation transition remains subject to that restriction while it is evaluated in the predecessor
+domain and may be rejected when the resulting effective authority or execution contract does not permit it. If the transition is validly
+accepted, descendants in the new domain are not subject to the predecessor-domain restriction unless it is materialized for the new
+<code>branchId</code>, expressed at lineage or grant scope, or inherited through an explicit profile-defined rule (Section 5.2). This does not mean the
+new domain regains authority: it may still be constrained by signed attenuation, lineage-scoped restrictions, grant-scoped restrictions,
+other branch-specific restrictions, and execution-contract restrictions. Issuers that intend a restriction to cover the causal future across
+authorized domain changes SHOULD use lineage or grant scope, or define explicit authenticated inheritance.<a href="#section-5.6-1.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.6-1.4">
+            <p id="section-5.6-1.4.1"><strong>Privacy.</strong> In the incremental profile, historical executor identities do not travel with the lineage: a Verifier sees the identities and
+evidence of the <em>presented</em> transition — the current executor identity, the immediate predecessor identity, and the current transition
+evidence — together with the persistent execution coordinates the profile requires; older executor identities are not carried by default.
+<code>lineageId</code>, <code>grantId</code>, <code>originIssuer</code> (when propagated), and <code>branchId</code> (in branch-capable profiles) remain persistent correlators. A
+profile with unlinkability requirements MUST define a privacy-preserving representation or lookup mechanism without weakening revocation
+matching (for example pairwise or blinded identifiers, per-segment commitments, privacy-preserving lookup, or selective disclosure).
+Uniqueness is not mathematically absolute: the derived construction makes intentional cross-branch collision require a hash collision and
+makes accidental collision negligible under the selected security level, and copying a <code>branchCreationNonce</code> to a different creation point
+yields a different <code>branchId</code> (deliberate reuse at the <em>same</em> creation point is the domain-aliasing case above).<a href="#section-5.6-1.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.6-1.5">
+            <p id="section-5.6-1.5.1"><strong>Incremental visibility.</strong> Direct <code>KEY</code>, <code>DELEGATE</code>, and <code>ATTESTATION</code> see only the evidence in the received transition (Section 3.2);
+reaching the past requires Section 4.<a href="#section-5.6-1.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="counter-capacity">
+<section id="section-6">
+      <h2 id="name-counter-capacity">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-counter-capacity" class="section-name selfRef">Counter Capacity</a>
+      </h2>
+<p id="section-6-1">This appendix is non-normative. Exhausting <code>lineageCounter</code> requires completing that many <em>causal</em> hops on one path:<a href="#section-6-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-6-2">
+<pre>
+secondsToOverflow = (2^64 − 1 − currentCounter) / R
+    where R = maximum accepted hops per second on one lineage path
+</pre><a href="#section-6-2" class="pilcrow">¶</a>
+</div>
+<p id="section-6-3">Each path is causally sequential; fan-out permits several paths but does not parallelize one path. A concrete <code>R</code> depends on hardware,
+network, and application logic and is not fixed here. Under any realistic per-lineage rate a <code>uint64</code> counter is practically inexhaustible,
+though a profile that wants the mathematically unbounded case MAY use a CBOR bignum. The normative point is only the one in Section 2.3:
+overflow and wraparound are rejected.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">The following values are approximate and illustrative, taken at <code>currentCounter = 0</code> on one causally sequential path and rounded:<a href="#section-6-4" class="pilcrow">¶</a></p>
+<table class="center" id="table-3">
+        <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
+<thead>
+          <tr>
+            <th class="text-right" rowspan="1" colspan="1">Accepted hops per second on one path</th>
+            <th class="text-right" rowspan="1" colspan="1">Approximate time to exhaustion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-right" rowspan="1" colspan="1">1</td>
+            <td class="text-right" rowspan="1" colspan="1">about 584 billion years</td>
+          </tr>
+          <tr>
+            <td class="text-right" rowspan="1" colspan="1">1,000</td>
+            <td class="text-right" rowspan="1" colspan="1">about 584 million years</td>
+          </tr>
+          <tr>
+            <td class="text-right" rowspan="1" colspan="1">1,000,000</td>
+            <td class="text-right" rowspan="1" colspan="1">about 584 thousand years</td>
+          </tr>
+          <tr>
+            <td class="text-right" rowspan="1" colspan="1">1,000,000,000</td>
+            <td class="text-right" rowspan="1" colspan="1">about 584 years</td>
+          </tr>
+        </tbody>
+      </table>
+<p id="section-6-6">Even under extremely aggressive illustrative rates, the exhaustion horizon remains operationally remote. The table communicates scale, not a
+performance claim, and the rates are not deployment benchmarks.<a href="#section-6-6" class="pilcrow">¶</a></p>
+<p id="section-6-7">The propagated coordinates support the native predicates: <code>lineageId</code> and <code>lineageCounter</code> support lineage cutoffs, <code>branchId</code> supports
+branch-domain cutoffs, and <code>grantId</code> supports grant-wide revocation. A frontier accumulator remains an <em>optional</em> extension for membership
+proofs and cryptographic audit of the prefix.<a href="#section-6-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="contributors">
+<section id="section-7">
+      <h2 id="name-contributors-2">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
+      </h2>
+<p id="section-7-1">The editors and contributors of this document are listed in the <strong>document header</strong> above. Listing is governed by Appendix B.7 of the
+<a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a>.<a href="#section-7-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="legal-notices">
+<section id="section-8">
+      <h2 id="name-legal-notices">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-legal-notices" class="section-name selfRef">Legal Notices</a>
+      </h2>
+<p id="section-8-1">The appendices governing:<a href="#section-8-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-8-2.1">
+          <p id="section-8-2.1.1"><strong>A.</strong> Use of Automated Language Assistance,<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-8-2.2">
+          <p id="section-8-2.2.1"><strong>B.</strong> Authorship, Stewardship, Attribution, and Derivative Works,<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-8-2.3">
+          <p id="section-8-2.3.1"><strong>C.</strong> Disclaimer and Limitation of Liability,<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-8-2.4">
+          <p id="section-8-2.4.1"><strong>D.</strong> Acknowledgements,<a href="#section-8-2.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-8-3">are maintained in a single canonical document, the <strong><a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a></strong> (<code>draft/0.2/pic-legal.md</code>), and are
+<strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
+and attribution matters.<a href="#section-8-4" class="pilcrow">¶</a></p>
+<p id="section-8-5">This specification is subordinate to the <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
+the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or authorship claims beyond
+those defined in the PIC Legal Appendices.<a href="#section-8-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="references">
+<section id="section-9">
+      <h2 id="name-references">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<ul class="normal">
+<li class="normal" id="section-9-1.1">
+          <p id="section-9-1.1.1">[1] Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-9-1.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-9-1.2">
+          <p id="section-9-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-9-1.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-9-1.3">
+          <p id="section-9-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-9-1.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-A">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Nicola Gallo</span></div>
+<div dir="auto" class="left"><span class="org">Nitro Agility S.r.l.</span></div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# RFC sources: repo-relative Markdown files built by scripts/rfc/build.sh.
+# One path per line; lines starting with # are ignored.
+# Outputs land next to their sources, in draft/<version>/rfc/ — a single
+# build run updates every version listed here. When a new version directory
+# is created (e.g. draft/0.3/), add its specs below; keep the old versions
+# listed so their outputs stay up to date.
+# pic-legal.md is intentionally excluded: it is the legal appendices document,
+# not a technical specification.
+draft/0.2/pic-spec.md
+draft/0.2/pic-prover-verifier-spec.md
+draft/0.2/pic-revocation-spec.md
+draft/0.2/pic-lineage-guardrail-spec.md
+draft/0.2/pic-architecture-deployment-spec.md

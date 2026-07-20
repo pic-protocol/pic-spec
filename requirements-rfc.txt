@@ -1,0 +1,3 @@
+# Pinned Python toolchain for the RFC build (see scripts/rfc/).
+# xml2rfc renders RFCXML v3 (produced by kramdown-rfc2629) into HTML and TXT.
+xml2rfc==3.32.0

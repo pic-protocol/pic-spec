@@ -1,0 +1,31 @@
+version: '3'
+
+tasks:
+  # RFC toolchain — kramdown-rfc2629 + xml2rfc (see scripts/rfc/ and the README section "Building RFC documents")
+
+  rfc:setup:
+    desc: Install the RFC toolchain (kramdown-rfc into .tools/gems, xml2rfc into .tools/xml2rfc-venv); idempotent
+    cmds:
+      - ./scripts/rfc/setup.sh
+    silent: true
+  rfc:check:
+    desc: Verify the toolchain and validate every configured spec without writing outputs
+    cmds:
+      - ./scripts/rfc/check.sh
+    silent: true
+  rfc:build:
+    desc: Build XML/HTML/TXT for every configured spec into draft/<version>/rfc/ (atomic per document; logs in .cache/rfc-logs)
+    cmds:
+      - ./scripts/rfc/build.sh
+    silent: true
+  rfc:clean:
+    desc: Remove generated RFC outputs and build logs (leaves the toolchain in .tools/ installed)
+    cmds:
+      - ./scripts/rfc/clean.sh
+    silent: true
+  rfc:rebuild:
+    desc: Clean and rebuild all RFC outputs
+    cmds:
+      - ./scripts/rfc/clean.sh
+      - ./scripts/rfc/build.sh
+    silent: true
