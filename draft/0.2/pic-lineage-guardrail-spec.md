@@ -14,6 +14,7 @@ author:
   - ins: N. Gallo
     name: Nicola Gallo
     org: Nitro Agility S.r.l.
+    email: nicola.gallo@nitroagility.com
 
 normative: {}
 informative: {}
@@ -189,7 +190,7 @@ outer lineage authority
 
 Removing all `carriedLineages` removes the execution subject of the Sandboxed Execution; it does not attenuate the outer authority or
 transform the outer lineage into an empty authority container. `multiLineage.carriedLineages` MUST contain at least one element; an empty
-`carriedLineages` array is invalid under this profile because it represents no Multi-Lineage Execution to evaluate.
+`carriedLineages` array represents no Multi-Lineage Execution to evaluate and MUST be rejected.
 
 ## Sandboxed Execution
 
@@ -382,6 +383,9 @@ Semantics:
 - the list is bounded by the profile;
 - a carried lineage MAY itself contain `multiLineage`; recursion has no special terminal depth in the model;
 - implementations MAY impose resource and maximum-depth limits; these are implementation and profile limits, not PIC-semantic changes.
+
+The term `carriedLineages` does not require the complete historical chain to be embedded; the selected validation profile determines the
+independently verifiable representation carried for each lineage.
 
 `multiLineage` MUST NOT alter `previousPcaHash`, create additional predecessors, enter `invariants.operations`, import authority from its
 carried lineages, or replace PoR, any carried lineage's signature, or any carried lineage's validation.
@@ -984,7 +988,9 @@ one predecessor per PCA;
 authority never expands.
 
 MULTI-LINEAGE EXECUTION
-independent lineages participate together;
+one or more carried lineages constitute
+the inner execution being evaluated;
+each remains independently rooted and verified;
 their authorities are never merged.
 
 SANDBOXED EXECUTION
@@ -1004,10 +1010,29 @@ A service mesh may carry, observe, encrypt, or operationally restrict this execu
 Physical executor behavior, alternate physical paths, implementation failure, cryptographic compromise, unavailable authenticated history,
 and policy-semantic error remain at the stated boundaries of the model.
 
+Without at least one carried lineage, there is no inner Multi-Lineage Execution for this profile to evaluate. This does not make the carried
+lineages authority parents of the outer lineage.
+
 # Contributors {#contributors}
 
 The editors and contributors of this document are listed in the **document header** above. Listing is governed by Appendix B.7 of the
 [PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md).
+
+# Acknowledgement
+
+The **Provenance Identity Continuity (PIC) Model** — the theoretical framework this specification expresses in normative form — was created
+by **Nicola Gallo**. It first appeared on Zenodo on 1 December 2025 and is developed in full in the Proof-of-Continuity paper:
+
+- Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Zenodo.
+  [zenodo.org/records/17777421](https://zenodo.org/records/17777421) (DOI: 10.5281/zenodo.17777421).
+- Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. Zenodo.
+  [zenodo.org/records/21285112](https://zenodo.org/records/21285112) (DOI: 10.5281/zenodo.21285112).
+
+Authorship of the PIC Model remains with Nicola Gallo; the PIC specifications are published and maintained by **Nitro Agility S.r.l.** as
+Specification Steward. Any work that references, implements, or claims conformance with PIC must preserve this attribution, distinguishing the
+**PIC Model** (author: Nicola Gallo) from the **PIC Specifications** (steward: Nitro Agility S.r.l.), as required by the
+**[PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md)** (Appendix B, Attribution; Appendix D,
+Acknowledgements), which are incorporated into this specification by reference.
 
 # Legal Notices
 

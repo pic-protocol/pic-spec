@@ -14,6 +14,7 @@ author:
   - ins: N. Gallo
     name: Nicola Gallo
     org: Nitro Agility S.r.l.
+    email: nicola.gallo@nitroagility.com
 
 normative: {}
 informative: {}
@@ -1078,6 +1079,22 @@ proofs and cryptographic audit of the prefix.
 
 The editors and contributors of this document are listed in the **document header** above. Listing is governed by Appendix B.7 of the
 [PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md).
+
+# Acknowledgement
+
+The **Provenance Identity Continuity (PIC) Model** — the theoretical framework this specification expresses in normative form — was created
+by **Nicola Gallo**. It first appeared on Zenodo on 1 December 2025 and is developed in full in the Proof-of-Continuity paper:
+
+- Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Zenodo.
+  [zenodo.org/records/17777421](https://zenodo.org/records/17777421) (DOI: 10.5281/zenodo.17777421).
+- Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. Zenodo.
+  [zenodo.org/records/21285112](https://zenodo.org/records/21285112) (DOI: 10.5281/zenodo.21285112).
+
+Authorship of the PIC Model remains with Nicola Gallo; the PIC specifications are published and maintained by **Nitro Agility S.r.l.** as
+Specification Steward. Any work that references, implements, or claims conformance with PIC must preserve this attribution, distinguishing the
+**PIC Model** (author: Nicola Gallo) from the **PIC Specifications** (steward: Nitro Agility S.r.l.), as required by the
+**[PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md)** (Appendix B, Attribution; Appendix D,
+Acknowledgements), which are incorporated into this specification by reference.
 
 # Legal Notices
 

@@ -14,6 +14,7 @@ author:
   - ins: N. Gallo
     name: Nicola Gallo
     org: Nitro Agility S.r.l.
+    email: nicola.gallo@nitroagility.com
 
 normative: {}
 informative: {}
@@ -67,6 +68,22 @@ Subordinate specifications:
 | [PIC Revocation](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md) | Revocation coordinates (`lineageId`, `grantId`, `lineageCounter`, `originIssuer`, and `branchId` in branch-capable profiles) and their hop-by-hop continuity, the requirements for turning a historical selector into a causal cutoff, and revocation-authorization and revocation-state requirements. | Draft 0.2 | 2026-07-18 |
 | [PIC Execution Guardrail](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md) | A **Lineage Execution** is a single-origin PIC execution; a **Multi-Lineage Execution** carries one or more of them together for one proposed transition. **Execution Guardrails** — invoked by trusted sandboxes — validate the participating PCAs, evaluate configured policy over semantic scopes, and enforce permit or deny; permitted crossings travel in a guardrail envelope. *Participation, not authority mixing.* | Draft 0.2 | 2026-07-19 |
 | [PIC Architecture and Deployment](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md) | Centralized (**Trust Plane**) and decentralized architectures, their fit to trusted and untrusted environments, hybrid enterprise topologies and service meshes, and interoperability with existing token infrastructures through an OAuth token-exchange profile. | Draft 0.2 | 2026-07-19 |
+
+# Acknowledgement
+
+The **Provenance Identity Continuity (PIC) Model** — the theoretical framework this specification expresses in normative form — was created
+by **Nicola Gallo**. It first appeared on Zenodo on 1 December 2025 and is developed in full in the Proof-of-Continuity paper:
+
+- Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Zenodo.
+  [zenodo.org/records/17777421](https://zenodo.org/records/17777421) (DOI: 10.5281/zenodo.17777421).
+- Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. Zenodo.
+  [zenodo.org/records/21285112](https://zenodo.org/records/21285112) (DOI: 10.5281/zenodo.21285112).
+
+Authorship of the PIC Model remains with Nicola Gallo; the PIC specifications are published and maintained by **Nitro Agility S.r.l.** as
+Specification Steward. Any work that references, implements, or claims conformance with PIC must preserve this attribution, distinguishing the
+**PIC Model** (author: Nicola Gallo) from the **PIC Specifications** (steward: Nitro Agility S.r.l.), as required by the
+**[PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md)** (Appendix B, Attribution; Appendix D,
+Acknowledgements), which are incorporated into this specification by reference.
 
 # Legal Notices
 

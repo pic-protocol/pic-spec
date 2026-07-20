@@ -119,9 +119,10 @@ Gallo                         Informational                     [Page 2]
    7.  Deployment Models . . . . . . . . . . . . . . . . . . . . . .  31
    8.  Zero Trust  . . . . . . . . . . . . . . . . . . . . . . . . .  33
    9.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  34
-   10. Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  34
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  34
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  35
+   10. Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .  34
+   11. Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  34
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  35
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  36
 
 1.  Introduction
 
@@ -138,8 +139,8 @@ Gallo                         Informational                     [Page 2]
    Model* is implemented at each execution hop to close that gap.  The
    model, including *Proof of Relationship (PoR)*, *Proof of Continuity
    (PoC)*, and the resulting safety guarantees, is formally defined in
-   the companion paper [1] (Section 11) and formally verified with the
-   Lean theorem prover [2] (Section 11).  The paper treats PoR as an
+   the companion paper [1] (Section 12) and formally verified with the
+   Lean theorem prover [2] (Section 12).  The paper treats PoR as an
    abstract, unforgeable primitive.  This document specifies the two
    components that realize it:
 
@@ -156,12 +157,11 @@ Gallo                         Informational                     [Page 2]
       either proof is invalid, the hop is rejected before any authority
       is exercised.
 
-
-
-
-
-
-
+   PIC *does not require a central server*. Depending on deployment
+   topology and implementer choice, a chain can be validated _fully
+   decentralized_ — each hop carrying everything the next needs to
+   verify it — or with the help of a trusted component such as a
+   snapshot server.  Section 5 describes these representations; the PIC
 
 
 
@@ -170,11 +170,6 @@ Gallo                         Informational                     [Page 3]
                          PIC Prover and Verifier               July 2026
 
 
-   PIC *does not require a central server*. Depending on deployment
-   topology and implementer choice, a chain can be validated _fully
-   decentralized_ — each hop carrying everything the next needs to
-   verify it — or with the help of a trusted component such as a
-   snapshot server.  Section 5 describes these representations; the PIC
    _invariants_ are the same in every case, but the concrete assurance
    and trust assumptions differ by profile (Sections 6.8, 7) — the
    profiles are not equivalent.
@@ -216,16 +211,6 @@ Gallo                         Informational                     [Page 3]
    assumed unforgeable, and a break of the underlying cryptography is
    outside the model, as it is for every protocol in this space.
 
-
-
-
-
-
-Gallo                         Informational                     [Page 4]
-
-                         PIC Prover and Verifier               July 2026
-
-
    This boundary is what distinguishes PIC.  If authority from two
    independent lineages can be composed into a new state that remains
    valid under a model, that model relies on correct executor behavior
@@ -233,6 +218,13 @@ Gallo                         Informational                     [Page 4]
    construction: the damage of a buggy or compromised executor is
    confined to its local step and cannot propagate as valid authority at
    the next hop.
+
+
+
+Gallo                         Informational                     [Page 4]
+
+                         PIC Prover and Verifier               July 2026
+
 
 1.2.  Delegating the Future
 
@@ -274,6 +266,14 @@ Gallo                         Informational                     [Page 4]
    Each executor receives a request, processes it, and may cause a
    further step:
 
+   +----------------+      |      +----------------+      |      +----------------+
+   |  EXECUTOR n-1  |------|----->|   EXECUTOR n   |------|----->|  EXECUTOR n+1  |
+   +----------------+      |      +----------------+      |      +----------------+
+                                       time x                        time x + y
+
+
+
+
 
 
 
@@ -281,11 +281,6 @@ Gallo                         Informational                     [Page 5]
 
                          PIC Prover and Verifier               July 2026
 
-
-   +----------------+      |      +----------------+      |      +----------------+
-   |  EXECUTOR n-1  |------|----->|   EXECUTOR n   |------|----->|  EXECUTOR n+1  |
-   +----------------+      |      +----------------+      |      +----------------+
-                                       time x                        time x + y
 
    Each | marks a hop boundary: the point where the predecessor's Prover
    emits its proofs and the successor's Verifier validates them.  Each
@@ -333,6 +328,11 @@ Gallo                         Informational                     [Page 5]
 
 
 
+
+
+
+
+
 Gallo                         Informational                     [Page 6]
 
                          PIC Prover and Verifier               July 2026
@@ -353,7 +353,7 @@ Gallo                         Informational                     [Page 6]
    guarantee across the whole lineage, so the mismatch is not a state a
    valid chain can represent at any hop.  It is ruled out by
    construction, not caught by runtime vigilance — and this is exactly
-   the property the Lean formalization verifies [2] (Section 11).
+   the property the Lean formalization verifies [2] (Section 12).
 
 1.5.  The Execution Flow as Part of the Security Model
 
@@ -475,7 +475,7 @@ Gallo                         Informational                     [Page 8]
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
    "OPTIONAL" in this document are to be interpreted as described in BCP
-   14 [3] (Section 11) [4] (Section 11) when, and only when, they appear
+   14 [3] (Section 12) [4] (Section 12) when, and only when, they appear
    in all capitals within normative text.
 
    Examples in this document are illustrative and non-normative.
@@ -493,7 +493,7 @@ Gallo                         Informational                     [Page 8]
 
    The examples represent authority as an operations set — the reference
    profile, matching the operation-resource privileges of the model [1]
-   (Section 11).  PIC does not require this representation, nor does it
+   (Section 12).  PIC does not require this representation, nor does it
    define the application's authorization vocabulary; Section 4 covers
    authority as an abstract domain (roles, labels, scopes, policy
    references) and its relationship to a Policy Decision Point.
@@ -847,8 +847,8 @@ Gallo                         Informational                    [Page 15]
    current hop is a valid, contract-conforming, non-expansive
    continuation of exactly one predecessor, bound to the concrete
    request, and therefore constitutes the next element (n+1) of that PIC
-   execution.  This is the causal linkage of the model [1] (Section 11),
-   the property the Lean formalization verifies [2] (Section 11).
+   execution.  This is the causal linkage of the model [1] (Section 12),
+   the property the Lean formalization verifies [2] (Section 12).
 
    *Continuation is open by default.* Because the PCA and its challenge
    travel in the clear, _any_ executor that observes the PCA and holds a
@@ -1271,7 +1271,7 @@ Gallo                         Informational                    [Page 22]
    where ≤ is an _attenuation order_ defined by the profile.  The
    operations set with subset inclusion, used in the examples, is the
    *reference profile*: it corresponds to the operation-resource
-   privileges of the model [1] (Section 11).
+   privileges of the model [1] (Section 12).
 
    A label may _denote_ authority without listing it: EU-BACKUP-READONLY
    denotes a set of operation-resource permissions and carries that
@@ -1335,7 +1335,7 @@ Gallo                         Informational                    [Page 23]
    meaning of predecessor, PIC's non-expansion is vacuous — the labels
    shrink while what they authorize grows.  Establishing that the label
    order refines its denotation order is up to the application or its
-   PDP.  It does *not inherit the Lean proof* [2] (Section 11): the
+   PDP.  It does *not inherit the Lean proof* [2] (Section 12): the
    proof covers non-expansion of the _abstract_ order only; semantic
    monotonicity of a concrete vocabulary is a separate proof obligation
 
@@ -1593,7 +1593,7 @@ Gallo                         Informational                    [Page 28]
 
 6.5.  Formal Scope
 
-   The Lean formalization [2] (Section 11) proves the logical safety
+   The Lean formalization [2] (Section 12) proves the logical safety
    properties of the abstract model and, through a refinement mapping,
    that any chain accepted under the modeled verifier assumptions
    satisfies the abstract PIC invariants.  The computational security of
@@ -1607,8 +1607,8 @@ Gallo                         Informational                    [Page 28]
    The core binds a hop to its executor through the PCA signature and
    pins the action through the request block (Section 2.3).  A profile
    MAY add a *proof of possession* of the request or channel — for
-   example *DPoP* [5] (Section 11), *HTTP Message Signatures* [6]
-   (Section 11), or an equivalent signed request binding — or otherwise
+   example *DPoP* [5] (Section 12), *HTTP Message Signatures* [6]
+   (Section 12), or an equivalent signed request binding — or otherwise
    constrain the recipient or channel.  These are *not core continuation
    modes* and are *not needed for the N+1 model*, whose successor is
    unknown; they serve profiles that require additional presentation
@@ -1863,13 +1863,48 @@ Gallo                         Informational                    [Page 33]
    PIC Legal Appendices (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-legal.md).
 
-10.  Legal Notices
+10.  Acknowledgement
+
+   The *Provenance Identity Continuity (PIC) Model* — the theoretical
+   framework this specification expresses in normative form — was
+   created by *Nicola Gallo*. It first appeared on Zenodo on 1 December
+   2025 and is developed in full in the Proof-of-Continuity paper:
+
+   *  Gallo, N. (2025). _PIC Model — Provenance Identity Continuity for
+      Distributed Execution Systems_. Zenodo. zenodo.org/
+      records/17777421 (https://zenodo.org/records/17777421) (DOI:
+      10.5281/zenodo.17777421).
+
+   *  Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
+      Authority Propagation in Distributed Systems and AI Agents_.
+      Zenodo. zenodo.org/records/21285112 (https://zenodo.org/
+      records/21285112) (DOI: 10.5281/zenodo.21285112).
+
+   Authorship of the PIC Model remains with Nicola Gallo; the PIC
+   specifications are published and maintained by *Nitro Agility S.r.l.*
+   as Specification Steward.  Any work that references, implements, or
+   claims conformance with PIC must preserve this attribution,
+   distinguishing the *PIC Model* (author: Nicola Gallo) from the *PIC
+   Specifications* (steward: Nitro Agility S.r.l.), as required by the
+   *PIC Legal Appendices (https://github.com/pic-protocol/pic-
+   spec/blob/main/draft/0.2/pic-legal.md)* (Appendix B, Attribution;
+   Appendix D, Acknowledgements), which are incorporated into this
+   specification by reference.
+
+11.  Legal Notices
 
    The appendices governing:
 
    *  *A.* Use of Automated Language Assistance,
 
    *  *B.* Authorship, Stewardship, Attribution, and Derivative Works,
+
+
+
+Gallo                         Informational                    [Page 34]
+
+                         PIC Prover and Verifier               July 2026
+
 
    *  *C.* Disclaimer and Limitation of Liability,
 
@@ -1892,19 +1927,12 @@ Gallo                         Informational                    [Page 33]
    introduce new conceptual authority, invariants, or authorship claims
    beyond those defined in the PIC Legal Appendices.
 
-11.  References
+12.  References
 
    *  [1] Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
       Authority Propagation in Distributed Systems and AI Agents_.
       arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
       (https://arxiv.org/abs/2607.08906)
-
-
-
-Gallo                         Informational                    [Page 34]
-
-                         PIC Prover and Verifier               July 2026
-
 
    *  [2] Gallo, N. (2026). _PIC Lean Verification_. Lean 4
       formalization of the definitions and theorems of [1].
@@ -1925,6 +1953,15 @@ Gallo                         Informational                    [Page 34]
       Possession (DPoP)_. RFC 9449. rfc-editor.org/rfc/rfc9449
       (https://www.rfc-editor.org/rfc/rfc9449)
 
+
+
+
+
+Gallo                         Informational                    [Page 35]
+
+                         PIC Prover and Verifier               July 2026
+
+
    *  [6] Backman, A., Richer, J., & Sporny, M. (2024). _HTTP Message
       Signatures_. RFC 9421. rfc-editor.org/rfc/rfc9421
       (https://www.rfc-editor.org/rfc/rfc9421)
@@ -1933,6 +1970,7 @@ Author's Address
 
    Nicola Gallo
    Nitro Agility S.r.l.
+   Email: nicola.gallo@nitroagility.com
 
 
 
@@ -1957,4 +1995,22 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 35]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 36]

@@ -95,15 +95,15 @@ Table of Contents
      5.6.  Limitations . . . . . . . . . . . . . . . . . . . . . . .  29
    6.  Counter Capacity  . . . . . . . . . . . . . . . . . . . . . .  30
    7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  31
-   8.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  31
-   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  32
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  32
+   8.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .  31
+   9.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  32
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  33
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  33
 
 1.  Introduction
 
    This section is non-normative.  It explains the concepts revocation
    needs; the normative requirements are in Sections 2, 4, and 5.
-
 
 
 
@@ -200,7 +200,7 @@ Gallo                         Informational                     [Page 3]
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
    "OPTIONAL" are to be interpreted as described in BCP 14 [2]
-   (Section 9) [3] (Section 9) when, and only when, they appear in all
+   (Section 10) [3] (Section 10) when, and only when, they appear in all
    capitals, and only within the normative sections.  Examples are
    illustrative and non-normative.
 
@@ -1724,12 +1724,12 @@ Gallo                         Informational                    [Page 30]
    PIC Legal Appendices (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-legal.md).
 
-8.  Legal Notices
+8.  Acknowledgement
 
-   The appendices governing:
-
-   *  *A.* Use of Automated Language Assistance,
-
+   The *Provenance Identity Continuity (PIC) Model* — the theoretical
+   framework this specification expresses in normative form — was
+   created by *Nicola Gallo*. It first appeared on Zenodo on 1 December
+   2025 and is developed in full in the Proof-of-Continuity paper:
 
 
 
@@ -1737,6 +1737,33 @@ Gallo                         Informational                    [Page 31]
 
                              PIC Revocation                    July 2026
 
+
+   *  Gallo, N. (2025). _PIC Model — Provenance Identity Continuity for
+      Distributed Execution Systems_. Zenodo. zenodo.org/
+      records/17777421 (https://zenodo.org/records/17777421) (DOI:
+      10.5281/zenodo.17777421).
+
+   *  Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
+      Authority Propagation in Distributed Systems and AI Agents_.
+      Zenodo. zenodo.org/records/21285112 (https://zenodo.org/
+      records/21285112) (DOI: 10.5281/zenodo.21285112).
+
+   Authorship of the PIC Model remains with Nicola Gallo; the PIC
+   specifications are published and maintained by *Nitro Agility S.r.l.*
+   as Specification Steward.  Any work that references, implements, or
+   claims conformance with PIC must preserve this attribution,
+   distinguishing the *PIC Model* (author: Nicola Gallo) from the *PIC
+   Specifications* (steward: Nitro Agility S.r.l.), as required by the
+   *PIC Legal Appendices (https://github.com/pic-protocol/pic-
+   spec/blob/main/draft/0.2/pic-legal.md)* (Appendix B, Attribution;
+   Appendix D, Acknowledgements), which are incorporated into this
+   specification by reference.
+
+9.  Legal Notices
+
+   The appendices governing:
+
+   *  *A.* Use of Automated Language Assistance,
 
    *  *B.* Authorship, Stewardship, Attribution, and Derivative Works,
 
@@ -1754,6 +1781,19 @@ Gallo                         Informational                    [Page 31]
    Appendices, the PIC Legal Appendices prevail for legal, governance,
    licensing, and attribution matters.
 
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 32]
+
+                             PIC Revocation                    July 2026
+
+
    This specification is subordinate to the PIC Specification
    (https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-
    spec.md), which defines the normative semantics of the PIC Model and
@@ -1761,7 +1801,7 @@ Gallo                         Informational                    [Page 31]
    introduce new conceptual authority, invariants, or authorship claims
    beyond those defined in the PIC Legal Appendices.
 
-9.  References
+10.  References
 
    *  [1] Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
       Authority Propagation in Distributed Systems and AI Agents_.
@@ -1780,6 +1820,7 @@ Author's Address
 
    Nicola Gallo
    Nitro Agility S.r.l.
+   Email: nicola.gallo@nitroagility.com
 
 
 
@@ -1789,4 +1830,19 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 32]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 33]

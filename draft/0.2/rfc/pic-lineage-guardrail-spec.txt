@@ -116,9 +116,10 @@ Gallo                         Informational                     [Page 2]
 
    7.  Model Summary . . . . . . . . . . . . . . . . . . . . . . . .  27
    8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  28
-   9.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  28
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  29
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  29
+   9.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .  29
+   10. Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  29
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  30
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  30
 
 1.  Introduction
 
@@ -161,7 +162,6 @@ Gallo                         Informational                     [Page 2]
 
    *  non-expansion at every hop, so authority only narrows;
 
-   *  no authority is imported from another lineage;
 
 
 
@@ -169,6 +169,8 @@ Gallo                         Informational                     [Page 3]
 
                          PIC Sandboxed Execution               July 2026
 
+
+   *  no authority is imported from another lineage;
 
    *  physical executor behavior is outside the protocol guarantee.
 
@@ -188,7 +190,7 @@ Gallo                         Informational                     [Page 3]
    protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md);
    revocation by the PIC Revocation Specification (https://github.com/
    pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md);
-   the formal model and proofs by the PIC Model [1] (Section 10).  This
+   the formal model and proofs by the PIC Model [1] (Section 11).  This
    document restates none of them.
 
 1.2.  Multi-Lineage Execution
@@ -216,8 +218,6 @@ Gallo                         Informational                     [Page 3]
    +========================================+
 
    Distinct lineages, one proposed transition.
-
-
 
 
 
@@ -298,8 +298,8 @@ Gallo                         Informational                     [Page 5]
    Sandboxed Execution; it does not attenuate the outer authority or
    transform the outer lineage into an empty authority container.
    multiLineage.carriedLineages MUST contain at least one element; an
-   empty carriedLineages array is invalid under this profile because it
-   represents no Multi-Lineage Execution to evaluate.
+   empty carriedLineages array represents no Multi-Lineage Execution to
+   evaluate and MUST be rejected.
 
 1.3.  Sandboxed Execution
 
@@ -380,7 +380,7 @@ Gallo                         Informational                     [Page 6]
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
    "OPTIONAL" are to be interpreted as described in BCP 14 [2]
-   (Section 10) [3] (Section 10) when, and only when, they appear in all
+   (Section 11) [3] (Section 11) when, and only when, they appear in all
    capitals in normative text.  The sections defining multiLineage, its
    canonical binding, sandbox origination, the Guardrail Prover and
    Verifier profile, the operation profile, Acceptance, Bypass rejection
@@ -576,6 +576,10 @@ Gallo                         Informational                    [Page 10]
       these are implementation and profile limits, not PIC-semantic
       changes.
 
+   The term carriedLineages does not require the complete historical
+   chain to be embedded; the selected validation profile determines the
+   independently verifiable representation carried for each lineage.
+
    multiLineage MUST NOT alter previousPcaHash, create additional
    predecessors, enter invariants.operations, import authority from its
    carried lineages, or replace PoR, any carried lineage's signature, or
@@ -604,10 +608,6 @@ Gallo                         Informational                    [Page 10]
    proofOfRelationship.request MUST contain a cryptographic commitment
    to the complete canonical multiLineage field carried by that PCA.
    The request profile contains at least:
-
-
-
-
 
 
 
@@ -1520,7 +1520,9 @@ Gallo                         Informational                    [Page 27]
    authority never expands.
 
    MULTI-LINEAGE EXECUTION
-   independent lineages participate together;
+   one or more carried lineages constitute
+   the inner execution being evaluated;
+   each remains independently rooted and verified;
    their authorities are never merged.
 
    SANDBOXED EXECUTION
@@ -1544,6 +1546,10 @@ Gallo                         Informational                    [Page 27]
    and policy-semantic error remain at the stated boundaries of the
    model.
 
+   Without at least one carried lineage, there is no inner Multi-Lineage
+   Execution for this profile to evaluate.  This does not make the
+   carried lineages authority parents of the outer lineage.
+
 8.  Contributors
 
    The editors and contributors of this document are listed in the
@@ -1551,7 +1557,48 @@ Gallo                         Informational                    [Page 27]
    PIC Legal Appendices (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-legal.md).
 
-9.  Legal Notices
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 28]
+
+                         PIC Sandboxed Execution               July 2026
+
+
+9.  Acknowledgement
+
+   The *Provenance Identity Continuity (PIC) Model* — the theoretical
+   framework this specification expresses in normative form — was
+   created by *Nicola Gallo*. It first appeared on Zenodo on 1 December
+   2025 and is developed in full in the Proof-of-Continuity paper:
+
+   *  Gallo, N. (2025). _PIC Model — Provenance Identity Continuity for
+      Distributed Execution Systems_. Zenodo. zenodo.org/
+      records/17777421 (https://zenodo.org/records/17777421) (DOI:
+      10.5281/zenodo.17777421).
+
+   *  Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
+      Authority Propagation in Distributed Systems and AI Agents_.
+      Zenodo. zenodo.org/records/21285112 (https://zenodo.org/
+      records/21285112) (DOI: 10.5281/zenodo.21285112).
+
+   Authorship of the PIC Model remains with Nicola Gallo; the PIC
+   specifications are published and maintained by *Nitro Agility S.r.l.*
+   as Specification Steward.  Any work that references, implements, or
+   claims conformance with PIC must preserve this attribution,
+   distinguishing the *PIC Model* (author: Nicola Gallo) from the *PIC
+   Specifications* (steward: Nitro Agility S.r.l.), as required by the
+   *PIC Legal Appendices (https://github.com/pic-protocol/pic-
+   spec/blob/main/draft/0.2/pic-legal.md)* (Appendix B, Attribution;
+   Appendix D, Acknowledgements), which are incorporated into this
+   specification by reference.
+
+10.  Legal Notices
 
    The appendices governing:
 
@@ -1563,18 +1610,21 @@ Gallo                         Informational                    [Page 27]
 
    *  *D.* Acknowledgements,
 
-
-
-Gallo                         Informational                    [Page 28]
-
-                         PIC Sandboxed Execution               July 2026
-
-
    are maintained in a single canonical document, the *PIC Legal
    Appendices (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-legal.md)* (draft/0.2/pic-legal.md), and
    are *incorporated into this specification by reference* as if fully
    set forth herein.
+
+
+
+
+
+
+Gallo                         Informational                    [Page 29]
+
+                         PIC Sandboxed Execution               July 2026
+
 
    In case of conflict between this document and the PIC Legal
    Appendices, the PIC Legal Appendices prevail for legal, governance,
@@ -1587,7 +1637,7 @@ Gallo                         Informational                    [Page 28]
    introduce new conceptual authority, invariants, or authorship claims
    beyond those defined in the PIC Legal Appendices.
 
-10.  References
+11.  References
 
    *  [1] Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
       Authority Propagation in Distributed Systems and AI Agents_.
@@ -1606,6 +1656,7 @@ Author's Address
 
    Nicola Gallo
    Nitro Agility S.r.l.
+   Email: nicola.gallo@nitroagility.com
 
 
 
@@ -1621,4 +1672,9 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 29]
+
+
+
+
+
+Gallo                         Informational                    [Page 30]

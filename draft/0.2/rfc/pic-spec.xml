@@ -19,6 +19,7 @@
     <author initials="N." surname="Gallo" fullname="Nicola Gallo">
       <organization>Nitro Agility S.r.l.</organization>
       <address>
+        <email>nicola.gallo@nitroagility.com</email>
       </address>
     </author>
 
@@ -31,7 +32,7 @@
     <abstract>
 
 
-<?line 29?>
+<?line 30?>
 
 <t>This document is the <strong>PIC Specification</strong>: the entry point of the PIC
 specification set. It defines the normative semantics of the
@@ -53,7 +54,7 @@ is authoritative for normative requirements and conformance language.</t>
     <note title="Document Status">
 
 
-<?line 22?>
+<?line 23?>
 
 <t><strong>Version:</strong> 0.2 (Draft)
 <strong>Status</strong>: Draft – Not a Standard
@@ -69,7 +70,7 @@ is authoritative for normative requirements and conformance language.</t>
   <middle>
 
 
-<?line 42?>
+<?line 43?>
 
 <section anchor="introduction"><name>Introduction</name>
 
@@ -120,6 +121,25 @@ regardless of naming or intent.</t>
 </texttable>
 
 </section>
+<section anchor="acknowledgement"><name>Acknowledgement</name>
+
+<t>The <strong>Provenance Identity Continuity (PIC) Model</strong> — the theoretical framework this specification expresses in normative form — was created
+by <strong>Nicola Gallo</strong>. It first appeared on Zenodo on 1 December 2025 and is developed in full in the Proof-of-Continuity paper:</t>
+
+<t><list style="symbols">
+  <t>Gallo, N. (2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Zenodo.
+<eref target="https://zenodo.org/records/17777421">zenodo.org/records/17777421</eref> (DOI: 10.5281/zenodo.17777421).</t>
+  <t>Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. Zenodo.
+<eref target="https://zenodo.org/records/21285112">zenodo.org/records/21285112</eref> (DOI: 10.5281/zenodo.21285112).</t>
+</list></t>
+
+<t>Authorship of the PIC Model remains with Nicola Gallo; the PIC specifications are published and maintained by <strong>Nitro Agility S.r.l.</strong> as
+Specification Steward. Any work that references, implements, or claims conformance with PIC must preserve this attribution, distinguishing the
+<strong>PIC Model</strong> (author: Nicola Gallo) from the <strong>PIC Specifications</strong> (steward: Nitro Agility S.r.l.), as required by the
+<strong><eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</eref></strong> (Appendix B, Attribution; Appendix D,
+Acknowledgements), which are incorporated into this specification by reference.</t>
+
+</section>
 <section anchor="legal-notices"><name>Legal Notices</name>
 
 <t>The appendices governing:</t>
@@ -164,54 +184,61 @@ matters.</t>
   </back>
 
 <!-- ##markdown-source:
-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
-2BMAAA==
+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
 
 -->
 

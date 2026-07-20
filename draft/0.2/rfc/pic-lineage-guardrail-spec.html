@@ -1408,13 +1408,16 @@ Multi-Lineage Execution. It introduces no new PCA type and no trusted sandbox.<a
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-legal-notices" class="internal xref">Legal Notices</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-acknowledgement" class="internal xref">Acknowledgement</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-legal-notices" class="internal xref">Legal Notices</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-references" class="internal xref">References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1497,7 +1500,7 @@ One origin. One predecessor per PCA. Authority only narrows.
 <p id="section-1.1-4">The construction — PCA format, Prover, Verifier — is defined by the
 <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>;
 revocation by the <a href="pic-revocation-spec.html">PIC Revocation Specification</a>; the
-formal model and proofs by the PIC Model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span>. This document restates none of them.<a href="#section-1.1-4" class="pilcrow">¶</a></p>
+formal model and proofs by the PIC Model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>. This document restates none of them.<a href="#section-1.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="multi-lineage-execution">
@@ -1575,7 +1578,7 @@ outer lineage authority
 </div>
 <p id="section-1.2-11">Removing all <code>carriedLineages</code> removes the execution subject of the Sandboxed Execution; it does not attenuate the outer authority or
 transform the outer lineage into an empty authority container. <code>multiLineage.carriedLineages</code> MUST contain at least one element; an empty
-<code>carriedLineages</code> array is invalid under this profile because it represents no Multi-Lineage Execution to evaluate.<a href="#section-1.2-11" class="pilcrow">¶</a></p>
+<code>carriedLineages</code> array represents no Multi-Lineage Execution to evaluate and MUST be rejected.<a href="#section-1.2-11" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sandboxed-execution">
@@ -1654,7 +1657,7 @@ execution.<a href="#section-1.3-9" class="pilcrow">¶</a></p>
 <a href="#section-1.4" class="section-number selfRef">1.4. </a><a href="#name-requirements-notation" class="section-name selfRef">Requirements Notation</a>
         </h3>
 <p id="section-1.4-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span> when, and only when, they appear in all capitals
+"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> when, and only when, they appear in all capitals
 in normative text. The sections defining <code>multiLineage</code>, its canonical binding, sandbox origination, the Guardrail Prover and Verifier
 profile, the operation profile, Acceptance, Bypass rejection behavior, materializing-guardrail requirements, and Recursion resource limits
 are normative. The Abstract, Introduction, explanatory diagrams, examples, deployment comparisons, the service-mesh explanation, and Security
@@ -1830,29 +1833,31 @@ one Multi-Lineage Execution; inside it, <code>carriedLineages</code> is the boun
             <p id="section-2.4-4.7.1">implementations MAY impose resource and maximum-depth limits; these are implementation and profile limits, not PIC-semantic changes.<a href="#section-2.4-4.7.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.4-5"><code>multiLineage</code> MUST NOT alter <code>previousPcaHash</code>, create additional predecessors, enter <code>invariants.operations</code>, import authority from its
-carried lineages, or replace PoR, any carried lineage's signature, or any carried lineage's validation.<a href="#section-2.4-5" class="pilcrow">¶</a></p>
-<p id="section-2.4-6">Exactness. The outer request binding commits to the complete presented <code>multiLineage</code>. The Verifier reconstructs the carried-lineage set and
-context from the presented objects and recomputes every supplied digest; an added, removed, or substituted carried lineage causes rejection.<a href="#section-2.4-6" class="pilcrow">¶</a></p>
+<p id="section-2.4-5">The term <code>carriedLineages</code> does not require the complete historical chain to be embedded; the selected validation profile determines the
+independently verifiable representation carried for each lineage.<a href="#section-2.4-5" class="pilcrow">¶</a></p>
+<p id="section-2.4-6"><code>multiLineage</code> MUST NOT alter <code>previousPcaHash</code>, create additional predecessors, enter <code>invariants.operations</code>, import authority from its
+carried lineages, or replace PoR, any carried lineage's signature, or any carried lineage's validation.<a href="#section-2.4-6" class="pilcrow">¶</a></p>
+<p id="section-2.4-7">Exactness. The outer request binding commits to the complete presented <code>multiLineage</code>. The Verifier reconstructs the carried-lineage set and
+context from the presented objects and recomputes every supplied digest; an added, removed, or substituted carried lineage causes rejection.<a href="#section-2.4-7" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.4-7.1">
-            <p id="section-2.4-7.1.1">Exactness applies to the authenticated Multi-Lineage Execution presented to the guardrail. Detecting inputs hidden before presentation
-requires a profile-defined authenticated input manifest or observation source.<a href="#section-2.4-7.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-2.4-8.1">
+            <p id="section-2.4-8.1.1">Exactness applies to the authenticated Multi-Lineage Execution presented to the guardrail. Detecting inputs hidden before presentation
+requires a profile-defined authenticated input manifest or observation source.<a href="#section-2.4-8.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.4-8">Two distinct functions must not be confused:<a href="#section-2.4-8" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-2.4-9">
+<p id="section-2.4-9">Two distinct functions must not be confused:<a href="#section-2.4-9" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-10">
 <pre>
 multiLineage
     carries the complete inner execution
 
 proofOfRelationship.request
     binds the concrete ENFORCE action to the exact multiLineage
-</pre><a href="#section-2.4-9" class="pilcrow">¶</a>
+</pre><a href="#section-2.4-10" class="pilcrow">¶</a>
 </div>
-<p id="section-2.4-10">For every non-origin outer PCA, the ordinary <code>proofOfRelationship.request</code> MUST contain a cryptographic commitment to the complete canonical
-<code>multiLineage</code> field carried by that PCA. The request profile contains at least:<a href="#section-2.4-10" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-2.4-11">
+<p id="section-2.4-11">For every non-origin outer PCA, the ordinary <code>proofOfRelationship.request</code> MUST contain a cryptographic commitment to the complete canonical
+<code>multiLineage</code> field carried by that PCA. The request profile contains at least:<a href="#section-2.4-11" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-12">
 <pre>
 proofOfRelationship.request.operation
 proofOfRelationship.request.target
@@ -1864,50 +1869,50 @@ proofOfRelationship.request.semanticProfile      (when applicable)
 proofOfRelationship.request.enforcementResult
 proofOfRelationship.request.requestDigest
 proofOfRelationship.request.payloadDigest
-</pre><a href="#section-2.4-11" class="pilcrow">¶</a>
+</pre><a href="#section-2.4-12" class="pilcrow">¶</a>
 </div>
-<p id="section-2.4-12">This profile does not redefine the base request format
+<p id="section-2.4-13">This profile does not redefine the base request format
 (<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>,
 Section 2.3); it extends the request binding. The PCA signature protects the complete <code>multiLineage</code> field as part of the PCA; the request
-commitment additionally pins the concrete <code>ENFORCE</code> operation to that exact inner execution under the executed-vs-signed rule.<a href="#section-2.4-12" class="pilcrow">¶</a></p>
-<p id="section-2.4-13"><code>multiLineageDigest</code> is mandatory in every non-origin outer PCA and is computed as:<a href="#section-2.4-13" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-2.4-14">
+commitment additionally pins the concrete <code>ENFORCE</code> operation to that exact inner execution under the executed-vs-signed rule.<a href="#section-2.4-13" class="pilcrow">¶</a></p>
+<p id="section-2.4-14"><code>multiLineageDigest</code> is mandatory in every non-origin outer PCA and is computed as:<a href="#section-2.4-14" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-15">
 <pre>
 request.multiLineageDigest
     ==
 H( "PIC-Multi-Lineage-v0" || canonical(PCA.multiLineage) )
-</pre><a href="#section-2.4-14" class="pilcrow">¶</a>
+</pre><a href="#section-2.4-15" class="pilcrow">¶</a>
 </div>
-<p id="section-2.4-15">The selected profile MUST define the canonical encoding, hash suite, domain separator, carried-lineage ordering and whether it is semantic,
+<p id="section-2.4-16">The selected profile MUST define the canonical encoding, hash suite, domain separator, carried-lineage ordering and whether it is semantic,
 duplicate-carried-lineage handling, maximum carried-lineage count, treatment of optional fields, normalization rules, and included context
 fields. <code>requestDigest</code> and <code>payloadDigest</code> MAY bind additional material, but MUST NOT replace <code>multiLineageDigest</code>. The Verifier MUST reject
 a missing digest, an unknown canonicalization profile, a non-canonical field, a digest mismatch, an added, removed, or substituted carried
 lineage, a forbidden duplicate carried lineage, a semantically significant reordering, or a mismatch between the carried context and the
-committed context.<a href="#section-2.4-15" class="pilcrow">¶</a></p>
-<p id="section-2.4-16">The decision is recorded only at <code>proofOfRelationship.request.enforcementResult</code>, where <code>enforcementResult</code> is <code>permit</code> or <code>deny</code>. It records
+committed context.<a href="#section-2.4-16" class="pilcrow">¶</a></p>
+<p id="section-2.4-17">The decision is recorded only at <code>proofOfRelationship.request.enforcementResult</code>, where <code>enforcementResult</code> is <code>permit</code> or <code>deny</code>. It records
 the result for the exact <code>multiLineage</code>, destination, request, payload, policy, committed inputs, semantic profile, and crossing context
 bound by the same outer request. A <code>permit</code> MAY appear in an authorizing outer successor; a <code>deny</code> MUST NOT authorize continuation. A profile
 MAY record a denial for audit, but MUST NOT introduce a denial PCA type or interpret a deny-bearing PCA as permission to cross the governed
-boundary.<a href="#section-2.4-16" class="pilcrow">¶</a></p>
-<p id="section-2.4-17">For every non-origin outer PCA, <code>operation</code>, <code>multiLineageDigest</code>, and <code>enforcementResult</code> are mandatory; other request fields follow the
-selected profile's optionality rules.<a href="#section-2.4-17" class="pilcrow">¶</a></p>
-<p id="section-2.4-18">An audit representation of <code>deny</code> is not an execution-authorizing continuation. Unless a future profile explicitly defines denial-state
+boundary.<a href="#section-2.4-17" class="pilcrow">¶</a></p>
+<p id="section-2.4-18">For every non-origin outer PCA, <code>operation</code>, <code>multiLineageDigest</code>, and <code>enforcementResult</code> are mandatory; other request fields follow the
+selected profile's optionality rules.<a href="#section-2.4-18" class="pilcrow">¶</a></p>
+<p id="section-2.4-19">An audit representation of <code>deny</code> is not an execution-authorizing continuation. Unless a future profile explicitly defines denial-state
 progression, a denial MUST NOT be assumed to consume the predecessor continuation challenge, advance the authorizing outer lineage, or create
-an executable successor. The interoperable denial-recording format is out of scope for this revision.<a href="#section-2.4-18" class="pilcrow">¶</a></p>
-<p id="section-2.4-19">Evolution across hops. The outer PCA at hop <code>n</code> carries the exact inner execution evaluated by guardrail <code>n</code>. The next guardrail receives
-that signed object and MAY continue the same inner execution or evaluate a profile-valid successor Multi-Lineage Execution.<a href="#section-2.4-19" class="pilcrow">¶</a></p>
+an executable successor. The interoperable denial-recording format is out of scope for this revision.<a href="#section-2.4-19" class="pilcrow">¶</a></p>
+<p id="section-2.4-20">Evolution across hops. The outer PCA at hop <code>n</code> carries the exact inner execution evaluated by guardrail <code>n</code>. The next guardrail receives
+that signed object and MAY continue the same inner execution or evaluate a profile-valid successor Multi-Lineage Execution.<a href="#section-2.4-20" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-2.4-20.1">
-            <p id="section-2.4-20.1.1">A successor outer PCA MUST NOT silently mutate <code>multiLineage</code>. If the proposed inner execution changes, the successor request MUST bind the
+<li class="normal ulEmpty" id="section-2.4-21.1">
+            <p id="section-2.4-21.1.1">A successor outer PCA MUST NOT silently mutate <code>multiLineage</code>. If the proposed inner execution changes, the successor request MUST bind the
 complete new <code>multiLineage</code>, and every changed carried lineage MUST independently validate as required by its own PIC lineage and the
-selected profile.<a href="#section-2.4-20.1.1" class="pilcrow">¶</a></p>
+selected profile.<a href="#section-2.4-21.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.4-21">An unchanged carried lineage may be re-carried unchanged. A carried lineage may continue only through its own valid PIC successor. Removing a
+<p id="section-2.4-22">An unchanged carried lineage may be re-carried unchanged. A carried lineage may continue only through its own valid PIC successor. Removing a
 carried lineage is not an attenuation of the outer authority; it is a change to the execution input and MUST be visible in the signed request
-binding. Inner authority is never silently added, removed, replaced, or imported.<a href="#section-2.4-21" class="pilcrow">¶</a></p>
-<p id="section-2.4-22">The recursion is structural, not authority composition:<a href="#section-2.4-22" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-2.4-23">
+binding. Inner authority is never silently added, removed, replaced, or imported.<a href="#section-2.4-22" class="pilcrow">¶</a></p>
+<p id="section-2.4-23">The recursion is structural, not authority composition:<a href="#section-2.4-23" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.4-24">
 <pre>
 PCA
  +-- multiLineage
@@ -1916,7 +1921,7 @@ PCA
       +-- carried lineage: PCA
            +-- multiLineage
                 +-- ...
-</pre><a href="#section-2.4-23" class="pilcrow">¶</a>
+</pre><a href="#section-2.4-24" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -2597,7 +2602,9 @@ one predecessor per PCA;
 authority never expands.
 
 MULTI-LINEAGE EXECUTION
-independent lineages participate together;
+one or more carried lineages constitute
+the inner execution being evaluated;
+each remains independently rooted and verified;
 their authorities are never merged.
 
 SANDBOXED EXECUTION
@@ -2614,6 +2621,8 @@ one authority state, and the evaluation process itself continues only as valid P
 <p id="section-7-3">A service mesh may carry, observe, encrypt, or operationally restrict this execution, but it is not the source of its sandboxing property.<a href="#section-7-3" class="pilcrow">¶</a></p>
 <p id="section-7-4">Physical executor behavior, alternate physical paths, implementation failure, cryptographic compromise, unavailable authenticated history,
 and policy-semantic error remain at the stated boundaries of the model.<a href="#section-7-4" class="pilcrow">¶</a></p>
+<p id="section-7-5">Without at least one carried lineage, there is no inner Multi-Lineage Execution for this profile to evaluate. This does not make the carried
+lineages authority parents of the outer lineage.<a href="#section-7-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="contributors">
@@ -2625,49 +2634,73 @@ and policy-semantic error remain at the stated boundaries of the model.<a href="
 <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a>.<a href="#section-8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="legal-notices">
+<div id="acknowledgement">
 <section id="section-9">
-      <h2 id="name-legal-notices">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-legal-notices" class="section-name selfRef">Legal Notices</a>
+      <h2 id="name-acknowledgement">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-acknowledgement" class="section-name selfRef">Acknowledgement</a>
       </h2>
-<p id="section-9-1">The appendices governing:<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-1">The <strong>Provenance Identity Continuity (PIC) Model</strong> — the theoretical framework this specification expresses in normative form — was created
+by <strong>Nicola Gallo</strong>. It first appeared on Zenodo on 1 December 2025 and is developed in full in the Proof-of-Continuity paper:<a href="#section-9-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-9-2.1">
-          <p id="section-9-2.1.1"><strong>A.</strong> Use of Automated Language Assistance,<a href="#section-9-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-9-2.1.1">Gallo, N. (2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Zenodo.
+<a href="https://zenodo.org/records/17777421">zenodo.org/records/17777421</a> (DOI: 10.5281/zenodo.17777421).<a href="#section-9-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-9-2.2">
-          <p id="section-9-2.2.1"><strong>B.</strong> Authorship, Stewardship, Attribution, and Derivative Works,<a href="#section-9-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-9-2.3">
-          <p id="section-9-2.3.1"><strong>C.</strong> Disclaimer and Limitation of Liability,<a href="#section-9-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-9-2.4">
-          <p id="section-9-2.4.1"><strong>D.</strong> Acknowledgements,<a href="#section-9-2.4.1" class="pilcrow">¶</a></p>
+          <p id="section-9-2.2.1">Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. Zenodo.
+<a href="https://zenodo.org/records/21285112">zenodo.org/records/21285112</a> (DOI: 10.5281/zenodo.21285112).<a href="#section-9-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-9-3">are maintained in a single canonical document, the <strong><a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a></strong> (<code>draft/0.2/pic-legal.md</code>), and are
-<strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-9-3" class="pilcrow">¶</a></p>
-<p id="section-9-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
-and attribution matters.<a href="#section-9-4" class="pilcrow">¶</a></p>
-<p id="section-9-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
+<p id="section-9-3">Authorship of the PIC Model remains with Nicola Gallo; the PIC specifications are published and maintained by <strong>Nitro Agility S.r.l.</strong> as
+Specification Steward. Any work that references, implements, or claims conformance with PIC must preserve this attribution, distinguishing the
+<strong>PIC Model</strong> (author: Nicola Gallo) from the <strong>PIC Specifications</strong> (steward: Nitro Agility S.r.l.), as required by the
+<strong><a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a></strong> (Appendix B, Attribution; Appendix D,
+Acknowledgements), which are incorporated into this specification by reference.<a href="#section-9-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="legal-notices">
+<section id="section-10">
+      <h2 id="name-legal-notices">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-legal-notices" class="section-name selfRef">Legal Notices</a>
+      </h2>
+<p id="section-10-1">The appendices governing:<a href="#section-10-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10-2.1">
+          <p id="section-10-2.1.1"><strong>A.</strong> Use of Automated Language Assistance,<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-2.2">
+          <p id="section-10-2.2.1"><strong>B.</strong> Authorship, Stewardship, Attribution, and Derivative Works,<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-2.3">
+          <p id="section-10-2.3.1"><strong>C.</strong> Disclaimer and Limitation of Liability,<a href="#section-10-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-2.4">
+          <p id="section-10-2.4.1"><strong>D.</strong> Acknowledgements,<a href="#section-10-2.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-10-3">are maintained in a single canonical document, the <strong><a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a></strong> (<code>draft/0.2/pic-legal.md</code>), and are
+<strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-10-3" class="pilcrow">¶</a></p>
+<p id="section-10-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
+and attribution matters.<a href="#section-10-4" class="pilcrow">¶</a></p>
+<p id="section-10-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
 the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or authorship claims beyond
-those defined in the PIC Legal Appendices.<a href="#section-9-5" class="pilcrow">¶</a></p>
+those defined in the PIC Legal Appendices.<a href="#section-10-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="references">
-<section id="section-10">
+<section id="section-11">
       <h2 id="name-references">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <ul class="normal">
-<li class="normal" id="section-10-1.1">
-          <p id="section-10-1.1.1">[1] Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-10-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-11-1.1">
+          <p id="section-11-1.1.1">[1] Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-11-1.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-10-1.2">
-          <p id="section-10-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-10-1.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-11-1.2">
+          <p id="section-11-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-11-1.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-10-1.3">
-          <p id="section-10-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-10-1.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-11-1.3">
+          <p id="section-11-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-11-1.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -2680,6 +2713,10 @@ those defined in the PIC Legal Appendices.<a href="#section-9-5" class="pilcrow"
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Nicola Gallo</span></div>
 <div dir="auto" class="left"><span class="org">Nitro Agility S.r.l.</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:nicola.gallo@nitroagility.com" class="email">nicola.gallo@nitroagility.com</a>
+</div>
 </address>
 </section>
 </div>

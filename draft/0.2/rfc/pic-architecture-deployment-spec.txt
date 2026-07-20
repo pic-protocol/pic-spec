@@ -74,9 +74,10 @@ Table of Contents
      4.1.  Service Meshes  . . . . . . . . . . . . . . . . . . . . .   7
    5.  Interoperability  . . . . . . . . . . . . . . . . . . . . . .   7
    6.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   8
-   7.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .   8
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   9
+   7.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .   8
+   8.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .   9
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  10
 
 1.  Introduction
 
@@ -98,10 +99,9 @@ Table of Contents
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
    "OPTIONAL" are to be interpreted as described in BCP 14 [2]
-   (Section 8) [3] (Section 8) when, and only when, they appear in all
+   (Section 9) [3] (Section 9) when, and only when, they appear in all
    capitals, and only within the normative sections of this document.
    Examples are illustrative and non-normative.
-
 
 
 
@@ -383,7 +383,7 @@ Gallo                         Informational                     [Page 6]
    derivation from existing credentials (PIC Prover and Verifier
    Specification (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Section 1.8)
-   and builds on OAuth 2.0 Token Exchange [4] (Section 8).  The profile
+   and builds on OAuth 2.0 Token Exchange [4] (Section 9).  The profile
    will be defined in a future specification.
 
 
@@ -413,7 +413,44 @@ Gallo                         Informational                     [Page 7]
    PIC Legal Appendices (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-legal.md).
 
-7.  Legal Notices
+7.  Acknowledgement
+
+   The *Provenance Identity Continuity (PIC) Model* — the theoretical
+   framework this specification expresses in normative form — was
+   created by *Nicola Gallo*. It first appeared on Zenodo on 1 December
+   2025 and is developed in full in the Proof-of-Continuity paper:
+
+   *  Gallo, N. (2025). _PIC Model — Provenance Identity Continuity for
+      Distributed Execution Systems_. Zenodo. zenodo.org/
+      records/17777421 (https://zenodo.org/records/17777421) (DOI:
+      10.5281/zenodo.17777421).
+
+   *  Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
+      Authority Propagation in Distributed Systems and AI Agents_.
+      Zenodo. zenodo.org/records/21285112 (https://zenodo.org/
+      records/21285112) (DOI: 10.5281/zenodo.21285112).
+
+   Authorship of the PIC Model remains with Nicola Gallo; the PIC
+   specifications are published and maintained by *Nitro Agility S.r.l.*
+   as Specification Steward.  Any work that references, implements, or
+   claims conformance with PIC must preserve this attribution,
+   distinguishing the *PIC Model* (author: Nicola Gallo) from the *PIC
+   Specifications* (steward: Nitro Agility S.r.l.), as required by the
+   *PIC Legal Appendices (https://github.com/pic-protocol/pic-
+   spec/blob/main/draft/0.2/pic-legal.md)* (Appendix B, Attribution;
+   Appendix D, Acknowledgements), which are incorporated into this
+   specification by reference.
+
+
+
+
+
+Gallo                         Informational                     [Page 8]
+
+                     PIC Architecture and Deployment           July 2026
+
+
+8.  Legal Notices
 
    The appendices governing:
 
@@ -442,15 +479,7 @@ Gallo                         Informational                     [Page 7]
    introduce new conceptual authority, invariants, or authorship claims
    beyond those defined in the PIC Legal Appendices.
 
-
-
-
-Gallo                         Informational                     [Page 8]
-
-                     PIC Architecture and Deployment           July 2026
-
-
-8.  References
+9.  References
 
    *  [1] Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
       Authority Propagation in Distributed Systems and AI Agents_.
@@ -469,36 +498,63 @@ Gallo                         Informational                     [Page 8]
       Mortimore, C. (2020). _OAuth 2.0 Token Exchange_. RFC 8693. rfc-
       editor.org/rfc/rfc8693 (https://www.rfc-editor.org/rfc/rfc8693)
 
-Author's Address
-
-   Nicola Gallo
-   Nitro Agility S.r.l.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 Gallo                         Informational                     [Page 9]
+
+                     PIC Architecture and Deployment           July 2026
+
+
+Author's Address
+
+   Nicola Gallo
+   Nitro Agility S.r.l.
+   Email: nicola.gallo@nitroagility.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 10]

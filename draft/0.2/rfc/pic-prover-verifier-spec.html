@@ -1446,13 +1446,16 @@ chain this specification orients on, and succinct proofs (Section 5).<a href="#s
             <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-legal-notices" class="internal xref">Legal Notices</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-acknowledgement" class="internal xref">Acknowledgement</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-legal-notices" class="internal xref">Legal Notices</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-references" class="internal xref">References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1470,7 +1473,7 @@ Normative requirements are defined in Sections 2, 3, 4, and 6, together with the
 valid across the steps of a distributed execution. This specification defines how the <strong>Provenance Identity Continuity (PIC) Model</strong> is
 implemented at each execution hop to close that gap. The model, including
 <strong>Proof of Relationship (PoR)</strong>, <strong>Proof of Continuity (PoC)</strong>, and the resulting safety guarantees, is formally defined in the companion
-paper <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> and formally verified with the Lean theorem prover <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>. The paper treats PoR as an abstract,
+paper <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> and formally verified with the Lean theorem prover <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>. The paper treats PoR as an abstract,
 unforgeable primitive. This document specifies the two components that realize it:<a href="#section-1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-3.1">
@@ -1602,7 +1605,7 @@ it. The bug can still execute locally, as stated in Section 1.1, but the state i
 shares with the object-capability approach: a capability
 removes the mismatch by construction at a single hop, by fusing designation and authority at invocation; PIC extends the same by-construction
 guarantee across the whole lineage, so the mismatch is not a state a valid chain can represent at any hop. It is ruled out by construction,
-not caught by runtime vigilance — and this is exactly the property the Lean formalization verifies <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-1.4-5" class="pilcrow">¶</a></p>
+not caught by runtime vigilance — and this is exactly the property the Lean formalization verifies <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-1.4-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="the-execution-flow-as-part-of-the-security-model">
@@ -1689,7 +1692,7 @@ prerequisites.<a href="#section-1.6-6" class="pilcrow">¶</a></p>
 <p id="section-1.7-1">The <strong>normative</strong> sections of this document are Sections 2, 3, 4, and 6, together with the requirement explicitly marked normative in
 Section 5. Sections 1, 7, and 8 are non-normative.<a href="#section-1.7-1" class="pilcrow">¶</a></p>
 <p id="section-1.7-2">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" in this document are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> when, and only when, they
+"OPTIONAL" in this document are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> when, and only when, they
 appear in all capitals within normative text.<a href="#section-1.7-2" class="pilcrow">¶</a></p>
 <p id="section-1.7-3">Examples in this document are illustrative and non-normative.<a href="#section-1.7-3" class="pilcrow">¶</a></p>
 </section>
@@ -1704,7 +1707,7 @@ document that carries the <strong>invariants</strong> of a lineage, that is, the
 that executors must satisfy. The PCA of the origin, <strong>PCA0</strong>, contains no Proof of Relationship: there is no predecessor to relate to. Every
 later hop continues, and may only attenuate, the invariants granted by the PCA0.<a href="#section-1.8-1" class="pilcrow">¶</a></p>
 <p id="section-1.8-2">The examples represent authority as an <code>operations</code> set — the reference profile, matching the operation-resource privileges of the model
-<span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>. PIC does not require this representation, nor does it define the application's authorization vocabulary; Section 4
+<span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>. PIC does not require this representation, nor does it define the application's authorization vocabulary; Section 4
 covers authority as an abstract domain (roles, labels, scopes, policy references) and its relationship to a Policy Decision Point.<a href="#section-1.8-2" class="pilcrow">¶</a></p>
 <p id="section-1.8-3">In the running scenario, Alice connects to the backup SaaS. The service agreement confirms that the service is operated in Europe by an
 accountable party and does not use agentic execution. On those terms she grants access to all her files for backup. Her client produces a
@@ -1927,7 +1930,7 @@ uniqueness across independent Verifiers.<a href="#section-2.3-5" class="pilcrow"
 response proves only that the successor observed and holds the predecessor PCA. The complete PoR, validated together with the checks of
 Section 3.3, proves <strong>PIC execution causality</strong>: the current hop is a valid, contract-conforming, non-expansive continuation of exactly one
 predecessor, bound to the concrete request, and therefore constitutes the next element (<code>n+1</code>) of that PIC execution. This is the causal
-linkage of the model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>, the property the Lean formalization verifies <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
+linkage of the model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>, the property the Lean formalization verifies <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
 <p id="section-2.3-7"><strong>Continuation is open by default.</strong> Because the PCA and its challenge travel in the clear, <em>any</em> executor that observes the PCA and holds a
 conforming attestation can produce a valid successor with its own key — the challenge proves it saw the PCA, not that it was chosen. This
 <em>open</em> continuation is the core behavior of the N+1 case, where the successor is unknown at delegation time. What is executed is still pinned:
@@ -2236,7 +2239,7 @@ authority(i+1)  ≤  authority(i)
 </pre><a href="#section-4.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-4.1-3">where <code>≤</code> is an <em>attenuation order</em> defined by the profile. The <code>operations</code> set with subset inclusion, used in the examples, is the
-<strong>reference profile</strong>: it corresponds to the operation-resource privileges of the model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<strong>reference profile</strong>: it corresponds to the operation-resource privileges of the model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
 <p id="section-4.1-4">A label may <em>denote</em> authority without listing it: <code>EU-BACKUP-READONLY</code> denotes a set of operation-resource permissions and carries that
 meaning by reference. This keeps the confused-deputy result intact rather than discarding it — a label is defined to denote a semantic set
 (in the reference case an O×R set), and the label order is required to <strong>refine</strong> the subset order on those denotations. O×R is thus the
@@ -2287,7 +2290,7 @@ implementers who choose that path.<a href="#section-4.3-3" class="pilcrow">¶</a
 <p id="section-4.3-4">Whoever takes that path takes an obligation with it, and it is <strong>theirs, not PIC's</strong>: the declared attenuation order on labels MUST be
 <em>monotone with respect to their semantics</em>. If <code>current ≤ predecessor</code> in the label order but the meaning of <code>current</code> is not contained in the
 meaning of <code>predecessor</code>, PIC's non-expansion is vacuous — the labels shrink while what they authorize grows. Establishing that the label order refines
-its denotation order is up to the application or its PDP. It does <strong>not inherit the Lean proof</strong> <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>: the proof covers
+its denotation order is up to the application or its PDP. It does <strong>not inherit the Lean proof</strong> <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>: the proof covers
 non-expansion of the <em>abstract</em> order only; semantic monotonicity of a concrete vocabulary is a separate proof obligation that PIC does not
 discharge. This is the same boundary the model already draws for heterogeneous translation, and it is a natural point of standardization —
 label vocabularies with provably semantic-monotone orders, and the PIC↔PDP interface that carries the obligation.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
@@ -2475,7 +2478,7 @@ semantics, but they may change the cryptographic trust model.<a href="#section-6
         <h3 id="name-formal-scope">
 <a href="#section-6.5" class="section-number selfRef">6.5. </a><a href="#name-formal-scope" class="section-name selfRef">Formal Scope</a>
         </h3>
-<p id="section-6.5-1">The Lean formalization <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> proves the logical safety properties of the abstract model and, through a refinement mapping, that
+<p id="section-6.5-1">The Lean formalization <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> proves the logical safety properties of the abstract model and, through a refinement mapping, that
 any chain accepted under the modeled verifier assumptions satisfies the abstract PIC invariants. The computational security of the chosen
 cryptographic primitives, and the semantic monotonicity of a concrete authority profile (Section 4.3), remain <strong>external assumptions</strong>. It
 is not claimed that Lean proves the security of a cryptographic implementation.<a href="#section-6.5-1" class="pilcrow">¶</a></p>
@@ -2487,8 +2490,8 @@ is not claimed that Lean proves the security of a cryptographic implementation.<
 <a href="#section-6.6" class="section-number selfRef">6.6. </a><a href="#name-proof-of-possession-optiona" class="section-name selfRef">Proof of Possession (Optional)</a>
         </h3>
 <p id="section-6.6-1">The core binds a hop to its executor through the PCA signature and pins the action through the <code>request</code> block (Section 2.3). A profile MAY
-add a <strong>proof of possession</strong> of the request or channel — for example <strong>DPoP</strong> <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>, <strong>HTTP Message Signatures</strong>
-          <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>, or an equivalent signed request binding — or otherwise constrain the recipient or channel. These are <strong>not core
+add a <strong>proof of possession</strong> of the request or channel — for example <strong>DPoP</strong> <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>, <strong>HTTP Message Signatures</strong>
+          <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>, or an equivalent signed request binding — or otherwise constrain the recipient or channel. These are <strong>not core
 continuation modes</strong> and are <strong>not needed for the N+1 model</strong>, whose successor is unknown; they serve profiles that require additional
 presentation constraints.<a href="#section-6.6-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
@@ -2665,58 +2668,82 @@ nothing" as a slogan but a model where trust is <em>earned per hop, verified exp
 <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a>.<a href="#section-9-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="legal-notices">
+<div id="acknowledgement">
 <section id="section-10">
-      <h2 id="name-legal-notices">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-legal-notices" class="section-name selfRef">Legal Notices</a>
+      <h2 id="name-acknowledgement">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-acknowledgement" class="section-name selfRef">Acknowledgement</a>
       </h2>
-<p id="section-10-1">The appendices governing:<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-10-1">The <strong>Provenance Identity Continuity (PIC) Model</strong> — the theoretical framework this specification expresses in normative form — was created
+by <strong>Nicola Gallo</strong>. It first appeared on Zenodo on 1 December 2025 and is developed in full in the Proof-of-Continuity paper:<a href="#section-10-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-10-2.1">
-          <p id="section-10-2.1.1"><strong>A.</strong> Use of Automated Language Assistance,<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.1.1">Gallo, N. (2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Zenodo.
+<a href="https://zenodo.org/records/17777421">zenodo.org/records/17777421</a> (DOI: 10.5281/zenodo.17777421).<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-10-2.2">
-          <p id="section-10-2.2.1"><strong>B.</strong> Authorship, Stewardship, Attribution, and Derivative Works,<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-10-2.3">
-          <p id="section-10-2.3.1"><strong>C.</strong> Disclaimer and Limitation of Liability,<a href="#section-10-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-10-2.4">
-          <p id="section-10-2.4.1"><strong>D.</strong> Acknowledgements,<a href="#section-10-2.4.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.2.1">Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. Zenodo.
+<a href="https://zenodo.org/records/21285112">zenodo.org/records/21285112</a> (DOI: 10.5281/zenodo.21285112).<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-10-3">are maintained in a single canonical document, the <strong><a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a></strong> (<code>draft/0.2/pic-legal.md</code>), and are
-<strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-10-3" class="pilcrow">¶</a></p>
-<p id="section-10-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
-and attribution matters.<a href="#section-10-4" class="pilcrow">¶</a></p>
-<p id="section-10-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
+<p id="section-10-3">Authorship of the PIC Model remains with Nicola Gallo; the PIC specifications are published and maintained by <strong>Nitro Agility S.r.l.</strong> as
+Specification Steward. Any work that references, implements, or claims conformance with PIC must preserve this attribution, distinguishing the
+<strong>PIC Model</strong> (author: Nicola Gallo) from the <strong>PIC Specifications</strong> (steward: Nitro Agility S.r.l.), as required by the
+<strong><a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a></strong> (Appendix B, Attribution; Appendix D,
+Acknowledgements), which are incorporated into this specification by reference.<a href="#section-10-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="legal-notices">
+<section id="section-11">
+      <h2 id="name-legal-notices">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-legal-notices" class="section-name selfRef">Legal Notices</a>
+      </h2>
+<p id="section-11-1">The appendices governing:<a href="#section-11-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-11-2.1">
+          <p id="section-11-2.1.1"><strong>A.</strong> Use of Automated Language Assistance,<a href="#section-11-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-11-2.2">
+          <p id="section-11-2.2.1"><strong>B.</strong> Authorship, Stewardship, Attribution, and Derivative Works,<a href="#section-11-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-11-2.3">
+          <p id="section-11-2.3.1"><strong>C.</strong> Disclaimer and Limitation of Liability,<a href="#section-11-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-11-2.4">
+          <p id="section-11-2.4.1"><strong>D.</strong> Acknowledgements,<a href="#section-11-2.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-11-3">are maintained in a single canonical document, the <strong><a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md">PIC Legal Appendices</a></strong> (<code>draft/0.2/pic-legal.md</code>), and are
+<strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-11-3" class="pilcrow">¶</a></p>
+<p id="section-11-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
+and attribution matters.<a href="#section-11-4" class="pilcrow">¶</a></p>
+<p id="section-11-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
 the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or authorship claims beyond
-those defined in the PIC Legal Appendices.<a href="#section-10-5" class="pilcrow">¶</a></p>
+those defined in the PIC Legal Appendices.<a href="#section-11-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="references">
-<section id="section-11">
+<section id="section-12">
       <h2 id="name-references">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <ul class="normal">
-<li class="normal" id="section-11-1.1">
-          <p id="section-11-1.1.1">[1] Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-11-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-12-1.1">
+          <p id="section-12-1.1.1">[1] Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-12-1.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.2">
-          <p id="section-11-1.2.1">[2] Gallo, N. (2026). <em>PIC Lean Verification</em>. Lean 4 formalization of the definitions and theorems of [1]. <a href="https://github.com/ngallo/pic-model/tree/main/draft/0.1/pic-model-math/pic-lean">github.com/ngallo/pic-model/draft/0.1/pic-model-math/pic-lean</a><a href="#section-11-1.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.2">
+          <p id="section-12-1.2.1">[2] Gallo, N. (2026). <em>PIC Lean Verification</em>. Lean 4 formalization of the definitions and theorems of [1]. <a href="https://github.com/ngallo/pic-model/tree/main/draft/0.1/pic-model-math/pic-lean">github.com/ngallo/pic-model/draft/0.1/pic-model-math/pic-lean</a><a href="#section-12-1.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.3">
-          <p id="section-11-1.3.1">[3] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-11-1.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.3">
+          <p id="section-12-1.3.1">[3] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-12-1.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.4">
-          <p id="section-11-1.4.1">[4] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-11-1.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.4">
+          <p id="section-12-1.4.1">[4] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-12-1.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.5">
-          <p id="section-11-1.5.1">[5] Fett, D., Campbell, B., Bradley, J., Lodderstedt, T., Jones, M. B., &amp; Waite, D. (2023). <em>OAuth 2.0 Demonstrating Proof of Possession (DPoP)</em>. RFC 9449. <a href="https://www.rfc-editor.org/rfc/rfc9449">rfc-editor.org/rfc/rfc9449</a><a href="#section-11-1.5.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.5">
+          <p id="section-12-1.5.1">[5] Fett, D., Campbell, B., Bradley, J., Lodderstedt, T., Jones, M. B., &amp; Waite, D. (2023). <em>OAuth 2.0 Demonstrating Proof of Possession (DPoP)</em>. RFC 9449. <a href="https://www.rfc-editor.org/rfc/rfc9449">rfc-editor.org/rfc/rfc9449</a><a href="#section-12-1.5.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.6">
-          <p id="section-11-1.6.1">[6] Backman, A., Richer, J., &amp; Sporny, M. (2024). <em>HTTP Message Signatures</em>. RFC 9421. <a href="https://www.rfc-editor.org/rfc/rfc9421">rfc-editor.org/rfc/rfc9421</a><a href="#section-11-1.6.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.6">
+          <p id="section-12-1.6.1">[6] Backman, A., Richer, J., &amp; Sporny, M. (2024). <em>HTTP Message Signatures</em>. RFC 9421. <a href="https://www.rfc-editor.org/rfc/rfc9421">rfc-editor.org/rfc/rfc9421</a><a href="#section-12-1.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -2729,6 +2756,10 @@ those defined in the PIC Legal Appendices.<a href="#section-10-5" class="pilcrow
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Nicola Gallo</span></div>
 <div dir="auto" class="left"><span class="org">Nitro Agility S.r.l.</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:nicola.gallo@nitroagility.com" class="email">nicola.gallo@nitroagility.com</a>
+</div>
 </address>
 </section>
 </div>
