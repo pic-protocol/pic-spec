@@ -1,14 +1,14 @@
 ---
-title: "PIC Execution Guardrail Specification"
-abbrev: "PIC Execution Guardrail"
-docname: draft-pic-execution-guardrail-latest
+title: "PIC Sandboxed Execution Specification"
+abbrev: "PIC Sandboxed Execution"
+docname: draft-pic-sandboxed-execution-latest
 category: info
 ipr: none
 submissiontype: independent
 stand_alone: yes
 smart_quotes: false
 pi: [toc, sortrefs, symrefs]
-date: 2026-07-19
+date: 2026-07-20
 
 author:
   - ins: N. Gallo
@@ -23,8 +23,11 @@ informative: {}
 
 **Version:** 0.2 (Draft)
 **Status**: Draft – Not a Standard
-**Date:** 2026-07-19
+**Date:** 2026-07-20
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-lineage-guardrail-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md)
+
+This revision defines the **Sandboxed Execution**: PIC applied recursively — an outer PIC lineage that carries and governs an inner
+Multi-Lineage Execution. It introduces no new PCA type and no trusted sandbox.
 
 --- note_Editors
 
@@ -37,1004 +40,442 @@ informative: {}
 
 --- abstract
 
-This document is the **PIC Execution Guardrail Specification**, a subordinate specification of the [PIC Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md).
-It retains its historical repository filename (`pic-lineage-guardrail-spec.md`); the runtime construct it defines is the Execution
-Guardrail.
+This document is the **PIC Sandboxed Execution Specification**, a subordinate specification of the
+[PIC Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md). It retains its historical repository
+filename (`pic-lineage-guardrail-spec.md`).
 
-A **Lineage Execution** is a single-origin PIC execution in which every PCA continues exactly one predecessor and authority remains bounded
-by the origin authority context. A complete PIC implementation secures each Lineage Execution — origin binding, Proof of Relationship at
-every hop, non-expansion — so invalid authority cannot be propagated as a valid continuation: authority originating in one Lineage Execution
-cannot be represented as a valid continuation of another. Physical executor behavior remains outside the protocol guarantee: a buggy,
-compromised, or malicious executor can still act locally, but it cannot use PIC to command the next conforming executor beyond the authority
-of its Lineage Execution.
+A **Multi-Lineage Execution** carries one or more independent PIC lineages together for one proposed transition. When such a transition must
+be validated and controlled by configured policy, that control is itself an execution — and PIC governs it the way it governs any other: as
+a lineage.
 
-An executor proposes a transition through a **Multi-Lineage Execution**: one or more independent Lineage Executions carried together for
-one proposed transition, each retaining its own origin, PCA chain, authority context, and continuity. The participating authorities remain
-distinct, and no new authority or lineage is created by their joint carriage. *Participation, not authority mixing.*
+A **Sandboxed Execution** places the Multi-Lineage Execution inside an ordinary outer PIC lineage. Each **guardrail** is a normal executor
+of that outer lineage: it verifies the outer continuation, verifies every carried inner lineage, applies the enforcement function, and — on
+permit — proves the next ordinary outer PCA.
 
-An **Execution Guardrail** is an externally configured runtime control at an execution boundary that evaluates the proposed transition of a
-Multi-Lineage Execution against configured policy and permits or denies it. Guardrails do not make an invalid PCA valid, do not merge
-authorities, and do not alter lineage invariants. A guardrail's own authority to enforce is itself a PIC continuation — a dedicated
-**Enforcement Lineage** for the operation `ENFORCE`, originated by an authorized enforcement origin — not possession of a separately
-recognized key: *guardrail authority is not recognized; it is continued.*
+No new PCA type is introduced, no trusted sandbox, and no external guardrail authority. The outer lineage is identified only by the
+operation `ENFORCE` and by one signed profile field, `multiLineage`, that carries the inner execution. The construction is recursive: an
+inner leg may itself be a Sandboxed Execution.
 
-This revision establishes the concepts and the standard requirements notation shared by the PIC specification set. It also defines the
-execution model — untrusted executors whose governed external effects are gated by **enforced acceptance** — the **Enforcement PCA** that
-carries a guardrail decision as a signed continuation of an Enforcement Lineage, and the enforcement order over semantic scopes and
-configured policies (Sections 2–6); the canonical serialization and interoperable, keyword-level conformance requirements will be defined
-in forthcoming revisions. Guardrails build on the PCA format of the
-[PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md) and are consistent with the
-[PIC Revocation Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md); they do not alter non-expansion of the signed state, Proof of Relationship, or the
-rule that every PCA continues exactly one predecessor. In case of conflict, the **PIC Specification** is authoritative.
+> A Sandboxed Execution is PIC applied recursively: an outer PIC execution carries and governs an inner PIC execution.
+
+Guardrails build on the PCA format of the
+[PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md) and are
+consistent with the [PIC Revocation Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md);
+they do not alter Proof of Relationship, non-expansion, or the rule that every PCA continues exactly one predecessor. In case of conflict,
+the **PIC Specification** is authoritative.
 
 --- middle
 
 # Introduction
 
-This section is non-normative. It introduces the three concepts the rest of this specification builds on: the Lineage Execution, which PIC
-secures; the Multi-Lineage Execution, which carries one or more Lineage Executions together for one proposed transition; and the Execution
-Guardrail, which evaluates that proposed transition at an execution boundary:
+This section is non-normative. It introduces the three concepts this specification builds on, and the single idea that connects them: PIC
+carries PIC.
 
 ~~~text
-PIC
-===
-
 LINEAGE EXECUTION
 -----------------
-a single-origin PIC execution
-
-- one origin authority context
-- PoR continuity
-- non-expansion
-- no imported authority
-- no invalid PCA accepted downstream
-
+one origin; one predecessor per PCA; non-expansion
 
 MULTI-LINEAGE EXECUTION
 -----------------------
-n >= 1 Lineage Executions carried
-together for one proposed transition
+n >= 1 independent Lineage Executions carried together
 
-- constructed by the executor
-- authorities remain separate
-- no new authority or lineage is created
-
-
-EXECUTION GUARDRAIL
+SANDBOXED EXECUTION
 -------------------
-evaluates the proposed transition
-at an execution boundary
-
-- input: one Multi-Lineage Execution
-- evaluate configured policy
-- enforce permit or deny
-- its authority is a continued
-  Enforcement Lineage (ENFORCE)
+an outer PIC Lineage Execution carrying a Multi-Lineage Execution
 ~~~
 
-## Lineage Execution and Execution Lineage Safety
-
-> A **Lineage Execution** is a single-origin PIC execution in which every PCA continues exactly one predecessor and authority remains
-> bounded by the origin authority context.
-
-A Lineage Execution begins when a **permissioned entity** — a human identity, a workload, a service, an AI agent, a role, a service
-account, or another authenticated entity associated with permissions — expresses an **intent** and selects an **origin authority context**
-from its permissions. The result is PCA0. Every later PCA is produced by an executor and continues exactly one predecessor through PoR, and
-successors need not be known in advance: each hop delegates to an N+1 executor that may not yet exist when its predecessor completes
-([PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Section 1.3).
-
-The topology may branch under fan-out ([PIC Revocation Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md), Section 1.1), so a Lineage Execution is
-not necessarily one linear chain. Even when execution branches:
-
-- every PCA continues exactly one predecessor, witnessed by PoR;
-- every path remains bound to the same origin;
-- non-expansion holds at every hop, so authority remains origin-bounded;
-- unrelated authority cannot be introduced.
+The whole construction reduces to one picture:
 
 ~~~text
-+------------------------+
-| PERMISSIONED ENTITY A  |
-+------------------------+
-            |
-          intent
-            |
-            v
-+------------------------+
-| ORIGIN PCA0-A          |
-| authority context C0-A |
-+------------------------+
-            |
-            | PoR
-            v
-+------------------------+
-| PCA1-A                 |
-| C1-A <= C0-A           |
-+------------------------+
-            |
-       +----+----+
-       |         |
-       v         v
-    PCA2-A1   PCA2-A2
-
-One origin.
-Each PCA continues exactly one predecessor.
-Authority only narrows.
+Sandboxed Execution
+    = outer PIC lineage
+      carrying
+      inner Multi-Lineage Execution
 ~~~
 
-These properties structurally eliminate the confused deputy from the PIC state model: authority from one Lineage Execution cannot appear
-as a valid continuation of another. The claim is limited to valid PIC state and authority propagation; the physical boundary is stated
-below. Distinct authorities may travel together in the same message or process; they remain logically distinct and are never merged. The formal definitions and proofs are in the PIC Model
-[[1]](#references); the construction — Provers, Verifiers, and the PCA format — is defined by the
-[PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), and revocation by the
-[PIC Revocation Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md). This document builds on them and restates none of them.
+The outer lineage applies PIC recursively to the execution that validates and controls the inner execution.
 
-What these properties provide is **execution lineage safety**, distinct from physical executor behavior:
+## Lineage Execution
 
-~~~text
-EXECUTION LINEAGE SAFETY              PHYSICAL EXECUTOR BEHAVIOR
-------------------------              --------------------------
-the authority states that can be      the physical actions that a buggy,
-created, propagated, and              compromised, or malicious
-accepted as valid                     executor performs
+> A **Lineage Execution** is a single-origin PIC execution in which every PCA continues exactly one predecessor under PoR, and authority
+> remains bounded by the origin authority context.
 
-secured by PIC                        outside the PIC protocol guarantee
-~~~
-
-Execution lineage safety is more than document integrity. A conforming executor cannot create a valid successor PCA that:
-
-- expands authority;
-- imports authority from an unrelated Lineage Execution;
-- claims an operation not authorized by its own origin authority context;
-- breaks predecessor continuity.
-
-The valid case only narrows authority:
+- one origin, PCA0;
+- every later PCA continues exactly one predecessor, witnessed by PoR;
+- non-expansion at every hop, so authority only narrows;
+- no authority is imported from another lineage;
+- physical executor behavior is outside the protocol guarantee.
 
 ~~~text
-LINEAGE EXECUTION A
-
-PCA0-A { READ-ALL, BACKUP }
-          |
-          | PoR + non-expansion
-          v
+PCA0-A { READ, BACKUP }
+   |
+   | PoR + non-expansion
+   v
 PCA1-A { BACKUP }
-          |
-          v
-    NEXT EXECUTOR
+   |
+   v
+NEXT EXECUTOR
+
+One origin. One predecessor per PCA. Authority only narrows.
 ~~~
 
-The invalid case cannot be validated as a continuation:
-
-~~~text
-Lineage Execution A:
-PCA1-A { BACKUP }
-
-Lineage Execution B:
-PCA0-B { WRITE-S3 }
-
-Invalid successor of A:
-{ BACKUP, WRITE-S3 }
-
-WRITE-S3 did not originate in A.
-The PCA is not a valid continuation of A.
-~~~
-
-An executor may hold several capabilities or credentials and use them together at the application layer, and PIC does not prohibit an
-application from holding several authorities. What it prohibits is representing authority originating in one Lineage Execution as a valid
-continuation of another: possession alone does not establish which authority belongs to the Lineage Execution that caused the action.
-
-Physical behavior lies outside this guarantee, for PIC as for any security protocol:
-
-~~~text
-Authority carried by the lineage: READ
-Physical operation performed:     WRITE
-~~~
-
-Here the executor has failed to implement or enforce the protocol; PIC did not authorize `WRITE`. The physical write may produce real
-external effects, and if the executor never attempts to represent or propagate the action as authority, PIC may not observe it at all: no
-protocol can infer every local physical action from authority documents alone. The physical effects may leave the executor, but the invalid
-authority state cannot propagate as a valid PIC continuation.
-
-> A faulty executor may act locally, but it cannot use PIC to create a valid authority state that commands the next conforming executor
-> beyond the authority of the current Lineage Execution.
-
-The operational risk that remains — the physical behavior itself — is addressed by the guardrails of Section 1.3, enforced through the
-execution model of Section 2.
+The construction — PCA format, Prover, Verifier — is defined by the
+[PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md);
+revocation by the [PIC Revocation Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md); the
+formal model and proofs by the PIC Model [[1]](#references). This document restates none of them.
 
 ## Multi-Lineage Execution
 
-> A **Multi-Lineage Execution** is an execution in which one or more independent Lineage Executions are carried together for one proposed
-> transition, while each retains its own origin, PCA chain, authority context, and continuity.
+> A **Multi-Lineage Execution** carries one or more independent Lineage Executions together for one proposed transition, without merging
+> their authorities.
 
-A Multi-Lineage Execution is a runtime carrier: it carries n >= 1 distinct Lineage Executions, and it has no authority of its own. With
-n = 1 it is simply a proposed transition under one Lineage Execution; with n >= 2 several authorities travel together. The name is
-intentional: Multi-Lineage Execution names the uniform runtime carrier used at a guarded crossing, whether it carries one Lineage
-Execution or several. The executor or calling system constructs it by selecting the participating Lineage Executions. The proposed
-transition consists exclusively of the concrete signed requests carried by the participating Lineage Executions, together with their
-declared participation context: a Multi-Lineage Execution introduces no additional request, executable authority, or unsigned action.
+- it carries `n >= 1` independent PIC lineages;
+- each lineage remains independently verifiable;
+- it has no combined authority of its own;
+- it is the execution input carried by the `multiLineage` field (Section 2.3).
 
 ~~~text
-one Lineage Execution
-    -> one authority-propagation flow
++======================================+
+| MULTI-LINEAGE EXECUTION              |
+|                                      |
+| leg A: PCA1-A { BACKUP }             |
+| leg B: PCA0-B { WRITE-S3 }           |
+|                                      |
+| authorities remain separate          |
++======================================+
 
-Multi-Lineage Execution
-    -> n >= 1 distinct Lineage Executions
-       carried together for one proposed transition
+Distinct lineages, one proposed transition.
 ~~~
+
+## Sandboxed Guardrails
+
+A Sandboxed Execution is a multi-hop **outer** PIC execution. Its executors are **guardrails**, and each continues the previous one under
+PoR:
 
 ~~~text
-LINEAGE EXECUTION A
-PCA1-A { BACKUP }
-        |
-        | enters as A
-        v
-+====================================================+
-|               MULTI-LINEAGE EXECUTION              |
-|                                                    |
-|  +----------------------------------------------+  |
-|  | A: PCA1-A { BACKUP }                         |  |
-|  +----------------------------------------------+  |
-|                                                    |
-|  +----------------------------------------------+  |
-|  | B: PCA0-B { WRITE-S3 }                       |  |
-|  +----------------------------------------------+  |
-|                                                    |
-|  authorities remain separate                       |
-+====================================================+
-        ^
-        | enters as B
-        |
-LINEAGE EXECUTION B
-PCA0-B { WRITE-S3 }
+OUTER SANDBOXED EXECUTION
 
-Distinct Lineage Executions, one proposed transition.
+PCA-G[n-1]              PCA-G[n]                PCA-G[n+1]
+Guardrail n-1  --PoR--> Guardrail n  --PoR-->  Guardrail n+1
+                            |
+                            | carries and evaluates
+                            v
+                     Multi-Lineage Execution
+                     [ leg A | leg B | ... ]
 ~~~
 
-## Execution Guardrails
+Each guardrail:
 
-An example introduces the concept. A homeowner gives an authorized contractor a key to renovate a house. The key allows the contractor to
-enter. If the contractor enters and destroys the house, the key has not failed: asking the key to guarantee correct physical behavior is a
-category error. The needed controls are external to the key — define limits, observe activity, evaluate proposed actions, deny continuation
-when limits are crossed.
+1. receives an ordinary outer PCA carrying `multiLineage`;
+2. verifies the outer PIC continuation;
+3. verifies every inner leg;
+4. applies the enforcement function;
+5. on permit, proves the next ordinary outer PCA;
+6. on deny, produces no authorizing continuation for that crossing.
 
-~~~text
-key
-  -> valid authority propagation through a Lineage Execution
+> A **guardrail** is an executor of a Sandboxed Execution: it verifies the outer continuation, verifies the carried inner execution,
+> applies the enforcement function, and, on permit, proves the next ordinary outer PCA.
 
-contractor
-  -> executor operating with valid authority
+An execution is sandboxed not because a physical boundary forced guardrail invocation, but because the next conforming guardrail accepts and
+continues only a valid outer PCA.
 
-contractor acting outside the intended work
-  -> buggy, compromised, malicious, or non-deterministic behavior
-
-limits, observation, and denial
-  -> execution guardrails
-~~~
-
-> An **Execution Guardrail** is an externally configured runtime control at an execution boundary that evaluates a proposed transition
-> involving one or more Lineage Executions and enforces the resulting policy decision.
-
-The guardrail evaluates a proposed transition represented as one Multi-Lineage Execution (Section 1.2), the single-lineage case included.
-Within a single Lineage Execution,
-authority states are already secured by execution lineage safety (Section 1.1); what the guardrail adds is the evaluation of the proposed
-transition against configured policy.
-
-~~~text
-MULTI-LINEAGE EXECUTION (n >= 1)
-                |
-                | proposed transition
-                v
-+--------------------------------+
-| EXECUTION GUARDRAIL            |
-|                                |
-| evaluate configured policy     |
-| enforce the result             |
-+--------------------------------+
-                |
-           +----+----+
-           |         |
-         permit     deny
-           |         |
-           v         X
-     NEXT EXECUTOR
-     OR TARGET
-~~~
-
-Permit allows the proposed transition to cross the execution boundary as presented. Deny prevents that proposed transition from crossing
-the boundary. Future revisions may define additional runtime controls; this section does not anticipate them.
-
-The executor or calling system constructs the proposed transition by selecting the participating Lineage Executions, their concrete signed
-requests, and their declared participation context. The guardrail does not construct or modify those requests, does not decide which
-Lineage Executions participate, and does not create an alternative transition, a new authority state, or a new Lineage Execution.
-
-> The executor constructs the proposed transition. The guardrail does not compose the participating Lineage Executions; it only determines
-> whether the proposed transition may cross the execution boundary.
-
-If the proposal is denied, the executor may later construct a different proposal; that is a new proposed transition, outside the decision
-being evaluated.
-
-How configured policy is evaluated is an implementation choice. The guardrail may evaluate policy directly or obtain a decision from
-another policy evaluation component. What matters is that the decision is enforced before the proposed transition crosses the execution
-boundary.
-
-~~~text
-POLICY GOVERNANCE
-defines, reviews, approves, and configures policy
-
-EXECUTION GUARDRAIL
-evaluates or obtains a policy decision
-and enforces permit or deny at runtime
-~~~
-
-Runtime evaluation is not itself governance. PIC and the guardrail also answer different questions:
-
-> PIC determines whether the authority state is a valid continuation of its Lineage Execution. The guardrail determines whether the
-> proposed transition satisfies the configured policy, and enforces permit or deny at the execution boundary.
-
-Guardrails do not make an invalid PCA valid, do not merge authorities, do not change lineage invariants, and do not guarantee correct
-internal executor behavior. They reduce the executor's ability to cause another executor or target to continue an operation that violates
-the configured policy. How crossings are carried and enforced is described in Sections 3 and 4; the formal requirements are deferred to
-the normative sections of this specification.
-
-The canonical example. A user authorizes an application to read a document and perform a backup; that authority propagates through Lineage
-Execution A. The executor serving the request is an AI agent: it receives PCA1-A and proves the PoR, like any other executor.
-
-~~~text
-LINEAGE EXECUTION A — USER AUTHORITY
-
-PCA0-A { READ-ALL, BACKUP }
-          |
-          | PoR
-          v
-PCA1-A { BACKUP }
-          |
-          | PoR
-          v
-+------------------------+
-| AI AGENT               |
-| executor of A          |
-+------------------------+
-~~~
-
-To write the backup to S3, the agent also acts as a permissioned entity of its own: it expresses its own intent and mints PCA0-B, the
-origin of Lineage Execution B:
-
-~~~text
-LINEAGE EXECUTION B — AGENT AUTHORITY
-
-PCA0-B { WRITE-S3 }
-~~~
-
-The agent now holds two authorities. It constructs a Multi-Lineage Execution carrying both and proposes the transition:
-
-~~~text
-+====================================================+
-|               MULTI-LINEAGE EXECUTION              |
-|                                                    |
-| A: PCA1-A { BACKUP }                               |
-| B: PCA0-B { WRITE-S3 }                             |
-|                                                    |
-| concrete signed request: B / WRITE-S3              |
-+====================================================+
-                          |
-                          v
-              +----------------------+
-              | EXECUTION GUARDRAIL  |
-              |                      |
-              | evaluate policy      |
-              | permit / deny        |
-              +----------------------+
-                          |
-                          v
-                          S3
-~~~
-
-Lineage Execution A authorizes `BACKUP`; Lineage Execution B authorizes `WRITE-S3`. B authorizes the external S3 write; A provides the
-independently preserved `BACKUP` authority context that motivates the proposed transition. The agent proposed their joint participation; the
-guardrail did not create that relationship and does not merge A and B. Configured policy determines whether the proposed transition is
-permitted, the guardrail enforces permit or deny, and every externally relevant action remains attributable to a specific Lineage
-Execution. Participation, not authority mixing.
+> The executor is not physically sandboxed by this specification. The execution is sandboxed because it can continue only through valid
+> guardrail hops of the outer PIC lineage.
 
 ## Requirements Notation
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" are to be interpreted as described in BCP 14 [[2]](#references) [[3]](#references) when, and only when, they appear in all capitals,
-and only within the normative sections of this document. Examples are illustrative and non-normative.
+"OPTIONAL" are to be interpreted as described in BCP 14 [[2]](#references) [[3]](#references) when, and only when, they appear in all
+capitals. Examples are illustrative and non-normative.
 
-The normative guardrail construction and enforcement requirements will be defined in forthcoming revisions of this specification.
+# Recursive Execution Model
 
-# Execution Model
-
-This section is non-normative. It defines the execution model — executor, Enforcement Lineage, guardrail — and one point must be clear by
-its end: the executor is never the source of enforcement authority. Enforcement authority is a continued Enforcement Lineage, and a
-governed crossing is accepted by the next conforming hop only when it carries a valid Enforcement PCA for that exact crossing.
-
-## Executors: Deterministic and Non-Deterministic
-
-An executor belongs to one of two classes:
-
-- a **deterministic executor** has behavior fixed by human-written code: given the same inputs and state, it performs the same operations;
-- a **non-deterministic executor** has behavior not fixed by its implementation — an LLM, an AI agent, or any component whose next
-  operation is a runtime decision.
-
-When an operation is judged incorrect, the two classes name it differently, but it is the same phenomenon. In a deterministic executor it
-is called a **bug**: the author acknowledges a design or implementation error. In a non-deterministic executor it is a **decision we did
-not want**: there is no error to point to; the component chose. Both belong to the physics of execution — physical executor behavior in
-the sense of Section 1.1, outside execution lineage safety, for PIC as for any security protocol. From the protocol's point of view the
-two failure modes are operationally equivalent.
-
-## The Enforcement Problem
-
-Section 1 defined the Execution Guardrail but left two questions open: what authorizes it, and what makes its decision unskippable?
-
-- If the executor's own code is responsible for calling the guardrail, a deterministic executor with a bug may simply never make the call,
-  and a non-deterministic executor may decide not to — precisely because it does not want to be limited.
-- If the guardrail were authorized merely by holding a key the receiver recognizes, a compromised executor that obtained or invoked that
-  key could manufacture its own approvals.
-
-Both failures share one root: trusting the executor to invoke, or to authorize, its own control is circular — the component whose behavior
-is in question would be the source of its own limits. Enforcement can be neither invoked nor authorized from inside the executor.
-
-The resolution is not a trusted invoker enclosing the executor. It is to make enforcement authority a PIC continuation, and to make each
-decision a signed continuation that the next conforming hop checks before it accepts the crossing.
-
-## The Enforcement Lineage
-
-> An **Enforcement Lineage** is a normal Lineage Execution dedicated to the operation `ENFORCE`. Its origin PCA, `PCA0-G`, is minted by an
-> explicitly authorized enforcement origin — policy governance, the protected application, the deployment owner, or another authorized
-> origin. A candidate guardrail does not mint its own `PCA0-G`.
-
-An Enforcement Lineage is not a new primitive: it is an ordinary Lineage Execution (Section 1.1) whose origin authority context carries the
-single operation `ENFORCE` together with the execution contract the enforcing executor must satisfy.
+## Outer and Inner Execution
 
 ~~~text
-PCA0-G {
-  operations: [ ENFORCE ],
-  executionContract: {
-    role: guardrail,
-    policyEngine: ...,
-    environment: ...,
-    executionModel: ...,
-    requiredAttestations: ...
-  }
-}
+outer execution = Sandboxed Execution
+inner execution = Multi-Lineage Execution carried in multiLineage
 ~~~
 
-A future guardrail becomes authorized exactly as any executor becomes authorized in PIC: by producing a valid successor PCA in this
-lineage. That successor satisfies the ordinary PIC continuation requirements
-([PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md)):
+The outer execution is an ordinary Lineage Execution with its own PCA0, authority context, PoR chain, execution contract, continuation, and
+revocation coordinates. Every inner leg independently has the same PIC structure.
 
-- exactly one predecessor;
-- valid PoR;
-- a conforming executor attestation against the inherited execution contract;
-- `ENFORCE` authority, unexpanded;
-- complete request binding;
-- a signature over the whole PCA.
-
-Nothing here is recognized by fiat. The guardrail holds no standing that a key alone could confer; it holds a position in a lineage that
-traces back to an authorized enforcement origin.
-
-> Guardrail authority is not recognized; it is continued.
-
-This is where the trust moves. It no longer rests on the behavior of the executor (unverifiable, Section 2.1) or on a receiver's
-recognition of a key. It rests on the same continuation the rest of PIC already secures: an executor that does not continue a valid
-Enforcement Lineage cannot produce a valid Enforcement PCA, whatever keys it holds.
-
-## Discrete Multi-Hop Execution
-
-Execution is discrete and multi-hop: a chain of executors, each hop continuing its Lineage Execution under PoR and non-expansion as defined
-by the [PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md).
+The outer execution does not absorb the inner lineages. It carries them as execution inputs and continues on its own authority, `ENFORCE`.
 
 ~~~text
-+-----------+       +-----------+       +-----------+
-| EXECUTOR  |------>| EXECUTOR  |------>| EXECUTOR  |
-+-----------+  PoR  +-----------+  PoR  +-----------+
+Outer authority  = ENFORCE
+Inner lineages   = execution inputs carried for evaluation
+Outer authority != union of inner authorities
 ~~~
 
-A guarded crossing between hops is evaluated by a guardrail — itself an executor continuing an Enforcement Lineage — and the receiving hop
-accepts it only against a valid Enforcement PCA (Section 3).
+## PIC Carrying PIC
 
-## The Abstraction Step
-
-Whether the executor is deterministic or non-deterministic does not matter. Bug or decision, the failure mode is the same (Section 2.1);
-the enforcement problem is the same (Section 2.2); the answer is the same (Section 2.3). The model therefore discards the executor's nature
-and keeps only the invariant element: a governed crossing carries a valid Enforcement PCA continuing an authorized Enforcement Lineage, or
-the next conforming hop does not accept it.
+The execution being controlled is already represented through PIC. The guardrail process that controls it must itself be controlled, across
+guardrails not yet known. So the controlled Multi-Lineage Execution becomes the signed subject of another PIC lineage — and that lineage can
+be carried again.
 
 ~~~text
-ANY EXECUTOR
-  proposes a crossing (Multi-Lineage Execution)
-
-GUARDRAIL (executor of an Enforcement Lineage)
-  validates, evaluates policy, and — on permit —
-  emits an Enforcement PCA bound to that exact crossing
-
-NEXT CONFORMING HOP
-  accepts only with a valid Enforcement PCA for that crossing
+OUTER PIC
+PCA-G[n]
+|
++-- operation: ENFORCE
++-- executionContract: required next-guardrail properties
++-- multiLineage:
+    |
+    +-- INNER PIC LEG A: PCA-A[x]
+    +-- INNER PIC LEG B: PCA-B[y]
+    +-- ...
 ~~~
-
-The executor's nature is discarded; the Enforcement PCA is the fixed, checkable element.
-
-## Lineage Executions at a Guarded Crossing
-
-At each hop a Multi-Lineage Execution (Section 1.2) is proposed, evaluated at the guarded crossing, and — if permitted — continues to the
-next hop. The guardrail evaluates the proposed transition against configured policy (Section 1.3) and, on permit, emits an Enforcement PCA
-that binds the decision to the exact crossing; the decision gates continuation.
 
 ~~~text
-L1 ----+                                                        +----> L1'
-       |                    +-------------+                      |
-L2 ----+---> proposed  ---->|  GUARDRAIL  |----- permit --------+----> L2'
-       |     crossing       |  (ENFORCE)  |  + Enforcement PCA   |
-LN ----+                    +-------------+                      +----> LN'
-                                   |
-                                   | deny
-                                   v
-                                   X
-
-The guardrail is an executor of an Enforcement Lineage.
-On permit it emits an Enforcement PCA bound to this crossing.
+PCA-G[n-1] --> PCA-G[n] --> PCA-G[n+1]
+                   |
+                   +-- multiLineage
+                         |
+                         +-- independently verified PIC legs
 ~~~
 
-The decision verbs are those of Section 1.3: permit and deny. Richer runtime-control taxonomies are deferred to forthcoming revisions.
+> PIC does not stop at protecting application execution. It can protect the execution that protects application execution.
 
-## Model Summary
+## The `multiLineage` PCA Profile Field
 
-- **executor** — untrusted, deterministic or non-deterministic; the source of bugs and unwanted decisions;
-- **Enforcement Lineage** — a normal Lineage Execution for the operation `ENFORCE`, originated by an authorized enforcement origin; a
-  guardrail is authorized by validly continuing it, not by holding a recognized key;
-- **Execution Guardrail** — an executor of an Enforcement Lineage that evaluates every proposed crossing against configured policy
-  (Section 1.3) and, on permit, emits an **Enforcement PCA** bound to that crossing;
-- **enforced acceptance** — the next conforming hop accepts a guarded crossing only with a valid Enforcement PCA for that exact crossing;
-- **Lineage Executions** — the secured authority inputs and outputs of each hop (Sections 1.1, 1.2); never merged, and every externally
-  relevant action keeps an authorizing Lineage Execution.
-
-With the model in place, Section 3 describes how crossings are carried and accepted, and Section 4 how the guardrail enforces them.
-
-# Guarded Crossings
-
-This section is non-normative. It describes how Lineage Executions reach a hop, how the executor selects the ones that continue, how the
-guardrail's decision travels as an Enforcement PCA, and how the next hop accepts a crossing only when that decision is present and exact.
-
-## Input and Output
-
-At each hop a guarded crossing takes a Multi-Lineage Execution as input and produces a Multi-Lineage Execution as output — n >= 1 on both
-sides. No new machinery is required for PCA validity: each PCA remains subject to the
-[PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), and an invalid PCA is rejected by a conforming PIC Verifier
-function. What enforced acceptance adds is a guarded-crossing acceptance requirement — a valid Enforcement PCA for that exact crossing
-(Sections 3.3 and 3.4) — without changing PCA validity, PoR, or non-expansion. What this specification governs is the proposed output
-crossing presented to the successor hop: it may carry several independently attributable Lineage Executions, and it does not become a
-combined authority state. That is what the guardrail evaluates and what the Enforcement PCA binds.
-
-## Selection
-
-The Lineage Executions of the output come from two sources:
-
-- the **input**: Lineage Executions that entered the hop;
-- the **environment**: authorities available at the hop, including origins the executor mints as a permissioned entity of its own
-  (Section 1.3, canonical example).
-
-Which ones the executor selects cannot be dictated from outside. A deterministic executor with a bug departs from any instruction; a
-non-deterministic executor may simply choose otherwise (Section 2.1) — and either way the result would still need verification. The model
-therefore does not force the selection: the executor selects freely and proposes the crossing; the guardrail — an executor of an
-Enforcement Lineage (Section 2.3) — validates the participating PCAs, evaluates configured policy, and, on permit, binds exactly that
-crossing into an Enforcement PCA. The division of responsibility is exact: the executor constructs the proposed transition and selects its
-participating Lineage Executions; the guardrail evaluates it and, if it permits, attests exactly that crossing — no more, no fewer
-participants — as a continuation of its Enforcement Lineage.
-
-~~~text
-INPUT (n >= 1)              ENVIRONMENT
-Multi-Lineage Execution     authorities at the hop
-        |                        |
-        v                        v
-   the executor freely selects the participating
-   Lineage Executions and proposes the crossing
-                    |
-                    v
-             +-------------+
-             |  GUARDRAIL  |  validates, evaluates,
-             |  (ENFORCE)  |  and on permit emits an
-             +-------------+  Enforcement PCA
-~~~
-
-## The Enforcement PCA
-
-One question remains: the successor receives a Multi-Lineage Execution — how does it know the crossing was guarded, and by an authorized
-guardrail? Because a permitted crossing carries an **Enforcement PCA**: a PCA in an Enforcement Lineage (Section 2.3) whose request is the
-evaluation of one concrete guarded crossing. The Enforcement PCA is both the proof of guardrail authorization — it is a valid continuation
-of an authorized Enforcement Lineage — and the record of the decision. There is no separate authority to recognize.
-
-The Enforcement PCA commits to the participating Lineage Executions through a bounded list, `guardedLineages`:
-
-~~~json
-"guardedLineages": [
-  {
-    "pcaDigest": "sha256:...",
-    "lineageId": "...",
-    "lineageCounter": 42,
-    "branchId": "sha256:...",
-    "scopesCommitment": "sha256:..."
-  }
-]
-~~~
-
-`guardedLineages` is a list of commitments to the participating Lineage Executions. It does not, and must not:
-
-- contain or merge their authority;
-- make an invalid PCA valid;
-- create a new participant lineage;
-- become part of the Enforcement Lineage authority context.
-
-The Enforcement Lineage authority context retains only:
-
-~~~text
-{ ENFORCE }
-~~~
-
-The Enforcement PCA request binding covers at least:
-
-- `operation = ENFORCE`;
-- the exact participant set;
-- the destination;
-- the concrete signed requests and relevant payload digests;
-- the crossing-context digest;
-- the policy identifier, version, and digest;
-- the committed evaluation inputs;
-- the verdict;
-- freshness and replay-protection data.
-
-Every digest is recomputed from the presented objects; a digest is never trusted as supplied. The carried participant PCA bytes may remain
-in the existing crossing carrier: `guardedLineages` holds commitments, not duplicated PCA history.
-
-**Carrier.** The guardrail forwarding envelope of the previous revision is retained only as a carrier for the crossing. Its semantics are
-now those of the Enforcement PCA:
-
-- the Enforcement PCA is the proof of guardrail authorization and of the decision;
-- a separate `guardrailProof` does not establish any independent guardrail authority; authorization is the Enforcement Lineage
-  continuation, nothing else;
-- a `forwardingProof` may remain, but only as presentation attribution — it attributes who presented the crossing, not who authorized it;
-- transport and forwarding create no enforcement authority.
-
-Envelopes are not nested and participant PCAs are not duplicated; the carrier travels through any medium unchanged, exactly as a PCA does
-([PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Section 6.7). An illustrative carrier:
+`multiLineage` is a signed profile extension of an ordinary PCA, in the same extension style as the revocation coordinates of the
+[PIC Revocation Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md), Section 2. It carries
+one Multi-Lineage Execution; inside it, `legs` is the bounded list of independently verifiable PIC inputs.
 
 ~~~json
 {
-  "crossing": {
-    "participants": ["A", "B"],
-    "destination": "…",
-    "requestsDigest": "sha256:…",
-    "crossingContextDigest": "sha256:…"
-  },
-  "enforcementPca": {
-    "operation": "ENFORCE",
-    "predecessorDigest": "sha256:…",
-    "guardedLineages": [
-      { "pcaDigest": "sha256:…", "lineageId": "…", "lineageCounter": 42,
-        "branchId": "sha256:…", "scopesCommitment": "sha256:…" }
+  "multiLineage": {
+    "legs": [
+      {
+        "pca": { "...": "ordinary signed PCA" },
+        "predecessor": { "...": "when required by the selected validation profile" },
+        "role": "..."
+      }
     ],
-    "policy": { "id": "…", "version": "…", "digest": "sha256:…" },
-    "inputsCommitment": "sha256:…",
-    "verdict": "permit",
-    "freshness": { "…": "…" },
-    "proof": { "verificationMethod": "…", "signature": "…" }
-  },
-  "forwardingProof": {
-    "verificationMethod": "…",
-    "signature": "…"
+    "context": {
+      "destination": "...",
+      "requestsDigest": "sha256:...",
+      "payloadDigest": "sha256:...",
+      "freshness": "..."
+    }
   }
 }
 ~~~
 
-The example is illustrative and non-normative. The canonical serialization and interoperable verification rules will be defined by a
-future normative revision or profile.
+Semantics:
 
-The Enforcement PCA is what defeats bypass. An attacker that skips the guardrail can still call the next hop directly; the call arrives
-with no Enforcement PCA, with one that does not validate, or with one that does not continue an Enforcement Lineage the receiver accepts —
-and the receiving hop rejects it. As with invalid authority in Section 1.1, the failure is not prevented at the faulty hop; it is blocked
-at the next conforming one.
+- the whole `multiLineage` field is covered by the outer PCA's ordinary single signature;
+- every leg is an ordinary PIC PCA, or the profile-selected proof representation of one;
+- each leg keeps its own origin, predecessor relation, authority context, and revocation coordinates;
+- legs are never merged;
+- the list is bounded by the profile;
+- a leg MAY itself contain `multiLineage`; recursion has no special terminal depth in the model;
+- implementations MAY impose resource and maximum-depth limits; these are implementation and profile limits, not PIC-semantic changes.
+
+`multiLineage` MUST NOT alter `previousPcaHash`, create additional predecessors, enter `invariants.operations`, import authority from its
+legs, or replace PoR, any leg's signature, or any leg's validation.
+
+Exactness. The outer request binding commits to the complete presented `multiLineage`. The Verifier reconstructs the leg set and context
+from the presented objects and recomputes every supplied digest; an added, removed, or substituted leg causes rejection.
+
+> Exactness applies to the authenticated Multi-Lineage Execution presented to the guardrail. Detecting inputs hidden before presentation
+> requires a profile-defined authenticated input manifest or observation source.
+
+The recursion is structural, not authority composition:
 
 ~~~text
-GUARDED PATH
+PCA
+ +-- multiLineage
+      +-- leg: PCA
+      +-- leg: PCA
+      +-- leg: PCA
+           +-- multiLineage
+                +-- ...
+~~~
 
-+-------------+  permit + sign   +--------------------------------+
-|  GUARDRAIL  |----------------->|  ENFORCEMENT PCA                |
-|  (ENFORCE)  |                  |  continues an Enforcement       |
-+-------------+                  |  Lineage; binds this crossing   |
-                                 +--------------------------------+
-                                                |
-                                                v
-                                          EXECUTOR N+1
-                              accepts: valid Enforcement PCA for
-                              exactly this crossing
+## Originating the Sandboxed Execution
 
+An executor that wants its proposed Multi-Lineage Execution to enter the first guardrail creates an ordinary origin PCA, `PCA0-G` — provided
+it is authorized to originate that outer lineage. A component not authorized to mint the outer PCA0 cannot self-authorize by creating one.
 
+~~~json
+{
+  "invariants": {
+    "operations": ["ENFORCE"],
+    "executionContract": { "...": "properties required of future guardrail executors" }
+  },
+  "multiLineage": {
+    "legs": [
+      { "...": "inner PIC leg A" },
+      { "...": "inner PIC leg B" }
+    ],
+    "context": { "...": "exact proposed crossing" }
+  },
+  "continuation": { "...": "challenge for the first guardrail" }
+}
+~~~
+
+`PCA0-G` is an ordinary PCA0: no predecessor, no PoR, signed by its authorized origin. It delegates the future guardrail through the
+execution contract, without naming it. The first guardrail proves conformance and produces `PCA1-G`; subsequent guardrails produce
+`PCA2-G`, `PCA3-G`, and so on.
+
+~~~text
+authorized caller creates PCA0-G
+          |
+          | future delegation (execution contract)
+          v
+unknown guardrail proves conformance and creates PCA1-G
+~~~
+
+## Guardrail Prover and Verifier Profile
+
+A guardrail performs two nested verification levels over the existing ordinary PIC procedures, then — on permit — proves the next PCA.
+
+**Outer verification.** The guardrail acts as an ordinary PIC Verifier for the outer execution:
+
+1. validate the outer predecessor PCA;
+2. verify outer PoR and predecessor binding;
+3. verify continuation freshness;
+4. verify the guardrail executor attestation and conformance to the inherited execution contract;
+5. verify non-expansion;
+6. verify temporal and revocation requirements;
+7. verify that the outer request matches the presented `multiLineage`.
+
+**Inner verification.** Only after outer validation succeeds, the guardrail validates every leg in `multiLineage` with the ordinary PIC
+Verifier procedure and the selected chain representation: origin or immediate predecessor, signature, PoR, predecessor binding,
+non-expansion, execution-contract conformance, request binding, freshness, and revocation. Any invalid leg is deny, before policy.
+
+**Enforcement function.** Over the validated legs, their bound scopes and metadata, and the exact crossing context — destination, requests,
+payload commitments — the guardrail evaluates the profile-defined enforcement function. A PDP or policy engine is one possible
+implementation.
+
+> The profile requires an enforcement result; it does not require a particular PDP architecture, policy language, product, or deployment
+> topology.
+
+Failure, unavailable policy, indeterminate evaluation, or inconsistent input mapping default to deny.
+
+**Outer proving.** On permit, the guardrail acts as ordinary PIC Prover: it constructs the next outer PCA, responds to the predecessor
+challenge, keeps or attenuates `{ ENFORCE }`, preserves or strengthens the execution contract, carries the exact output `multiLineage`,
+binds the enforcement result and exact context in the ordinary request, adds a fresh continuation, and signs once. The next guardrail
+repeats the same procedure — and that repetition is the sandbox.
+
+~~~text
+receive outer PCA
+      |
+validate outer PIC continuation
+      |
+validate every inner PIC leg
+      |
+apply enforcement function
+      |
+   permit?
+   /    \
+ no      yes
+ X       build and sign next ordinary outer PCA
+~~~
+
+## Operation Profile
+
+This revision uses one operation class, `ENFORCE`:
+
+- it means: validate the carried Multi-Lineage Execution, apply the enforcement function, and decide whether the outer execution may
+  continue;
+- it grants none of the authority carried by the inner legs;
+- it is subject to ordinary PIC non-expansion: the outer lineage MAY retain or attenuate it, never add broader operations.
+
+Future revisions MAY define additional recursive-control operation classes, using the same ordinary PCA, PoR, and profile-extension model.
+
+# Acceptance
+
+A conforming guardrail or receiving hop operating under this profile MUST accept the outer continuation only if:
+
+~~~text
+ValidOuterPIC(PCA-G[n-1], PCA-G[n])
+AND PCA-G[n].operation == ENFORCE
+AND ValidMultiLineage(PCA-G[n].multiLineage)
+AND ExactPresentedExecutionBinding
+AND EnforcementResult == permit
+AND Fresh
+AND NotRevoked
+~~~
+
+`ValidMultiLineage` means every presented leg validates independently under its own PIC lineage and selected validation profile.
+
+The receiving component MUST recompute all digests and MUST reject:
+
+- a missing `multiLineage`;
+- an invalid outer continuation;
+- an invalid inner leg;
+- an added, removed, or substituted presented leg;
+- a mismatched request, destination, or payload;
+- an invalid policy or input commitment;
+- a non-permit decision;
+- stale, replayed, or revoked state.
+
+This profile adds no second signature system: guardrail approval is the ordinary outer PCA signature, nothing else.
+
+# Bypass
+
+A sender MAY physically skip a guardrail and call the next one with the inner execution alone. The model does not prevent the attempt at the
+faulty sender; the next conforming guardrail rejects it, because a valid outer continuation is missing.
+
+~~~text
 BYPASS ATTEMPT
 
-ATTACKER ---- direct call, no Enforcement PCA ---->  EXECUTOR N+1
-                                                     rejects the crossing
+executor ---- inner Multi-Lineage only ----> next guardrail
+                                             reject:
+                                             no valid outer continuation
 ~~~
 
-How Enforcement Lineage origins are authorized, and how enforcing keys are generated, stored, attested, rotated, and revoked, will be
-defined by a future normative revision or profile; none of it grants authority independent of a valid Enforcement Lineage continuation.
+> The failure is not prevented at the faulty hop; it is blocked at the next conforming one.
 
-## Enforced-Acceptance Mode
-
-> A conforming receiving hop accepts a guarded crossing only when it carries a valid Enforcement PCA for that exact crossing.
-
-A hop requiring enforcement accepts a crossing only when all of the following hold:
-
-1. every participating PCA is valid;
-2. the accompanying Enforcement PCA is valid;
-3. it continues an accepted Enforcement Lineage;
-4. its authority remains limited to `ENFORCE`;
-5. its executor satisfies the inherited execution contract;
-6. `guardedLineages` commits to exactly the presented participants — none omitted, none added;
-7. its request binding matches the exact presented crossing;
-8. its policy and input commitments match;
-9. its verdict is `permit`;
-10. freshness and replay checks pass.
-
-A missing Enforcement PCA, an omitted or additional participant, or a mismatched destination, request, payload, policy, verdict, or
-crossing context causes rejection. Every digest is recomputed from the presented objects.
-
-~~~text
-AcceptGuardedCrossing(P, G) iff
-  ValidParticipants(P)
-  AND ValidEnforcementContinuation(G)
-  AND G.operation = ENFORCE
-  AND G.guardedLineages = CommitExactly(P)
-  AND G.crossingBinding = CommitExactCrossing(P)
-  AND G.verdict = permit
-  AND Fresh(G)
-~~~
-
-Not every hop requires enforcement. A hop may instead accept a plain PCA, as defined by the
-[PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md): PCA validity, PoR, origin binding, and non-expansion remain
-enforced, but a guarded crossing is not required and the bypass guarantee does not apply. The bypass resistance of enforced acceptance
-holds only across topology segments whose receiving hops require it — a deployment choice with a weaker profile where enforcement is not
-required, not a defect.
-
-~~~text
-ENFORCED-ACCEPTANCE HOP               BASELINE HOP
------------------------               ------------
-valid Enforcement PCA required        plain PCA accepted, per the
-for the exact crossing                Prover and Verifier Specification
-bypass rejected                       baseline PIC enforcement only
-guarded-crossing enforcement          no guarded-crossing claim
-~~~
-
-## Non-PIC-Aware Targets: The Egress Enforcer
-
-Some targets cannot verify PIC at all — object storage, legacy services, and other systems with no notion of an Enforcement PCA. For these,
-a deployment places an **egress enforcer** at the boundary to the target.
-
-The egress enforcer:
-
-- is itself an executor of an Enforcement Lineage;
-- validates the guarded crossing (the participating PCAs and the proposed transition);
-- produces the Enforcement PCA for the decision;
-- physically materializes exactly the permitted action — the action, destination, participants, and other bound context are not
-  replaceable after the decision.
-
-~~~text
-guarded crossing ---> EGRESS ENFORCER ---> non-PIC-aware target
-                      (Enforcement Lineage executor)
-                      validates, decides (Enforcement PCA),
-                      materializes exactly the permitted action
-~~~
-
-Preventing ungoverned paths to the target — direct credentials, alternate routes, or physical access that never reaches the egress
-enforcer — is a deployment responsibility, not a protocol primitive, and is addressed by the
+For a non-PIC-aware physical target, restricting direct paths to it is a deployment responsibility, addressed by the
 [PIC Architecture and Deployment Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md).
+This specification does not depend on gateways, service meshes, or physical sandboxes.
 
-## Architecture and Deployment Profiles
+# Recursion
 
-Deployments select, per topology segment, whether receiving hops require enforced acceptance, following the segment's trust and risk
-characteristics:
-
-~~~text
-TRUSTED OR CONTROLLED SEGMENT          UNTRUSTED OR HIGH-RISK SEGMENT
------------------------------          ------------------------------
-baseline PIC validation                enforced acceptance: a valid
-may be sufficient                      Enforcement PCA is required for
-                                       each guarded crossing
-baseline acceptance may be
-selected when guarded                  enforced acceptance is required
-execution is not required
-~~~
-
-Higher-risk executors include AI agents, third-party workloads, plugin or tool execution, user-supplied code, partially trusted services,
-and components outside the operator's administrative domain; deterministic internal software is not automatically trusted. The selection
-is an architecture and deployment decision: trust boundary, threat model, required assurance, executor control, external-effect risk, and
-interoperability requirements.
-
-> PIC defines authority validity independently of deployment mode. Architecture and deployment determine where enforced acceptance is
-> required in addition to baseline PIC validation.
-
-Guidance for selecting enforced-acceptance segments, baseline segments, and mixed deployment profiles is defined by the
-[PIC Architecture and Deployment Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md).
-
-# Guardrail Enforcement
-
-This section is non-normative. It describes the enforcement logic of the guardrail: validation first, then policy, then the enforced
-decision.
-
-## Enforcement Order
-
-The guardrail is an executor of an Enforcement Lineage (Section 2.3), and emitting an Enforcement PCA follows the ordinary PIC Prover
-procedure ([PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Section 2.1) with the profile-specific steps below.
-Before emitting an Enforcement PCA, the guardrail:
-
-1. validates its Enforcement Lineage predecessor;
-2. proves PoR and execution-contract conformance;
-3. validates every participating PCA with a conforming PIC Verifier function;
-4. denies immediately if any participant is invalid, without evaluating policy;
-5. evaluates the configured policy through its PDP or policy engine;
-6. constructs `guardedLineages` (Section 3.3);
-7. binds the exact crossing, policy, inputs, and verdict into the request;
-8. adds freshness and a new continuation;
-9. signs the complete Enforcement PCA.
-
-Policy failure, an unavailable policy, indeterminate evaluation, or non-reproducible inputs produce deny. Validation precedes policy, and
-policy evaluation cannot override PIC invalidity.
+The model is recursively closed. The same PCA format, PoR semantics, non-expansion rule, and Verifier logic apply at every level. No special
+root guardrail object exists, and no new trust primitive appears at deeper levels.
 
 ~~~text
-proposed crossing
-        |
-        v
-validate predecessor + every participant PCA ---- any invalid ----> deny
-        |
-    all valid
-        |
-        v
-evaluate configured policy (deny on failure / indeterminate)
-        |
-        v
-construct guardedLineages; bind crossing + policy + inputs + verdict
-        |
-        v
-add freshness + continuation; sign the Enforcement PCA
+PCA outer
+ +-- multiLineage
+      +-- PCA inner A
+      +-- PCA inner B
+           +-- multiLineage
+                +-- deeper PIC execution
 ~~~
 
-The PIC Verifier function may be integrated into the guardrail or invoked as a separate component; the packaging is an implementation
-choice. The PDP or policy engine is invoked as step 5 of this procedure — it informs the decision the guardrail signs; it is not an
-independent source of authority.
-
-The executed-vs-signed rule of the [PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md) (Section 3.3) applies per
-participating Lineage Execution: each executed operation must match the signed request of its own Lineage Execution and remains attributed
-to it. Policy authorizes joint participation only; it does not compose the authority sets into a common one.
-
-## Semantic Scopes
-
-Each Lineage Execution is tagged with **semantic scopes**: labels that describe the semantics of the authority it carries. A scope adds no
-authority — the operations a Lineage Execution can authorize remain those of its PCAs, and non-expansion is untouched; scopes exist only
-to inform the guardrail decision. The scope vocabulary is defined by policy governance (Section 1.3).
-
-A semantic scope used in a guardrail decision must be bound to its Lineage Execution by a mechanism that is not under the unilateral
-control of the executor whose crossing is being evaluated: an executor may propose a semantic claim, but an untrusted executor's claim
-alone is not sufficient for policy enforcement. Accepted binding sources — origin-bound metadata, signed declarations, trusted derivation,
-policy-controlled mapping, or attested execution context — are defined in the normative sections of this specification.
-
-~~~text
-LINEAGE EXECUTION A        LINEAGE EXECUTION B        LINEAGE EXECUTION C
-PCA1-A { BACKUP }          PCA0-B { WRITE-S3 }        PCA0-C { SHARE-PUBLIC }
-scope: data-protection     scope: data-protection     scope: external-sharing
-~~~
-
-## Policies
-
-A policy is a rule over the scopes of the participating Lineage Executions: it expresses which semantic combinations may cross together.
-Whoever defines the policies defines how the semantics may combine; the guardrail enforces it (Section 1.3). A policy carries an
-effect and a condition — the condition is an expression over the participants and their scopes — and the decision defaults to deny: a
-crossing is permitted only if the condition of an applicable permit policy holds. An illustrative policy, with a CEL-like condition:
-
-~~~json
-{
-  "id": "policy-backup-pipeline-01",
-  "effect": "permit",
-  "appliesTo": { "crossing": "*" },
-  "when": "participants.all(l, 'data-protection' in l.scopes || 'ai-compliance' in l.scopes)"
-}
-~~~
-
-Against the scopes of Section 4.2:
-
-~~~text
-PROPOSED CROSSING 1: A + B
-
-A.scopes = [ data-protection ]     condition: true
-B.scopes = [ data-protection ]     condition: true
-
-every participant satisfies the condition   -> enforce permit
-
-
-PROPOSED CROSSING 2: A + C
-
-A.scopes = [ data-protection ]     condition: true
-C.scopes = [ external-sharing ]    condition: false
-
-C does not satisfy the condition            -> enforce deny
-~~~
-
-The policy language, the scope vocabulary, and how scopes are bound to a Lineage Execution are defined in the normative sections of this
-specification; the example — including its CEL-like condition language — is illustrative only.
-
-## Concurrency
-
-Enforcement is not forced through a single, globally serialized Enforcement Lineage. A deployment may use separate Enforcement Lineages, or
-authorized fan-out or branch profiles ([PIC Revocation Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md), Section 1.1), to evaluate concurrent
-crossings. These reuse the existing PIC continuation and revocation rules unchanged; this revision defines no new concurrency model.
-
-# Lineage Executions in Transit
-
-This section is non-normative. It closes the conceptual model.
-
-A crossing is an execution in transit: it may happen in process, across a network, or over any other medium. The transport does not
-matter — the [PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md) already separates the security model from transport,
-and this specification inherits that separation. In a guarded crossing, what travels is the crossing carrier with its Enforcement PCA, and
-inside it travel the Lineage Executions of the crossing: bound together, never merged.
-
-~~~text
-HOP N                                                            HOP N+1
-
-GUARDRAIL                                                        VERIFIER
-    |                                                               ^
-    |     +----------------------------------------------+          |
-    +---->| CROSSING + ENFORCEMENT PCA                   |----------+
-          | [ L1 | L2 | ... | LN ]  bound, never merged  |
-          +----------------------------------------------+
-
-          ------ in process | network | any medium ------
-~~~
-
-The originating guardrail validates the proposed crossing before signing the Enforcement PCA; the receiving hop validates the Enforcement
-PCA and the participants as required by enforced acceptance (Section 3.4).
-
-PIC does not represent authority from several Lineage Executions as one lineage authority state: a successor PCA cannot import or merge
-authority, and that prohibition is what eliminates the confused deputy by construction (Section 1.1). The execution model may carry
-several independent Lineage Executions together for one crossing without changing any of them: each remains separately attributable, the
-guardrail evaluates the proposed crossing, and no combined authority state is created. Multi-Lineage Execution belongs to the
-execution-control model, not to the PIC authority-state model: if several authorities were represented as one valid PCA state, PIC's
-origin-bounded lineage guarantee would be lost; carrying them separately preserves that guarantee.
-
-~~~text
-INSIDE EACH LINEAGE EXECUTION          AT A GUARDED CROSSING
------------------------------          ---------------------
-one origin authority context           one or more independent
-PoR continuity                         Lineage Executions carried together
-authority only narrows                 each remains separately attributable
-no authority imported from             the guardrail evaluates the crossing
-another Lineage Execution              no combined authority state is created
-~~~
-
-This closes the conceptual model of this revision; the normative sections define the representations and the enforcement requirements.
+The model is recursively composable to arbitrary finite depth — not infinite computation. Implementations MUST bound leg counts, encoded
+size, and validation depth to prevent resource exhaustion.
 
 # Security Boundary
 
-This section is non-normative. It states what the model guarantees and what it does not.
+## Model Guarantee
 
-Within the model, an unauthorized guardrail cannot produce a valid Enforcement Lineage continuation, and an enforcing executor cannot
-validly expand its authority beyond `ENFORCE`. Two residual failure classes remain.
+Within the accepted model:
+
+- an outer hop without valid PoR cannot continue;
+- an unauthorized guardrail cannot become a valid successor;
+- the outer authority cannot expand beyond `ENFORCE`;
+- an invalid inner PCA causes rejection;
+- a different inner execution cannot be substituted without invalidating the signed binding;
+- skipping guardrails cannot produce a valid outer continuation.
 
 ## Implementation Failure
 
-An implementation may be compromised, ignore verification, misuse its keys, execute an action different from the signed request, or rely on
-broken cryptography, hashing, canonicalization, attestations, or trust anchors. That breaks the implementation or its assumptions, not the
-PIC model — the same boundary that applies to physical executor behavior throughout PIC (Section 1.1).
+The guarantee can fail physically if cryptographic primitives fail, keys or attestation issuers are compromised, a Verifier omits required
+checks, an executor performs a different physical action from the signed one, or canonicalization or digest construction is implemented
+incorrectly. These break the implementation or its assumptions, not the model.
 
-## PDP Semantic Divergence
+## Semantic Divergence
 
-A validly continuing enforcement executor may use an incorrect, dishonest, or semantically divergent policy engine. The Enforcement PCA
-makes the decision attributable and checkable by signing:
-
-- the policy identifier, version, and digest;
-- the evaluation profile;
-- the committed inputs;
-- the semantic or translation profile, where applicable;
-- the verdict.
-
-PIC guarantees the continuity, integrity, attribution, and scope of the enforcement decision. It does not prove that the selected policy,
-or its semantic interpretation, expresses the intended governance outcome.
+The enforcement function may be incorrect, dishonest, or semantically divergent. Signing the policy identifier, version, input commitments,
+semantic profile, and result makes the decision attributable and checkable. PIC proves the continuity and integrity of that decision; it
+does not prove that a human policy or its interpretation is correct.
 
 # Contributors {#contributors}
 

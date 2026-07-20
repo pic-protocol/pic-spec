@@ -12,9 +12,9 @@
 ]>
 
 
-<rfc ipr="none" docName="draft-pic-execution-guardrail-latest" category="info" submissionType="independent" tocInclude="true" sortRefs="true" symRefs="true">
+<rfc ipr="none" docName="draft-pic-sandboxed-execution-latest" category="info" submissionType="independent" tocInclude="true" sortRefs="true" symRefs="true">
   <front>
-    <title abbrev="PIC Execution Guardrail">PIC Execution Guardrail Specification</title>
+    <title abbrev="PIC Sandboxed Execution">PIC Sandboxed Execution Specification</title>
 
     <author initials="N." surname="Gallo" fullname="Nicola Gallo">
       <organization>Nitro Agility S.r.l.</organization>
@@ -22,7 +22,7 @@
       </address>
     </author>
 
-    <date year="2026" month="July" day="19"/>
+    <date year="2026" month="July" day="20"/>
 
     
     
@@ -31,37 +31,33 @@
     <abstract>
 
 
-<?line 38?>
+<?line 41?>
 
-<t>This document is the <strong>PIC Execution Guardrail Specification</strong>, a subordinate specification of the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</eref>.
-It retains its historical repository filename (<spanx style="verb">pic-lineage-guardrail-spec.md</spanx>); the runtime construct it defines is the Execution
-Guardrail.</t>
+<t>This document is the <strong>PIC Sandboxed Execution Specification</strong>, a subordinate specification of the
+<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification</eref>. It retains its historical repository
+filename (<spanx style="verb">pic-lineage-guardrail-spec.md</spanx>).</t>
 
-<t>A <strong>Lineage Execution</strong> is a single-origin PIC execution in which every PCA continues exactly one predecessor and authority remains bounded
-by the origin authority context. A complete PIC implementation secures each Lineage Execution — origin binding, Proof of Relationship at
-every hop, non-expansion — so invalid authority cannot be propagated as a valid continuation: authority originating in one Lineage Execution
-cannot be represented as a valid continuation of another. Physical executor behavior remains outside the protocol guarantee: a buggy,
-compromised, or malicious executor can still act locally, but it cannot use PIC to command the next conforming executor beyond the authority
-of its Lineage Execution.</t>
+<t>A <strong>Multi-Lineage Execution</strong> carries one or more independent PIC lineages together for one proposed transition. When such a transition must
+be validated and controlled by configured policy, that control is itself an execution — and PIC governs it the way it governs any other: as
+a lineage.</t>
 
-<t>An executor proposes a transition through a <strong>Multi-Lineage Execution</strong>: one or more independent Lineage Executions carried together for
-one proposed transition, each retaining its own origin, PCA chain, authority context, and continuity. The participating authorities remain
-distinct, and no new authority or lineage is created by their joint carriage. <em>Participation, not authority mixing.</em></t>
+<t>A <strong>Sandboxed Execution</strong> places the Multi-Lineage Execution inside an ordinary outer PIC lineage. Each <strong>guardrail</strong> is a normal executor
+of that outer lineage: it verifies the outer continuation, verifies every carried inner lineage, applies the enforcement function, and — on
+permit — proves the next ordinary outer PCA.</t>
 
-<t>An <strong>Execution Guardrail</strong> is an externally configured runtime control at an execution boundary that evaluates the proposed transition of a
-Multi-Lineage Execution against configured policy and permits or denies it. Guardrails do not make an invalid PCA valid, do not merge
-authorities, and do not alter lineage invariants. A guardrail's own authority to enforce is itself a PIC continuation — a dedicated
-<strong>Enforcement Lineage</strong> for the operation <spanx style="verb">ENFORCE</spanx>, originated by an authorized enforcement origin — not possession of a separately
-recognized key: <em>guardrail authority is not recognized; it is continued.</em></t>
+<t>No new PCA type is introduced, no trusted sandbox, and no external guardrail authority. The outer lineage is identified only by the
+operation <spanx style="verb">ENFORCE</spanx> and by one signed profile field, <spanx style="verb">multiLineage</spanx>, that carries the inner execution. The construction is recursive: an
+inner leg may itself be a Sandboxed Execution.</t>
 
-<t>This revision establishes the concepts and the standard requirements notation shared by the PIC specification set. It also defines the
-execution model — untrusted executors whose governed external effects are gated by <strong>enforced acceptance</strong> — the <strong>Enforcement PCA</strong> that
-carries a guardrail decision as a signed continuation of an Enforcement Lineage, and the enforcement order over semantic scopes and
-configured policies (Sections 2–6); the canonical serialization and interoperable, keyword-level conformance requirements will be defined
-in forthcoming revisions. Guardrails build on the PCA format of the
-<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref> and are consistent with the
-<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</eref>; they do not alter non-expansion of the signed state, Proof of Relationship, or the
-rule that every PCA continues exactly one predecessor. In case of conflict, the <strong>PIC Specification</strong> is authoritative.</t>
+<ul empty="true"><li>
+  <t>A Sandboxed Execution is PIC applied recursively: an outer PIC execution carries and governs an inner PIC execution.</t>
+</li></ul>
+
+<t>Guardrails build on the PCA format of the
+<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref> and are
+consistent with the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</eref>;
+they do not alter Proof of Relationship, non-expansion, or the rule that every PCA continues exactly one predecessor. In case of conflict,
+the <strong>PIC Specification</strong> is authoritative.</t>
 
 
 
@@ -76,8 +72,11 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
 
 <t><strong>Version:</strong> 0.2 (Draft)
 <strong>Status</strong>: Draft – Not a Standard
-<strong>Date:</strong> 2026-07-19
+<strong>Date:</strong> 2026-07-20
 <strong>Source:</strong> <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md">github.com/pic-protocol/pic-spec/draft/0.2/pic-lineage-guardrail-spec.md</eref></t>
+
+<t>This revision defines the <strong>Sandboxed Execution</strong>: PIC applied recursively — an outer PIC lineage that carries and governs an inner
+Multi-Lineage Execution. It introduces no new PCA type and no trusted sandbox.</t>
 
 
     </note>
@@ -86,7 +85,7 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
     <note title="Editors">
 
 
-<?line 29?>
+<?line 32?>
 
 <t><list style="symbols">
   <t><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor</t>
@@ -100,7 +99,7 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
     <note title="Contributors">
 
 
-<?line 34?>
+<?line 37?>
 
 <t><list style="symbols">
   <t><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <xref target="contributors"></xref>).</em></t>
@@ -115,1049 +114,467 @@ rule that every PCA continues exactly one predecessor. In case of conflict, the 
   <middle>
 
 
-<?line 70?>
+<?line 67?>
 
 <section anchor="introduction"><name>Introduction</name>
 
-<t>This section is non-normative. It introduces the three concepts the rest of this specification builds on: the Lineage Execution, which PIC
-secures; the Multi-Lineage Execution, which carries one or more Lineage Executions together for one proposed transition; and the Execution
-Guardrail, which evaluates that proposed transition at an execution boundary:</t>
+<t>This section is non-normative. It introduces the three concepts this specification builds on, and the single idea that connects them: PIC
+carries PIC.</t>
 
 <figure><sourcecode type="text"><![CDATA[
-PIC
-===
-
 LINEAGE EXECUTION
 -----------------
-a single-origin PIC execution
-
-- one origin authority context
-- PoR continuity
-- non-expansion
-- no imported authority
-- no invalid PCA accepted downstream
-
+one origin; one predecessor per PCA; non-expansion
 
 MULTI-LINEAGE EXECUTION
 -----------------------
-n >= 1 Lineage Executions carried
-together for one proposed transition
+n >= 1 independent Lineage Executions carried together
 
-- constructed by the executor
-- authorities remain separate
-- no new authority or lineage is created
-
-
-EXECUTION GUARDRAIL
+SANDBOXED EXECUTION
 -------------------
-evaluates the proposed transition
-at an execution boundary
-
-- input: one Multi-Lineage Execution
-- evaluate configured policy
-- enforce permit or deny
-- its authority is a continued
-  Enforcement Lineage (ENFORCE)
+an outer PIC Lineage Execution carrying a Multi-Lineage Execution
 ]]></sourcecode></figure>
 
-<section anchor="lineage-execution-and-execution-lineage-safety"><name>Lineage Execution and Execution Lineage Safety</name>
+<t>The whole construction reduces to one picture:</t>
+
+<figure><sourcecode type="text"><![CDATA[
+Sandboxed Execution
+    = outer PIC lineage
+      carrying
+      inner Multi-Lineage Execution
+]]></sourcecode></figure>
+
+<t>The outer lineage applies PIC recursively to the execution that validates and controls the inner execution.</t>
+
+<section anchor="lineage-execution"><name>Lineage Execution</name>
 
 <ul empty="true"><li>
-  <t>A <strong>Lineage Execution</strong> is a single-origin PIC execution in which every PCA continues exactly one predecessor and authority remains
-bounded by the origin authority context.</t>
+  <t>A <strong>Lineage Execution</strong> is a single-origin PIC execution in which every PCA continues exactly one predecessor under PoR, and authority
+remains bounded by the origin authority context.</t>
 </li></ul>
 
-<t>A Lineage Execution begins when a <strong>permissioned entity</strong> — a human identity, a workload, a service, an AI agent, a role, a service
-account, or another authenticated entity associated with permissions — expresses an <strong>intent</strong> and selects an <strong>origin authority context</strong>
-from its permissions. The result is PCA0. Every later PCA is produced by an executor and continues exactly one predecessor through PoR, and
-successors need not be known in advance: each hop delegates to an N+1 executor that may not yet exist when its predecessor completes
-(<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>, Section 1.3).</t>
-
-<t>The topology may branch under fan-out (<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</eref>, Section 1.1), so a Lineage Execution is
-not necessarily one linear chain. Even when execution branches:</t>
-
 <t><list style="symbols">
-  <t>every PCA continues exactly one predecessor, witnessed by PoR;</t>
-  <t>every path remains bound to the same origin;</t>
-  <t>non-expansion holds at every hop, so authority remains origin-bounded;</t>
-  <t>unrelated authority cannot be introduced.</t>
+  <t>one origin, PCA0;</t>
+  <t>every later PCA continues exactly one predecessor, witnessed by PoR;</t>
+  <t>non-expansion at every hop, so authority only narrows;</t>
+  <t>no authority is imported from another lineage;</t>
+  <t>physical executor behavior is outside the protocol guarantee.</t>
 </list></t>
 
 <figure><sourcecode type="text"><![CDATA[
-+------------------------+
-| PERMISSIONED ENTITY A  |
-+------------------------+
-            |
-          intent
-            |
-            v
-+------------------------+
-| ORIGIN PCA0-A          |
-| authority context C0-A |
-+------------------------+
-            |
-            | PoR
-            v
-+------------------------+
-| PCA1-A                 |
-| C1-A <= C0-A           |
-+------------------------+
-            |
-       +----+----+
-       |         |
-       v         v
-    PCA2-A1   PCA2-A2
-
-One origin.
-Each PCA continues exactly one predecessor.
-Authority only narrows.
-]]></sourcecode></figure>
-
-<t>These properties structurally eliminate the confused deputy from the PIC state model: authority from one Lineage Execution cannot appear
-as a valid continuation of another. The claim is limited to valid PIC state and authority propagation; the physical boundary is stated
-below. Distinct authorities may travel together in the same message or process; they remain logically distinct and are never merged. The formal definitions and proofs are in the PIC Model
-<xref target="references">[1]</xref>; the construction — Provers, Verifiers, and the PCA format — is defined by the
-<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>, and revocation by the
-<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</eref>. This document builds on them and restates none of them.</t>
-
-<t>What these properties provide is <strong>execution lineage safety</strong>, distinct from physical executor behavior:</t>
-
-<figure><sourcecode type="text"><![CDATA[
-EXECUTION LINEAGE SAFETY              PHYSICAL EXECUTOR BEHAVIOR
-------------------------              --------------------------
-the authority states that can be      the physical actions that a buggy,
-created, propagated, and              compromised, or malicious
-accepted as valid                     executor performs
-
-secured by PIC                        outside the PIC protocol guarantee
-]]></sourcecode></figure>
-
-<t>Execution lineage safety is more than document integrity. A conforming executor cannot create a valid successor PCA that:</t>
-
-<t><list style="symbols">
-  <t>expands authority;</t>
-  <t>imports authority from an unrelated Lineage Execution;</t>
-  <t>claims an operation not authorized by its own origin authority context;</t>
-  <t>breaks predecessor continuity.</t>
-</list></t>
-
-<t>The valid case only narrows authority:</t>
-
-<figure><sourcecode type="text"><![CDATA[
-LINEAGE EXECUTION A
-
-PCA0-A { READ-ALL, BACKUP }
-          |
-          | PoR + non-expansion
-          v
+PCA0-A { READ, BACKUP }
+   |
+   | PoR + non-expansion
+   v
 PCA1-A { BACKUP }
-          |
-          v
-    NEXT EXECUTOR
+   |
+   v
+NEXT EXECUTOR
+
+One origin. One predecessor per PCA. Authority only narrows.
 ]]></sourcecode></figure>
 
-<t>The invalid case cannot be validated as a continuation:</t>
-
-<figure><sourcecode type="text"><![CDATA[
-Lineage Execution A:
-PCA1-A { BACKUP }
-
-Lineage Execution B:
-PCA0-B { WRITE-S3 }
-
-Invalid successor of A:
-{ BACKUP, WRITE-S3 }
-
-WRITE-S3 did not originate in A.
-The PCA is not a valid continuation of A.
-]]></sourcecode></figure>
-
-<t>An executor may hold several capabilities or credentials and use them together at the application layer, and PIC does not prohibit an
-application from holding several authorities. What it prohibits is representing authority originating in one Lineage Execution as a valid
-continuation of another: possession alone does not establish which authority belongs to the Lineage Execution that caused the action.</t>
-
-<t>Physical behavior lies outside this guarantee, for PIC as for any security protocol:</t>
-
-<figure><sourcecode type="text"><![CDATA[
-Authority carried by the lineage: READ
-Physical operation performed:     WRITE
-]]></sourcecode></figure>
-
-<t>Here the executor has failed to implement or enforce the protocol; PIC did not authorize <spanx style="verb">WRITE</spanx>. The physical write may produce real
-external effects, and if the executor never attempts to represent or propagate the action as authority, PIC may not observe it at all: no
-protocol can infer every local physical action from authority documents alone. The physical effects may leave the executor, but the invalid
-authority state cannot propagate as a valid PIC continuation.</t>
-
-<ul empty="true"><li>
-  <t>A faulty executor may act locally, but it cannot use PIC to create a valid authority state that commands the next conforming executor
-beyond the authority of the current Lineage Execution.</t>
-</li></ul>
-
-<t>The operational risk that remains — the physical behavior itself — is addressed by the guardrails of Section 1.3, enforced through the
-execution model of Section 2.</t>
+<t>The construction — PCA format, Prover, Verifier — is defined by the
+<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>;
+revocation by the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</eref>; the
+formal model and proofs by the PIC Model <xref target="references">[1]</xref>. This document restates none of them.</t>
 
 </section>
 <section anchor="multi-lineage-execution"><name>Multi-Lineage Execution</name>
 
 <ul empty="true"><li>
-  <t>A <strong>Multi-Lineage Execution</strong> is an execution in which one or more independent Lineage Executions are carried together for one proposed
-transition, while each retains its own origin, PCA chain, authority context, and continuity.</t>
+  <t>A <strong>Multi-Lineage Execution</strong> carries one or more independent Lineage Executions together for one proposed transition, without merging
+their authorities.</t>
 </li></ul>
 
-<t>A Multi-Lineage Execution is a runtime carrier: it carries n &gt;= 1 distinct Lineage Executions, and it has no authority of its own. With
-n = 1 it is simply a proposed transition under one Lineage Execution; with n &gt;= 2 several authorities travel together. The name is
-intentional: Multi-Lineage Execution names the uniform runtime carrier used at a guarded crossing, whether it carries one Lineage
-Execution or several. The executor or calling system constructs it by selecting the participating Lineage Executions. The proposed
-transition consists exclusively of the concrete signed requests carried by the participating Lineage Executions, together with their
-declared participation context: a Multi-Lineage Execution introduces no additional request, executable authority, or unsigned action.</t>
+<t><list style="symbols">
+  <t>it carries <spanx style="verb">n &gt;= 1</spanx> independent PIC lineages;</t>
+  <t>each lineage remains independently verifiable;</t>
+  <t>it has no combined authority of its own;</t>
+  <t>it is the execution input carried by the <spanx style="verb">multiLineage</spanx> field (Section 2.3).</t>
+</list></t>
 
 <figure><sourcecode type="text"><![CDATA[
-one Lineage Execution
-    -> one authority-propagation flow
++======================================+
+| MULTI-LINEAGE EXECUTION              |
+|                                      |
+| leg A: PCA1-A { BACKUP }             |
+| leg B: PCA0-B { WRITE-S3 }           |
+|                                      |
+| authorities remain separate          |
++======================================+
 
-Multi-Lineage Execution
-    -> n >= 1 distinct Lineage Executions
-       carried together for one proposed transition
-]]></sourcecode></figure>
-
-<figure><sourcecode type="text"><![CDATA[
-LINEAGE EXECUTION A
-PCA1-A { BACKUP }
-        |
-        | enters as A
-        v
-+====================================================+
-|               MULTI-LINEAGE EXECUTION              |
-|                                                    |
-|  +----------------------------------------------+  |
-|  | A: PCA1-A { BACKUP }                         |  |
-|  +----------------------------------------------+  |
-|                                                    |
-|  +----------------------------------------------+  |
-|  | B: PCA0-B { WRITE-S3 }                       |  |
-|  +----------------------------------------------+  |
-|                                                    |
-|  authorities remain separate                       |
-+====================================================+
-        ^
-        | enters as B
-        |
-LINEAGE EXECUTION B
-PCA0-B { WRITE-S3 }
-
-Distinct Lineage Executions, one proposed transition.
+Distinct lineages, one proposed transition.
 ]]></sourcecode></figure>
 
 </section>
-<section anchor="execution-guardrails"><name>Execution Guardrails</name>
+<section anchor="sandboxed-guardrails"><name>Sandboxed Guardrails</name>
 
-<t>An example introduces the concept. A homeowner gives an authorized contractor a key to renovate a house. The key allows the contractor to
-enter. If the contractor enters and destroys the house, the key has not failed: asking the key to guarantee correct physical behavior is a
-category error. The needed controls are external to the key — define limits, observe activity, evaluate proposed actions, deny continuation
-when limits are crossed.</t>
+<t>A Sandboxed Execution is a multi-hop <strong>outer</strong> PIC execution. Its executors are <strong>guardrails</strong>, and each continues the previous one under
+PoR:</t>
 
 <figure><sourcecode type="text"><![CDATA[
-key
-  -> valid authority propagation through a Lineage Execution
+OUTER SANDBOXED EXECUTION
 
-contractor
-  -> executor operating with valid authority
-
-contractor acting outside the intended work
-  -> buggy, compromised, malicious, or non-deterministic behavior
-
-limits, observation, and denial
-  -> execution guardrails
+PCA-G[n-1]              PCA-G[n]                PCA-G[n+1]
+Guardrail n-1  --PoR--> Guardrail n  --PoR-->  Guardrail n+1
+                            |
+                            | carries and evaluates
+                            v
+                     Multi-Lineage Execution
+                     [ leg A | leg B | ... ]
 ]]></sourcecode></figure>
+
+<t>Each guardrail:</t>
+
+<t><list style="numbers" type="1">
+  <t>receives an ordinary outer PCA carrying <spanx style="verb">multiLineage</spanx>;</t>
+  <t>verifies the outer PIC continuation;</t>
+  <t>verifies every inner leg;</t>
+  <t>applies the enforcement function;</t>
+  <t>on permit, proves the next ordinary outer PCA;</t>
+  <t>on deny, produces no authorizing continuation for that crossing.</t>
+</list></t>
 
 <ul empty="true"><li>
-  <t>An <strong>Execution Guardrail</strong> is an externally configured runtime control at an execution boundary that evaluates a proposed transition
-involving one or more Lineage Executions and enforces the resulting policy decision.</t>
+  <t>A <strong>guardrail</strong> is an executor of a Sandboxed Execution: it verifies the outer continuation, verifies the carried inner execution,
+applies the enforcement function, and, on permit, proves the next ordinary outer PCA.</t>
 </li></ul>
 
-<t>The guardrail evaluates a proposed transition represented as one Multi-Lineage Execution (Section 1.2), the single-lineage case included.
-Within a single Lineage Execution,
-authority states are already secured by execution lineage safety (Section 1.1); what the guardrail adds is the evaluation of the proposed
-transition against configured policy.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-MULTI-LINEAGE EXECUTION (n >= 1)
-                |
-                | proposed transition
-                v
-+--------------------------------+
-| EXECUTION GUARDRAIL            |
-|                                |
-| evaluate configured policy     |
-| enforce the result             |
-+--------------------------------+
-                |
-           +----+----+
-           |         |
-         permit     deny
-           |         |
-           v         X
-     NEXT EXECUTOR
-     OR TARGET
-]]></sourcecode></figure>
-
-<t>Permit allows the proposed transition to cross the execution boundary as presented. Deny prevents that proposed transition from crossing
-the boundary. Future revisions may define additional runtime controls; this section does not anticipate them.</t>
-
-<t>The executor or calling system constructs the proposed transition by selecting the participating Lineage Executions, their concrete signed
-requests, and their declared participation context. The guardrail does not construct or modify those requests, does not decide which
-Lineage Executions participate, and does not create an alternative transition, a new authority state, or a new Lineage Execution.</t>
+<t>An execution is sandboxed not because a physical boundary forced guardrail invocation, but because the next conforming guardrail accepts and
+continues only a valid outer PCA.</t>
 
 <ul empty="true"><li>
-  <t>The executor constructs the proposed transition. The guardrail does not compose the participating Lineage Executions; it only determines
-whether the proposed transition may cross the execution boundary.</t>
+  <t>The executor is not physically sandboxed by this specification. The execution is sandboxed because it can continue only through valid
+guardrail hops of the outer PIC lineage.</t>
 </li></ul>
-
-<t>If the proposal is denied, the executor may later construct a different proposal; that is a new proposed transition, outside the decision
-being evaluated.</t>
-
-<t>How configured policy is evaluated is an implementation choice. The guardrail may evaluate policy directly or obtain a decision from
-another policy evaluation component. What matters is that the decision is enforced before the proposed transition crosses the execution
-boundary.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-POLICY GOVERNANCE
-defines, reviews, approves, and configures policy
-
-EXECUTION GUARDRAIL
-evaluates or obtains a policy decision
-and enforces permit or deny at runtime
-]]></sourcecode></figure>
-
-<t>Runtime evaluation is not itself governance. PIC and the guardrail also answer different questions:</t>
-
-<ul empty="true"><li>
-  <t>PIC determines whether the authority state is a valid continuation of its Lineage Execution. The guardrail determines whether the
-proposed transition satisfies the configured policy, and enforces permit or deny at the execution boundary.</t>
-</li></ul>
-
-<t>Guardrails do not make an invalid PCA valid, do not merge authorities, do not change lineage invariants, and do not guarantee correct
-internal executor behavior. They reduce the executor's ability to cause another executor or target to continue an operation that violates
-the configured policy. How crossings are carried and enforced is described in Sections 3 and 4; the formal requirements are deferred to
-the normative sections of this specification.</t>
-
-<t>The canonical example. A user authorizes an application to read a document and perform a backup; that authority propagates through Lineage
-Execution A. The executor serving the request is an AI agent: it receives PCA1-A and proves the PoR, like any other executor.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-LINEAGE EXECUTION A — USER AUTHORITY
-
-PCA0-A { READ-ALL, BACKUP }
-          |
-          | PoR
-          v
-PCA1-A { BACKUP }
-          |
-          | PoR
-          v
-+------------------------+
-| AI AGENT               |
-| executor of A          |
-+------------------------+
-]]></sourcecode></figure>
-
-<t>To write the backup to S3, the agent also acts as a permissioned entity of its own: it expresses its own intent and mints PCA0-B, the
-origin of Lineage Execution B:</t>
-
-<figure><sourcecode type="text"><![CDATA[
-LINEAGE EXECUTION B — AGENT AUTHORITY
-
-PCA0-B { WRITE-S3 }
-]]></sourcecode></figure>
-
-<t>The agent now holds two authorities. It constructs a Multi-Lineage Execution carrying both and proposes the transition:</t>
-
-<figure><sourcecode type="text"><![CDATA[
-+====================================================+
-|               MULTI-LINEAGE EXECUTION              |
-|                                                    |
-| A: PCA1-A { BACKUP }                               |
-| B: PCA0-B { WRITE-S3 }                             |
-|                                                    |
-| concrete signed request: B / WRITE-S3              |
-+====================================================+
-                          |
-                          v
-              +----------------------+
-              | EXECUTION GUARDRAIL  |
-              |                      |
-              | evaluate policy      |
-              | permit / deny        |
-              +----------------------+
-                          |
-                          v
-                          S3
-]]></sourcecode></figure>
-
-<t>Lineage Execution A authorizes <spanx style="verb">BACKUP</spanx>; Lineage Execution B authorizes <spanx style="verb">WRITE-S3</spanx>. B authorizes the external S3 write; A provides the
-independently preserved <spanx style="verb">BACKUP</spanx> authority context that motivates the proposed transition. The agent proposed their joint participation; the
-guardrail did not create that relationship and does not merge A and B. Configured policy determines whether the proposed transition is
-permitted, the guardrail enforces permit or deny, and every externally relevant action remains attributable to a specific Lineage
-Execution. Participation, not authority mixing.</t>
 
 </section>
 <section anchor="requirements-notation"><name>Requirements Notation</name>
 
 <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" are to be interpreted as described in BCP 14 <xref target="references">[2]</xref> <xref target="references">[3]</xref> when, and only when, they appear in all capitals,
-and only within the normative sections of this document. Examples are illustrative and non-normative.</t>
-
-<t>The normative guardrail construction and enforcement requirements will be defined in forthcoming revisions of this specification.</t>
+"OPTIONAL" are to be interpreted as described in BCP 14 <xref target="references">[2]</xref> <xref target="references">[3]</xref> when, and only when, they appear in all
+capitals. Examples are illustrative and non-normative.</t>
 
 </section>
 </section>
-<section anchor="execution-model"><name>Execution Model</name>
+<section anchor="recursive-execution-model"><name>Recursive Execution Model</name>
 
-<t>This section is non-normative. It defines the execution model — executor, Enforcement Lineage, guardrail — and one point must be clear by
-its end: the executor is never the source of enforcement authority. Enforcement authority is a continued Enforcement Lineage, and a
-governed crossing is accepted by the next conforming hop only when it carries a valid Enforcement PCA for that exact crossing.</t>
+<section anchor="outer-and-inner-execution"><name>Outer and Inner Execution</name>
 
-<section anchor="executors-deterministic-and-non-deterministic"><name>Executors: Deterministic and Non-Deterministic</name>
+<figure><sourcecode type="text"><![CDATA[
+outer execution = Sandboxed Execution
+inner execution = Multi-Lineage Execution carried in multiLineage
+]]></sourcecode></figure>
 
-<t>An executor belongs to one of two classes:</t>
+<t>The outer execution is an ordinary Lineage Execution with its own PCA0, authority context, PoR chain, execution contract, continuation, and
+revocation coordinates. Every inner leg independently has the same PIC structure.</t>
 
-<t><list style="symbols">
-  <t>a <strong>deterministic executor</strong> has behavior fixed by human-written code: given the same inputs and state, it performs the same operations;</t>
-  <t>a <strong>non-deterministic executor</strong> has behavior not fixed by its implementation — an LLM, an AI agent, or any component whose next
-operation is a runtime decision.</t>
-</list></t>
+<t>The outer execution does not absorb the inner lineages. It carries them as execution inputs and continues on its own authority, <spanx style="verb">ENFORCE</spanx>.</t>
 
-<t>When an operation is judged incorrect, the two classes name it differently, but it is the same phenomenon. In a deterministic executor it
-is called a <strong>bug</strong>: the author acknowledges a design or implementation error. In a non-deterministic executor it is a <strong>decision we did
-not want</strong>: there is no error to point to; the component chose. Both belong to the physics of execution — physical executor behavior in
-the sense of Section 1.1, outside execution lineage safety, for PIC as for any security protocol. From the protocol's point of view the
-two failure modes are operationally equivalent.</t>
+<figure><sourcecode type="text"><![CDATA[
+Outer authority  = ENFORCE
+Inner lineages   = execution inputs carried for evaluation
+Outer authority != union of inner authorities
+]]></sourcecode></figure>
 
 </section>
-<section anchor="the-enforcement-problem"><name>The Enforcement Problem</name>
+<section anchor="pic-carrying-pic"><name>PIC Carrying PIC</name>
 
-<t>Section 1 defined the Execution Guardrail but left two questions open: what authorizes it, and what makes its decision unskippable?</t>
+<t>The execution being controlled is already represented through PIC. The guardrail process that controls it must itself be controlled, across
+guardrails not yet known. So the controlled Multi-Lineage Execution becomes the signed subject of another PIC lineage — and that lineage can
+be carried again.</t>
 
-<t><list style="symbols">
-  <t>If the executor's own code is responsible for calling the guardrail, a deterministic executor with a bug may simply never make the call,
-and a non-deterministic executor may decide not to — precisely because it does not want to be limited.</t>
-  <t>If the guardrail were authorized merely by holding a key the receiver recognizes, a compromised executor that obtained or invoked that
-key could manufacture its own approvals.</t>
-</list></t>
+<figure><sourcecode type="text"><![CDATA[
+OUTER PIC
+PCA-G[n]
+|
++-- operation: ENFORCE
++-- executionContract: required next-guardrail properties
++-- multiLineage:
+    |
+    +-- INNER PIC LEG A: PCA-A[x]
+    +-- INNER PIC LEG B: PCA-B[y]
+    +-- ...
+]]></sourcecode></figure>
 
-<t>Both failures share one root: trusting the executor to invoke, or to authorize, its own control is circular — the component whose behavior
-is in question would be the source of its own limits. Enforcement can be neither invoked nor authorized from inside the executor.</t>
-
-<t>The resolution is not a trusted invoker enclosing the executor. It is to make enforcement authority a PIC continuation, and to make each
-decision a signed continuation that the next conforming hop checks before it accepts the crossing.</t>
-
-</section>
-<section anchor="the-enforcement-lineage"><name>The Enforcement Lineage</name>
+<figure><sourcecode type="text"><![CDATA[
+PCA-G[n-1] --> PCA-G[n] --> PCA-G[n+1]
+                   |
+                   +-- multiLineage
+                         |
+                         +-- independently verified PIC legs
+]]></sourcecode></figure>
 
 <ul empty="true"><li>
-  <t>An <strong>Enforcement Lineage</strong> is a normal Lineage Execution dedicated to the operation <spanx style="verb">ENFORCE</spanx>. Its origin PCA, <spanx style="verb">PCA0-G</spanx>, is minted by an
-explicitly authorized enforcement origin — policy governance, the protected application, the deployment owner, or another authorized
-origin. A candidate guardrail does not mint its own <spanx style="verb">PCA0-G</spanx>.</t>
+  <t>PIC does not stop at protecting application execution. It can protect the execution that protects application execution.</t>
 </li></ul>
 
-<t>An Enforcement Lineage is not a new primitive: it is an ordinary Lineage Execution (Section 1.1) whose origin authority context carries the
-single operation <spanx style="verb">ENFORCE</spanx> together with the execution contract the enforcing executor must satisfy.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-PCA0-G {
-  operations: [ ENFORCE ],
-  executionContract: {
-    role: guardrail,
-    policyEngine: ...,
-    environment: ...,
-    executionModel: ...,
-    requiredAttestations: ...
-  }
-}
-]]></sourcecode></figure>
-
-<t>A future guardrail becomes authorized exactly as any executor becomes authorized in PIC: by producing a valid successor PCA in this
-lineage. That successor satisfies the ordinary PIC continuation requirements
-(<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>):</t>
-
-<t><list style="symbols">
-  <t>exactly one predecessor;</t>
-  <t>valid PoR;</t>
-  <t>a conforming executor attestation against the inherited execution contract;</t>
-  <t><spanx style="verb">ENFORCE</spanx> authority, unexpanded;</t>
-  <t>complete request binding;</t>
-  <t>a signature over the whole PCA.</t>
-</list></t>
-
-<t>Nothing here is recognized by fiat. The guardrail holds no standing that a key alone could confer; it holds a position in a lineage that
-traces back to an authorized enforcement origin.</t>
-
-<ul empty="true"><li>
-  <t>Guardrail authority is not recognized; it is continued.</t>
-</li></ul>
-
-<t>This is where the trust moves. It no longer rests on the behavior of the executor (unverifiable, Section 2.1) or on a receiver's
-recognition of a key. It rests on the same continuation the rest of PIC already secures: an executor that does not continue a valid
-Enforcement Lineage cannot produce a valid Enforcement PCA, whatever keys it holds.</t>
-
 </section>
-<section anchor="discrete-multi-hop-execution"><name>Discrete Multi-Hop Execution</name>
+<section anchor="the-multilineage-pca-profile-field"><name>The <spanx style="verb">multiLineage</spanx> PCA Profile Field</name>
 
-<t>Execution is discrete and multi-hop: a chain of executors, each hop continuing its Lineage Execution under PoR and non-expansion as defined
-by the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-+-----------+       +-----------+       +-----------+
-| EXECUTOR  |------>| EXECUTOR  |------>| EXECUTOR  |
-+-----------+  PoR  +-----------+  PoR  +-----------+
-]]></sourcecode></figure>
-
-<t>A guarded crossing between hops is evaluated by a guardrail — itself an executor continuing an Enforcement Lineage — and the receiving hop
-accepts it only against a valid Enforcement PCA (Section 3).</t>
-
-</section>
-<section anchor="the-abstraction-step"><name>The Abstraction Step</name>
-
-<t>Whether the executor is deterministic or non-deterministic does not matter. Bug or decision, the failure mode is the same (Section 2.1);
-the enforcement problem is the same (Section 2.2); the answer is the same (Section 2.3). The model therefore discards the executor's nature
-and keeps only the invariant element: a governed crossing carries a valid Enforcement PCA continuing an authorized Enforcement Lineage, or
-the next conforming hop does not accept it.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-ANY EXECUTOR
-  proposes a crossing (Multi-Lineage Execution)
-
-GUARDRAIL (executor of an Enforcement Lineage)
-  validates, evaluates policy, and — on permit —
-  emits an Enforcement PCA bound to that exact crossing
-
-NEXT CONFORMING HOP
-  accepts only with a valid Enforcement PCA for that crossing
-]]></sourcecode></figure>
-
-<t>The executor's nature is discarded; the Enforcement PCA is the fixed, checkable element.</t>
-
-</section>
-<section anchor="lineage-executions-at-a-guarded-crossing"><name>Lineage Executions at a Guarded Crossing</name>
-
-<t>At each hop a Multi-Lineage Execution (Section 1.2) is proposed, evaluated at the guarded crossing, and — if permitted — continues to the
-next hop. The guardrail evaluates the proposed transition against configured policy (Section 1.3) and, on permit, emits an Enforcement PCA
-that binds the decision to the exact crossing; the decision gates continuation.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-L1 ----+                                                        +----> L1'
-       |                    +-------------+                      |
-L2 ----+---> proposed  ---->|  GUARDRAIL  |----- permit --------+----> L2'
-       |     crossing       |  (ENFORCE)  |  + Enforcement PCA   |
-LN ----+                    +-------------+                      +----> LN'
-                                   |
-                                   | deny
-                                   v
-                                   X
-
-The guardrail is an executor of an Enforcement Lineage.
-On permit it emits an Enforcement PCA bound to this crossing.
-]]></sourcecode></figure>
-
-<t>The decision verbs are those of Section 1.3: permit and deny. Richer runtime-control taxonomies are deferred to forthcoming revisions.</t>
-
-</section>
-<section anchor="model-summary"><name>Model Summary</name>
-
-<t><list style="symbols">
-  <t><strong>executor</strong> — untrusted, deterministic or non-deterministic; the source of bugs and unwanted decisions;</t>
-  <t><strong>Enforcement Lineage</strong> — a normal Lineage Execution for the operation <spanx style="verb">ENFORCE</spanx>, originated by an authorized enforcement origin; a
-guardrail is authorized by validly continuing it, not by holding a recognized key;</t>
-  <t><strong>Execution Guardrail</strong> — an executor of an Enforcement Lineage that evaluates every proposed crossing against configured policy
-(Section 1.3) and, on permit, emits an <strong>Enforcement PCA</strong> bound to that crossing;</t>
-  <t><strong>enforced acceptance</strong> — the next conforming hop accepts a guarded crossing only with a valid Enforcement PCA for that exact crossing;</t>
-  <t><strong>Lineage Executions</strong> — the secured authority inputs and outputs of each hop (Sections 1.1, 1.2); never merged, and every externally
-relevant action keeps an authorizing Lineage Execution.</t>
-</list></t>
-
-<t>With the model in place, Section 3 describes how crossings are carried and accepted, and Section 4 how the guardrail enforces them.</t>
-
-</section>
-</section>
-<section anchor="guarded-crossings"><name>Guarded Crossings</name>
-
-<t>This section is non-normative. It describes how Lineage Executions reach a hop, how the executor selects the ones that continue, how the
-guardrail's decision travels as an Enforcement PCA, and how the next hop accepts a crossing only when that decision is present and exact.</t>
-
-<section anchor="input-and-output"><name>Input and Output</name>
-
-<t>At each hop a guarded crossing takes a Multi-Lineage Execution as input and produces a Multi-Lineage Execution as output — n &gt;= 1 on both
-sides. No new machinery is required for PCA validity: each PCA remains subject to the
-<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>, and an invalid PCA is rejected by a conforming PIC Verifier
-function. What enforced acceptance adds is a guarded-crossing acceptance requirement — a valid Enforcement PCA for that exact crossing
-(Sections 3.3 and 3.4) — without changing PCA validity, PoR, or non-expansion. What this specification governs is the proposed output
-crossing presented to the successor hop: it may carry several independently attributable Lineage Executions, and it does not become a
-combined authority state. That is what the guardrail evaluates and what the Enforcement PCA binds.</t>
-
-</section>
-<section anchor="selection"><name>Selection</name>
-
-<t>The Lineage Executions of the output come from two sources:</t>
-
-<t><list style="symbols">
-  <t>the <strong>input</strong>: Lineage Executions that entered the hop;</t>
-  <t>the <strong>environment</strong>: authorities available at the hop, including origins the executor mints as a permissioned entity of its own
-(Section 1.3, canonical example).</t>
-</list></t>
-
-<t>Which ones the executor selects cannot be dictated from outside. A deterministic executor with a bug departs from any instruction; a
-non-deterministic executor may simply choose otherwise (Section 2.1) — and either way the result would still need verification. The model
-therefore does not force the selection: the executor selects freely and proposes the crossing; the guardrail — an executor of an
-Enforcement Lineage (Section 2.3) — validates the participating PCAs, evaluates configured policy, and, on permit, binds exactly that
-crossing into an Enforcement PCA. The division of responsibility is exact: the executor constructs the proposed transition and selects its
-participating Lineage Executions; the guardrail evaluates it and, if it permits, attests exactly that crossing — no more, no fewer
-participants — as a continuation of its Enforcement Lineage.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-INPUT (n >= 1)              ENVIRONMENT
-Multi-Lineage Execution     authorities at the hop
-        |                        |
-        v                        v
-   the executor freely selects the participating
-   Lineage Executions and proposes the crossing
-                    |
-                    v
-             +-------------+
-             |  GUARDRAIL  |  validates, evaluates,
-             |  (ENFORCE)  |  and on permit emits an
-             +-------------+  Enforcement PCA
-]]></sourcecode></figure>
-
-</section>
-<section anchor="the-enforcement-pca"><name>The Enforcement PCA</name>
-
-<t>One question remains: the successor receives a Multi-Lineage Execution — how does it know the crossing was guarded, and by an authorized
-guardrail? Because a permitted crossing carries an <strong>Enforcement PCA</strong>: a PCA in an Enforcement Lineage (Section 2.3) whose request is the
-evaluation of one concrete guarded crossing. The Enforcement PCA is both the proof of guardrail authorization — it is a valid continuation
-of an authorized Enforcement Lineage — and the record of the decision. There is no separate authority to recognize.</t>
-
-<t>The Enforcement PCA commits to the participating Lineage Executions through a bounded list, <spanx style="verb">guardedLineages</spanx>:</t>
-
-<figure><sourcecode type="json"><![CDATA[
-"guardedLineages": [
-  {
-    "pcaDigest": "sha256:...",
-    "lineageId": "...",
-    "lineageCounter": 42,
-    "branchId": "sha256:...",
-    "scopesCommitment": "sha256:..."
-  }
-]
-]]></sourcecode></figure>
-
-<t><spanx style="verb">guardedLineages</spanx> is a list of commitments to the participating Lineage Executions. It does not, and must not:</t>
-
-<t><list style="symbols">
-  <t>contain or merge their authority;</t>
-  <t>make an invalid PCA valid;</t>
-  <t>create a new participant lineage;</t>
-  <t>become part of the Enforcement Lineage authority context.</t>
-</list></t>
-
-<t>The Enforcement Lineage authority context retains only:</t>
-
-<figure><sourcecode type="text"><![CDATA[
-{ ENFORCE }
-]]></sourcecode></figure>
-
-<t>The Enforcement PCA request binding covers at least:</t>
-
-<t><list style="symbols">
-  <t><spanx style="verb">operation = ENFORCE</spanx>;</t>
-  <t>the exact participant set;</t>
-  <t>the destination;</t>
-  <t>the concrete signed requests and relevant payload digests;</t>
-  <t>the crossing-context digest;</t>
-  <t>the policy identifier, version, and digest;</t>
-  <t>the committed evaluation inputs;</t>
-  <t>the verdict;</t>
-  <t>freshness and replay-protection data.</t>
-</list></t>
-
-<t>Every digest is recomputed from the presented objects; a digest is never trusted as supplied. The carried participant PCA bytes may remain
-in the existing crossing carrier: <spanx style="verb">guardedLineages</spanx> holds commitments, not duplicated PCA history.</t>
-
-<t><strong>Carrier.</strong> The guardrail forwarding envelope of the previous revision is retained only as a carrier for the crossing. Its semantics are
-now those of the Enforcement PCA:</t>
-
-<t><list style="symbols">
-  <t>the Enforcement PCA is the proof of guardrail authorization and of the decision;</t>
-  <t>a separate <spanx style="verb">guardrailProof</spanx> does not establish any independent guardrail authority; authorization is the Enforcement Lineage
-continuation, nothing else;</t>
-  <t>a <spanx style="verb">forwardingProof</spanx> may remain, but only as presentation attribution — it attributes who presented the crossing, not who authorized it;</t>
-  <t>transport and forwarding create no enforcement authority.</t>
-</list></t>
-
-<t>Envelopes are not nested and participant PCAs are not duplicated; the carrier travels through any medium unchanged, exactly as a PCA does
-(<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>, Section 6.7). An illustrative carrier:</t>
+<t><spanx style="verb">multiLineage</spanx> is a signed profile extension of an ordinary PCA, in the same extension style as the revocation coordinates of the
+<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</eref>, Section 2. It carries
+one Multi-Lineage Execution; inside it, <spanx style="verb">legs</spanx> is the bounded list of independently verifiable PIC inputs.</t>
 
 <figure><sourcecode type="json"><![CDATA[
 {
-  "crossing": {
-    "participants": ["A", "B"],
-    "destination": "…",
-    "requestsDigest": "sha256:…",
-    "crossingContextDigest": "sha256:…"
-  },
-  "enforcementPca": {
-    "operation": "ENFORCE",
-    "predecessorDigest": "sha256:…",
-    "guardedLineages": [
-      { "pcaDigest": "sha256:…", "lineageId": "…", "lineageCounter": 42,
-        "branchId": "sha256:…", "scopesCommitment": "sha256:…" }
+  "multiLineage": {
+    "legs": [
+      {
+        "pca": { "...": "ordinary signed PCA" },
+        "predecessor": { "...": "when required by the selected validation profile" },
+        "role": "..."
+      }
     ],
-    "policy": { "id": "…", "version": "…", "digest": "sha256:…" },
-    "inputsCommitment": "sha256:…",
-    "verdict": "permit",
-    "freshness": { "…": "…" },
-    "proof": { "verificationMethod": "…", "signature": "…" }
-  },
-  "forwardingProof": {
-    "verificationMethod": "…",
-    "signature": "…"
+    "context": {
+      "destination": "...",
+      "requestsDigest": "sha256:...",
+      "payloadDigest": "sha256:...",
+      "freshness": "..."
+    }
   }
 }
 ]]></sourcecode></figure>
 
-<t>The example is illustrative and non-normative. The canonical serialization and interoperable verification rules will be defined by a
-future normative revision or profile.</t>
+<t>Semantics:</t>
 
-<t>The Enforcement PCA is what defeats bypass. An attacker that skips the guardrail can still call the next hop directly; the call arrives
-with no Enforcement PCA, with one that does not validate, or with one that does not continue an Enforcement Lineage the receiver accepts —
-and the receiving hop rejects it. As with invalid authority in Section 1.1, the failure is not prevented at the faulty hop; it is blocked
-at the next conforming one.</t>
+<t><list style="symbols">
+  <t>the whole <spanx style="verb">multiLineage</spanx> field is covered by the outer PCA's ordinary single signature;</t>
+  <t>every leg is an ordinary PIC PCA, or the profile-selected proof representation of one;</t>
+  <t>each leg keeps its own origin, predecessor relation, authority context, and revocation coordinates;</t>
+  <t>legs are never merged;</t>
+  <t>the list is bounded by the profile;</t>
+  <t>a leg MAY itself contain <spanx style="verb">multiLineage</spanx>; recursion has no special terminal depth in the model;</t>
+  <t>implementations MAY impose resource and maximum-depth limits; these are implementation and profile limits, not PIC-semantic changes.</t>
+</list></t>
+
+<t><spanx style="verb">multiLineage</spanx> MUST NOT alter <spanx style="verb">previousPcaHash</spanx>, create additional predecessors, enter <spanx style="verb">invariants.operations</spanx>, import authority from its
+legs, or replace PoR, any leg's signature, or any leg's validation.</t>
+
+<t>Exactness. The outer request binding commits to the complete presented <spanx style="verb">multiLineage</spanx>. The Verifier reconstructs the leg set and context
+from the presented objects and recomputes every supplied digest; an added, removed, or substituted leg causes rejection.</t>
+
+<ul empty="true"><li>
+  <t>Exactness applies to the authenticated Multi-Lineage Execution presented to the guardrail. Detecting inputs hidden before presentation
+requires a profile-defined authenticated input manifest or observation source.</t>
+</li></ul>
+
+<t>The recursion is structural, not authority composition:</t>
 
 <figure><sourcecode type="text"><![CDATA[
-GUARDED PATH
+PCA
+ +-- multiLineage
+      +-- leg: PCA
+      +-- leg: PCA
+      +-- leg: PCA
+           +-- multiLineage
+                +-- ...
+]]></sourcecode></figure>
 
-+-------------+  permit + sign   +--------------------------------+
-|  GUARDRAIL  |----------------->|  ENFORCEMENT PCA                |
-|  (ENFORCE)  |                  |  continues an Enforcement       |
-+-------------+                  |  Lineage; binds this crossing   |
-                                 +--------------------------------+
-                                                |
-                                                v
-                                          EXECUTOR N+1
-                              accepts: valid Enforcement PCA for
-                              exactly this crossing
+</section>
+<section anchor="originating-the-sandboxed-execution"><name>Originating the Sandboxed Execution</name>
 
+<t>An executor that wants its proposed Multi-Lineage Execution to enter the first guardrail creates an ordinary origin PCA, <spanx style="verb">PCA0-G</spanx> — provided
+it is authorized to originate that outer lineage. A component not authorized to mint the outer PCA0 cannot self-authorize by creating one.</t>
 
+<figure><sourcecode type="json"><![CDATA[
+{
+  "invariants": {
+    "operations": ["ENFORCE"],
+    "executionContract": { "...": "properties required of future guardrail executors" }
+  },
+  "multiLineage": {
+    "legs": [
+      { "...": "inner PIC leg A" },
+      { "...": "inner PIC leg B" }
+    ],
+    "context": { "...": "exact proposed crossing" }
+  },
+  "continuation": { "...": "challenge for the first guardrail" }
+}
+]]></sourcecode></figure>
+
+<t><spanx style="verb">PCA0-G</spanx> is an ordinary PCA0: no predecessor, no PoR, signed by its authorized origin. It delegates the future guardrail through the
+execution contract, without naming it. The first guardrail proves conformance and produces <spanx style="verb">PCA1-G</spanx>; subsequent guardrails produce
+<spanx style="verb">PCA2-G</spanx>, <spanx style="verb">PCA3-G</spanx>, and so on.</t>
+
+<figure><sourcecode type="text"><![CDATA[
+authorized caller creates PCA0-G
+          |
+          | future delegation (execution contract)
+          v
+unknown guardrail proves conformance and creates PCA1-G
+]]></sourcecode></figure>
+
+</section>
+<section anchor="guardrail-prover-and-verifier-profile"><name>Guardrail Prover and Verifier Profile</name>
+
+<t>A guardrail performs two nested verification levels over the existing ordinary PIC procedures, then — on permit — proves the next PCA.</t>
+
+<t><strong>Outer verification.</strong> The guardrail acts as an ordinary PIC Verifier for the outer execution:</t>
+
+<t><list style="numbers" type="1">
+  <t>validate the outer predecessor PCA;</t>
+  <t>verify outer PoR and predecessor binding;</t>
+  <t>verify continuation freshness;</t>
+  <t>verify the guardrail executor attestation and conformance to the inherited execution contract;</t>
+  <t>verify non-expansion;</t>
+  <t>verify temporal and revocation requirements;</t>
+  <t>verify that the outer request matches the presented <spanx style="verb">multiLineage</spanx>.</t>
+</list></t>
+
+<t><strong>Inner verification.</strong> Only after outer validation succeeds, the guardrail validates every leg in <spanx style="verb">multiLineage</spanx> with the ordinary PIC
+Verifier procedure and the selected chain representation: origin or immediate predecessor, signature, PoR, predecessor binding,
+non-expansion, execution-contract conformance, request binding, freshness, and revocation. Any invalid leg is deny, before policy.</t>
+
+<t><strong>Enforcement function.</strong> Over the validated legs, their bound scopes and metadata, and the exact crossing context — destination, requests,
+payload commitments — the guardrail evaluates the profile-defined enforcement function. A PDP or policy engine is one possible
+implementation.</t>
+
+<ul empty="true"><li>
+  <t>The profile requires an enforcement result; it does not require a particular PDP architecture, policy language, product, or deployment
+topology.</t>
+</li></ul>
+
+<t>Failure, unavailable policy, indeterminate evaluation, or inconsistent input mapping default to deny.</t>
+
+<t><strong>Outer proving.</strong> On permit, the guardrail acts as ordinary PIC Prover: it constructs the next outer PCA, responds to the predecessor
+challenge, keeps or attenuates <spanx style="verb">{ ENFORCE }</spanx>, preserves or strengthens the execution contract, carries the exact output <spanx style="verb">multiLineage</spanx>,
+binds the enforcement result and exact context in the ordinary request, adds a fresh continuation, and signs once. The next guardrail
+repeats the same procedure — and that repetition is the sandbox.</t>
+
+<figure><sourcecode type="text"><![CDATA[
+receive outer PCA
+      |
+validate outer PIC continuation
+      |
+validate every inner PIC leg
+      |
+apply enforcement function
+      |
+   permit?
+   /    \
+ no      yes
+ X       build and sign next ordinary outer PCA
+]]></sourcecode></figure>
+
+</section>
+<section anchor="operation-profile"><name>Operation Profile</name>
+
+<t>This revision uses one operation class, <spanx style="verb">ENFORCE</spanx>:</t>
+
+<t><list style="symbols">
+  <t>it means: validate the carried Multi-Lineage Execution, apply the enforcement function, and decide whether the outer execution may
+continue;</t>
+  <t>it grants none of the authority carried by the inner legs;</t>
+  <t>it is subject to ordinary PIC non-expansion: the outer lineage MAY retain or attenuate it, never add broader operations.</t>
+</list></t>
+
+<t>Future revisions MAY define additional recursive-control operation classes, using the same ordinary PCA, PoR, and profile-extension model.</t>
+
+</section>
+</section>
+<section anchor="acceptance"><name>Acceptance</name>
+
+<t>A conforming guardrail or receiving hop operating under this profile MUST accept the outer continuation only if:</t>
+
+<figure><sourcecode type="text"><![CDATA[
+ValidOuterPIC(PCA-G[n-1], PCA-G[n])
+AND PCA-G[n].operation == ENFORCE
+AND ValidMultiLineage(PCA-G[n].multiLineage)
+AND ExactPresentedExecutionBinding
+AND EnforcementResult == permit
+AND Fresh
+AND NotRevoked
+]]></sourcecode></figure>
+
+<t><spanx style="verb">ValidMultiLineage</spanx> means every presented leg validates independently under its own PIC lineage and selected validation profile.</t>
+
+<t>The receiving component MUST recompute all digests and MUST reject:</t>
+
+<t><list style="symbols">
+  <t>a missing <spanx style="verb">multiLineage</spanx>;</t>
+  <t>an invalid outer continuation;</t>
+  <t>an invalid inner leg;</t>
+  <t>an added, removed, or substituted presented leg;</t>
+  <t>a mismatched request, destination, or payload;</t>
+  <t>an invalid policy or input commitment;</t>
+  <t>a non-permit decision;</t>
+  <t>stale, replayed, or revoked state.</t>
+</list></t>
+
+<t>This profile adds no second signature system: guardrail approval is the ordinary outer PCA signature, nothing else.</t>
+
+</section>
+<section anchor="bypass"><name>Bypass</name>
+
+<t>A sender MAY physically skip a guardrail and call the next one with the inner execution alone. The model does not prevent the attempt at the
+faulty sender; the next conforming guardrail rejects it, because a valid outer continuation is missing.</t>
+
+<figure><sourcecode type="text"><![CDATA[
 BYPASS ATTEMPT
 
-ATTACKER ---- direct call, no Enforcement PCA ---->  EXECUTOR N+1
-                                                     rejects the crossing
+executor ---- inner Multi-Lineage only ----> next guardrail
+                                             reject:
+                                             no valid outer continuation
 ]]></sourcecode></figure>
-
-<t>How Enforcement Lineage origins are authorized, and how enforcing keys are generated, stored, attested, rotated, and revoked, will be
-defined by a future normative revision or profile; none of it grants authority independent of a valid Enforcement Lineage continuation.</t>
-
-</section>
-<section anchor="enforced-acceptance-mode"><name>Enforced-Acceptance Mode</name>
 
 <ul empty="true"><li>
-  <t>A conforming receiving hop accepts a guarded crossing only when it carries a valid Enforcement PCA for that exact crossing.</t>
+  <t>The failure is not prevented at the faulty hop; it is blocked at the next conforming one.</t>
 </li></ul>
 
-<t>A hop requiring enforcement accepts a crossing only when all of the following hold:</t>
-
-<t><list style="numbers" type="1">
-  <t>every participating PCA is valid;</t>
-  <t>the accompanying Enforcement PCA is valid;</t>
-  <t>it continues an accepted Enforcement Lineage;</t>
-  <t>its authority remains limited to <spanx style="verb">ENFORCE</spanx>;</t>
-  <t>its executor satisfies the inherited execution contract;</t>
-  <t><spanx style="verb">guardedLineages</spanx> commits to exactly the presented participants — none omitted, none added;</t>
-  <t>its request binding matches the exact presented crossing;</t>
-  <t>its policy and input commitments match;</t>
-  <t>its verdict is <spanx style="verb">permit</spanx>;</t>
-  <t>freshness and replay checks pass.</t>
-</list></t>
-
-<t>A missing Enforcement PCA, an omitted or additional participant, or a mismatched destination, request, payload, policy, verdict, or
-crossing context causes rejection. Every digest is recomputed from the presented objects.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-AcceptGuardedCrossing(P, G) iff
-  ValidParticipants(P)
-  AND ValidEnforcementContinuation(G)
-  AND G.operation = ENFORCE
-  AND G.guardedLineages = CommitExactly(P)
-  AND G.crossingBinding = CommitExactCrossing(P)
-  AND G.verdict = permit
-  AND Fresh(G)
-]]></sourcecode></figure>
-
-<t>Not every hop requires enforcement. A hop may instead accept a plain PCA, as defined by the
-<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>: PCA validity, PoR, origin binding, and non-expansion remain
-enforced, but a guarded crossing is not required and the bypass guarantee does not apply. The bypass resistance of enforced acceptance
-holds only across topology segments whose receiving hops require it — a deployment choice with a weaker profile where enforcement is not
-required, not a defect.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-ENFORCED-ACCEPTANCE HOP               BASELINE HOP
------------------------               ------------
-valid Enforcement PCA required        plain PCA accepted, per the
-for the exact crossing                Prover and Verifier Specification
-bypass rejected                       baseline PIC enforcement only
-guarded-crossing enforcement          no guarded-crossing claim
-]]></sourcecode></figure>
+<t>For a non-PIC-aware physical target, restricting direct paths to it is a deployment responsibility, addressed by the
+<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md">PIC Architecture and Deployment Specification</eref>.
+This specification does not depend on gateways, service meshes, or physical sandboxes.</t>
 
 </section>
-<section anchor="non-pic-aware-targets-the-egress-enforcer"><name>Non-PIC-Aware Targets: The Egress Enforcer</name>
+<section anchor="recursion"><name>Recursion</name>
 
-<t>Some targets cannot verify PIC at all — object storage, legacy services, and other systems with no notion of an Enforcement PCA. For these,
-a deployment places an <strong>egress enforcer</strong> at the boundary to the target.</t>
-
-<t>The egress enforcer:</t>
-
-<t><list style="symbols">
-  <t>is itself an executor of an Enforcement Lineage;</t>
-  <t>validates the guarded crossing (the participating PCAs and the proposed transition);</t>
-  <t>produces the Enforcement PCA for the decision;</t>
-  <t>physically materializes exactly the permitted action — the action, destination, participants, and other bound context are not
-replaceable after the decision.</t>
-</list></t>
+<t>The model is recursively closed. The same PCA format, PoR semantics, non-expansion rule, and Verifier logic apply at every level. No special
+root guardrail object exists, and no new trust primitive appears at deeper levels.</t>
 
 <figure><sourcecode type="text"><![CDATA[
-guarded crossing ---> EGRESS ENFORCER ---> non-PIC-aware target
-                      (Enforcement Lineage executor)
-                      validates, decides (Enforcement PCA),
-                      materializes exactly the permitted action
+PCA outer
+ +-- multiLineage
+      +-- PCA inner A
+      +-- PCA inner B
+           +-- multiLineage
+                +-- deeper PIC execution
 ]]></sourcecode></figure>
 
-<t>Preventing ungoverned paths to the target — direct credentials, alternate routes, or physical access that never reaches the egress
-enforcer — is a deployment responsibility, not a protocol primitive, and is addressed by the
-<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md">PIC Architecture and Deployment Specification</eref>.</t>
-
-</section>
-<section anchor="architecture-and-deployment-profiles"><name>Architecture and Deployment Profiles</name>
-
-<t>Deployments select, per topology segment, whether receiving hops require enforced acceptance, following the segment's trust and risk
-characteristics:</t>
-
-<figure><sourcecode type="text"><![CDATA[
-TRUSTED OR CONTROLLED SEGMENT          UNTRUSTED OR HIGH-RISK SEGMENT
------------------------------          ------------------------------
-baseline PIC validation                enforced acceptance: a valid
-may be sufficient                      Enforcement PCA is required for
-                                       each guarded crossing
-baseline acceptance may be
-selected when guarded                  enforced acceptance is required
-execution is not required
-]]></sourcecode></figure>
-
-<t>Higher-risk executors include AI agents, third-party workloads, plugin or tool execution, user-supplied code, partially trusted services,
-and components outside the operator's administrative domain; deterministic internal software is not automatically trusted. The selection
-is an architecture and deployment decision: trust boundary, threat model, required assurance, executor control, external-effect risk, and
-interoperability requirements.</t>
-
-<ul empty="true"><li>
-  <t>PIC defines authority validity independently of deployment mode. Architecture and deployment determine where enforced acceptance is
-required in addition to baseline PIC validation.</t>
-</li></ul>
-
-<t>Guidance for selecting enforced-acceptance segments, baseline segments, and mixed deployment profiles is defined by the
-<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md">PIC Architecture and Deployment Specification</eref>.</t>
-
-</section>
-</section>
-<section anchor="guardrail-enforcement"><name>Guardrail Enforcement</name>
-
-<t>This section is non-normative. It describes the enforcement logic of the guardrail: validation first, then policy, then the enforced
-decision.</t>
-
-<section anchor="enforcement-order"><name>Enforcement Order</name>
-
-<t>The guardrail is an executor of an Enforcement Lineage (Section 2.3), and emitting an Enforcement PCA follows the ordinary PIC Prover
-procedure (<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref>, Section 2.1) with the profile-specific steps below.
-Before emitting an Enforcement PCA, the guardrail:</t>
-
-<t><list style="numbers" type="1">
-  <t>validates its Enforcement Lineage predecessor;</t>
-  <t>proves PoR and execution-contract conformance;</t>
-  <t>validates every participating PCA with a conforming PIC Verifier function;</t>
-  <t>denies immediately if any participant is invalid, without evaluating policy;</t>
-  <t>evaluates the configured policy through its PDP or policy engine;</t>
-  <t>constructs <spanx style="verb">guardedLineages</spanx> (Section 3.3);</t>
-  <t>binds the exact crossing, policy, inputs, and verdict into the request;</t>
-  <t>adds freshness and a new continuation;</t>
-  <t>signs the complete Enforcement PCA.</t>
-</list></t>
-
-<t>Policy failure, an unavailable policy, indeterminate evaluation, or non-reproducible inputs produce deny. Validation precedes policy, and
-policy evaluation cannot override PIC invalidity.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-proposed crossing
-        |
-        v
-validate predecessor + every participant PCA ---- any invalid ----> deny
-        |
-    all valid
-        |
-        v
-evaluate configured policy (deny on failure / indeterminate)
-        |
-        v
-construct guardedLineages; bind crossing + policy + inputs + verdict
-        |
-        v
-add freshness + continuation; sign the Enforcement PCA
-]]></sourcecode></figure>
-
-<t>The PIC Verifier function may be integrated into the guardrail or invoked as a separate component; the packaging is an implementation
-choice. The PDP or policy engine is invoked as step 5 of this procedure — it informs the decision the guardrail signs; it is not an
-independent source of authority.</t>
-
-<t>The executed-vs-signed rule of the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref> (Section 3.3) applies per
-participating Lineage Execution: each executed operation must match the signed request of its own Lineage Execution and remains attributed
-to it. Policy authorizes joint participation only; it does not compose the authority sets into a common one.</t>
-
-</section>
-<section anchor="semantic-scopes"><name>Semantic Scopes</name>
-
-<t>Each Lineage Execution is tagged with <strong>semantic scopes</strong>: labels that describe the semantics of the authority it carries. A scope adds no
-authority — the operations a Lineage Execution can authorize remain those of its PCAs, and non-expansion is untouched; scopes exist only
-to inform the guardrail decision. The scope vocabulary is defined by policy governance (Section 1.3).</t>
-
-<t>A semantic scope used in a guardrail decision must be bound to its Lineage Execution by a mechanism that is not under the unilateral
-control of the executor whose crossing is being evaluated: an executor may propose a semantic claim, but an untrusted executor's claim
-alone is not sufficient for policy enforcement. Accepted binding sources — origin-bound metadata, signed declarations, trusted derivation,
-policy-controlled mapping, or attested execution context — are defined in the normative sections of this specification.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-LINEAGE EXECUTION A        LINEAGE EXECUTION B        LINEAGE EXECUTION C
-PCA1-A { BACKUP }          PCA0-B { WRITE-S3 }        PCA0-C { SHARE-PUBLIC }
-scope: data-protection     scope: data-protection     scope: external-sharing
-]]></sourcecode></figure>
-
-</section>
-<section anchor="policies"><name>Policies</name>
-
-<t>A policy is a rule over the scopes of the participating Lineage Executions: it expresses which semantic combinations may cross together.
-Whoever defines the policies defines how the semantics may combine; the guardrail enforces it (Section 1.3). A policy carries an
-effect and a condition — the condition is an expression over the participants and their scopes — and the decision defaults to deny: a
-crossing is permitted only if the condition of an applicable permit policy holds. An illustrative policy, with a CEL-like condition:</t>
-
-<figure><sourcecode type="json"><![CDATA[
-{
-  "id": "policy-backup-pipeline-01",
-  "effect": "permit",
-  "appliesTo": { "crossing": "*" },
-  "when": "participants.all(l, 'data-protection' in l.scopes || 'ai-compliance' in l.scopes)"
-}
-]]></sourcecode></figure>
-
-<t>Against the scopes of Section 4.2:</t>
-
-<figure><sourcecode type="text"><![CDATA[
-PROPOSED CROSSING 1: A + B
-
-A.scopes = [ data-protection ]     condition: true
-B.scopes = [ data-protection ]     condition: true
-
-every participant satisfies the condition   -> enforce permit
-
-
-PROPOSED CROSSING 2: A + C
-
-A.scopes = [ data-protection ]     condition: true
-C.scopes = [ external-sharing ]    condition: false
-
-C does not satisfy the condition            -> enforce deny
-]]></sourcecode></figure>
-
-<t>The policy language, the scope vocabulary, and how scopes are bound to a Lineage Execution are defined in the normative sections of this
-specification; the example — including its CEL-like condition language — is illustrative only.</t>
-
-</section>
-<section anchor="concurrency"><name>Concurrency</name>
-
-<t>Enforcement is not forced through a single, globally serialized Enforcement Lineage. A deployment may use separate Enforcement Lineages, or
-authorized fan-out or branch profiles (<eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md">PIC Revocation Specification</eref>, Section 1.1), to evaluate concurrent
-crossings. These reuse the existing PIC continuation and revocation rules unchanged; this revision defines no new concurrency model.</t>
-
-</section>
-</section>
-<section anchor="lineage-executions-in-transit"><name>Lineage Executions in Transit</name>
-
-<t>This section is non-normative. It closes the conceptual model.</t>
-
-<t>A crossing is an execution in transit: it may happen in process, across a network, or over any other medium. The transport does not
-matter — the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">PIC Prover and Verifier Specification</eref> already separates the security model from transport,
-and this specification inherits that separation. In a guarded crossing, what travels is the crossing carrier with its Enforcement PCA, and
-inside it travel the Lineage Executions of the crossing: bound together, never merged.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-HOP N                                                            HOP N+1
-
-GUARDRAIL                                                        VERIFIER
-    |                                                               ^
-    |     +----------------------------------------------+          |
-    +---->| CROSSING + ENFORCEMENT PCA                   |----------+
-          | [ L1 | L2 | ... | LN ]  bound, never merged  |
-          +----------------------------------------------+
-
-          ------ in process | network | any medium ------
-]]></sourcecode></figure>
-
-<t>The originating guardrail validates the proposed crossing before signing the Enforcement PCA; the receiving hop validates the Enforcement
-PCA and the participants as required by enforced acceptance (Section 3.4).</t>
-
-<t>PIC does not represent authority from several Lineage Executions as one lineage authority state: a successor PCA cannot import or merge
-authority, and that prohibition is what eliminates the confused deputy by construction (Section 1.1). The execution model may carry
-several independent Lineage Executions together for one crossing without changing any of them: each remains separately attributable, the
-guardrail evaluates the proposed crossing, and no combined authority state is created. Multi-Lineage Execution belongs to the
-execution-control model, not to the PIC authority-state model: if several authorities were represented as one valid PCA state, PIC's
-origin-bounded lineage guarantee would be lost; carrying them separately preserves that guarantee.</t>
-
-<figure><sourcecode type="text"><![CDATA[
-INSIDE EACH LINEAGE EXECUTION          AT A GUARDED CROSSING
------------------------------          ---------------------
-one origin authority context           one or more independent
-PoR continuity                         Lineage Executions carried together
-authority only narrows                 each remains separately attributable
-no authority imported from             the guardrail evaluates the crossing
-another Lineage Execution              no combined authority state is created
-]]></sourcecode></figure>
-
-<t>This closes the conceptual model of this revision; the normative sections define the representations and the enforcement requirements.</t>
+<t>The model is recursively composable to arbitrary finite depth — not infinite computation. Implementations MUST bound leg counts, encoded
+size, and validation depth to prevent resource exhaustion.</t>
 
 </section>
 <section anchor="security-boundary"><name>Security Boundary</name>
 
-<t>This section is non-normative. It states what the model guarantees and what it does not.</t>
+<section anchor="model-guarantee"><name>Model Guarantee</name>
 
-<t>Within the model, an unauthorized guardrail cannot produce a valid Enforcement Lineage continuation, and an enforcing executor cannot
-validly expand its authority beyond <spanx style="verb">ENFORCE</spanx>. Two residual failure classes remain.</t>
-
-<section anchor="implementation-failure"><name>Implementation Failure</name>
-
-<t>An implementation may be compromised, ignore verification, misuse its keys, execute an action different from the signed request, or rely on
-broken cryptography, hashing, canonicalization, attestations, or trust anchors. That breaks the implementation or its assumptions, not the
-PIC model — the same boundary that applies to physical executor behavior throughout PIC (Section 1.1).</t>
-
-</section>
-<section anchor="pdp-semantic-divergence"><name>PDP Semantic Divergence</name>
-
-<t>A validly continuing enforcement executor may use an incorrect, dishonest, or semantically divergent policy engine. The Enforcement PCA
-makes the decision attributable and checkable by signing:</t>
+<t>Within the accepted model:</t>
 
 <t><list style="symbols">
-  <t>the policy identifier, version, and digest;</t>
-  <t>the evaluation profile;</t>
-  <t>the committed inputs;</t>
-  <t>the semantic or translation profile, where applicable;</t>
-  <t>the verdict.</t>
+  <t>an outer hop without valid PoR cannot continue;</t>
+  <t>an unauthorized guardrail cannot become a valid successor;</t>
+  <t>the outer authority cannot expand beyond <spanx style="verb">ENFORCE</spanx>;</t>
+  <t>an invalid inner PCA causes rejection;</t>
+  <t>a different inner execution cannot be substituted without invalidating the signed binding;</t>
+  <t>skipping guardrails cannot produce a valid outer continuation.</t>
 </list></t>
 
-<t>PIC guarantees the continuity, integrity, attribution, and scope of the enforcement decision. It does not prove that the selected policy,
-or its semantic interpretation, expresses the intended governance outcome.</t>
+</section>
+<section anchor="implementation-failure"><name>Implementation Failure</name>
+
+<t>The guarantee can fail physically if cryptographic primitives fail, keys or attestation issuers are compromised, a Verifier omits required
+checks, an executor performs a different physical action from the signed one, or canonicalization or digest construction is implemented
+incorrectly. These break the implementation or its assumptions, not the model.</t>
+
+</section>
+<section anchor="semantic-divergence"><name>Semantic Divergence</name>
+
+<t>The enforcement function may be incorrect, dishonest, or semantically divergent. Signing the policy identifier, version, input commitments,
+semantic profile, and result makes the decision attributable and checkable. PIC proves the continuity and integrity of that decision; it
+does not prove that a human policy or its interpretation is correct.</t>
 
 </section>
 </section>
@@ -1214,345 +631,163 @@ those defined in the PIC Legal Appendices.</t>
   </back>
 
 <!-- ##markdown-source:
-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
+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
+mY1BAxhrMIPMDEghslJ5h90n3CfZ853TtxkAMrXlbJblCzDo6+lz+c6lp9/v
+J03W5Gao9l6/OFFXupiMy/dmos7em3TVZGWhrpYmzaZZqvFtL9HjcWXudrff
+SyZlWugFDTmp9LTpL7O0X7t2fePa9XPdmLpJaFwzK6v1UGXFtEyyZTVURVmY
+pF6NF1ldU9NmvTT4eWKWhv5TNEnd0IA/6pzaDdXa1Em90FXz419WJY05VFOd
+1yZZZkN105RpT9Vl1VRmWtOn9QIf3iYTmnaonj55+lX/ydf9p0+SRK+aeVkN
+E6X6NBeNcjFQz3Wel/REKdnRRZaWuY4el9UMT5uqVKNZlmfNWl0NqkE+SJKi
+rBZEszvq9uFjgs3F3/tEefyH9tqYH0/LdLWgjf141ehmVSfJwcGfTIW9Dw8O
+1JPBU/XoFMTcpx+kycHBUPEj9d9//091UTZKqytQRVcTanSK7VHXaIPUs1xV
+KT++mWXNfDUepOXiMc5nWZVEqDLnLzUd+GM+u8c0Mz/Ks8LomenPVjR8pbOc
+Gw0Wk7eP5k2zrIePH//iiOO8HD9e6Kx46Nj7SXI9z2pF7JaBFGpiptS2Vs3c
+KNrNJu+BKGBLvVzmGf1Q0XOi4p3J10Sm/1K6UOWqMRU3svPSaLpRqa6qjIam
+MdWsvDNVgc/EB4WpkpervMn657a9n22gXjTUgs5+skqpb1Gqwtyr1ycjBY7l
+sehZU63qhhZjZWAQHfvZJGvKio67T/uJeYuO6NE2rtpX50bThrkfeo0mE7Wm
+Y2X+VHeZVstVntPG/7Ii4VKPSGiyu2yy0jmxKrhVF9lfWZL3mSJ5VjdZMVNE
+ZpK3n0zaqKZUhscHGavyjro+qo1RNyckiVU2XmHJbx/9Jo2+7u8PDqJ9xS2T
+/5fL1OO6qXTaWBabWPnDBMJdD9KGBwc9EjtaUVlNsoJETtXxz6qcYrTkhgeL
+f/kVxMYJCXNhZRpqUausqRXth/ZKE4G+y7IGjdbJNMsNE//R7SeF7nafGHRE
+BNjB9MSZTlZI+eK0FmVlYuUcCxdRs5wZokGlpjhY6kE7pEURTYn+BS2OBen7
+uSmIjumcyBmeqwVJTjImhtF5BoU9YZniEy3znL6O1/g2zWarir4tyzxL1z0r
+0dIKJ0pUMfkU8uytj1UHE16sE/is4cO/12t8DGpgrUpsYah0nWi3NUumrVpI
+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
+1jpr/f3h17/duVb8+JC1ot1+8j8VQvkpvVEAAA==
 
 -->
 
