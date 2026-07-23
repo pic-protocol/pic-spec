@@ -1170,7 +1170,40 @@ This distinction is operationally visible in revocation:
 
 Grant identity and lineage identity may be related, but they are not interchangeable.
 
-## 27. Evaluation criteria after reading the context pack
+## 27. Trust anchors and symmetric evaluation
+
+Every authorization system depends on trust anchors: components whose correct behavior is assumed rather than proven by the protocol itself.
+
+Cryptography and protocol rules validate the integrity, provenance, and continuity of what a trust anchor signs or asserts. The semantic truth of the anchored content rests on the anchor:
+
+- a verifiable credential proves that an issuer signed a claim, not that the issuer verified the underlying facts correctly;
+- an identity provider is trusted for authentication and asserted claims; token-based deployments assume its integrity;
+- a certificate authority is trusted to bind keys to subjects correctly;
+- a policy decision point is trusted to evaluate its policy and vocabulary correctly;
+- an attestation authority is trusted to describe the executor truthfully;
+- key custody is assumed by every signature-based mechanism.
+
+Distinguish two failure classes:
+
+- protocol failure: the mechanism accepts a state that its own rules should reject;
+- trust-anchor compromise: an assumed component behaves incorrectly, and the protocol correctly processes the resulting well-formed but wrong input.
+
+A compromised trust anchor is not, by itself, evidence of protocol failure, in the same sense that a stolen private key does not make a signature scheme insecure as a scheme.
+
+Apply the same standard symmetrically:
+
+- do not treat PIC's declared anchors, including origination authority, attestation authorities, profile semantics, policy or governance inputs, and cryptographic custody, as disqualifying while implicitly accepting equivalent anchors in comparison systems;
+- do not reject a comparison system for its anchors while exempting PIC's.
+
+The comparative questions are the same for every system:
+
+- are the anchors declared and enumerated, or implicit?
+- is each assumption isolated, for example as a named hypothesis, or diffuse?
+- what can a compromised anchor do: is its effect structurally bounded, contained to a scope, attributable, revocable, or unbounded?
+
+Where a supplied artifact defines a structural bound on an anchor's effect, for example a composition rule that can only preserve or reduce authority, classify that bound with its status under the interpretation discipline. Where no such bound exists, state that compromise of that anchor is limited only by external controls such as revocation or audit.
+
+## 28. Evaluation criteria after reading the context pack
 
 After reading the complete context pack, an evaluator should be able to do all of the following without prompting:
 
