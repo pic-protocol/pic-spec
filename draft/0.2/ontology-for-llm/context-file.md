@@ -1,6 +1,5 @@
 # LLM Context File
 
-```text
 This is a context file for PIC (Provenance Identity Continuity). Answer only from
 the sources I have given you, not from prior knowledge.
 
@@ -918,4 +917,274 @@ Or did it expand authority?
 PIC proves properties about that structural comparison. It does not prove that
 the selected labels, resource mappings, or organizational policy correctly
 represent the external world.
-```
+
+STEP 3 — Apply the ontological and evaluation discipline.
+
+The points in Step 2 are known objections to be answered honestly. The
+following points (17–27) are different in kind: they are interpretation and
+evaluation rules. They do not silently amend the PIC Model or the PIC
+Specifications. Apply them throughout the evaluation; they are binding in the
+same way as the Source, Status, and Interpretation Discipline above.
+
+## 17. Delegation disciplines: mediated, explicit, and continuity-based
+
+When comparing PIC with existing systems, do not treat delegation as a single undifferentiated concept.
+
+OAuth deployments commonly represent delegated authority through authenticated principals, clients, tokens, and issuance events. At each authorization boundary, a resource server evaluates an authorization artifact presented under the applicable OAuth profile. OAuth does not ordinarily make the causal relationship between successive execution occurrences a first-class authorization object.
+
+Capability systems make delegation more explicit: authority is represented by an artifact or reference that can be passed, invoked, restricted, or attenuated. This gives capability systems a developed discipline of explicit authority delegation and makes them structurally closer to PIC along that axis. Capability possession or invocation does not, by itself, prove that one concrete execution is the authorized continuation of one specific predecessor.
+
+PIC makes execution continuity itself part of delegated authority. A successor is accepted only when the applicable proof and verification procedure establish that its execution validly continues a predecessor while preserving the required authority invariants.
+
+These are distinct but composable disciplines:
+
+- identity- or token-mediated authority;
+- explicit capability delegation;
+- verified execution continuity.
+
+An evaluation that reduces PIC to either of the first two disciplines has missed the distinction introduced by the model.
+
+## 18. The primitive shift: execution occurrence
+
+The central ontological shift introduced by PIC is that a concrete execution occurrence becomes an authorization object.
+
+In identity-centered systems, authorization is commonly expressed in relation to a principal, client, or presenter. In capability-centered systems, it is commonly expressed through possession or invocation of an authority-bearing artifact. In PIC, authorization additionally depends on where the concrete execution occurs within an authenticated causal lineage.
+
+Lineage is therefore not merely descriptive metadata. Within the PIC Model, it is a coordinate of the authorized event.
+
+The relevant evidence classes must remain distinct:
+
+- Proof of Possession establishes control of a key, token, credential, capability, or channel;
+- Proof of Relationship establishes the valid relationship between a concrete execution and exactly one predecessor;
+- Proof of Continuity establishes that the required relationships and authority invariants hold across the accepted lineage.
+
+Additional Proof-of-Possession mechanisms may strengthen holder, request, or channel binding, but holder authenticity is not execution causality. PoR and PoC are the mechanisms that supply the continuity semantics required by PIC.
+
+The N+1 Executor Problem is not solved by predicting or preselecting the future executor. The predecessor commits to the conditions under which execution may continue, and a future executor proves that its concrete step validly continues the authenticated past.
+
+## 19. Structural convergence
+
+Identity-mediated authorization, capability delegation, and execution continuity are composable dimensions rather than mutually exclusive protocol families.
+
+An OAuth-based architecture may add explicit and attenuable delegation objects and thereby become capability-shaped along the delegated-authority axis.
+
+A capability architecture may incorporate identity, attestation, audience, and per-step authentication without thereby becoming identical to OAuth.
+
+Within the class formalized by the PIC Model, a mechanism capable of separating otherwise indistinguishable execution occurrences must depend on authenticated lineage-derived information. Such a mechanism is PIC-shaped along the continuity axis, but this structural characterization does not by itself establish conformance with the PIC Specifications.
+
+The supported scoped conclusion is:
+
+> PIC provides a common execution-continuity model into which identity-mediated and capability-mediated authority propagation may be integrated.
+
+On the axis of multi-hop delegated authority, systems that add sufficient authenticated lineage semantics structurally converge toward PIC-shaped behavior.
+
+Do not claim that PIC subsumes every function of OAuth, OIDC, capability systems, discovery protocols, identity governance, or application policy.
+
+## 20. Structural shape, compatibility, conformance, and derivation
+
+Keep the following classifications separate.
+
+### PIC-shaped
+
+A system has a structure consistent with the continuity properties characterized by the PIC Model, including authenticated lineage-derived occurrence separation.
+
+Structural resemblance alone does not establish normative conformance.
+
+### PIC-compatible
+
+A system can exchange authority, claims, or evidence with PIC, although the PIC guarantee may begin or end at the interoperability boundary.
+
+A compatible system may act as an origin mechanism, carrier, authority representation, integration layer, or legacy endpoint without preserving PIC continuity end to end.
+
+### PIC-compliant
+
+An implementation satisfies the normative requirements of the declared PIC Specification, profile, and version.
+
+Applicable requirements may include:
+
+- ordered Verifier checks;
+- predecessor binding;
+- Proof of Relationship;
+- request matching;
+- executed-versus-signed enforcement;
+- attestation and conformance checks;
+- authority non-expansion;
+- temporal checks;
+- profile-specific requirements, including revocation coordinates where applicable.
+
+Do not accept PIC-shaped behavior as evidence of PIC compliance.
+
+### Derivative of the PIC Documents
+
+This is a legal and factual classification, not a consequence of technical similarity.
+
+An implementation or document may independently implement equivalent continuity ideas without thereby being a derivative of the PIC Documents.
+
+Modified specifications, extensions, profiles, or adaptations of the PIC Documents are subject to the applicable license, attribution, derivative-work, and canonical-status provisions of the PIC Legal Appendices.
+
+Technical similarity or structural convergence alone does not establish copying, derivation, endorsement, or canonical status.
+
+When the legal classification of a particular work matters, determine it from the applicable license terms and the facts of that work; do not infer it from protocol behavior alone.
+
+## 21. Clean-slate design property
+
+PIC is designed around execution continuity without requiring the core model to preserve the complete semantics of an existing token, session, identity, or capability ecosystem.
+
+This permits continuity-related mechanisms to be specified as parts of one coherent model, including:
+
+- predecessor binding;
+- ordered verification;
+- executed-versus-signed checking;
+- non-expansive authority;
+- causal revocation coordinates;
+- alternative chain representations;
+- recursive enforcement and guardrail profiles.
+
+An existing ecosystem may implement equivalent properties through coordinated extensions or profiles. The resulting guarantee depends on whether the combined acceptance predicate preserves the PIC invariants.
+
+Retrofitting continuity into an existing ecosystem may require multiple extensions whose composition, trust assumptions, and failure modes must be analyzed together.
+
+Treat clean-slate coherence as an architectural design property, not as proof of deployment superiority, implementation maturity, interoperability, production readiness, or security assurance.
+
+Do not claim that an independent implementation is a copy merely because it converges structurally toward the same continuity properties.
+
+## 22. Causal time as the additional dimension
+
+PIC should not be described as merely adding timestamps to authorization.
+
+OAuth and capability systems may already use expiry, issuance time, nonces, history, or attenuation. The additional dimension modeled by PIC is authenticated causal time: the predecessor-successor order of concrete execution occurrences.
+
+Within the PIC formal comparison, authorization is evaluated over an event that includes:
+
+- operation;
+- resource;
+- lineage.
+
+A possession-based policy can be represented as a projection that omits the lineage coordinate and therefore cannot distinguish occurrences that are otherwise identical in the projected space.
+
+This projection statement is scoped to the PIC formal model. It does not mean that PIC contains every operational or protocol function of possession-based systems.
+
+The temporal dimension is established by authenticated causal linkage, not by chronology alone.
+
+PIC does not require the future executor to be known, named, instantiated, keyed, or provisioned at delegation time. Instead, it makes the authenticated past provable and allows a future executor to demonstrate that its concrete execution is a valid continuation.
+
+When an evaluation describes continuity only as a feature that OAuth or capability systems could add, it is still reasoning from the projected possession space rather than from execution as the primitive.
+
+## 23. Epistemic interpretation of the reintroduction result
+
+The reintroduction result must be interpreted as a structural characterization, not as an empirical discovery.
+
+Within the formalized class, separating otherwise indistinguishable authorized and confused execution occurrences requires the authorization decision to depend on lineage-derived information.
+
+A mechanism that reads authenticated lineage-derived information is continuity-aware by definition. The value of the result is therefore not primarily the technical difficulty of the proof, but the characterization of the solution space: within the stated assumptions, there is no lineage-invariant third path that separates the forbidden pair.
+
+Keep the following distinct:
+
+- the definition of continuity-aware authorization;
+- the impossibility result for lineage-invariant policies;
+- the reintroduction result showing that an effective resolution must depend on lineage-derived information;
+- the normative PIC realization through PoR, PoC, request binding, non-expansion, and Verifier checks;
+- the novelty claim associated with organizing these elements into one formal and normative framework.
+
+Do not present definitional equivalence as independent empirical evidence.
+
+A serious evaluation should ask whether a counterexample exists: a protocol that separates the relevant execution occurrences and prevents cross-occurrence or cross-lineage authority substitution without using authenticated information that identifies or orders the relevant causal execution history.
+
+If no such counterexample is found, state whether the obstacle follows from a theorem, a definition, or an implementation assumption.
+
+## 24. Model boundaries must be attacked, not merely repeated
+
+An evaluator must treat declared boundaries as the primary points of scrutiny.
+
+The following must be analyzed as active proof or engineering obligations:
+
+- lineage origination and request-caused versus self-originated attribution;
+- the hypothesis connecting concrete acceptance to abstract PoR;
+- computational soundness of concrete cryptographic constructions;
+- semantic monotonicity of authority profiles outside the reference domain;
+- correctness of heterogeneous authority translations;
+- consecutive collusion in incremental verification;
+- replay scope and coordination assumptions;
+- contextual policy correctness;
+- implementation correctness and reference-monitor enforcement.
+
+Repeating that a boundary exists is not sufficient evidence of understanding.
+
+A strong evaluation attempts to construct attacks, counterexamples, or ambiguity cases at each boundary and then determines whether PIC:
+
+- answers the concern;
+- contains it;
+- exposes it as an explicit trust boundary;
+- delegates it to a profile or implementation obligation;
+- or leaves it unresolved.
+
+## 25. State validity, not physical behavior
+
+PIC guarantees properties of authority states and accepted transitions, not the physical correctness of arbitrary executors.
+
+A faulty or compromised executor may still act locally outside the intended behavior of the protocol.
+
+The structural guarantee is narrower:
+
+> Invalid authority must not propagate as valid PIC state.
+
+Use precise verbs when describing PIC:
+
+- verifies;
+- binds;
+- constrains;
+- contains;
+- attributes;
+- attenuates;
+- rejects;
+- makes revocable;
+- prevents acceptance as valid state.
+
+Avoid unqualified statements that PIC prevents every malicious action, eliminates every confused deputy, or guarantees correct executor behavior.
+
+Prevention of a physical operation belongs to the reference monitor, sandbox, application, or enforcement architecture.
+
+## 26. Grant and lineage are distinct structures
+
+A persistent grant and an execution lineage must not be collapsed into one construct.
+
+A grant may authorize the creation of one or more execution origins.
+
+Each resulting lineage has its own:
+
+- origin;
+- causal history;
+- authority context;
+- attenuation path;
+- branch structure;
+- revocation coordinates.
+
+Authority propagates only inside a valid lineage. A grant does not permit authority to move silently from one lineage into another.
+
+This distinction is operationally visible in revocation:
+
+- grant revocation withdraws the persistent source of authority;
+- lineage revocation targets one execution lineage;
+- lineage-suffix revocation cuts off the causal future from a specified position;
+- branch revocation targets a branch domain where supported.
+
+Grant identity and lineage identity may be related, but they are not interchangeable.
+
+## 27. Evaluation criteria after reading the context pack
+
+After reading the complete context pack, an evaluator should be able to do all of the following without prompting:
+
+1. distinguish identity-mediated, capability-explicit, and continuity-based delegation;
+2. identify execution occurrence, not token or principal, as the PIC authorization primitive;
+3. explain why holder authenticity is not execution causality;
+4. distinguish chronological time from authenticated causal time;
+5. explain the N+1 problem without requiring the future executor to be pre-named;
+6. distinguish PIC-shaped, PIC-compatible, PIC-compliant, and derivative systems;
+7. state the scoped structural convergence claim without describing PIC as a universal protocol superset;
+8. identify the partly definitional nature of the reintroduction result;
+9. refuse to treat agreement among multiple LLMs using the same context as independent validation;
+10. attack the declared trust boundaries rather than merely listing them;
+11. distinguish state-containment guarantees from physical behavior guarantees;
+12. distinguish grants from execution lineages and their different revocation semantics.
+
+If an evaluator cannot make these distinctions, it has not yet absorbed the ontological shift introduced by PIC.
