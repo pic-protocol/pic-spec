@@ -104,10 +104,10 @@ ProVerif), and implemented in PIC-X:
 
 | Property | Where |
 | --- | --- |
-| Origin authority context (root PCA, `C0`), including derivation from an existing credential via the OAuth Token Exchange binding | Prover and Verifier §1.8, §5.4; PIC-X |
+| Origin authority context (root PCA, `C0`), including derivation from an existing credential via the OAuth Token Exchange binding | Prover and Verifier §1.8, §5.3; PIC-X |
 | Exactly one causal predecessor per advancement, inside the signed material (`predecessor.hash` over the exact signed predecessor PIC PCA COSE bytes; challenge continuity) | Prover and Verifier §2, §5.2; PIC-X |
 | Proof of Relationship (`sd-jwt` typed evidence identifying the eligible workload key) | Prover and Verifier §2.3; PIC-X |
-| Non-expansion under the profile's attenuation order; dropped authority cannot reappear | Prover and Verifier §2.4, §4; Lean; PIC-X |
+| Non-expansion under the profile's attenuation order; authority dropped at a hop cannot reappear later **on that branch**. A sibling branch continued from an earlier checkpoint may still carry it — fan-out is by design, and terminating a predecessor checkpoint is a revocation decision, not an attenuation | Prover and Verifier §2.4, §4, §6.1; Lean (`droppedAuthorityIsLost`, per branch); PIC-X |
 | Centralized settlement into signed checkpoints; ordinary verification of settled state | Prover and Verifier §3, §5.1; PIC-X |
 | Request/execution binding | Prover and Verifier §3.3 — specified, profile-conditional (optional in 0.2) |
 
