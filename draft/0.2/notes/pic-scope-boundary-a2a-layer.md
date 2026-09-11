@@ -109,7 +109,7 @@ ProVerif), and implemented in PIC-X:
 | Proof of Relationship (`sd-jwt` typed evidence identifying the eligible workload key) | Prover and Verifier §2.3; PIC-X |
 | Non-expansion under the profile's attenuation order; authority dropped at a hop cannot reappear later **on that branch**. A sibling branch continued from an earlier checkpoint may still carry it — fan-out is by design, and terminating a predecessor checkpoint is a revocation decision, not an attenuation | Prover and Verifier §2.4, §4, §6.1; Lean (`droppedAuthorityIsLost`, per branch); PIC-X |
 | Centralized settlement into signed checkpoints; ordinary verification of settled state | Prover and Verifier §3, §5.1; PIC-X |
-| Request/execution binding | Prover and Verifier §3.3 — specified, profile-conditional (optional in 0.2) |
+| Request/execution binding | Prover and Verifier §3.3 — specified as profile-conditional; optional in Profile 0.2 and not exercised by PIC-X today. Listed here because the rule is normative when a profile requires it, not because it is implemented |
 
 ## 2.2 Specified as direction — drafts and work in progress
 
@@ -231,9 +231,10 @@ reproduce them.
 # 7. Status
 
 The PIC Specifications are public drafts. PIC-X today covers OAuth Token Exchange into
-PIC and single-lineage propagation under centralized Profile 0.2 settlement; revocation
-wiring and multi-lineage composition are not yet implemented. No wire or semantic
-compatibility should be assumed.
+PIC and single-lineage propagation under centralized Profile 0.2 settlement. Not yet
+implemented in PIC-X: revocation wiring, multi-lineage composition (Sandboxed
+Execution), guardrails and Trusted Anchors, request/execution binding. No wire or
+semantic compatibility should be assumed.
 
 # 8. References
 
