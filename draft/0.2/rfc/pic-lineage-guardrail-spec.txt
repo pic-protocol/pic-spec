@@ -182,7 +182,7 @@ Gallo                         Informational                     [Page 3]
    9.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .  34
    10. Registry Considerations . . . . . . . . . . . . . . . . . . .  35
    11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  35
-   12. Document History  . . . . . . . . . . . . . . . . . . . . . .  35
+   12. Document History  . . . . . . . . . . . . . . . . . . . . . .  36
    13. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  36
    14. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  36
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  36
@@ -1738,6 +1738,14 @@ Gallo                         Informational                    [Page 31]
                          PIC Sandboxed Execution            October 2026
 
 
+   *  *10–13 November 2026 — IEEE NCA 2026 conference paper
+      (forthcoming).* Gallo, N., Silvestri, S., and Radesca, A.
+      _Authority Continuity for Verifiable Lineage in Distributed
+      Systems and AI Agents_. Accepted for the 24th IEEE International
+      Symposium on Network Computing and Applications (NCA 2026) [8]
+      (Section 11).  The IEEE Xplore DOI will be added as soon as it
+      becomes available.
+
    This document was first published as a public draft on *20 July 2026*
    as part of the PIC Specification 0.2 family.  Published tags and
    immutable records identify the exact text applicable to a review or
@@ -1775,14 +1783,6 @@ Gallo                         Informational                    [Page 31]
       invalidating the authenticated binding;
 
    *  skipping guardrails cannot produce a valid outer continuation.
-
-
-
-
-
-
-
-
 
 
 
@@ -1945,13 +1945,13 @@ Gallo                         Informational                    [Page 34]
       paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
       (https://doi.org/10.5281/zenodo.17777421)
 
-12.  Document History
-
-   This section is informative.
-
-   *  *0.2 — 20 July 2026.* Initial public draft of recursive Sandboxed
-      Execution and Composition Collection processing.
-
+   *  [8] Gallo, N., Silvestri, S., & Radesca, A. (forthcoming 2026).
+      _Authority Continuity for Verifiable Lineage in Distributed
+      Systems and AI Agents_. Accepted paper, 24th IEEE International
+      Symposium on Network Computing and Applications (NCA 2026), 10–13
+      November 2026, Ortigia–Syracuse, Italy. nca-ieee.org/2026
+      (https://www.nca-ieee.org/2026/).  IEEE Xplore DOI forthcoming;
+      this reference will be updated when it becomes available.
 
 
 
@@ -1961,6 +1961,13 @@ Gallo                         Informational                    [Page 35]
 
                          PIC Sandboxed Execution            October 2026
 
+
+12.  Document History
+
+   This section is informative.
+
+   *  *0.2 — 20 July 2026.* Initial public draft of recursive Sandboxed
+      Execution and Composition Collection processing.
 
    *  *0.2 revision — 26 October 2026.* Clarified causal composition,
       ordinary multi-parent bounds, exact binding, implementation-
@@ -1985,13 +1992,6 @@ Author's Address
    Nicola Gallo
    Nitro Agility S.r.l.
    Email: nicola.gallo@nitroagility.com
-
-
-
-
-
-
-
 
 
 

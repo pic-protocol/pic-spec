@@ -133,9 +133,9 @@ Table of Contents
      6.1.  Historical References . . . . . . . . . . . . . . . . . .  12
    7.  Security Considerations . . . . . . . . . . . . . . . . . . .  13
    8.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .  13
-   9.  Registry Considerations . . . . . . . . . . . . . . . . . . .  13
+   9.  Registry Considerations . . . . . . . . . . . . . . . . . . .  14
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  14
-   11. Document History  . . . . . . . . . . . . . . . . . . . . . .  14
+   11. Document History  . . . . . . . . . . . . . . . . . . . . . .  15
    12. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  15
    13. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  15
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  15
@@ -656,13 +656,13 @@ Gallo                         Informational                    [Page 11]
       and Confused-Deputy Exclusion_, Zenodo record 23102373 [6]
       (Section 10).
 
-   This document was first published as a public draft on *12 August
-   2026* as part of the PIC Specification 0.2 family.  Published tags
-   and immutable records identify the exact text applicable to a review
-   or conformance claim.  Researchers and implementers are encouraged to
-   cite the primary publication that supports the formal property they
-   discuss.  Copyright attribution for reuse of PIC specification
-   materials is governed separately by the applicable CC BY 4.0 license.
+   *  *10–13 November 2026 — IEEE NCA 2026 conference paper
+      (forthcoming).* Gallo, N., Silvestri, S., and Radesca, A.
+      _Authority Continuity for Verifiable Lineage in Distributed
+      Systems and AI Agents_. Accepted for the 24th IEEE International
+      Symposium on Network Computing and Applications (NCA 2026) [9]
+      (Section 10).  The IEEE Xplore DOI will be added as soon as it
+      becomes available.
 
 
 
@@ -673,6 +673,14 @@ Gallo                         Informational                    [Page 12]
 
                      PIC Architecture and Deployment        October 2026
 
+
+   This document was first published as a public draft on *12 August
+   2026* as part of the PIC Specification 0.2 family.  Published tags
+   and immutable records identify the exact text applicable to a review
+   or conformance claim.  Researchers and implementers are encouraged to
+   cite the primary publication that supports the formal property they
+   discuss.  Copyright attribution for reuse of PIC specification
+   materials is governed separately by the applicable CC BY 4.0 license.
 
 7.  Security Considerations
 
@@ -712,14 +720,6 @@ Gallo                         Informational                    [Page 12]
    while preserving the evidence required by the selected assurance
    profile.
 
-9.  Registry Considerations
-
-   This document defines deployment architectures and requests no
-   external registry action.
-
-
-
-
 
 
 
@@ -729,6 +729,11 @@ Gallo                         Informational                    [Page 13]
 
                      PIC Architecture and Deployment        October 2026
 
+
+9.  Registry Considerations
+
+   This document defines deployment architectures and requests no
+   external registry action.
 
 10.  References
 
@@ -767,13 +772,8 @@ Gallo                         Informational                    [Page 13]
       paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
       (https://doi.org/10.5281/zenodo.17777421)
 
-11.  Document History
 
-   This section is informative.
 
-   *  *0.2 — 12 August 2026.* Initial public draft describing
-      centralized, decentralized, trusted, untrusted, and hybrid
-      deployment models.
 
 
 
@@ -785,6 +785,22 @@ Gallo                         Informational                    [Page 14]
 
                      PIC Architecture and Deployment        October 2026
 
+
+   *  [9] Gallo, N., Silvestri, S., & Radesca, A. (forthcoming 2026).
+      _Authority Continuity for Verifiable Lineage in Distributed
+      Systems and AI Agents_. Accepted paper, 24th IEEE International
+      Symposium on Network Computing and Applications (NCA 2026), 10–13
+      November 2026, Ortigia–Syracuse, Italy. nca-ieee.org/2026
+      (https://www.nca-ieee.org/2026/).  IEEE Xplore DOI forthcoming;
+      this reference will be updated when it becomes available.
+
+11.  Document History
+
+   This section is informative.
+
+   *  *0.2 — 12 August 2026.* Initial public draft describing
+      centralized, decentralized, trusted, untrusted, and hybrid
+      deployment models.
 
    *  *0.2 revision — 26 October 2026.* Distinguished topology from
       assurance and implementation coverage from profile requirements,
@@ -809,22 +825,6 @@ Author's Address
    Nicola Gallo
    Nitro Agility S.r.l.
    Email: nicola.gallo@nitroagility.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

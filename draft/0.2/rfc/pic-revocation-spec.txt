@@ -138,14 +138,14 @@ Table of Contents
    7.  Position Capacity . . . . . . . . . . . . . . . . . . . . . .  12
    8.  Origins, Authorship, and Historical Record  . . . . . . . . .  12
      8.1.  Historical References . . . . . . . . . . . . . . . . . .  13
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  13
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  14
    10. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  14
    11. Registry Considerations . . . . . . . . . . . . . . . . . . .  14
    12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  14
    13. Document History  . . . . . . . . . . . . . . . . . . . . . .  15
-   14. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  15
-   15. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  15
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  15
+   14. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  16
+   15. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  16
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  16
 
 1.  Introduction
 
@@ -702,6 +702,14 @@ Gallo                         Informational                    [Page 12]
       and Confused-Deputy Exclusion_, Zenodo record 23102373 [5]
       (Section 12).
 
+   *  *10–13 November 2026 — IEEE NCA 2026 conference paper
+      (forthcoming).* Gallo, N., Silvestri, S., and Radesca, A.
+      _Authority Continuity for Verifiable Lineage in Distributed
+      Systems and AI Agents_. Accepted for the 24th IEEE International
+      Symposium on Network Computing and Applications (NCA 2026) [8]
+      (Section 12).  The IEEE Xplore DOI will be added as soon as it
+      becomes available.
+
    This document was first published as a public draft on *18 July 2026*
    as part of the PIC Specification 0.2 family.  Published tags and
    immutable records identify the exact text applicable to a review or
@@ -710,15 +718,7 @@ Gallo                         Informational                    [Page 12]
    discuss.  Copyright attribution for reuse of PIC specification
    materials is governed separately by the applicable CC BY 4.0 license.
 
-9.  Security Considerations
 
-   Revocation security depends on authenticated, fresh, rollback-
-   protected revocation state and explicit behavior when that state is
-   unavailable.  Stale or rolled-back state can cause a Verifier or
-   settlement service to accept continuity that should have been cut
-   off.  A selector value, PCA ID, position, key identifier, grant
-   identifier, or policy label is only a target coordinate; knowledge or
-   possession of it is not revocation authority.
 
 
 
@@ -729,6 +729,16 @@ Gallo                         Informational                    [Page 13]
 
                              PIC Revocation                 October 2026
 
+
+9.  Security Considerations
+
+   Revocation security depends on authenticated, fresh, rollback-
+   protected revocation state and explicit behavior when that state is
+   unavailable.  Stale or rolled-back state can cause a Verifier or
+   settlement service to accept continuity that should have been cut
+   off.  A selector value, PCA ID, position, key identifier, grant
+   identifier, or policy label is only a target coordinate; knowledge or
+   possession of it is not revocation authority.
 
    In a fan-out profile, (PCA ID, position) is not a unique causal-event
    coordinate.  Treating it as one can either over-revoke independent
@@ -769,6 +779,13 @@ Gallo                         Informational                    [Page 13]
       Agents_. arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
       (https://arxiv.org/abs/2607.08906)
 
+
+
+Gallo                         Informational                    [Page 14]
+
+                             PIC Revocation                 October 2026
+
+
    *  [2] Bradner, S. (1997). _Key words for use in RFCs to Indicate
       Requirement Levels_. BCP 14, RFC 2119. rfc-editor.org/rfc/rfc2119
       (https://www.rfc-editor.org/rfc/rfc2119)
@@ -776,15 +793,6 @@ Gallo                         Informational                    [Page 13]
    *  [3] Leiba, B. (2017). _Ambiguity of Uppercase vs Lowercase in RFC
       2119 Key Words_. BCP 14, RFC 8174. rfc-editor.org/rfc/rfc8174
       (https://www.rfc-editor.org/rfc/rfc8174)
-
-
-
-
-
-Gallo                         Informational                    [Page 14]
-
-                             PIC Revocation                 October 2026
-
 
    *  [4] Gallo, N. (25 September 2026). _Beyond Proof of Possession: A
       Relational Theory of Authority_. Zenodo.  DOI: 10.5281/
@@ -804,6 +812,14 @@ Gallo                         Informational                    [Page 14]
       paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
       (https://doi.org/10.5281/zenodo.17777421)
 
+   *  [8] Gallo, N., Silvestri, S., & Radesca, A. (forthcoming 2026).
+      _Authority Continuity for Verifiable Lineage in Distributed
+      Systems and AI Agents_. Accepted paper, 24th IEEE International
+      Symposium on Network Computing and Applications (NCA 2026), 10–13
+      November 2026, Ortigia–Syracuse, Italy. nca-ieee.org/2026
+      (https://www.nca-ieee.org/2026/).  IEEE Xplore DOI forthcoming;
+      this reference will be updated when it becomes available.
+
 13.  Document History
 
    This section is informative.
@@ -816,6 +832,15 @@ Gallo                         Informational                    [Page 14]
       and standards-oriented document structure; added a standalone
       origin, authorship, and historical record for independent
       distribution.
+
+
+
+
+
+Gallo                         Informational                    [Page 15]
+
+                             PIC Revocation                 October 2026
+
 
 14.  Acknowledgments
 
@@ -837,4 +862,35 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 15]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 16]

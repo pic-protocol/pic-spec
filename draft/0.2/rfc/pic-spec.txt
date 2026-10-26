@@ -96,12 +96,12 @@ Table of Contents
      4.1.  Historical References . . . . . . . . . . . . . . . . . .   7
    5.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
    6.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   8
-   7.  Registry Considerations . . . . . . . . . . . . . . . . . . .   8
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   8
+   7.  Registry Considerations . . . . . . . . . . . . . . . . . . .   9
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
      8.2.  Informative References  . . . . . . . . . . . . . . . . .   9
-   9.  Document History  . . . . . . . . . . . . . . . . . . . . . .   9
-   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .   9
+   9.  Document History  . . . . . . . . . . . . . . . . . . . . . .  10
+   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  10
    11. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  10
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  10
 
@@ -328,8 +328,8 @@ Gallo                         Informational                     [Page 5]
    |                           | exchange          |      |            |
    |                           | profiles.         |      |            |
    +---------------------------+-------------------+------+------------+
-
-                                  Table 1
+   | COSS Temporal Evidence    | Protocol-neutral  |Draft | 2026-10-26 |
+   | (https://github.com/pic-  | same-occurrence   |0.2   |            |
 
 
 
@@ -337,6 +337,20 @@ Gallo                         Informational                     [Page 6]
 
                             PIC Specification               October 2026
 
+
+   | protocol/pic-             | binding of PIC    |      |            |
+   | spec/blob/main/draft/0.2/ | authority         |      |            |
+   | coss-evidences.md)        | evidence, IFC     |      |            |
+   |                           | evidence,         |      |            |
+   |                           | runtime           |      |            |
+   |                           | provenance, and   |      |            |
+   |                           | other COSS        |      |            |
+   |                           | coordinate        |      |            |
+   |                           | evidence on one   |      |            |
+   |                           | causal history.   |      |            |
+   +---------------------------+-------------------+------+------------+
+
+                                  Table 1
 
    Implementation mappings, product coverage reports, and deployment-
    specific interoperability notes are maintained outside the normative
@@ -371,6 +385,15 @@ Gallo                         Informational                     [Page 6]
       Propagation Models: PoP vs PoC and the Confused Deputy Problem_,
       Zenodo record 17833000 [6] (Section 8).
 
+
+
+
+
+Gallo                         Informational                     [Page 7]
+
+                            PIC Specification               October 2026
+
+
    *  *9 July 2026 — formal Proof-of-Continuity paper.* _Proof-of-
       Continuity: A Temporal Model for Authority Propagation in
       Distributed Systems and AI Agents_, arXiv:2607.08906 [1]
@@ -385,14 +408,13 @@ Gallo                         Informational                     [Page 6]
       and Confused-Deputy Exclusion_, Zenodo record 23102373 [5]
       (Section 8).
 
-
-
-
-
-Gallo                         Informational                     [Page 7]
-
-                            PIC Specification               October 2026
-
+   *  *10–13 November 2026 — IEEE NCA 2026 conference paper
+      (forthcoming).* Gallo, N., Silvestri, S., and Radesca, A.
+      _Authority Continuity for Verifiable Lineage in Distributed
+      Systems and AI Agents_. Accepted for the 24th IEEE International
+      Symposium on Network Computing and Applications (NCA 2026) [8]
+      (Section 8).  The IEEE Xplore DOI will be added as soon as it
+      becomes available.
 
    The PIC Specification 0.2 family was first published on *15 July
    2026* and subsequently revised as the formal record developed.
@@ -420,6 +442,14 @@ Gallo                         Informational                     [Page 7]
    disclose only the evidence required by the receiving Verifier, scope
    stable identifiers to the smallest suitable trust domain, and define
    retention and access controls for continuity records.  Data
+
+
+
+Gallo                         Informational                     [Page 8]
+
+                            PIC Specification               October 2026
+
+
    minimization must not remove evidence required for a claimed security
    property.
 
@@ -441,14 +471,6 @@ Gallo                         Informational                     [Page 7]
    *  [3] Leiba, B. (2017). _Ambiguity of Uppercase vs Lowercase in RFC
       2119 Key Words_. BCP 14, RFC 8174. rfc-editor.org/rfc/rfc8174
       (https://www.rfc-editor.org/rfc/rfc8174)
-
-
-
-
-Gallo                         Informational                     [Page 8]
-
-                            PIC Specification               October 2026
-
 
 8.2.  Informative References
 
@@ -475,6 +497,23 @@ Gallo                         Informational                     [Page 8]
       paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
       (https://doi.org/10.5281/zenodo.17777421)
 
+
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                            PIC Specification               October 2026
+
+
+   *  [8] Gallo, N., Silvestri, S., & Radesca, A. (forthcoming 2026).
+      _Authority Continuity for Verifiable Lineage in Distributed
+      Systems and AI Agents_. Accepted paper, 24th IEEE International
+      Symposium on Network Computing and Applications (NCA 2026), 10–13
+      November 2026, Ortigia–Syracuse, Italy. nca-ieee.org/2026
+      (https://www.nca-ieee.org/2026/).  IEEE Xplore DOI forthcoming;
+      this reference will be updated when it becomes available.
+
 9.  Document History
 
    This section is informative.
@@ -487,7 +526,9 @@ Gallo                         Informational                     [Page 8]
       out, and multi-parent composition with the cited formal record;
       separated the research history from repository licensing and
       governance; and established the standalone origin, authorship, and
-      historical record used across the specification family.
+      historical record used across the specification family.  Added the
+      COSS Temporal Evidence subordinate specification for same-
+      occurrence binding of evidence from several security coordinates.
 
 10.  Acknowledgments
 
@@ -495,16 +536,6 @@ Gallo                         Informational                     [Page 8]
    and do not define authorship, conformance, endorsement, or technical
    responsibility.  Names are added only when a concrete contribution
    has been identified and the person agrees to be listed.
-
-
-
-
-
-
-Gallo                         Informational                     [Page 9]
-
-                            PIC Specification               October 2026
-
 
 11.  Contributors
 
@@ -518,37 +549,6 @@ Author's Address
    Nicola Gallo
    Nitro Agility S.r.l.
    Email: nicola.gallo@nitroagility.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

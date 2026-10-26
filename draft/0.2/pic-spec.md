@@ -171,6 +171,7 @@ separately authorized and MUST NOT masquerade as an ordinary continuation
 | [PIC Revocation](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md) | Revocation around stable lineage identifiers, path positions, lineage-depth and causal cutoffs, optional authenticated selectors, position or ancestry witnesses, revocation authorization, and authenticated revocation state. | Draft 0.2 | 2026-07-18 |
 | [PIC Sandboxed Execution](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md) | Sandboxed Execution as an outer `ENFORCE` PIC continuity governing a Composition Collection of independently verifiable PIC continuities. The collection is bound exactly, members remain independent, and no authority union is created. | Draft 0.2 | 2026-07-20 |
 | [PIC Architecture and Deployment](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md) | Profile-selected PIC deployment architectures, including trusted continuity services, decentralized validation, hybrid enterprise topologies, service meshes, and optional interoperability through selected exchange profiles. | Draft 0.2 | 2026-08-12 |
+| [COSS Temporal Evidence](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/coss-evidences.md) | Protocol-neutral same-occurrence binding of PIC authority evidence, IFC evidence, runtime provenance, and other COSS coordinate evidence on one causal history. | Draft 0.2 | 2026-10-26 |
 
 Implementation mappings, product coverage reports, and deployment-specific interoperability notes are maintained outside the normative
 specification set. They may demonstrate conformance but do not define PIC semantics or modify a profile's requirements.
@@ -200,6 +201,9 @@ The publicly verifiable research record is:
   23102206 [[4]](#references).
 - **2 October 2026 — event-level causal closure.** *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
   and Confused-Deputy Exclusion*, Zenodo record 23102373 [[5]](#references).
+- **10–13 November 2026 — IEEE NCA 2026 conference paper (forthcoming).** Gallo, N., Silvestri, S., and Radesca, A. *Authority Continuity for
+  Verifiable Lineage in Distributed Systems and AI Agents*. Accepted for the 24th IEEE International Symposium on Network Computing and
+  Applications (NCA 2026) [[8]](#references). The IEEE Xplore DOI will be added as soon as it becomes available.
 
 The PIC Specification 0.2 family was first published on **15 July 2026** and subsequently revised as the formal record developed. Published
 tags and immutable records identify the exact text applicable to a review or conformance claim. Researchers and implementers are encouraged
@@ -238,6 +242,7 @@ may define registries for identifiers, algorithms, evidence types, or error valu
 - [5] Gallo, N. (2 October 2026). *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion*. Zenodo. DOI: [10.5281/zenodo.23102373](https://doi.org/10.5281/zenodo.23102373)
 - [6] Gallo, N. (5 December 2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. DOI: [10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
 - [7] Gallo, N. (1 December 2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Archived working paper. Zenodo. DOI: [10.5281/zenodo.17777421](https://doi.org/10.5281/zenodo.17777421)
+- [8] Gallo, N., Silvestri, S., & Radesca, A. (forthcoming 2026). *Authority Continuity for Verifiable Lineage in Distributed Systems and AI Agents*. Accepted paper, 24th IEEE International Symposium on Network Computing and Applications (NCA 2026), 10–13 November 2026, Ortigia–Syracuse, Italy. [nca-ieee.org/2026](https://www.nca-ieee.org/2026/). IEEE Xplore DOI forthcoming; this reference will be updated when it becomes available.
 
 # Document History
 
@@ -246,7 +251,8 @@ This section is informative.
 - **0.2 — 15 July 2026.** Initial publication of the 0.2 specification family.
 - **0.2 revision — 26 October 2026.** Aligned concrete assurance claims, relational authority, event-level causal provenance, fan-out, and
   multi-parent composition with the cited formal record; separated the research history from repository licensing and governance; and
-  established the standalone origin, authorship, and historical record used across the specification family.
+  established the standalone origin, authorship, and historical record used across the specification family. Added the COSS Temporal
+  Evidence subordinate specification for same-occurrence binding of evidence from several security coordinates.
 
 # Acknowledgments
 
