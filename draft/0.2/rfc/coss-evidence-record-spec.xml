@@ -175,6 +175,24 @@ control (IFC), runtime attestation, or any other coordinate.</t>
 "OPTIONAL" are to be interpreted as described in BCP 14 <xref target="references">[2]</xref> <xref target="references">[3]</xref> when, and only when, they appear in all capitals.</t>
 
 </section>
+<section anchor="terminology"><name>Terminology</name>
+
+<t><list style="symbols">
+  <t>An <strong>occurrence</strong> is one represented security-relevant execution event.</t>
+  <t><spanx style="verb">Pred(e)</spanx> is the set of represented immediate causal predecessors of occurrence <spanx style="verb">e</spanx>; <spanx style="verb">Hist(e)</spanx> is its represented causal history.</t>
+  <t>A <strong>coordinate</strong> is a profile-defined ordered security-state system with a state space, a "no more permissive than" order, admitted
+behaviors, evidence requirements, and a verifier.</t>
+  <t><spanx style="verb">K</spanx> is the set of coordinate profiles required by trusted policy for a particular verification decision.</t>
+  <t>A <strong>COSS Evidence Record (CER)</strong> is authenticated witness material for one occurrence. It is not itself a verifier verdict.</t>
+  <t>A <strong>Producer</strong> creates a CER. A <strong>Verifier</strong> evaluates a CER and its predecessor graph under trusted policy.</t>
+  <t>A <strong>Profile</strong> supplies concrete representations, cryptographic mechanisms, coordinate semantics, and verification rules.</t>
+  <t>A <strong>transition class</strong> is <spanx style="verb">root</spanx>, <spanx style="verb">ordinary</spanx>, or <spanx style="verb">authorized-relaxation</spanx>.</t>
+  <t>An <strong>authorized relaxation</strong> is an explicitly authorized non-conservative coordinate transition. It is not an ordinary continuation.</t>
+  <t>A <strong>relaxation authority</strong> is a trust anchor or a delegated authority whose authorization path terminates at a trust anchor accepted by
+the Verifier. Its signature authenticates an authorization; the signature alone does not establish that the authorization is applicable.</t>
+</list></t>
+
+</section>
 <section anchor="scope"><name>Scope</name>
 
 <t>This specification defines:</t>
@@ -203,10 +221,10 @@ for the complete COSS product.</t>
 </section>
 <section anchor="planned-companion-specifications"><name>Planned Companion Specifications</name>
 
-<t>This document is standalone and defines the record model and the semantic conditions for COSS PoR and PoC. A future companion <strong>COSS Prover
-and Verifier Specification</strong> (<spanx style="verb">coss-prover-verifier-spec.md</spanx>) may define concrete proof production, recursive graph verification,
-verifier-result objects, error semantics, and protocol bindings. A separate <strong>COSS-to-TRACE Profile</strong> (<spanx style="verb">coss-trace-profile.md</spanx>) may define a
-concrete TRACE mapping without making TRACE a dependency of COSS.</t>
+<t>This document is standalone and defines the record model and the semantic conditions for COSS PoR and PoC. A future <strong>COSS Prover and
+Verifier Specification</strong> may define concrete proof production, recursive graph verification, verifier-result objects, error semantics, and
+protocol bindings. A separate future <strong>COSS-to-TRACE Profile</strong> may define a concrete TRACE mapping without making TRACE a dependency of
+COSS.</t>
 
 <t>Those companion names describe planned work only. They do not identify published specifications, create conformance requirements, or alter
 the requirements of this document until separate documents are published and explicitly versioned.</t>
@@ -220,11 +238,15 @@ accepted variant below, Carol acts as a Data Loss Prevention (DLP) service. Tren
 forbids confidential data over email.</t>
 
 <figure><artwork><![CDATA[
-Alice -- read her documents, for verification --\
-                                                 \
-Bob   -- send official email --------------------> Carol -- send(bytes) --> Dave
-                                                 /
-Trent -- Alice's documents; classification HIGH /
+Alice -- read for verification --\
+                                  \
+Bob   -- send official email ------> Carol
+                                  /
+Trent -- documents; HIGH --------/
+                                      |
+                                      | send(bytes)
+                                      v
+                                     Dave
 
 Dave's rule: no confidential data by email
 ]]></artwork></figure>
@@ -238,7 +260,8 @@ send request
 
 authority question: may this occurrence send email?
 flow question:      may these bytes flow to this destination?
-causal question:    which earlier occurrences produced this request and these bytes?
+causal question:    which earlier occurrences produced this
+                    request and these bytes?
 ]]></artwork></figure>
 
 <t>Neither the bytes nor the send permission answers all three questions. A log entry with an actor and timestamp does not establish the causal
@@ -250,9 +273,12 @@ relationship. Evidence is sufficient for this effect only when the relevant answ
 down-set <spanx style="verb">Hist(e)</spanx>, not a wall-clock interval and not a second timeline per security mechanism <xref target="references">[4]</xref> <xref target="references">[7]</xref>.</t>
 
 <figure><artwork><![CDATA[
-Alice intent ----> Trent release -----\
-                                      > Carol send request ----> Dave effect
-Bob intent --------------------------/
+Alice intent --> Trent release --\
+                                  > Carol send
+Bob intent ----------------------/
+                                      |
+                                      v
+                                  Dave effect
 ]]></artwork></figure>
 
 <t>Common ancestry, equal timestamps, the same executor, or co-residence in one process MUST NOT be treated as proof that two branches are the
@@ -277,6 +303,16 @@ Sigma(e) = (sigma_j(e)) for every j in J
   <t>the evidence and verification procedure that establish its claims.</t>
 </list></t>
 
+<t>For states <spanx style="verb">x'</spanx> and <spanx style="verb">x</spanx>, every conformant coordinate profile MUST make its order semantically monotone:</t>
+
+<figure><artwork><![CDATA[
+x' <=_j x  implies  admitted_j(x') subset-of admitted_j(x)
+]]></artwork></figure>
+
+<t>The profile MUST justify this implication for its concrete state representation and behavior semantics. It MUST NOT infer semantic
+monotonicity merely from a syntactic ordering or from proofs about a different coordinate. This is a profile proof obligation; it is not
+inherited automatically from a PIC implementation or from the formal proofs for another state space <xref target="references">[4]</xref>.</t>
+
 <t>For an ordinary causal edge <spanx style="verb">p -&gt; e</spanx>, COSS continuity requires:</t>
 
 <figure><artwork><![CDATA[
@@ -291,6 +327,10 @@ PoR_COSS(p, e)  AND  C(e) subset-of C(p)
 
 <t>An IFC profile may provide a different state and order. COSS does not require distinct coordinates to use the same vocabulary, verifier, or
 artifact format. It requires their results to constrain the same occurrence.</t>
+
+<t>If a coordinate translates between heterogeneous state spaces, the profile MUST define the translation, prove that it is monotone in the
+source and target orders, and state the semantic relation preserved across their behavior universes. A translation that is
+order-preserving but excessively permissive in its intended security meaning is a profile or deployment error <xref target="references">[4]</xref>.</t>
 
 <t>At an ordinary multi-parent join, the child MUST be no more permissive than every parent in every required coordinate. For PIC authority:</t>
 
@@ -312,6 +352,12 @@ format or project is not itself a coordinate.</t>
 evidence required, the verifier and trust inputs, and the treatment of missing or unsupported evidence. It MUST distinguish producer claims
 from independently verified properties. Runtime attestation or a signature over an evidence envelope MUST NOT, by itself, be treated as
 proof that every claim inside the envelope is true.</t>
+
+<t>One execution-integrity profile MAY use the relational construction of <xref target="references">[6]</xref>: its state is a positive executor envelope <spanx style="verb">rho</spanx>,
+ordinary refinement requires <spanx style="verb">rho(i+1) =&gt; rho(i)</spanx>, and admission requires sound evidence that the predecessor envelope holds for the
+current transition. Such a profile MUST use positive predicates unless it defines a sound treatment of negation, and missing evidence MUST
+NOT produce admission. This is one valid construction, not the mandatory representation of every execution-integrity coordinate. A profile
+based on attestation grades or another state space MUST independently define and justify its own order and admitted-behavior semantics.</t>
 
 <t>TRACE is a candidate execution-evidence system for realizing such a profile <xref target="references">[11]</xref>. A TRACE Trust Record can commit to the
 program or workload named by the producer, runtime, policy, data classification, tool transcript, build provenance, and transparency
@@ -339,36 +385,59 @@ signature, or asserting a runtime platform does not establish conformance to thi
       <c>Authenticates possession. It does not identify the causal occurrence.</c>
       <c><strong>COSS PoR</strong></c>
       <c>Does this occurrence validly continue this specific predecessor on the shared causal graph?</c>
-      <c>Establishes a profile-defined causal edge, same-occurrence binding, and the required relationship checks.</c>
+      <c>Establishes the profile-defined causal edge. It does not by itself establish occurrence binding, coordinate refinement, or admission.</c>
       <c><strong>COSS PoC</strong></c>
-      <c>Does the whole represented execution preserve valid continuation across every required coordinate?</c>
-      <c>Composes accepted COSS PoR edges, coordinate refinement, and authorized relaxations across the causal history.</c>
+      <c>Does the represented execution preserve the selected COSS rules across every coordinate in <spanx style="verb">K</spanx>?</c>
+      <c>Composes accepted COSS PoR edges with ordinary coordinate refinement and separately authorized relaxation boundaries.</c>
 </texttable>
 
 <t>PoP MAY protect a COSS record or a referenced artifact, but PoP alone MUST NOT be accepted as COSS PoR or COSS PoC. A digest chain establishes
 artifact linkage only. It establishes COSS continuity only when the applicable profiles also validate the causal relationships and coordinate
 rules.</t>
 
-<t><spanx style="verb">PoR_COSS(p, e)</spanx> holds only when the Verifier establishes that <spanx style="verb">CER(e)</spanx> identifies the exact authenticated <spanx style="verb">CER(p)</spanx> as a predecessor, that the
-claimed causal edge is valid under the selected profile, that every required evidence item is bound to the occurrence represented by <spanx style="verb">e</spanx>, and
-that all required profile-specific relationship checks succeed. When PIC is required, its authority-handoff relationship check contributes
-to <spanx style="verb">PoR_COSS</spanx>; that PIC check alone is not the complete COSS relationship result.</t>
+<t><spanx style="verb">PoR_COSS(p, e)</spanx> holds only when the Verifier establishes that <spanx style="verb">CER(e)</spanx> identifies the exact authenticated <spanx style="verb">CER(p)</spanx> as a predecessor and that
+the claimed edge is a valid causal continuation under the selected relationship profile. Profile-specific checks whose purpose is to witness
+that causal relation are part of its concrete PoR realization. Occurrence binding, coordinate-evidence validity, predecessor-state
+coherence, refinement, freshness, revocation, and admission remain separate checks even when all are required to accept a step. When PIC is
+in <spanx style="verb">K</spanx>, its authority-handoff relationship check contributes the PIC realization of the causal edge; that check alone is not a complete COSS
+step result.</t>
+
+<t>For a trusted-policy-selected coordinate set <spanx style="verb">K</spanx>, define:</t>
+
+<t><list style="symbols">
+  <t><spanx style="verb">OccurrenceBind_COSS(e, K)</spanx> to mean that the behavior and every required evidence item are bound to the occurrence represented by <spanx style="verb">e</spanx>;</t>
+  <t><spanx style="verb">PredCoherent_COSS(p, e, K)</spanx> to mean that every coordinate-specific predecessor reference resolves to the corresponding coordinate state
+committed by the exact <spanx style="verb">CER(p)</spanx>; and</t>
+  <t><spanx style="verb">EvidenceValid_COSS(e, K)</spanx> to mean that each required coordinate state and its evidence are valid under that coordinate's profile and trust
+inputs.</t>
+</list></t>
 
 <t>For an ordinary edge, the accepted step condition is:</t>
 
 <figure><artwork><![CDATA[
-Step_COSS(p, e) = PoR_COSS(p, e)
-                  AND sigma_j(e) <=_j sigma_j(p) for every required j
+Step_COSS^K(p, e) = PoR_COSS(p, e)
+                    AND OccurrenceBind_COSS(e, K)
+                    AND PredCoherent_COSS(p, e, K)
+                    AND EvidenceValid_COSS(e, K)
+                    AND sigma_j(e) <=_j sigma_j(p) for every j in K
 ]]></artwork></figure>
 
-<t>At a join, this condition applies to every represented immediate predecessor. For an authorized relaxation, the affected coordinate checks
-are replaced only by the separately verified relaxation rule; unaffected coordinates remain subject to the ordinary condition.</t>
+<t>At a join, this condition applies to every represented immediate predecessor. For an authorized relaxation, only the affected coordinate
+order checks are replaced by a separately verified relaxation rule. PoR, occurrence binding, predecessor coherence, evidence validity, and
+ordinary refinement of unaffected coordinates remain mandatory.</t>
 
-<t><spanx style="verb">PoC_COSS(e)</spanx> holds only when the resolved predecessor graph for <spanx style="verb">Hist(e)</spanx> is rooted, acyclic, and complete under the selected profile; every
-represented edge has an accepted COSS PoR; and every required coordinate transition is either ordinary and non-expanding or an explicitly
-authorized relaxation. A successful COSS PoC therefore entails PIC PoC when PIC is a required coordinate, but PIC PoC alone does not entail
-COSS PoC. Joint admission is a subsequent decision: <spanx style="verb">Admit_COSS(e)</spanx> additionally requires every coordinate selected by trusted policy to
-admit the committed behavior at the protected effect.</t>
+<t><spanx style="verb">PoC_COSS^K(e)</spanx> holds only when the resolved predecessor graph for <spanx style="verb">Hist(e)</spanx> is rooted, acyclic, and complete under the selected profile;
+every represented edge has an accepted COSS PoR; every ordinary edge satisfies <spanx style="verb">Step_COSS^K</spanx>; and every non-conservative transition is an
+explicitly authorized relaxation satisfying the applicable profile rule.</t>
+
+<t>Projection of a successful COSS PoC to the PIC coordinate entails PIC PoC only on a path segment containing exclusively ordinary PIC
+transitions. At an authorized relaxation, the preceding authority bound does not continue across the relaxation; the ordinary bound restarts
+from the explicitly authorized resulting state <xref target="references">[4]</xref>. A COSS PoC that contains such a boundary therefore MUST NOT be presented
+as one end-to-end PIC PoC across that boundary. Likewise, the PIC confused-deputy exclusion result applies only to request-to-effect paths
+that satisfy the paper's ordinary-segment premise, together with causal completeness and protected-effect mediation <xref target="references">[4]</xref>.</t>
+
+<t>PIC PoC alone does not entail COSS PoC. Joint admission is a subsequent decision: <spanx style="verb">Admit_COSS^K(e)</spanx> additionally requires every coordinate in
+<spanx style="verb">K</spanx> to admit the committed behavior at the protected effect.</t>
 
 <t>There is one predecessor graph. There is not an unrelated PIC chain, IFC chain, and execution-integrity chain later correlated by timestamp or
 actor name.</t>
@@ -382,13 +451,17 @@ not by itself establish COSS PoR or COSS PoC.</t>
 <t>The Verifier derives separate results:</t>
 
 <figure><artwork><![CDATA[
-PoR_COSS(p, e) = accepted or rejected
-PoC_COSS(e)    = accepted or rejected
-Admit_COSS(e)  = accepted or rejected for the committed behavior
+PoR_COSS(p, e)   = accepted or rejected
+PoC_COSS^K(e)    = accepted or rejected
+Admit_COSS^K(e)  = accepted or rejected for the committed behavior
 ]]></artwork></figure>
 
-<t>A profile MAY define a serializable verifier-result object, but it MUST keep that result distinct from the evidence record and MUST identify
-the Verifier, trust inputs, profile versions, evaluation time, and exact record or graph evaluated.</t>
+<t>A profile MAY define a serializable verifier-result object, but it MUST keep that result distinct from the evidence record. The result MUST
+identify the Verifier, trust inputs, exact coordinate set <spanx style="verb">K</spanx>, profile versions, evaluation time, exact record or graph evaluated, and the
+assurance established for every required coordinate. If a profile uses the labels <spanx style="verb">full-continuity</spanx> and <spanx style="verb">artifact-linked</spanx>, it MUST use them
+consistently with the PIC Prover and Verifier specification: an artifact-linked result establishes only the stated linkage properties and
+MUST NOT be presented as full semantic PoR or PoC. A full COSS continuity result requires full assurance for the causal relation and for every
+coordinate in <spanx style="verb">K</spanx>; an aggregate result MUST NOT hide a weaker required-coordinate result.</t>
 
 </section>
 </section>
@@ -414,7 +487,7 @@ the Verifier, trust inputs, profile versions, evaluation time, and exact record 
       <c><spanx style="verb">evidence</spanx></c>
       <c>Typed references to occurrence, causal, or coordinate evidence.</c>
       <c><spanx style="verb">relaxation</spanx></c>
-      <c>For an authorized relaxation, references to its separate authorization and affected coordinates.</c>
+      <c>For an authorized relaxation, the affected coordinates and commitments to the authorization source, authorization rule, exact input states, resulting states or bounds, scope, and applicable freshness evidence.</c>
 </texttable>
 
 <t>Every digest reference MUST identify the digest algorithm and the digest of the exact referenced bytes. The profile MUST define which bytes
@@ -437,6 +510,11 @@ results a coordinate state.</t>
 established for the occurrence and reference the evidence from which that result is verified. The state MAY remain selectively disclosed if
 the profile supplies a proof sufficient for refinement and admission.</t>
 
+<t>If coordinate evidence carries its own predecessor identifier or predecessor-state commitment, the profile MUST define how it is resolved.
+For every claimed edge <spanx style="verb">p -&gt; e</spanx>, that reference MUST identify the state of the same coordinate committed by the exact authenticated
+<spanx style="verb">CER(p)</spanx>. At a multi-parent join, the check applies separately to the coordinate state associated with every applicable parent. A valid
+coordinate artifact referring to another predecessor MUST be rejected rather than correlated by time, actor, workflow, or similar metadata.</t>
+
 <t>A <spanx style="verb">root</spanx> record has no predecessors. An <spanx style="verb">ordinary</spanx> or <spanx style="verb">authorized-relaxation</spanx> record has one or more distinct predecessors. The resolved
 predecessor relation MUST be acyclic. A profile MUST NOT infer a missing predecessor from physical time or list order.</t>
 
@@ -450,8 +528,44 @@ predecessor relation MUST be acyclic. A profile MUST NOT infer a missing predece
 evidence-artifact digests.</t>
 </list></t>
 
+<t>The boundary-witnessed checkpoint <spanx style="verb">kappa = (B, m, sigma)</spanx> of <xref target="references">[6]</xref> is one possible realization of the second method; it is not
+the only permitted realization. A profile using that construction MUST state how it discharges the applicable witness assumptions,
+including cryptographic unforgeability and binding, boundary protocol compliance, sound observation of the consumed handoff, sound
+executor-profile and relational evidence, replay or single-consumption control, and root validity.</t>
+
+<t>The base CER has no mandatory top-level freshness field. A profile MUST nevertheless define freshness and replay semantics and MUST bind any
+nonce, challenge, sequence, validity interval, consumption marker, or equivalent evidence needed by those semantics. A unique occurrence
+commitment or an executed-versus-bound comparison does not by itself establish freshness or prevent replay.</t>
+
 <t>Association performed later from timestamps, actor identifiers, workflow labels, or separately valid artifacts is insufficient. The binding
 MUST prevent an implementation from pairing valid PIC evidence from one execution with valid IFC or runtime evidence from another.</t>
+
+</section>
+<section anchor="authorized-relaxation-evidence"><name>Authorized Relaxation Evidence</name>
+
+<t>An authorized relaxation MUST identify the authority that approves the non-conservative transition. That authority MAY be a trust anchor or
+a delegated authority whose authorization path terminates at a trust anchor accepted under the Verifier's local policy. The authorization
+MUST be authenticated and MUST bind:</t>
+
+<t><list style="symbols">
+  <t>the applicable policy and authorization rule;</t>
+  <t>the exact predecessor records and affected input coordinate states;</t>
+  <t>the occurrence and behavior for which the relaxation is authorized;</t>
+  <t>every coordinate allowed to change;</t>
+  <t>the resulting coordinate states or an enforceable bound on them;</t>
+  <t>the authorization scope and any required freshness or replay evidence; and</t>
+  <t>any conditions that the receiving boundary must enforce.</t>
+</list></t>
+
+<t>The resulting state of each affected coordinate MUST satisfy the bound or rule explicitly granted by the relaxation authorization. This is a
+coordinate-profile obligation: COSS does not impose one cross-coordinate order between an authorizer's PIC authority and an IFC,
+geographic, or execution-integrity state. For PIC grants or authority composition, the applicable profile MUST define the authority source
+and prove that the resulting authority does not exceed the grant or composition bound supplied by that source. For declassification or
+another coordinate-specific relaxation, the applicable profile MUST define the corresponding authorization semantics.</t>
+
+<t>A signature by a trusted key authenticates the authorization object; it does not by itself prove that the signer was authorized for this
+rule, that the object applies to these inputs and this occurrence, or that the resulting state satisfies the authorized bound. The Verifier
+MUST establish all of those properties before accepting the relaxation.</t>
 
 </section>
 <section anchor="references-are-not-validation"><name>References Are Not Validation</name>
@@ -512,7 +626,9 @@ profile. An unavailable required artifact causes verification to fail unless the
       "roles": ["occurrence", "coordinate"],
       "coordinate": "execution-integrity",
       "profile": "execution-integrity-profile",
-      "state": { "digest": "sha-256:EXECUTION_INTEGRITY_STATE_DIGEST" },
+      "state": {
+        "digest": "sha-256:EXECUTION_INTEGRITY_STATE_DIGEST"
+      },
       "artifact": { "digest": "sha-256:RUNTIME_EVIDENCE_DIGEST" }
     }
   ]
@@ -533,8 +649,10 @@ provide:</t>
   <t>an authenticated record for the concrete occurrence and behavior;</t>
   <t>digest references that form the represented predecessor graph;</t>
   <t>typed digest references to external coordinate evidence;</t>
-  <t>same-occurrence binding for those references; and</t>
-  <t>a way for the receiving verifier to invoke, or validate the result of, each required coordinate verifier.</t>
+  <t>same-occurrence binding for those references;</t>
+  <t>coordinate-specific predecessor references that resolve to the corresponding states in the exact predecessor CERs;</t>
+  <t>a way for the receiving verifier to invoke, or validate the result of, each required coordinate verifier; and</t>
+  <t>for a non-conservative transition, separately authenticated relaxation evidence bound to its exact inputs and resulting bounds.</t>
 </list></t>
 
 <t>The authority intersection remains a PIC operation. IFC admission remains an IFC operation. The execution-evidence system records and binds
@@ -561,12 +679,19 @@ substitute for this step.</t>
   <t><strong>Causal validity.</strong> Validate that predecessor references are distinct, the resolved graph is acyclic, the declared predecessor set is
 complete under the selected profile, and the required PoR evidence is valid. Root, ordinary linear, ordinary join, and
 authorized-relaxation records MUST NOT be confused.</t>
-  <t><strong>Coordinate continuity.</strong> For an ordinary record, verify that every required coordinate is no more permissive than every applicable
-predecessor under that coordinate's declared order.</t>
-  <t><strong>Relaxation authorization.</strong> For an authorized relaxation, verify its separate authorization, the coordinates it may change, and the new
-bound. Unaffected coordinates remain subject to ordinary continuity.</t>
-  <t><strong>Joint admission.</strong> Before a protected effect, verify that every coordinate required by policy admits the committed behavior. Any required
-   rejection rejects the effect.</t>
+  <t><strong>Coordinate-predecessor coherence.</strong> For every coordinate-specific predecessor reference, verify that it resolves to the corresponding
+coordinate state committed by the exact predecessor CER. At a join, perform this check independently for every applicable parent.</t>
+  <t><strong>Coordinate continuity.</strong> For an ordinary record, verify that every coordinate in <spanx style="verb">K</spanx> is no more permissive than every applicable
+predecessor under that coordinate's declared order. If a profile performs a heterogeneous translation, verify its required translation
+and semantic-soundness conditions.</t>
+  <t><strong>Relaxation authorization.</strong> For an authorized relaxation, authenticate the authorization source to a locally accepted trust anchor;
+   verify its delegated authority when applicable; verify the bound policy, inputs, occurrence, behavior, affected coordinates, resulting
+   states or bounds, scope, and freshness; and enforce the coordinate-specific relaxation rule. Unaffected coordinates remain subject to
+   ordinary continuity.</t>
+  <t><strong>Joint admission.</strong> Before a protected effect, verify that every coordinate in <spanx style="verb">K</spanx> admits the committed behavior. Any required rejection
+   rejects the effect.</t>
+  <t><strong>Result construction.</strong> Bind the verdict to the exact record or graph, <spanx style="verb">K</spanx>, profile versions, trust inputs, evaluation time, and
+   per-coordinate assurance. Do not aggregate an artifact-linked required-coordinate result into a full COSS continuity claim.</t>
 </list></t>
 
 <t>An implementation MUST fail closed when a required coordinate, artifact, verifier, causal edge, or binding cannot be established. It MUST NOT
@@ -582,7 +707,8 @@ silently reduce a multi-coordinate decision to the coordinates it happens to und
 <figure><artwork><![CDATA[
 PIC authority:       send-email is present
 IFC provenance:      the bytes depend on Alice's HIGH documents
-execution integrity: the required occurrence properties are independently established
+execution integrity: the required occurrence properties are
+                     independently established
 destination policy:  external email is LOW
 causal binding:      all results refer to this exact send occurrence
 ]]></artwork></figure>
@@ -594,9 +720,12 @@ valid admitted continuation. The claimed protection requires the mail effect to 
 </section>
 <section anchor="accepted-dlp-path"><name>Accepted DLP Path</name>
 
-<t>Suppose Carol does not initially hold <spanx style="verb">send-email</spanx>. Bob invokes Carol by combining the <spanx style="verb">read-for-verification</spanx> authority received from Alice
-with Bob's own <spanx style="verb">send-email</spanx> authority. That union is not an ordinary join. It MUST be represented as an explicit authorized composition whose
-COSS record has transition class <spanx style="verb">authorized-relaxation</spanx>.</t>
+<t>Suppose Carol does not initially hold <spanx style="verb">send-email</spanx>. Alice's <spanx style="verb">read-for-verification</spanx> continuity and Bob's <spanx style="verb">send-email</spanx> continuity arrive as
+separate inputs. For this example, Dave's domain trusts a composition authority <spanx style="verb">P</spanx>, either directly as a trust anchor or through a validated
+delegation chain. Policy permits <spanx style="verb">P</spanx> to authorize their composition only for a DLP-mediated mail occurrence. <spanx style="verb">P</spanx> signs an authorization that
+binds the exact Alice and Bob predecessor CERs, Carol's DLP occurrence, the applicable policy, the resulting PIC authority bound, the output
+destination, scope, and freshness evidence. That union is not an ordinary join. It MUST be represented as an explicit authorized composition
+whose COSS record has transition class <spanx style="verb">authorized-relaxation</spanx>.</t>
 
 <t>Carol then evaluates the exact candidate output under the selected DLP or IFC profile. Two cases are distinct:</t>
 
@@ -610,31 +739,39 @@ declassification. Its evidence MUST bind the input, exact output bytes, applicab
 
 <figure><artwork><![CDATA[
 Alice read ----\
-                > [authorized composition: read + send] ---> Carol · DLP
-Bob send  -----/                                             |
-                                                             | verifies exact output
-Trent data ------------------------------------------------->|
-                                                             v
-                                             [declassification, if required]
-                                                             |
-                                                             v
-                                                     Dave mail effect
+                > [authorized composition] --> Carol DLP
+Bob send  -----/                                |
+P authorization ------------------------------>|
+                                               | verifies output
+Trent data ----------------------------------->|
+                                               v
+                                  [declassification if needed]
+                                               |
+                                               v
+                                         Dave mail
 ]]></artwork></figure>
 
 <t>The record presented to Dave binds at least:</t>
 
 <figure><artwork><![CDATA[
-behavior:                 digest of destination, message, and exact output bytes
-predecessor:              digest of the authenticated predecessor record
-PIC coordinate evidence:  digest of the authorized composition and authority state
-IFC coordinate evidence:  digest of the DLP/IFC result for the exact output
-relaxation evidence:      digest of declassification authorization, when required
-occurrence evidence:      digest of the execution evidence for this handoff
+behavior:                 digest of destination, message,
+                          and exact output bytes
+predecessor:              digest of the authenticated
+                          predecessor record
+PIC coordinate evidence:  digest of the authorized composition
+                          and authority state
+IFC coordinate evidence:  digest of the DLP/IFC result for the
+                          exact output
+relaxation evidence:      digest of P's authorization and any
+                          required declassification
+occurrence evidence:      digest of the execution evidence for
+                          this handoff
 ]]></artwork></figure>
 
-<t>Dave accepts only if the composition is authorized, the PIC state admits <spanx style="verb">send-email</spanx>, the DLP or IFC result admits the exact output and
-destination, any required declassification is authorized, and every item is bound to the same occurrence. Without the required composition
-or declassification evidence, valid evidence in another coordinate does not repair the missing rule.</t>
+<t>Dave accepts only if <spanx style="verb">P</spanx> chains to an accepted trust anchor, <spanx style="verb">P</spanx> is authorized for the bound composition rule, the resulting PIC state stays
+within the signed composition bound and admits <spanx style="verb">send-email</spanx>, the DLP or IFC result admits the exact output and destination, any required
+declassification is authorized, and every item is bound to the same occurrence. Without the required composition or declassification
+evidence, valid evidence in another coordinate does not repair the missing rule.</t>
 
 </section>
 </section>
@@ -644,11 +781,12 @@ or declassification evidence, valid evidence in another coordinate does not repa
 policy, predecessors, behavior, evidence references, and transition class as required above.</t>
 
 <t>A <strong>COSS Evidence Verifier</strong> conforms when it implements the ordered verification procedure, validates every required external
-profile independently, and fails closed on missing or unsupported required evidence.</t>
+profile independently, reports <spanx style="verb">K</spanx> and per-coordinate assurance, and fails closed on missing or unsupported required evidence.</t>
 
 <t>A <strong>COSS Evidence Profile</strong> conforms when it defines the concrete serialization, authenticating mechanism, exact-byte digest rules,
-occurrence and behavior commitments, coordinate identifiers, coordinate orders, evidence verifiers, freshness rules, and required-coordinate
-policy needed to realize this specification.</t>
+occurrence and behavior commitments, coordinate identifiers, semantically monotone coordinate orders, predecessor-state coherence,
+heterogeneous translations when used, evidence verifiers, freshness rules, authorized-relaxation rules, assurance semantics, and the
+required-coordinate policy needed to realize this specification.</t>
 
 <t>Conformance to this document does not imply conformance to PIC, an IFC system, or any referenced evidence system. Those claims require
 independent conformance to the corresponding specifications.</t>
@@ -697,6 +835,23 @@ Researchers and implementers are encouraged to cite the primary publication that
 attribution for reuse of PIC specification materials is governed separately by the applicable CC BY 4.0 license.</t>
 
 </section>
+<section anchor="visual-references"><name>Visual References</name>
+
+<t>The following supplementary videos provide visual explanations of the causal-time, same-history evidence, and full-provenance concepts used
+by PIC and COSS:</t>
+
+<t><list style="symbols">
+  <t><strong>18 October 2026 — causal time in authorization.</strong> <em>Encoding causal time in the authorization protocol · Same key, different history</em>,
+published by Permguard <xref target="references">[13]</xref>.</t>
+  <t><strong>19 October 2026 — authority and information on one history.</strong> <em>Temporal evidence: authority and information on one history · A single
+evidence</em>, published by Permguard <xref target="references">[14]</xref>.</t>
+  <t><strong>20 October 2026 — agentic loops and effect provenance.</strong> <em>Agentic loops and full provenance: the evidence of every effect</em>, published
+by Permguard <xref target="references">[15]</xref>.</t>
+</list></t>
+
+<t>These audiovisual references are informative explanations. They do not replace the formal publications or define conformance requirements.</t>
+
+</section>
 </section>
 <section anchor="security-considerations"><name>Security Considerations</name>
 
@@ -726,10 +881,10 @@ preserving the evidence needed for the claimed security property. Digest referen
 reused across domains.</t>
 
 </section>
-<section anchor="registry-considerations"><name>Registry Considerations</name>
+<section anchor="iana-considerations"><name>IANA Considerations</name>
 
-<t>This version defines no shared protocol registry and requests no external registry action. A future interoperability profile may define
-registries for coordinate identifiers, evidence roles, media types, digest algorithms, transition classes, or error values.</t>
+<t>This document has no IANA actions. A future interoperability profile may define registries for coordinate identifiers, evidence roles,
+media types, digest algorithms, transition classes, or error values.</t>
 
 </section>
 <section anchor="references"><name>References</name>
@@ -755,6 +910,9 @@ registries for coordinate identifiers, evidence roles, media types, digest algor
   <t>[10] Gallo, N., Silvestri, S., &amp; Radesca, A. (forthcoming 2026). <em>Authority Continuity for Verifiable Lineage in Distributed Systems and AI Agents</em>. Accepted paper, 24th IEEE International Symposium on Network Computing and Applications (NCA 2026), 10–13 November 2026, Ortigia–Syracuse, Italy. <eref target="https://www.nca-ieee.org/2026/">nca-ieee.org/2026</eref>. IEEE Xplore DOI forthcoming; this reference will be updated when it becomes available.</t>
   <t>[11] TRACE Specification Authors. (2026). <em>TRACE: Evidence for AI Agent Runs</em>. Version 0.2 Developer Preview. <eref target="https://trace.agentrust-io.com/">trace.agentrust-io.com</eref></t>
   <t>[12] TRACE Specification Authors. (2026). <em>RFC Proposal: Runtime Evidence, and What a Verifier May Conclude without It</em>. Non-normative draft proposal targeting TRACE v0.3. <eref target="https://trace.agentrust-io.com/docs/rfcs/runtime-evidence-profile/">trace.agentrust-io.com/docs/rfcs/runtime-evidence-profile</eref></t>
+  <t>[13] Permguard. (18 October 2026). <em>Encoding causal time in the authorization protocol · Same key, different history</em>. YouTube video. <eref target="https://www.youtube.com/watch?v=liYpy6QaBGo">youtube.com/watch?v=liYpy6QaBGo</eref></t>
+  <t>[14] Permguard. (19 October 2026). <em>Temporal evidence: authority and information on one history · A single evidence</em>. YouTube video. <eref target="https://www.youtube.com/watch?v=cWoJiUnwHYg">youtube.com/watch?v=cWoJiUnwHYg</eref></t>
+  <t>[15] Permguard. (20 October 2026). <em>Agentic loops and full provenance: the evidence of every effect</em>. YouTube video. <eref target="https://www.youtube.com/watch?v=yceBw8TD6Ek">youtube.com/watch?v=yceBw8TD6Ek</eref></t>
 </list></t>
 
 </section>
@@ -764,11 +922,9 @@ registries for coordinate identifiers, evidence roles, media types, digest algor
 <t>This section is informative.</t>
 
 <t><list style="symbols">
-  <t><strong>0.2 — 26 October 2026.</strong> Initial public draft defining protocol-neutral, same-occurrence binding of PIC authority evidence, IFC evidence,
-runtime provenance, and other COSS security coordinates on one causal evidence graph.</t>
-  <t><strong>0.2 revision — 26 October 2026.</strong> Named the transportable artifact the COSS Evidence Record; defined COSS PoR, COSS PoC, and their
-distinction from the evidence record; made the relationship to PIC explicit; added execution integrity as an optional,
-implementation-independent coordinate; identified TRACE as a candidate evidence system for a future profile; and recorded the planned
+  <t><strong>0.2 — 26 October 2026.</strong> Initial public draft defining the COSS Evidence Record; protocol-neutral same-occurrence binding of PIC, IFC,
+execution-integrity, and other coordinate evidence; COSS PoR and PoC over a trusted-policy-selected coordinate set; ordinary-segment and
+authorized-relaxation semantics; coordinate predecessor coherence; per-coordinate assurance; optional TRACE integration; and the planned
 COSS Prover and Verifier and COSS-to-TRACE companion specifications without making them current dependencies.</t>
 </list></t>
 
@@ -801,289 +957,365 @@ historical origin of the PIC Model and from stewardship of the PIC Specification
   </back>
 
 <!-- ##markdown-source:
-H4sIAAAAAAAAA8197XLbRtbmf1xFl1O1sbQkbclfsbyTWYVSJsrasl9JTibr
-12WBICjBJgEOAErWZDI19/Duz93r2P97KXMle55zTn+BoOwkU1urmnEkstHo
-Pt9ffXo4HCZt0c7zPXNnnK6adD6/MS/raV7nU3OaZ6u6aG+Gp23a5ubu+OXp
-6ZY5vCqmeZnl5iTPqnp6J0knkzq/wgT0/frX0yor0wW9IKuaZpjr18Oavx7e
-300ymvyiqm/2TFHOqqRY1numrMo8aVaTRdE0RVW2N8scX0/zZU7/lG3StGk5
-fZfOadyeucmbpFmkdfvuL6uqzZs9M0vnTZ4siz3zpq2ygWmquq3zWUO/3Szw
-y9tkSq/dM7v3dx8Pd+4Pdx8nSbpqL6t6LzFmSO+iWY5H5k8EkYo+MUY2cVxk
-1TwNPq7qC3za1pXZvyjmBC5zOqpH8xF/my/SYk7b4adGF3jqv5YYnMrYUVYt
-kqSs6kXaFlc0/8+/JIBC+PeQcIR/CCht/u6gylYLgsA7IGXVJMn29qu6ep9n
-7d72tnl1NDb0J+25mvtvzI/5pClouzTizfX19WhZZMOlDhvRDt7evWzbZbN3
-717ft/e2aCr7XsyxCZPb2z/kNfCFQfdHu+buQZ3O2vBxI8vmta4m8yIzPIRG
-HJUtcDs1rxte6JEFQ1Wmc0PYNocfl3ldYJYUm/u2qJtWZmku8ymeCbC5vf08
-pa9fL4Hn9S8Pp0Vb1XebLXwTItXc7UMmtnDa5tdpPZUHevBNI6pVnQmUL4r2
-cjUBeu+F4OQ/mmWe3Zti2/cISPd6oYkxo8XUI+aTE07m1eQekVv5mVNvBUS1
-P6lW7buzy6Jx9JUkXxsioABH5p//+B/muGpNCiSWU4LF9nbyNY3Dg2ZqMUy/
-p2XIrCRSpvlVPq+WhF28vZgVGSPWLC32TNqYJXGwqWamvcwjQmbkY2ct/Z+G
-Tm5iBNAKBAX0UlO0jamreY4JT6N3Kf5GvOSj1lzSCNq9meR5adJptSQ6GRha
-clU3+C1dEpCv8FtVBwult6emUQA0Q90Z75x4JS2Lv/LrRngFgcI/OLPTZIbk
-ZZFfD2gddd7kaZ1d0os9deP5gSkWy3nu/jazPJ9O0uzDgMGxJMwWE9rmbNWu
-6twtSN9urqv6Ay9hkd7QDvmNvKs6X87TTHd1TURF1HJd0kpSQmx5Y1pagoLI
-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
-MN0oobMfoKVpTlojV77l89nQZ91ZZQjVHc3nK1SgcerQurBnkfv5/enLY+ag
-cCiDo7GlwuERYcnwXBQokYWAC1w9dEYpLzSIYd43RNc/k6S4ozr6zp6509+o
-bbR7Z4CBXhDR2J853n1Hd46HUQw/RMFvkKkbXu3wszRSOAYDm8t0uPvo8d7L
-8fj1ycnh8fjw3cHRnw5Pz+7QyF/4VeJ4bn6NFalDGXjra169fH40/mntFd4r
-xWCrbmWnod6kb9/w1D/3Tn5yeHA4Pjw9fXnyDseXTw7si8wv9NRbns4yx+b9
-iPF/6zZw0prmfbd/fPDum5/ODk/XdmQR51esOYk7bGjj4zviUOB0tefwO28H
-dmDwIb0ajVFc1uaOGxQsHiN85s6eDPNDWXZg272wOxq/Oz3bPzv0IHMPWla8
-7dnDH44OQuphiBs7Sd/mP73l7tn63l0Xs2zo/ZRfuWvSSb9513j2V+86YNvP
-Q3uPg9ELhp5xvxIWh38+HL/Gyf53R8dnh386OTr76TfD5uT18dnRi8ON8AE3
-Jr/4I0y2gIr77cihF3do29suem7WybbIzow6VzQf4srNtVo2LjheLNFTDgeW
-UQqlxQSq3zqzwc6hZ5AymebWlOk5vK9npqxCbKTKq5u+tRZikEKk1SLH2CZx
-WZCophdFWSwIFFJVKyqQGzxx76b92858wwnVgEJvNLZxXq8z9my3INohNmp7
-YUixgDs4wd02gJNEC8zFbF8L6CpqfdRc4y4d39GK5Wcw29eP8bMpxxVKYoL5
-zN9aiuhZ8oC8B47z9cxTecLqCUc8Sx6ONhW46Bb4xKObUGI5j0Z8SujG7VLO
-zLGZbC0hRP/Kq+qDBJiiegmbBJgNOuQSrNAFN4RhfNF4VHluj/GlgkBO6YjL
-T4gMw0Y6TE4LBOPObuUa9XAEYeBV9sSFOV1eSUAUGIgu0Yh49fyGEwZh5kyC
-HFpk1nqIiTciLlEnD6CFDkUp1q+Q3va2Jhh8KmqEVrVp3eSBf3prZlmyPFFB
-sE+PEAuqeyb5h4GZrrgeJgp5QcIFHprkZv2BYzS2uxaD2BWPAJ70ynQmlje3
-NkCZ2mqxlMz7brA7x14QN7S/H2JSUhfcSaRByI/cDskeSbP5IJyn4hiaCxrb
-4lo9pR7WgmF3M1rkJScypVJxjvZFUs/zYMS1c5yp0PCNYOFEPArJ+sr3ggcE
-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
-AAA=
+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
+KKvRXHXZyhn9f3N4vS3txQAA
 
 -->
 

@@ -119,47 +119,47 @@ Gallo                         Informational                     [Page 2]
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   4
      1.1.  Requirements Notation . . . . . . . . . . . . . . . . . .   4
-     1.2.  Scope . . . . . . . . . . . . . . . . . . . . . . . . . .   4
-     1.3.  Relationship to PIC . . . . . . . . . . . . . . . . . . .   4
-     1.4.  Planned Companion Specifications  . . . . . . . . . . . .   5
-   2.  One Effect, Several Questions . . . . . . . . . . . . . . . .   5
-     2.1.  One Causal Axis . . . . . . . . . . . . . . . . . . . . .   6
-   3.  COSS Security State . . . . . . . . . . . . . . . . . . . . .   6
-     3.1.  Execution Integrity Coordinate  . . . . . . . . . . . . .   7
-   4.  COSS Proof of Relationship and Proof of Continuity  . . . . .   8
-     4.1.  Evidence and Verification Results . . . . . . . . . . . .   9
-   5.  COSS Evidence Record  . . . . . . . . . . . . . . . . . . . .   9
-     5.1.  Same-Occurrence Binding . . . . . . . . . . . . . . . . .  11
-     5.2.  References Are Not Validation . . . . . . . . . . . . . .  11
-     5.3.  Illustrative Record . . . . . . . . . . . . . . . . . . .  12
-     5.4.  Minimal Integration Contract  . . . . . . . . . . . . . .  14
-   6.  Verification  . . . . . . . . . . . . . . . . . . . . . . . .  14
-   7.  Worked Decision at Dave . . . . . . . . . . . . . . . . . . .  15
-     7.1.  Rejected Ordinary Path  . . . . . . . . . . . . . . . . .  15
-     7.2.  Accepted DLP Path . . . . . . . . . . . . . . . . . . . .  16
-   8.  Conformance . . . . . . . . . . . . . . . . . . . . . . . . .  17
-   9.  Origins, Authorship, and Historical Record  . . . . . . . . .  17
-     9.1.  Historical References . . . . . . . . . . . . . . . . . .  18
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  19
-   11. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  19
-   12. Registry Considerations . . . . . . . . . . . . . . . . . . .  19
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  20
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  20
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  20
-   14. Document History  . . . . . . . . . . . . . . . . . . . . . .  21
-   15. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  21
-   16. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  22
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  22
+     1.2.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   4
+     1.3.  Scope . . . . . . . . . . . . . . . . . . . . . . . . . .   5
+     1.4.  Relationship to PIC . . . . . . . . . . . . . . . . . . .   5
+     1.5.  Planned Companion Specifications  . . . . . . . . . . . .   6
+   2.  One Effect, Several Questions . . . . . . . . . . . . . . . .   6
+     2.1.  One Causal Axis . . . . . . . . . . . . . . . . . . . . .   7
+   3.  COSS Security State . . . . . . . . . . . . . . . . . . . . .   7
+     3.1.  Execution Integrity Coordinate  . . . . . . . . . . . . .   8
+   4.  COSS Proof of Relationship and Proof of Continuity  . . . . .   9
+     4.1.  Evidence and Verification Results . . . . . . . . . . . .  12
+   5.  COSS Evidence Record  . . . . . . . . . . . . . . . . . . . .  12
+     5.1.  Same-Occurrence Binding . . . . . . . . . . . . . . . . .  14
+     5.2.  Authorized Relaxation Evidence  . . . . . . . . . . . . .  15
+     5.3.  References Are Not Validation . . . . . . . . . . . . . .  16
+     5.4.  Illustrative Record . . . . . . . . . . . . . . . . . . .  16
+     5.5.  Minimal Integration Contract  . . . . . . . . . . . . . .  18
+   6.  Verification  . . . . . . . . . . . . . . . . . . . . . . . .  18
+   7.  Worked Decision at Dave . . . . . . . . . . . . . . . . . . .  20
+     7.1.  Rejected Ordinary Path  . . . . . . . . . . . . . . . . .  20
+     7.2.  Accepted DLP Path . . . . . . . . . . . . . . . . . . . .  20
+   8.  Conformance . . . . . . . . . . . . . . . . . . . . . . . . .  22
+   9.  Origins, Authorship, and Historical Record  . . . . . . . . .  22
+     9.1.  Historical References . . . . . . . . . . . . . . . . . .  23
+     9.2.  Visual References . . . . . . . . . . . . . . . . . . . .  24
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  24
+   11. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  25
+   12. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  25
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  25
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  25
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  25
+   14. Document History  . . . . . . . . . . . . . . . . . . . . . .  27
+   15. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  27
+   16. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  27
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  27
 
-1.  Introduction
 
-   An effect can be authorized in one dimension and forbidden in
-   another.  A mail service may receive both a valid permission to send
-   and bytes derived from confidential data.  The permission answers
-   what authority may continue.  It does not answer where the bytes may
-   flow.
+
+
+
 
 
 
@@ -169,6 +169,14 @@ Gallo                         Informational                     [Page 3]
 
                           COSS Evidence Record              October 2026
 
+
+1.  Introduction
+
+   An effect can be authorized in one dimension and forbidden in
+   another.  A mail service may receive both a valid permission to send
+   and bytes derived from confidential data.  The permission answers
+   what authority may continue.  It does not answer where the bytes may
+   flow.
 
    COSS places those distinct security coordinates on the same causal
    execution [4] (Section 13).  This document specifies the evidence
@@ -184,7 +192,51 @@ Gallo                         Informational                     [Page 3]
    (Section 13) [3] (Section 13) when, and only when, they appear in all
    capitals.
 
-1.2.  Scope
+1.2.  Terminology
+
+   *  An *occurrence* is one represented security-relevant execution
+      event.
+
+   *  Pred(e) is the set of represented immediate causal predecessors of
+      occurrence e; Hist(e) is its represented causal history.
+
+   *  A *coordinate* is a profile-defined ordered security-state system
+      with a state space, a "no more permissive than" order, admitted
+      behaviors, evidence requirements, and a verifier.
+
+   *  K is the set of coordinate profiles required by trusted policy for
+      a particular verification decision.
+
+   *  A *COSS Evidence Record (CER)* is authenticated witness material
+      for one occurrence.  It is not itself a verifier verdict.
+
+   *  A *Producer* creates a CER.  A *Verifier* evaluates a CER and its
+      predecessor graph under trusted policy.
+
+   *  A *Profile* supplies concrete representations, cryptographic
+      mechanisms, coordinate semantics, and verification rules.
+
+   *  A *transition class* is root, ordinary, or authorized-relaxation.
+
+
+
+
+Gallo                         Informational                     [Page 4]
+
+                          COSS Evidence Record              October 2026
+
+
+   *  An *authorized relaxation* is an explicitly authorized non-
+      conservative coordinate transition.  It is not an ordinary
+      continuation.
+
+   *  A *relaxation authority* is a trust anchor or a delegated
+      authority whose authorization path terminates at a trust anchor
+      accepted by the Verifier.  Its signature authenticates an
+      authorization; the signature alone does not establish that the
+      authorization is applicable.
+
+1.3.  Scope
 
    This specification defines:
 
@@ -210,7 +262,7 @@ Gallo                         Informational                     [Page 3]
    A mapping to an execution-evidence system is a profile of this
    specification, not a redefinition of PIC or COSS semantics.
 
-1.3.  Relationship to PIC
+1.4.  Relationship to PIC
 
    COSS is the multi-coordinate generalization of PIC.  PIC remains the
    authority coordinate and the source of the authority-specific PoR,
@@ -218,25 +270,27 @@ Gallo                         Informational                     [Page 3]
    other independently defined ordered coordinates and requires all of
    them to refer to one causal occurrence and one predecessor graph.
    COSS does not replace PIC, and PIC continuity alone does not
+   establish continuity for the complete COSS product.
 
 
 
-Gallo                         Informational                     [Page 4]
+
+
+
+Gallo                         Informational                     [Page 5]
 
                           COSS Evidence Record              October 2026
 
 
-   establish continuity for the complete COSS product.
-
-1.4.  Planned Companion Specifications
+1.5.  Planned Companion Specifications
 
    This document is standalone and defines the record model and the
-   semantic conditions for COSS PoR and PoC.  A future companion *COSS
-   Prover and Verifier Specification* (coss-prover-verifier-spec.md) may
-   define concrete proof production, recursive graph verification,
-   verifier-result objects, error semantics, and protocol bindings.  A
-   separate *COSS-to-TRACE Profile* (coss-trace-profile.md) may define a
-   concrete TRACE mapping without making TRACE a dependency of COSS.
+   semantic conditions for COSS PoR and PoC.  A future *COSS Prover and
+   Verifier Specification* may define concrete proof production,
+   recursive graph verification, verifier-result objects, error
+   semantics, and protocol bindings.  A separate future *COSS-to-TRACE
+   Profile* may define a concrete TRACE mapping without making TRACE a
+   dependency of COSS.
 
    Those companion names describe planned work only.  They do not
    identify published specifications, create conformance requirements,
@@ -251,33 +305,35 @@ Gallo                         Informational                     [Page 4]
    Prevention (DLP) service.  Trent stores Alice's documents.  Dave is a
    mail service whose rule forbids confidential data over email.
 
-Alice -- read her documents, for verification --\
-                                                 \
-Bob   -- send official email --------------------> Carol -- send(bytes) --> Dave
-                                                 /
-Trent -- Alice's documents; classification HIGH /
+   Alice -- read for verification --\
+                                     \
+   Bob   -- send official email ------> Carol
+                                     /
+   Trent -- documents; HIGH --------/
+                                         |
+                                         | send(bytes)
+                                         v
+                                        Dave
 
-Dave's rule: no confidential data by email
+   Dave's rule: no confidential data by email
 
    The two permissions can be individually valid while the proposed
    effect remains inadmissible.  Dave receives a permission and bytes:
 
-send request
-  permission: send email
-  bytes:      52 65 6c 61 7a 69 6f 6e 65 ...
+   send request
+     permission: send email
+     bytes:      52 65 6c 61 7a 69 6f 6e 65 ...
 
-authority question: may this occurrence send email?
-flow question:      may these bytes flow to this destination?
-causal question:    which earlier occurrences produced this request and these bytes?
-
-
-
+   authority question: may this occurrence send email?
+   flow question:      may these bytes flow to this destination?
+   causal question:    which earlier occurrences produced this
+                       request and these bytes?
 
 
 
 
 
-Gallo                         Informational                     [Page 5]
+Gallo                         Informational                     [Page 6]
 
                           COSS Evidence Record              October 2026
 
@@ -295,9 +351,12 @@ Gallo                         Informational                     [Page 5]
    down-set Hist(e), not a wall-clock interval and not a second timeline
    per security mechanism [4] (Section 13) [7] (Section 13).
 
-Alice intent ----> Trent release -----\
-                                      > Carol send request ----> Dave effect
-Bob intent --------------------------/
+   Alice intent --> Trent release --\
+                                     > Carol send
+   Bob intent ----------------------/
+                                         |
+                                         v
+                                     Dave effect
 
    Common ancestry, equal timestamps, the same executor, or co-residence
    in one process MUST NOT be treated as proof that two branches are the
@@ -321,6 +380,27 @@ Bob intent --------------------------/
 
    *  the evidence and verification procedure that establish its claims.
 
+   For states x' and x, every conformant coordinate profile MUST make
+   its order semantically monotone:
+
+   x' <=_j x  implies  admitted_j(x') subset-of admitted_j(x)
+
+
+
+
+
+Gallo                         Informational                     [Page 7]
+
+                          COSS Evidence Record              October 2026
+
+
+   The profile MUST justify this implication for its concrete state
+   representation and behavior semantics.  It MUST NOT infer semantic
+   monotonicity merely from a syntactic ordering or from proofs about a
+   different coordinate.  This is a profile proof obligation; it is not
+   inherited automatically from a PIC implementation or from the formal
+   proofs for another state space [4] (Section 13).
+
    For an ordinary causal edge p -> e, COSS continuity requires:
 
    PoR_COSS(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every required j
@@ -330,18 +410,17 @@ Bob intent --------------------------/
 
    PoR_COSS(p, e)  AND  C(e) subset-of C(p)
 
-
-
-
-Gallo                         Informational                     [Page 6]
-
-                          COSS Evidence Record              October 2026
-
-
    An IFC profile may provide a different state and order.  COSS does
    not require distinct coordinates to use the same vocabulary,
    verifier, or artifact format.  It requires their results to constrain
    the same occurrence.
+
+   If a coordinate translates between heterogeneous state spaces, the
+   profile MUST define the translation, prove that it is monotone in the
+   source and target orders, and state the semantic relation preserved
+   across their behavior universes.  A translation that is order-
+   preserving but excessively permissive in its intended security
+   meaning is a profile or deployment error [4] (Section 13).
 
    At an ordinary multi-parent join, the child MUST be no more
    permissive than every parent in every required coordinate.  For PIC
@@ -364,6 +443,13 @@ Gallo                         Informational                     [Page 6]
    coordinate is semantic and implementation-independent: an evidence
    format or project is not itself a coordinate.
 
+
+
+Gallo                         Informational                     [Page 8]
+
+                          COSS Evidence Record              October 2026
+
+
    An execution-integrity profile MUST define its state space, the order
    between states, the behaviors admitted at each state, the exact
    evidence required, the verifier and trust inputs, and the treatment
@@ -371,6 +457,18 @@ Gallo                         Informational                     [Page 6]
    claims from independently verified properties.  Runtime attestation
    or a signature over an evidence envelope MUST NOT, by itself, be
    treated as proof that every claim inside the envelope is true.
+
+   One execution-integrity profile MAY use the relational construction
+   of [6] (Section 13): its state is a positive executor envelope rho,
+   ordinary refinement requires rho(i+1) => rho(i), and admission
+   requires sound evidence that the predecessor envelope holds for the
+   current transition.  Such a profile MUST use positive predicates
+   unless it defines a sound treatment of negation, and missing evidence
+   MUST NOT produce admission.  This is one valid construction, not the
+   mandatory representation of every execution-integrity coordinate.  A
+   profile based on attestation grades or another state space MUST
+   independently define and justify its own order and admitted-behavior
+   semantics.
 
    TRACE is a candidate execution-evidence system for realizing such a
    profile [11] (Section 13).  A TRACE Trust Record can commit to the
@@ -386,14 +484,6 @@ Gallo                         Informational                     [Page 6]
    evidence and may map independently verified TRACE runtime results
    into the execution-integrity coordinate.  Such a profile MUST
    identify the exact TRACE version and revision and MUST define same-
-
-
-
-Gallo                         Informational                     [Page 7]
-
-                          COSS Evidence Record              October 2026
-
-
    occurrence binding, the coordinate order, admission rules,
    predecessor representation, and failure semantics.  Merely naming
    TRACE, carrying a TRACE signature, or asserting a runtime platform
@@ -404,29 +494,40 @@ Gallo                         Informational                     [Page 7]
 
    PoP, PoR, and PoC answer different questions:
 
-   +===========+===========================+==========================+
-   | Primitive | Question                  | Evidence consequence     |
-   +===========+===========================+==========================+
-   | *PoP*     | Does the presenter        | Authenticates            |
-   |           | control a key or          | possession.  It does not |
-   |           | artifact?                 | identify the causal      |
-   |           |                           | occurrence.              |
-   +-----------+---------------------------+--------------------------+
-   | *COSS     | Does this occurrence      | Establishes a profile-   |
-   | PoR*      | validly continue this     | defined causal edge,     |
-   |           | specific predecessor on   | same-occurrence binding, |
-   |           | the shared causal graph?  | and the required         |
-   |           |                           | relationship checks.     |
-   +-----------+---------------------------+--------------------------+
-   | *COSS     | Does the whole            | Composes accepted COSS   |
-   | PoC*      | represented execution     | PoR edges, coordinate    |
-   |           | preserve valid            | refinement, and          |
-   |           | continuation across every | authorized relaxations   |
-   |           | required coordinate?      | across the causal        |
-   |           |                           | history.                 |
-   +-----------+---------------------------+--------------------------+
 
-                                 Table 1
+
+
+
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                          COSS Evidence Record              October 2026
+
+
+   +===========+======================+================================+
+   | Primitive | Question             | Evidence consequence           |
+   +===========+======================+================================+
+   | *PoP*     | Does the presenter   | Authenticates possession.      |
+   |           | control a key or     | It does not identify the       |
+   |           | artifact?            | causal occurrence.             |
+   +-----------+----------------------+--------------------------------+
+   | *COSS     | Does this occurrence | Establishes the profile-       |
+   | PoR*      | validly continue     | defined causal edge.  It       |
+   |           | this specific        | does not by itself             |
+   |           | predecessor on the   | establish occurrence           |
+   |           | shared causal graph? | binding, coordinate            |
+   |           |                      | refinement, or admission.      |
+   +-----------+----------------------+--------------------------------+
+   | *COSS     | Does the represented | Composes accepted COSS         |
+   | PoC*      | execution preserve   | PoR edges with ordinary        |
+   |           | the selected COSS    | coordinate refinement and      |
+   |           | rules across every   | separately authorized          |
+   |           | coordinate in K?     | relaxation boundaries.         |
+   +-----------+----------------------+--------------------------------+
+
+                                  Table 1
 
    PoP MAY protect a COSS record or a referenced artifact, but PoP alone
    MUST NOT be accepted as COSS PoR or COSS PoC.  A digest chain
@@ -435,41 +536,87 @@ Gallo                         Informational                     [Page 7]
    relationships and coordinate rules.
 
    PoR_COSS(p, e) holds only when the Verifier establishes that CER(e)
-   identifies the exact authenticated CER(p) as a predecessor, that the
-   claimed causal edge is valid under the selected profile, that every
-   required evidence item is bound to the occurrence represented by e,
-   and that all required profile-specific relationship checks succeed.
-   When PIC is required, its authority-handoff relationship check
-   contributes to PoR_COSS; that PIC check alone is not the complete
-   COSS relationship result.
+   identifies the exact authenticated CER(p) as a predecessor and that
+   the claimed edge is a valid causal continuation under the selected
+   relationship profile.  Profile-specific checks whose purpose is to
+   witness that causal relation are part of its concrete PoR
+   realization.  Occurrence binding, coordinate-evidence validity,
+   predecessor-state coherence, refinement, freshness, revocation, and
+   admission remain separate checks even when all are required to accept
+   a step.  When PIC is in K, its authority-handoff relationship check
+   contributes the PIC realization of the causal edge; that check alone
+   is not a complete COSS step result.
+
+   For a trusted-policy-selected coordinate set K, define:
+
+   *  OccurrenceBind_COSS(e, K) to mean that the behavior and every
+      required evidence item are bound to the occurrence represented by
+      e;
 
 
 
-Gallo                         Informational                     [Page 8]
+
+
+Gallo                         Informational                    [Page 10]
 
                           COSS Evidence Record              October 2026
 
 
+   *  PredCoherent_COSS(p, e, K) to mean that every coordinate-specific
+      predecessor reference resolves to the corresponding coordinate
+      state committed by the exact CER(p); and
+
+   *  EvidenceValid_COSS(e, K) to mean that each required coordinate
+      state and its evidence are valid under that coordinate's profile
+      and trust inputs.
+
    For an ordinary edge, the accepted step condition is:
 
-   Step_COSS(p, e) = PoR_COSS(p, e)
-                     AND sigma_j(e) <=_j sigma_j(p) for every required j
+   Step_COSS^K(p, e) = PoR_COSS(p, e)
+                       AND OccurrenceBind_COSS(e, K)
+                       AND PredCoherent_COSS(p, e, K)
+                       AND EvidenceValid_COSS(e, K)
+                       AND sigma_j(e) <=_j sigma_j(p) for every j in K
 
    At a join, this condition applies to every represented immediate
-   predecessor.  For an authorized relaxation, the affected coordinate
-   checks are replaced only by the separately verified relaxation rule;
-   unaffected coordinates remain subject to the ordinary condition.
+   predecessor.  For an authorized relaxation, only the affected
+   coordinate order checks are replaced by a separately verified
+   relaxation rule.  PoR, occurrence binding, predecessor coherence,
+   evidence validity, and ordinary refinement of unaffected coordinates
+   remain mandatory.
 
-   PoC_COSS(e) holds only when the resolved predecessor graph for
+   PoC_COSS^K(e) holds only when the resolved predecessor graph for
    Hist(e) is rooted, acyclic, and complete under the selected profile;
-   every represented edge has an accepted COSS PoR; and every required
-   coordinate transition is either ordinary and non-expanding or an
-   explicitly authorized relaxation.  A successful COSS PoC therefore
-   entails PIC PoC when PIC is a required coordinate, but PIC PoC alone
-   does not entail COSS PoC.  Joint admission is a subsequent decision:
-   Admit_COSS(e) additionally requires every coordinate selected by
-   trusted policy to admit the committed behavior at the protected
+   every represented edge has an accepted COSS PoR; every ordinary edge
+   satisfies Step_COSS^K; and every non-conservative transition is an
+   explicitly authorized relaxation satisfying the applicable profile
+   rule.
+
+   Projection of a successful COSS PoC to the PIC coordinate entails PIC
+   PoC only on a path segment containing exclusively ordinary PIC
+   transitions.  At an authorized relaxation, the preceding authority
+   bound does not continue across the relaxation; the ordinary bound
+   restarts from the explicitly authorized resulting state [4]
+   (Section 13).  A COSS PoC that contains such a boundary therefore
+   MUST NOT be presented as one end-to-end PIC PoC across that boundary.
+   Likewise, the PIC confused-deputy exclusion result applies only to
+   request-to-effect paths that satisfy the paper's ordinary-segment
+   premise, together with causal completeness and protected-effect
+   mediation [4] (Section 13).
+
+   PIC PoC alone does not entail COSS PoC.  Joint admission is a
+   subsequent decision: Admit_COSS^K(e) additionally requires every
+   coordinate in K to admit the committed behavior at the protected
    effect.
+
+
+
+
+
+Gallo                         Informational                    [Page 11]
+
+                          COSS Evidence Record              October 2026
+
 
    There is one predecessor graph.  There is not an unrelated PIC chain,
    IFC chain, and execution-integrity chain later correlated by
@@ -485,14 +632,22 @@ Gallo                         Informational                     [Page 8]
 
    The Verifier derives separate results:
 
-   PoR_COSS(p, e) = accepted or rejected
-   PoC_COSS(e)    = accepted or rejected
-   Admit_COSS(e)  = accepted or rejected for the committed behavior
+   PoR_COSS(p, e)   = accepted or rejected
+   PoC_COSS^K(e)    = accepted or rejected
+   Admit_COSS^K(e)  = accepted or rejected for the committed behavior
 
    A profile MAY define a serializable verifier-result object, but it
-   MUST keep that result distinct from the evidence record and MUST
-   identify the Verifier, trust inputs, profile versions, evaluation
-   time, and exact record or graph evaluated.
+   MUST keep that result distinct from the evidence record.  The result
+   MUST identify the Verifier, trust inputs, exact coordinate set K,
+   profile versions, evaluation time, exact record or graph evaluated,
+   and the assurance established for every required coordinate.  If a
+   profile uses the labels full-continuity and artifact-linked, it MUST
+   use them consistently with the PIC Prover and Verifier specification:
+   an artifact-linked result establishes only the stated linkage
+   properties and MUST NOT be presented as full semantic PoR or PoC.  A
+   full COSS continuity result requires full assurance for the causal
+   relation and for every coordinate in K; an aggregate result MUST NOT
+   hide a weaker required-coordinate result.
 
 5.  COSS Evidence Record
 
@@ -501,40 +656,54 @@ Gallo                         Informational                     [Page 8]
 
 
 
-Gallo                         Informational                     [Page 9]
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 12]
 
                           COSS Evidence Record              October 2026
 
 
-        +==============+=========================================+
-        | Field        | Meaning                                 |
-        +==============+=========================================+
-        | version      | The exact COSS evidence specification   |
-        |              | or profile version.                     |
-        +--------------+-----------------------------------------+
-        | occurrence   | A commitment to the concrete execution  |
-        |              | occurrence.                             |
-        +--------------+-----------------------------------------+
-        | policy       | An identifier or commitment for the     |
-        |              | trusted policy that selects required    |
-        |              | coordinates and verification rules.     |
-        +--------------+-----------------------------------------+
-        | transition   | root, ordinary, or authorized-          |
-        |              | relaxation.                             |
-        +--------------+-----------------------------------------+
-        | predecessors | Digest references to the exact          |
-        |              | authenticated predecessor records.      |
-        +--------------+-----------------------------------------+
-        | behavior     | A commitment to the request, message,   |
-        |              | or protected effect being judged.       |
-        +--------------+-----------------------------------------+
-        | evidence     | Typed references to occurrence, causal, |
-        |              | or coordinate evidence.                 |
-        +--------------+-----------------------------------------+
-        | relaxation   | For an authorized relaxation,           |
-        |              | references to its separate              |
-        |              | authorization and affected coordinates. |
-        +--------------+-----------------------------------------+
+    +==============+=================================================+
+    | Field        | Meaning                                         |
+    +==============+=================================================+
+    | version      | The exact COSS evidence specification or        |
+    |              | profile version.                                |
+    +--------------+-------------------------------------------------+
+    | occurrence   | A commitment to the concrete execution          |
+    |              | occurrence.                                     |
+    +--------------+-------------------------------------------------+
+    | policy       | An identifier or commitment for the trusted     |
+    |              | policy that selects required coordinates and    |
+    |              | verification rules.                             |
+    +--------------+-------------------------------------------------+
+    | transition   | root, ordinary, or authorized-relaxation.       |
+    +--------------+-------------------------------------------------+
+    | predecessors | Digest references to the exact authenticated    |
+    |              | predecessor records.                            |
+    +--------------+-------------------------------------------------+
+    | behavior     | A commitment to the request, message, or        |
+    |              | protected effect being judged.                  |
+    +--------------+-------------------------------------------------+
+    | evidence     | Typed references to occurrence, causal, or      |
+    |              | coordinate evidence.                            |
+    +--------------+-------------------------------------------------+
+    | relaxation   | For an authorized relaxation, the affected      |
+    |              | coordinates and commitments to the              |
+    |              | authorization source, authorization rule, exact |
+    |              | input states, resulting states or bounds,       |
+    |              | scope, and applicable freshness evidence.       |
+    +--------------+-------------------------------------------------+
 
                                  Table 2
 
@@ -556,8 +725,7 @@ Gallo                         Informational                     [Page 9]
 
 
 
-
-Gallo                         Informational                    [Page 10]
+Gallo                         Informational                    [Page 13]
 
                           COSS Evidence Record              October 2026
 
@@ -577,6 +745,16 @@ Gallo                         Informational                    [Page 10]
    disclosed if the profile supplies a proof sufficient for refinement
    and admission.
 
+   If coordinate evidence carries its own predecessor identifier or
+   predecessor-state commitment, the profile MUST define how it is
+   resolved.  For every claimed edge p -> e, that reference MUST
+   identify the state of the same coordinate committed by the exact
+   authenticated CER(p).  At a multi-parent join, the check applies
+   separately to the coordinate state associated with every applicable
+   parent.  A valid coordinate artifact referring to another predecessor
+   MUST be rejected rather than correlated by time, actor, workflow, or
+   similar metadata.
+
    A root record has no predecessors.  An ordinary or authorized-
    relaxation record has one or more distinct predecessors.  The
    resolved predecessor relation MUST be acyclic.  A profile MUST NOT
@@ -593,13 +771,97 @@ Gallo                         Informational                    [Page 10]
        together to the occurrence, its predecessor records, and the
        exact evidence-artifact digests.
 
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 14]
+
+                          COSS Evidence Record              October 2026
+
+
+   The boundary-witnessed checkpoint kappa = (B, m, sigma) of [6]
+   (Section 13) is one possible realization of the second method; it is
+   not the only permitted realization.  A profile using that
+   construction MUST state how it discharges the applicable witness
+   assumptions, including cryptographic unforgeability and binding,
+   boundary protocol compliance, sound observation of the consumed
+   handoff, sound executor-profile and relational evidence, replay or
+   single-consumption control, and root validity.
+
+   The base CER has no mandatory top-level freshness field.  A profile
+   MUST nevertheless define freshness and replay semantics and MUST bind
+   any nonce, challenge, sequence, validity interval, consumption
+   marker, or equivalent evidence needed by those semantics.  A unique
+   occurrence commitment or an executed-versus-bound comparison does not
+   by itself establish freshness or prevent replay.
+
    Association performed later from timestamps, actor identifiers,
    workflow labels, or separately valid artifacts is insufficient.  The
    binding MUST prevent an implementation from pairing valid PIC
    evidence from one execution with valid IFC or runtime evidence from
    another.
 
-5.2.  References Are Not Validation
+5.2.  Authorized Relaxation Evidence
+
+   An authorized relaxation MUST identify the authority that approves
+   the non-conservative transition.  That authority MAY be a trust
+   anchor or a delegated authority whose authorization path terminates
+   at a trust anchor accepted under the Verifier's local policy.  The
+   authorization MUST be authenticated and MUST bind:
+
+   *  the applicable policy and authorization rule;
+
+   *  the exact predecessor records and affected input coordinate
+      states;
+
+   *  the occurrence and behavior for which the relaxation is
+      authorized;
+
+   *  every coordinate allowed to change;
+
+   *  the resulting coordinate states or an enforceable bound on them;
+
+   *  the authorization scope and any required freshness or replay
+      evidence; and
+
+   *  any conditions that the receiving boundary must enforce.
+
+
+
+
+
+Gallo                         Informational                    [Page 15]
+
+                          COSS Evidence Record              October 2026
+
+
+   The resulting state of each affected coordinate MUST satisfy the
+   bound or rule explicitly granted by the relaxation authorization.
+   This is a coordinate-profile obligation: COSS does not impose one
+   cross-coordinate order between an authorizer's PIC authority and an
+   IFC, geographic, or execution-integrity state.  For PIC grants or
+   authority composition, the applicable profile MUST define the
+   authority source and prove that the resulting authority does not
+   exceed the grant or composition bound supplied by that source.  For
+   declassification or another coordinate-specific relaxation, the
+   applicable profile MUST define the corresponding authorization
+   semantics.
+
+   A signature by a trusted key authenticates the authorization object;
+   it does not by itself prove that the signer was authorized for this
+   rule, that the object applies to these inputs and this occurrence, or
+   that the resulting state satisfies the authorized bound.  The
+   Verifier MUST establish all of those properties before accepting the
+   relaxation.
+
+5.3.  References Are Not Validation
 
    An authenticated digest reference proves that the signer committed to
    exact artifact bytes.  It does *not* prove that:
@@ -609,14 +871,6 @@ Gallo                         Informational                    [Page 10]
    *  its issuer is trusted for the claimed role;
 
    *  the artifact establishes PoR;
-
-
-
-
-Gallo                         Informational                    [Page 11]
-
-                          COSS Evidence Record              October 2026
-
 
    *  its coordinate state is correctly ordered; or
 
@@ -628,7 +882,7 @@ Gallo                         Informational                    [Page 11]
    verification to fail unless the selected profile defines an
    equivalent self-contained proof.
 
-5.3.  Illustrative Record
+5.4.  Illustrative Record
 
    The following JSON is illustrative and is not a wire format or a
    registry of identifier strings:
@@ -639,37 +893,7 @@ Gallo                         Informational                    [Page 11]
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 12]
+Gallo                         Informational                    [Page 16]
 
                           COSS Evidence Record              October 2026
 
@@ -711,11 +935,24 @@ Gallo                         Informational                    [Page 12]
          "roles": ["occurrence", "coordinate"],
          "coordinate": "execution-integrity",
          "profile": "execution-integrity-profile",
-         "state": { "digest": "sha-256:EXECUTION_INTEGRITY_STATE_DIGEST" },
+         "state": {
+           "digest": "sha-256:EXECUTION_INTEGRITY_STATE_DIGEST"
+         },
          "artifact": { "digest": "sha-256:RUNTIME_EVIDENCE_DIGEST" }
        }
      ]
    }
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 17]
+
+                          COSS Evidence Record              October 2026
+
 
    The record binds three external artifacts to one mail-send
    occurrence.  It does not ask the execution-evidence system to compute
@@ -723,14 +960,7 @@ Gallo                         Informational                    [Page 12]
    integrity.  Dave validates each required profile and then applies the
    joint admission rule.
 
-
-
-Gallo                         Informational                    [Page 13]
-
-                          COSS Evidence Record              October 2026
-
-
-5.4.  Minimal Integration Contract
+5.5.  Minimal Integration Contract
 
    An execution-evidence system can support COSS Evidence Records
    without implementing PIC or IFC internally.  Its profile needs to
@@ -742,10 +972,17 @@ Gallo                         Informational                    [Page 13]
 
    3.  typed digest references to external coordinate evidence;
 
-   4.  same-occurrence binding for those references; and
+   4.  same-occurrence binding for those references;
 
-   5.  a way for the receiving verifier to invoke, or validate the
-       result of, each required coordinate verifier.
+   5.  coordinate-specific predecessor references that resolve to the
+       corresponding states in the exact predecessor CERs;
+
+   6.  a way for the receiving verifier to invoke, or validate the
+       result of, each required coordinate verifier; and
+
+   7.  for a non-conservative transition, separately authenticated
+       relaxation evidence bound to its exact inputs and resulting
+       bounds.
 
    The authority intersection remains a PIC operation.  IFC admission
    remains an IFC operation.  The execution-evidence system records and
@@ -764,6 +1001,15 @@ Gallo                         Informational                    [Page 13]
         authenticating mechanism, trust anchor, algorithm policy, and
         profile-defined freshness or replay rules.
 
+
+
+
+
+Gallo                         Informational                    [Page 18]
+
+                          COSS Evidence Record              October 2026
+
+
    3.   *Policy selection.* Resolve the policy under local trusted
         configuration and determine the required coordinates, evidence
         profiles, and verification rules.  The producer MUST NOT be able
@@ -776,16 +1022,6 @@ Gallo                         Informational                    [Page 13]
    5.   *Reference integrity.* Resolve every required artifact and
         verify its digest over the profile-defined exact bytes.
 
-
-
-
-
-
-Gallo                         Informational                    [Page 14]
-
-                          COSS Evidence Record              October 2026
-
-
    6.   *Evidence validity.* Apply the verifier and trust policy
         declared by every required evidence profile.  A reference
         signature is not a substitute for this step.
@@ -796,18 +1032,44 @@ Gallo                         Informational                    [Page 14]
         required PoR evidence is valid.  Root, ordinary linear, ordinary
         join, and authorized-relaxation records MUST NOT be confused.
 
-   8.   *Coordinate continuity.* For an ordinary record, verify that
-        every required coordinate is no more permissive than every
+   8.   *Coordinate-predecessor coherence.* For every coordinate-
+        specific predecessor reference, verify that it resolves to the
+        corresponding coordinate state committed by the exact
+        predecessor CER.  At a join, perform this check independently
+        for every applicable parent.
+
+   9.   *Coordinate continuity.* For an ordinary record, verify that
+        every coordinate in K is no more permissive than every
         applicable predecessor under that coordinate's declared order.
+        If a profile performs a heterogeneous translation, verify its
+        required translation and semantic-soundness conditions.
 
-   9.   *Relaxation authorization.* For an authorized relaxation, verify
-        its separate authorization, the coordinates it may change, and
-        the new bound.  Unaffected coordinates remain subject to
-        ordinary continuity.
+   10.  *Relaxation authorization.* For an authorized relaxation,
+        authenticate the authorization source to a locally accepted
+        trust anchor; verify its delegated authority when applicable;
+        verify the bound policy, inputs, occurrence, behavior, affected
+        coordinates, resulting states or bounds, scope, and freshness;
+        and enforce the coordinate-specific relaxation rule.  Unaffected
+        coordinates remain subject to ordinary continuity.
 
-   10.  *Joint admission.* Before a protected effect, verify that every
-        coordinate required by policy admits the committed behavior.
-        Any required rejection rejects the effect.
+   11.  *Joint admission.* Before a protected effect, verify that every
+        coordinate in K admits the committed behavior.  Any required
+        rejection rejects the effect.
+
+
+
+
+
+
+Gallo                         Informational                    [Page 19]
+
+                          COSS Evidence Record              October 2026
+
+
+   12.  *Result construction.* Bind the verdict to the exact record or
+        graph, K, profile versions, trust inputs, evaluation time, and
+        per-coordinate assurance.  Do not aggregate an artifact-linked
+        required-coordinate result into a full COSS continuity claim.
 
    An implementation MUST fail closed when a required coordinate,
    artifact, verifier, causal edge, or binding cannot be established.
@@ -820,11 +1082,12 @@ Gallo                         Informational                    [Page 14]
 
    For Carol's proposed mail effect, assume the evidence establishes:
 
-PIC authority:       send-email is present
-IFC provenance:      the bytes depend on Alice's HIGH documents
-execution integrity: the required occurrence properties are independently established
-destination policy:  external email is LOW
-causal binding:      all results refer to this exact send occurrence
+   PIC authority:       send-email is present
+   IFC provenance:      the bytes depend on Alice's HIGH documents
+   execution integrity: the required occurrence properties are
+                        independently established
+   destination policy:  external email is LOW
+   causal binding:      all results refer to this exact send occurrence
 
    The authority coordinate admits send-email.  The IFC coordinate
    rejects the HIGH -> LOW flow.  Dave therefore rejects the effect.
@@ -834,24 +1097,30 @@ causal binding:      all results refer to this exact send occurrence
    protection requires the mail effect to pass through Dave or another
    complete mediation boundary.
 
-
-
-
-Gallo                         Informational                    [Page 15]
-
-                          COSS Evidence Record              October 2026
-
-
 7.2.  Accepted DLP Path
 
-   Suppose Carol does not initially hold send-email.  Bob invokes Carol
-   by combining the read-for-verification authority received from Alice
-   with Bob's own send-email authority.  That union is not an ordinary
-   join.  It MUST be represented as an explicit authorized composition
-   whose COSS record has transition class authorized-relaxation.
+   Suppose Carol does not initially hold send-email.  Alice's read-for-
+   verification continuity and Bob's send-email continuity arrive as
+   separate inputs.  For this example, Dave's domain trusts a
+   composition authority P, either directly as a trust anchor or through
+   a validated delegation chain.  Policy permits P to authorize their
+   composition only for a DLP-mediated mail occurrence.  P signs an
+   authorization that binds the exact Alice and Bob predecessor CERs,
+   Carol's DLP occurrence, the applicable policy, the resulting PIC
+   authority bound, the output destination, scope, and freshness
+   evidence.  That union is not an ordinary join.  It MUST be
+   represented as an explicit authorized composition whose COSS record
+   has transition class authorized-relaxation.
 
    Carol then evaluates the exact candidate output under the selected
    DLP or IFC profile.  Two cases are distinct:
+
+
+
+Gallo                         Informational                    [Page 20]
+
+                          COSS Evidence Record              October 2026
+
 
    1.  If the verified output state already admits flow to the
        destination, no IFC relaxation is needed.
@@ -864,36 +1133,47 @@ Gallo                         Informational                    [Page 15]
 
    The evidence graph makes both possible security boundaries visible:
 
-Alice read ----\
-                > [authorized composition: read + send] ---> Carol · DLP
-Bob send  -----/                                             |
-                                                             | verifies exact output
-Trent data ------------------------------------------------->|
-                                                             v
-                                             [declassification, if required]
-                                                             |
-                                                             v
-                                                     Dave mail effect
+   Alice read ----\
+                   > [authorized composition] --> Carol DLP
+   Bob send  -----/                                |
+   P authorization ------------------------------>|
+                                                  | verifies output
+   Trent data ----------------------------------->|
+                                                  v
+                                     [declassification if needed]
+                                                  |
+                                                  v
+                                            Dave mail
 
    The record presented to Dave binds at least:
 
-behavior:                 digest of destination, message, and exact output bytes
-predecessor:              digest of the authenticated predecessor record
-PIC coordinate evidence:  digest of the authorized composition and authority state
-IFC coordinate evidence:  digest of the DLP/IFC result for the exact output
-relaxation evidence:      digest of declassification authorization, when required
-occurrence evidence:      digest of the execution evidence for this handoff
+   behavior:                 digest of destination, message,
+                             and exact output bytes
+   predecessor:              digest of the authenticated
+                             predecessor record
+   PIC coordinate evidence:  digest of the authorized composition
+                             and authority state
+   IFC coordinate evidence:  digest of the DLP/IFC result for the
+                             exact output
+   relaxation evidence:      digest of P's authorization and any
+                             required declassification
+   occurrence evidence:      digest of the execution evidence for
+                             this handoff
 
-   Dave accepts only if the composition is authorized, the PIC state
-   admits send-email, the DLP or IFC result admits the exact output and
-   destination, any required declassification is authorized, and every
-   item is bound to the same occurrence.  Without the required
-   composition or declassification evidence, valid evidence in another
-   coordinate does not repair the missing rule.
+   Dave accepts only if P chains to an accepted trust anchor, P is
+   authorized for the bound composition rule, the resulting PIC state
+   stays within the signed composition bound and admits send-email, the
+   DLP or IFC result admits the exact output and destination, any
+   required declassification is authorized, and every item is bound to
+   the same occurrence.  Without the required composition or
+   declassification evidence, valid evidence in another coordinate does
+   not repair the missing rule.
 
 
 
-Gallo                         Informational                    [Page 16]
+
+
+Gallo                         Informational                    [Page 21]
 
                           COSS Evidence Record              October 2026
 
@@ -907,14 +1187,16 @@ Gallo                         Informational                    [Page 16]
 
    A *COSS Evidence Verifier* conforms when it implements the ordered
    verification procedure, validates every required external profile
-   independently, and fails closed on missing or unsupported required
-   evidence.
+   independently, reports K and per-coordinate assurance, and fails
+   closed on missing or unsupported required evidence.
 
    A *COSS Evidence Profile* conforms when it defines the concrete
    serialization, authenticating mechanism, exact-byte digest rules,
    occurrence and behavior commitments, coordinate identifiers,
-   coordinate orders, evidence verifiers, freshness rules, and required-
-   coordinate policy needed to realize this specification.
+   semantically monotone coordinate orders, predecessor-state coherence,
+   heterogeneous translations when used, evidence verifiers, freshness
+   rules, authorized-relaxation rules, assurance semantics, and the
+   required-coordinate policy needed to realize this specification.
 
    Conformance to this document does not imply conformance to PIC, an
    IFC system, or any referenced evidence system.  Those claims require
@@ -947,9 +1229,7 @@ Gallo                         Informational                    [Page 16]
 
 
 
-
-
-Gallo                         Informational                    [Page 17]
+Gallo                         Informational                    [Page 22]
 
                           COSS Evidence Record              October 2026
 
@@ -1005,10 +1285,32 @@ Gallo                         Informational                    [Page 17]
 
 
 
-Gallo                         Informational                    [Page 18]
+Gallo                         Informational                    [Page 23]
 
                           COSS Evidence Record              October 2026
 
+
+9.2.  Visual References
+
+   The following supplementary videos provide visual explanations of the
+   causal-time, same-history evidence, and full-provenance concepts used
+   by PIC and COSS:
+
+   *  *18 October 2026 — causal time in authorization.* _Encoding causal
+      time in the authorization protocol · Same key, different history_,
+      published by Permguard [13] (Section 13).
+
+   *  *19 October 2026 — authority and information on one history.*
+      _Temporal evidence: authority and information on one history · A
+      single evidence_, published by Permguard [14] (Section 13).
+
+   *  *20 October 2026 — agentic loops and effect provenance.* _Agentic
+      loops and full provenance: the evidence of every effect_,
+      published by Permguard [15] (Section 13).
+
+   These audiovisual references are informative explanations.  They do
+   not replace the formal publications or define conformance
+   requirements.
 
 10.  Security Considerations
 
@@ -1034,6 +1336,16 @@ Gallo                         Informational                    [Page 18]
    protected effect.  This specification cannot protect causes or
    effects omitted from the modeled and mediated execution.
 
+
+
+
+
+
+Gallo                         Informational                    [Page 24]
+
+                          COSS Evidence Record              October 2026
+
+
    Replay, fan-out, freshness, revocation, trust-anchor compromise, and
    equivocation remain profile and deployment concerns.  A valid
    historical record is not automatically valid for a new occurrence.
@@ -1048,23 +1360,11 @@ Gallo                         Informational                    [Page 18]
    Digest references can still enable correlation when the same artifact
    is reused across domains.
 
-12.  Registry Considerations
+12.  IANA Considerations
 
-   This version defines no shared protocol registry and requests no
-   external registry action.  A future interoperability profile may
-   define registries for coordinate identifiers, evidence roles, media
-   types, digest algorithms, transition classes, or error values.
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 19]
-
-                          COSS Evidence Record              October 2026
-
+   This document has no IANA actions.  A future interoperability profile
+   may define registries for coordinate identifiers, evidence roles,
+   media types, digest algorithms, transition classes, or error values.
 
 13.  References
 
@@ -1095,6 +1395,13 @@ Gallo                         Informational                    [Page 19]
       Agents_. arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
       (https://arxiv.org/abs/2607.08906)
 
+
+
+Gallo                         Informational                    [Page 25]
+
+                          COSS Evidence Record              October 2026
+
+
    *  [6] Gallo, N. (25 September 2026). _Beyond Proof of Possession: A
       Relational Theory of Authority_. Zenodo.  DOI: 10.5281/
       zenodo.23102206 (https://doi.org/10.5281/zenodo.23102206)
@@ -1112,15 +1419,6 @@ Gallo                         Informational                    [Page 19]
       Continuity for Distributed Execution Systems_. Archived working
       paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
       (https://doi.org/10.5281/zenodo.17777421)
-
-
-
-
-
-Gallo                         Informational                    [Page 20]
-
-                          COSS Evidence Record              October 2026
-
 
    *  [10] Gallo, N., Silvestri, S., & Radesca, A. (forthcoming 2026).
       _Authority Continuity for Verifiable Lineage in Distributed
@@ -1141,23 +1439,43 @@ Gallo                         Informational                    [Page 20]
       (https://trace.agentrust-io.com/docs/rfcs/runtime-evidence-
       profile/)
 
+   *  [13] Permguard. (18 October 2026). _Encoding causal time in the
+      authorization protocol · Same key, different history_. YouTube
+      video. youtube.com/watch?v=liYpy6QaBGo (https://www.youtube.com/
+      watch?v=liYpy6QaBGo)
+
+   *  [14] Permguard. (19 October 2026). _Temporal evidence: authority
+      and information on one history · A single evidence_. YouTube
+      video. youtube.com/watch?v=cWoJiUnwHYg (https://www.youtube.com/
+      watch?v=cWoJiUnwHYg)
+
+
+
+
+
+Gallo                         Informational                    [Page 26]
+
+                          COSS Evidence Record              October 2026
+
+
+   *  [15] Permguard. (20 October 2026). _Agentic loops and full
+      provenance: the evidence of every effect_. YouTube video.
+      youtube.com/watch?v=yceBw8TD6Ek (https://www.youtube.com/
+      watch?v=yceBw8TD6Ek)
+
 14.  Document History
 
    This section is informative.
 
-   *  *0.2 — 26 October 2026.* Initial public draft defining protocol-
-      neutral, same-occurrence binding of PIC authority evidence, IFC
-      evidence, runtime provenance, and other COSS security coordinates
-      on one causal evidence graph.
-
-   *  *0.2 revision — 26 October 2026.* Named the transportable artifact
-      the COSS Evidence Record; defined COSS PoR, COSS PoC, and their
-      distinction from the evidence record; made the relationship to PIC
-      explicit; added execution integrity as an optional,
-      implementation-independent coordinate; identified TRACE as a
-      candidate evidence system for a future profile; and recorded the
-      planned COSS Prover and Verifier and COSS-to-TRACE companion
-      specifications without making them current dependencies.
+   *  *0.2 — 26 October 2026.* Initial public draft defining the COSS
+      Evidence Record; protocol-neutral same-occurrence binding of PIC,
+      IFC, execution-integrity, and other coordinate evidence; COSS PoR
+      and PoC over a trusted-policy-selected coordinate set; ordinary-
+      segment and authorized-relaxation semantics; coordinate
+      predecessor coherence; per-coordinate assurance; optional TRACE
+      integration; and the planned COSS Prover and Verifier and COSS-to-
+      TRACE companion specifications without making them current
+      dependencies.
 
 15.  Acknowledgments
 
@@ -1165,18 +1483,6 @@ Gallo                         Informational                    [Page 20]
    and do not define authorship, conformance, endorsement, or technical
    responsibility.  Names are added only when a concrete contribution
    has been identified and the person agrees to be listed.
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 21]
-
-                          COSS Evidence Record              October 2026
-
 
 16.  Contributors
 
@@ -1203,30 +1509,4 @@ Author's Address
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 22]
+Gallo                         Informational                    [Page 27]

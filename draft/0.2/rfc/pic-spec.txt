@@ -94,15 +94,15 @@ Table of Contents
    3.  Documents . . . . . . . . . . . . . . . . . . . . . . . . . .   5
    4.  Origins, Authorship, and Historical Record  . . . . . . . . .   7
      4.1.  Historical References . . . . . . . . . . . . . . . . . .   7
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
    6.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   9
    7.  Registry Considerations . . . . . . . . . . . . . . . . . . .   9
    8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      8.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
      8.2.  Informative References  . . . . . . . . . . . . . . . . .   9
    9.  Document History  . . . . . . . . . . . . . . . . . . . . . .  10
-   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  10
-   11. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  10
+   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  11
+   11. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  11
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  11
 
 
@@ -156,12 +156,12 @@ Gallo                         Informational                     [Page 2]
    1.  A root PIC Context of Authority establishes the upper authority
        bound for its lineage.
 
-   2.  Every accepted non-root advancement MUST continue exactly one
-       causal predecessor.
+   2.  Every accepted non-root ordinary linear advancement MUST continue
+       exactly one causal predecessor.  An ordinary multi-parent join
+       MUST identify every immediate causal predecessor and satisfy the
+       per-parent non-expansion rule stated below.
 
-   3.  The selected profile MUST establish the required Proof of
-       Relationship (PoR) relation between the predecessor and
-       successor.
+
 
 
 
@@ -169,6 +169,10 @@ Gallo                         Informational                     [Page 3]
 
                             PIC Specification               October 2026
 
+
+   3.  The selected profile MUST establish the required Proof of
+       Relationship (PoR) relation between the predecessor and
+       successor.
 
    4.  Successor authority MUST be no greater than predecessor authority
        under the selected profile's attenuation order.  For set-valued
@@ -214,10 +218,6 @@ Gallo                         Informational                     [Page 3]
    does not prove that hidden state, an omitted physical path, or an
    unmediated effect was represented [4] (Section 8) [5] (Section 8).
 
-   The exactly-one-predecessor rule applies to an ordinary linear
-   advancement.  Forks produce separate valid paths.  A profile that
-   represents an ordinary multi-parent causal join MUST keep the child
-   security state no more permissive than every parent; for set-valued
 
 
 
@@ -226,6 +226,10 @@ Gallo                         Informational                     [Page 4]
                             PIC Specification               October 2026
 
 
+   The exactly-one-predecessor rule applies to an ordinary linear
+   advancement.  Forks produce separate valid paths.  A profile that
+   represents an ordinary multi-parent causal join MUST keep the child
+   security state no more permissive than every parent; for set-valued
    authority, the child authority is therefore a subset of the
    intersection of the parent authorities.  A composition, grant,
    endorsement, or other non-conservative transition MUST be explicit
@@ -270,10 +274,6 @@ Gallo                         Informational                     [Page 4]
    |                           | and causal        |      |            |
    |                           | cutoffs,          |      |            |
    |                           | optional          |      |            |
-   |                           | authenticated     |      |            |
-   |                           | selectors,        |      |            |
-   |                           | position or       |      |            |
-   |                           | ancestry          |      |            |
 
 
 
@@ -282,6 +282,10 @@ Gallo                         Informational                     [Page 5]
                             PIC Specification               October 2026
 
 
+   |                           | authenticated     |      |            |
+   |                           | selectors,        |      |            |
+   |                           | position or       |      |            |
+   |                           | ancestry          |      |            |
    |                           | witnesses,        |      |            |
    |                           | revocation        |      |            |
    |                           | authorization,    |      |            |
@@ -326,10 +330,6 @@ Gallo                         Informational                     [Page 5]
    |                           | interoperability  |      |            |
    |                           | through selected  |      |            |
    |                           | exchange          |      |            |
-   |                           | profiles.         |      |            |
-   +---------------------------+-------------------+------+------------+
-   | Causally Ordered          | Protocol-         |Draft | 2026-10-26 |
-   | Security-State (COSS)     | neutral,          |0.2   |            |
 
 
 
@@ -338,6 +338,10 @@ Gallo                         Informational                     [Page 6]
                             PIC Specification               October 2026
 
 
+   |                           | profiles.         |      |            |
+   +---------------------------+-------------------+------+------------+
+   | Causally Ordered          | Protocol-         |Draft | 2026-10-26 |
+   | Security-State (COSS)     | neutral,          |0.2   |            |
    | Evidence Record           | transportable     |      |            |
    | (https://github.com/pic-  | same-occurrence   |      |            |
    | protocol/pic-             | evidence for PIC  |      |            |
@@ -379,11 +383,7 @@ Gallo                         Informational                     [Page 6]
 
    The publicly verifiable research record is:
 
-   *  *1 December 2025 — initial public PIC Model working paper.* _PIC
-      Model — Provenance Identity Continuity for Distributed Execution
-      Systems_, Zenodo record 17777421 [7] (Section 8).  That archived
-      draft is retained for historical reference and is not an
-      implementation specification.
+
 
 
 
@@ -393,6 +393,12 @@ Gallo                         Informational                     [Page 7]
 
                             PIC Specification               October 2026
 
+
+   *  *1 December 2025 — initial public PIC Model working paper.* _PIC
+      Model — Provenance Identity Continuity for Distributed Execution
+      Systems_, Zenodo record 17777421 [7] (Section 8).  That archived
+      draft is retained for historical reference and is not an
+      implementation specification.
 
    *  *5 December 2025 — authority-propagation analysis.* _Authority
       Propagation Models: PoP vs PoC and the Confused Deputy Problem_,
@@ -429,14 +435,8 @@ Gallo                         Informational                     [Page 7]
    reuse of PIC specification materials is governed separately by the
    applicable CC BY 4.0 license.
 
-5.  Security Considerations
 
-   The security consequences of PIC depend on the concrete profile and
-   its realization of PoR, non-expansion, freshness, request or
-   execution binding, revocation, and complete mediation.
-   Authentication of artifacts or possession of keys alone does not
-   establish causal continuity.  The subordinate specifications define
-   the detailed security requirements for their respective mechanisms.
+
 
 
 
@@ -449,6 +449,15 @@ Gallo                         Informational                     [Page 8]
 
                             PIC Specification               October 2026
 
+
+5.  Security Considerations
+
+   The security consequences of PIC depend on the concrete profile and
+   its realization of PoR, non-expansion, freshness, request or
+   execution binding, revocation, and complete mediation.
+   Authentication of artifacts or possession of keys alone does not
+   establish causal continuity.  The subordinate specifications define
+   the detailed security requirements for their respective mechanisms.
 
 6.  Privacy Considerations
 
@@ -487,15 +496,6 @@ Gallo                         Informational                     [Page 8]
       Agents_. arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
       (https://arxiv.org/abs/2607.08906)
 
-   *  [4] Gallo, N. (25 September 2026). _Beyond Proof of Possession: A
-      Relational Theory of Authority_. Zenodo.  DOI: 10.5281/
-      zenodo.23102206 (https://doi.org/10.5281/zenodo.23102206)
-
-   *  [5] Gallo, N. (2 October 2026). _Full Provenance on the COSS
-      Causal Axis: An Event-Level Closure of Causal Attribution and
-      Confused-Deputy Exclusion_. Zenodo.  DOI: 10.5281/zenodo.23102373
-      (https://doi.org/10.5281/zenodo.23102373)
-
 
 
 
@@ -505,6 +505,15 @@ Gallo                         Informational                     [Page 9]
 
                             PIC Specification               October 2026
 
+
+   *  [4] Gallo, N. (25 September 2026). _Beyond Proof of Possession: A
+      Relational Theory of Authority_. Zenodo.  DOI: 10.5281/
+      zenodo.23102206 (https://doi.org/10.5281/zenodo.23102206)
+
+   *  [5] Gallo, N. (2 October 2026). _Full Provenance on the COSS
+      Causal Axis: An Event-Level Closure of Causal Attribution and
+      Confused-Deputy Exclusion_. Zenodo.  DOI: 10.5281/zenodo.23102373
+      (https://doi.org/10.5281/zenodo.23102373)
 
    *  [6] Gallo, N. (5 December 2025). _Authority Propagation Models:
       PoP vs PoC and the Confused Deputy Problem_. Zenodo.  DOI:
@@ -541,6 +550,18 @@ Gallo                         Informational                     [Page 9]
       several security coordinates and explicit COSS Proof of
       Relationship and Proof of Continuity verification.
 
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 10]
+
+                            PIC Specification               October 2026
+
+
 10.  Acknowledgments
 
    Acknowledgments recognize review, discussion, or editorial assistance
@@ -555,32 +576,11 @@ Gallo                         Informational                     [Page 9]
    the historical origin of the PIC Model and from stewardship of the
    PIC Specifications.
 
-
-
-Gallo                         Informational                    [Page 10]
-
-                            PIC Specification               October 2026
-
-
 Author's Address
 
    Nicola Gallo
    Nitro Agility S.r.l.
    Email: nicola.gallo@nitroagility.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

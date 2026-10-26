@@ -111,8 +111,10 @@ the following invariants:
 
 1. A root PIC Context of Authority establishes the upper authority bound for its
    lineage.
-2. Every accepted non-root advancement MUST continue exactly one causal
-   predecessor.
+2. Every accepted non-root ordinary linear advancement MUST continue exactly
+   one causal predecessor. An ordinary multi-parent join MUST identify every
+   immediate causal predecessor and satisfy the per-parent non-expansion rule
+   stated below.
 3. The selected profile MUST establish the required Proof of Relationship
    (PoR) relation between the predecessor and successor.
 4. Successor authority MUST be no greater than predecessor authority under the
