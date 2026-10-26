@@ -12,9 +12,9 @@
 ]>
 
 
-<rfc ipr="none" docName="coss-temporal-evidence-02" category="info" submissionType="independent" tocInclude="true" sortRefs="true" symRefs="true">
+<rfc ipr="none" docName="coss-evidence-record-02" category="info" submissionType="independent" tocInclude="true" sortRefs="true" symRefs="true">
   <front>
-    <title abbrev="COSS Temporal Evidence">COSS Temporal Evidence</title>
+    <title abbrev="COSS Evidence Record">Causally Ordered Security-State (COSS) Evidence Record</title>
 
     <author initials="N." surname="Gallo" fullname="Nicola Gallo">
       <organization>Nitro Agility S.r.l.</organization>
@@ -35,9 +35,11 @@
 <?line 76?>
 
 <t>This document is a subordinate specification of the <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md">PIC Specification 0.2</eref>.
-It defines <strong>COSS Temporal Evidence</strong>: a protocol-neutral way to bind evidence from several security coordinates to one causal execution
-occurrence. A record may reference PIC authority-continuity evidence, information-flow evidence, runtime provenance, geographic evidence, or
-other profile-defined evidence without absorbing the semantics of those systems.</t>
+It defines the <strong>Causally Ordered Security-State (COSS) Evidence Record (CER)</strong>: a protocol-neutral, transportable record that binds evidence from several security
+coordinates to one causal execution occurrence. COSS generalizes PIC from one authority coordinate to a finite product of ordered security
+coordinates while retaining PIC as the authority coordinate and preserving the foundational distinction between Proof of Relationship (PoR)
+and Proof of Continuity (PoC). A record may reference PIC authority-continuity evidence, information-flow evidence, execution-integrity
+evidence, geographic evidence, or other profile-defined evidence without absorbing the semantics of those systems.</t>
 
 <t>The central rule is simple: <strong>one occurrence, one causal history, several independently verified coordinates</strong>. An authenticated digest
 reference proves that a record committed to exact artifact bytes; it does not prove that the referenced claim is true. Each required artifact
@@ -57,7 +59,7 @@ as evidence of one effect.</t>
 
 <t><strong>Project:</strong> PIC Protocol
 <strong>Project Website:</strong> <eref target="https://www.pic-protocol.org/">www.pic-protocol.org</eref>
-<strong>Document:</strong> coss-temporal-evidence-02
+<strong>Document:</strong> coss-evidence-record-02
 <strong>Version:</strong> 0.2 (Draft)
 <strong>Document Status:</strong> Public Draft
 <strong>Intended Use:</strong> Informational and Experimental
@@ -65,7 +67,7 @@ as evidence of one effect.</t>
 <strong>Last Updated:</strong> 2026-10-26
 <strong>Editor(s):</strong> Nicola Gallo (Nitro Agility S.r.l.)
 <strong>Steward:</strong> Nitro Agility S.r.l.
-<strong>Source:</strong> <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/coss-evidences.md">github.com/pic-protocol/pic-spec/draft/0.2/coss-evidences.md</eref></t>
+<strong>Source:</strong> <eref target="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/coss-evidence-record-spec.md">github.com/pic-protocol/pic-spec/draft/0.2/coss-evidence-record-spec.md</eref></t>
 
 
     </note>
@@ -156,7 +158,7 @@ This notice does not add restrictions to that license.</t>
   <middle>
 
 
-<?line 88?>
+<?line 90?>
 
 <section anchor="introduction"><name>Introduction</name>
 
@@ -178,8 +180,9 @@ control (IFC), runtime attestation, or any other coordinate.</t>
 <t>This specification defines:</t>
 
 <t><list style="symbols">
-  <t>the logical contents of a COSS Temporal Evidence Record;</t>
+  <t>the logical contents of a COSS Evidence Record;</t>
   <t>the binding of coordinate evidence to one execution occurrence and its causal predecessor set;</t>
+  <t>execution integrity as an optional security coordinate, distinct from the evidence system that realizes it;</t>
   <t>the distinction between Proof of Possession (PoP), Proof of Relationship (PoR), and Proof of Continuity (PoC);</t>
   <t>ordered verification of ordinary continuations, joins, and explicit authorized relaxations; and</t>
   <t>the limits of digest references and external evidence.</t>
@@ -188,6 +191,25 @@ control (IFC), runtime attestation, or any other coordinate.</t>
 <t>This specification does <strong>not</strong> define a serialization, signature suite, transport, evidence-retention system, PIC representation, IFC model,
 or product-specific mapping. Profiles define those choices. A mapping to an execution-evidence system is a profile of this specification, not
 a redefinition of PIC or COSS semantics.</t>
+
+</section>
+<section anchor="relationship-to-pic"><name>Relationship to PIC</name>
+
+<t>COSS is the multi-coordinate generalization of PIC. PIC remains the authority coordinate and the source of the authority-specific PoR, PoC,
+and non-expansion semantics. COSS places that coordinate beside other independently defined ordered coordinates and requires all of them to
+refer to one causal occurrence and one predecessor graph. COSS does not replace PIC, and PIC continuity alone does not establish continuity
+for the complete COSS product.</t>
+
+</section>
+<section anchor="planned-companion-specifications"><name>Planned Companion Specifications</name>
+
+<t>This document is standalone and defines the record model and the semantic conditions for COSS PoR and PoC. A future companion <strong>COSS Prover
+and Verifier Specification</strong> (<spanx style="verb">coss-prover-verifier-spec.md</spanx>) may define concrete proof production, recursive graph verification,
+verifier-result objects, error semantics, and protocol bindings. A separate <strong>COSS-to-TRACE Profile</strong> (<spanx style="verb">coss-trace-profile.md</spanx>) may define a
+concrete TRACE mapping without making TRACE a dependency of COSS.</t>
+
+<t>Those companion names describe planned work only. They do not identify published specifications, create conformance requirements, or alter
+the requirements of this document until separate documents are published and explicitly versioned.</t>
 
 </section>
 </section>
@@ -258,13 +280,13 @@ Sigma(e) = (sigma_j(e)) for every j in J
 <t>For an ordinary causal edge <spanx style="verb">p -&gt; e</spanx>, COSS continuity requires:</t>
 
 <figure><artwork><![CDATA[
-PoR(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every required j
+PoR_COSS(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every required j
 ]]></artwork></figure>
 
 <t>PIC is the authority coordinate of this construction. For set-valued PIC authority <spanx style="verb">C</spanx>, the order is set inclusion:</t>
 
 <figure><artwork><![CDATA[
-PoR(p, e)  AND  C(e) subset-of C(p)
+PoR_COSS(p, e)  AND  C(e) subset-of C(p)
 ]]></artwork></figure>
 
 <t>An IFC profile may provide a different state and order. COSS does not require distinct coordinates to use the same vocabulary, verifier, or
@@ -279,8 +301,32 @@ C(e) subset-of intersection of C(p), for every p in Pred(e)
 <t>A grant, authority composition, declassification, endorsement, or other non-conservative change MUST be represented as an explicit
 authorized relaxation. It MUST NOT be presented as an ordinary continuation.</t>
 
+<section anchor="execution-integrity-coordinate"><name>Execution Integrity Coordinate</name>
+
+<t><strong>Execution integrity</strong> is an optional COSS coordinate describing which properties of the concrete execution a verifier has established.
+A profile may include properties such as the execution environment, measured workload, binding between that environment and the
+record-signing key, policy commitment, or transcript commitment. The coordinate is semantic and implementation-independent: an evidence
+format or project is not itself a coordinate.</t>
+
+<t>An execution-integrity profile MUST define its state space, the order between states, the behaviors admitted at each state, the exact
+evidence required, the verifier and trust inputs, and the treatment of missing or unsupported evidence. It MUST distinguish producer claims
+from independently verified properties. Runtime attestation or a signature over an evidence envelope MUST NOT, by itself, be treated as
+proof that every claim inside the envelope is true.</t>
+
+<t>TRACE is a candidate execution-evidence system for realizing such a profile <xref target="references">[11]</xref>. A TRACE Trust Record can commit to the
+program or workload named by the producer, runtime, policy, data classification, tool transcript, build provenance, and transparency
+information. TRACE version 0.2 authenticates the producer's record but does not by itself establish the truth of each contained claim. Its
+runtime-evidence work is currently a non-normative proposal for a future version and defines candidate attestation grades and external
+platform-verifier inputs <xref target="references">[12]</xref>.</t>
+
+<t>A future COSS-to-TRACE profile may use a TRACE record as occurrence evidence and may map independently verified TRACE runtime results into
+the execution-integrity coordinate. Such a profile MUST identify the exact TRACE version and revision and MUST define same-occurrence
+binding, the coordinate order, admission rules, predecessor representation, and failure semantics. Merely naming TRACE, carrying a TRACE
+signature, or asserting a runtime platform does not establish conformance to this specification or to an execution-integrity profile.</t>
+
 </section>
-<section anchor="pop-por-and-poc-in-coss-evidence"><name>PoP, PoR, and PoC in COSS Evidence</name>
+</section>
+<section anchor="coss-proof-of-relationship-and-proof-of-continuity"><name>COSS Proof of Relationship and Proof of Continuity</name>
 
 <t>PoP, PoR, and PoC answer different questions:</t>
 
@@ -291,24 +337,64 @@ authorized relaxation. It MUST NOT be presented as an ordinary continuation.</t>
       <c><strong>PoP</strong></c>
       <c>Does the presenter control a key or artifact?</c>
       <c>Authenticates possession. It does not identify the causal occurrence.</c>
-      <c><strong>PoR</strong></c>
-      <c>Does this occurrence validly continue this specific predecessor?</c>
-      <c>Establishes a profile-defined causal edge and binds the successor to the predecessor record.</c>
-      <c><strong>PoC</strong></c>
-      <c>Does the whole represented execution preserve valid continuation?</c>
-      <c>Composes accepted PoR edges and coordinate refinement across the causal history.</c>
+      <c><strong>COSS PoR</strong></c>
+      <c>Does this occurrence validly continue this specific predecessor on the shared causal graph?</c>
+      <c>Establishes a profile-defined causal edge, same-occurrence binding, and the required relationship checks.</c>
+      <c><strong>COSS PoC</strong></c>
+      <c>Does the whole represented execution preserve valid continuation across every required coordinate?</c>
+      <c>Composes accepted COSS PoR edges, coordinate refinement, and authorized relaxations across the causal history.</c>
 </texttable>
 
-<t>PoP MAY protect a COSS record or a referenced artifact, but PoP alone MUST NOT be accepted as PoR or PoC. A digest chain establishes artifact
-linkage only. It establishes COSS continuity only when the applicable profiles also validate the causal relationships and coordinate rules.</t>
+<t>PoP MAY protect a COSS record or a referenced artifact, but PoP alone MUST NOT be accepted as COSS PoR or COSS PoC. A digest chain establishes
+artifact linkage only. It establishes COSS continuity only when the applicable profiles also validate the causal relationships and coordinate
+rules.</t>
 
-<t>PIC PoC is the authority specialization. COSS product continuity applies the same causal composition to every required ordered coordinate.
-There is one predecessor graph; there is not an unrelated "PIC chain" and "IFC chain" later correlated by time or actor name.</t>
+<t><spanx style="verb">PoR_COSS(p, e)</spanx> holds only when the Verifier establishes that <spanx style="verb">CER(e)</spanx> identifies the exact authenticated <spanx style="verb">CER(p)</spanx> as a predecessor, that the
+claimed causal edge is valid under the selected profile, that every required evidence item is bound to the occurrence represented by <spanx style="verb">e</spanx>, and
+that all required profile-specific relationship checks succeed. When PIC is required, its authority-handoff relationship check contributes
+to <spanx style="verb">PoR_COSS</spanx>; that PIC check alone is not the complete COSS relationship result.</t>
+
+<t>For an ordinary edge, the accepted step condition is:</t>
+
+<figure><artwork><![CDATA[
+Step_COSS(p, e) = PoR_COSS(p, e)
+                  AND sigma_j(e) <=_j sigma_j(p) for every required j
+]]></artwork></figure>
+
+<t>At a join, this condition applies to every represented immediate predecessor. For an authorized relaxation, the affected coordinate checks
+are replaced only by the separately verified relaxation rule; unaffected coordinates remain subject to the ordinary condition.</t>
+
+<t><spanx style="verb">PoC_COSS(e)</spanx> holds only when the resolved predecessor graph for <spanx style="verb">Hist(e)</spanx> is rooted, acyclic, and complete under the selected profile; every
+represented edge has an accepted COSS PoR; and every required coordinate transition is either ordinary and non-expanding or an explicitly
+authorized relaxation. A successful COSS PoC therefore entails PIC PoC when PIC is a required coordinate, but PIC PoC alone does not entail
+COSS PoC. Joint admission is a subsequent decision: <spanx style="verb">Admit_COSS(e)</spanx> additionally requires every coordinate selected by trusted policy to
+admit the committed behavior at the protected effect.</t>
+
+<t>There is one predecessor graph. There is not an unrelated PIC chain, IFC chain, and execution-integrity chain later correlated by timestamp or
+actor name.</t>
+
+<section anchor="evidence-and-verification-results"><name>Evidence and Verification Results</name>
+
+<t>A COSS Evidence Record is witness material. It carries or references the authenticated occurrence, predecessor, behavior, coordinate,
+and relaxation evidence on which a Verifier can operate. Possession, transport, signature validation, or schema validation of a record does
+not by itself establish COSS PoR or COSS PoC.</t>
+
+<t>The Verifier derives separate results:</t>
+
+<figure><artwork><![CDATA[
+PoR_COSS(p, e) = accepted or rejected
+PoC_COSS(e)    = accepted or rejected
+Admit_COSS(e)  = accepted or rejected for the committed behavior
+]]></artwork></figure>
+
+<t>A profile MAY define a serializable verifier-result object, but it MUST keep that result distinct from the evidence record and MUST identify
+the Verifier, trust inputs, profile versions, evaluation time, and exact record or graph evaluated.</t>
 
 </section>
-<section anchor="coss-temporal-evidence-record"><name>COSS Temporal Evidence Record</name>
+</section>
+<section anchor="coss-evidence-record"><name>COSS Evidence Record</name>
 
-<t>A COSS Temporal Evidence Record <spanx style="verb">TE(e)</spanx> is an authenticated commitment with the following logical fields:</t>
+<t>A COSS Evidence Record <spanx style="verb">CER(e)</spanx> is an authenticated commitment with the following logical fields:</t>
 
 <texttable>
       <ttcol align='left'>Field</ttcol>
@@ -343,7 +429,9 @@ are hashed. A locator MAY accompany a digest but MUST NOT be trusted for identit
 </list></t>
 
 <t>One artifact MAY fulfill several roles. A runtime or provenance record is not automatically a security-state coordinate: it becomes
-coordinate evidence only under a profile that defines its state, order, admitted behavior, and verifier.</t>
+coordinate evidence only under a profile that defines its state, order, admitted behavior, and verifier. For example, a TRACE record may be
+occurrence evidence without thereby making TRACE a coordinate; only an execution-integrity profile can assign independently verified TRACE
+results a coordinate state.</t>
 
 <t>A coordinate-evidence entry MUST identify its coordinate and exact profile version. It MUST also carry or commit to the coordinate state
 established for the occurrence and reference the evidence from which that result is verified. The state MAY remain selectively disclosed if
@@ -388,7 +476,7 @@ profile. An unavailable required artifact causes verification to fail unless the
 
 <figure><sourcecode type="json"><![CDATA[
 {
-  "version": "coss-temporal-evidence-0.2",
+  "version": "coss-evidence-record-0.2",
   "occurrence": {
     "profile": "mail-send-occurrence-v1",
     "digest": "sha-256:OCCURRENCE_DIGEST"
@@ -421,21 +509,25 @@ profile. An unavailable required artifact causes verification to fail unless the
       "artifact": { "digest": "sha-256:IFC_EVIDENCE_DIGEST" }
     },
     {
-      "roles": ["occurrence"],
-      "profile": "runtime-evidence-profile",
+      "roles": ["occurrence", "coordinate"],
+      "coordinate": "execution-integrity",
+      "profile": "execution-integrity-profile",
+      "state": { "digest": "sha-256:EXECUTION_INTEGRITY_STATE_DIGEST" },
       "artifact": { "digest": "sha-256:RUNTIME_EVIDENCE_DIGEST" }
     }
   ]
 }
 ]]></sourcecode></figure>
 
-<t>The record binds three external artifacts to one mail-send occurrence. It does not ask the runtime-evidence system to compute PIC attenuation,
-and it does not ask PIC to decide IFC. Dave validates each required profile and then applies the joint admission rule.</t>
+<t>The record binds three external artifacts to one mail-send occurrence. It does not ask the execution-evidence system to compute PIC
+attenuation, and it does not ask PIC to decide IFC or execution integrity. Dave validates each required profile and then applies the joint
+admission rule.</t>
 
 </section>
 <section anchor="minimal-integration-contract"><name>Minimal Integration Contract</name>
 
-<t>An execution-evidence system can support COSS Temporal Evidence without implementing PIC or IFC internally. Its profile needs to provide:</t>
+<t>An execution-evidence system can support COSS Evidence Records without implementing PIC or IFC internally. Its profile needs to
+provide:</t>
 
 <t><list style="numbers" type="1">
   <t>an authenticated record for the concrete occurrence and behavior;</t>
@@ -490,6 +582,7 @@ silently reduce a multi-coordinate decision to the coordinates it happens to und
 <figure><artwork><![CDATA[
 PIC authority:       send-email is present
 IFC provenance:      the bytes depend on Alice's HIGH documents
+execution integrity: the required occurrence properties are independently established
 destination policy:  external email is LOW
 causal binding:      all results refer to this exact send occurrence
 ]]></artwork></figure>
@@ -533,8 +626,8 @@ Trent data ------------------------------------------------->|
 <figure><artwork><![CDATA[
 behavior:                 digest of destination, message, and exact output bytes
 predecessor:              digest of the authenticated predecessor record
-PIC coordinate evidence: digest of the authorized composition and authority state
-IFC coordinate evidence: digest of the DLP/IFC result for the exact output
+PIC coordinate evidence:  digest of the authorized composition and authority state
+IFC coordinate evidence:  digest of the DLP/IFC result for the exact output
 relaxation evidence:      digest of declassification authorization, when required
 occurrence evidence:      digest of the execution evidence for this handoff
 ]]></artwork></figure>
@@ -547,10 +640,10 @@ or declassification evidence, valid evidence in another coordinate does not repa
 </section>
 <section anchor="conformance"><name>Conformance</name>
 
-<t>A <strong>COSS Temporal Evidence Producer</strong> conforms to this specification when it creates authenticated records that bind the occurrence,
+<t>A <strong>COSS Evidence Producer</strong> conforms to this specification when it creates authenticated records that bind the occurrence,
 policy, predecessors, behavior, evidence references, and transition class as required above.</t>
 
-<t>A <strong>COSS Temporal Evidence Verifier</strong> conforms when it implements the ordered verification procedure, validates every required external
+<t>A <strong>COSS Evidence Verifier</strong> conforms when it implements the ordered verification procedure, validates every required external
 profile independently, and fails closed on missing or unsupported required evidence.</t>
 
 <t>A <strong>COSS Evidence Profile</strong> conforms when it defines the concrete serialization, authenticating mechanism, exact-byte digest rules,
@@ -571,6 +664,11 @@ authority non-expansion, relational attenuation, and event-level causal provenan
 carried security state from authority to a finite product of ordered security coordinates on the same causal occurrence. The PIC
 Specifications translate those formal results into technical requirements and are published and maintained by <strong>Nitro Agility S.r.l.</strong> as
 Specification Steward.</t>
+
+<t>The name <strong>COSS</strong> abbreviates <strong>Causally Ordered Security-State</strong>. “Causally Ordered” identifies the single causal partial order shared by all
+represented security facts; “Security-State” identifies the product of ordered security coordinates carried on that structure. The name
+records how COSS was obtained from PIC: PIC remains the authority-continuity coordinate, while additional security-state coordinates are
+added without introducing a separate temporal or causal axis.</t>
 
 <section anchor="historical-references"><name>Historical References</name>
 
@@ -593,7 +691,7 @@ Verifiable Lineage in Distributed Systems and AI Agents</em>. Accepted for the 2
 Applications (NCA 2026) <xref target="references">[10]</xref>. The IEEE Xplore DOI will be added as soon as it becomes available.</t>
 </list></t>
 
-<t>The PIC Specification 0.2 family was first published on <strong>15 July 2026</strong>. This COSS Temporal Evidence subordinate specification was first
+<t>The PIC Specification 0.2 family was first published on <strong>15 July 2026</strong>. This COSS Evidence Record subordinate specification was first
 published on <strong>26 October 2026</strong>. Published tags and immutable records identify the exact text applicable to a review or conformance claim.
 Researchers and implementers are encouraged to cite the primary publication that supports the formal property they discuss. Copyright
 attribution for reuse of PIC specification materials is governed separately by the applicable CC BY 4.0 license.</t>
@@ -655,6 +753,8 @@ registries for coordinate identifiers, evidence roles, media types, digest algor
   <t>[8] Gallo, N. (5 December 2025). <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>. Zenodo. DOI: <eref target="https://doi.org/10.5281/zenodo.17833000">10.5281/zenodo.17833000</eref></t>
   <t>[9] Gallo, N. (1 December 2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Archived working paper. Zenodo. DOI: <eref target="https://doi.org/10.5281/zenodo.17777421">10.5281/zenodo.17777421</eref></t>
   <t>[10] Gallo, N., Silvestri, S., &amp; Radesca, A. (forthcoming 2026). <em>Authority Continuity for Verifiable Lineage in Distributed Systems and AI Agents</em>. Accepted paper, 24th IEEE International Symposium on Network Computing and Applications (NCA 2026), 10–13 November 2026, Ortigia–Syracuse, Italy. <eref target="https://www.nca-ieee.org/2026/">nca-ieee.org/2026</eref>. IEEE Xplore DOI forthcoming; this reference will be updated when it becomes available.</t>
+  <t>[11] TRACE Specification Authors. (2026). <em>TRACE: Evidence for AI Agent Runs</em>. Version 0.2 Developer Preview. <eref target="https://trace.agentrust-io.com/">trace.agentrust-io.com</eref></t>
+  <t>[12] TRACE Specification Authors. (2026). <em>RFC Proposal: Runtime Evidence, and What a Verifier May Conclude without It</em>. Non-normative draft proposal targeting TRACE v0.3. <eref target="https://trace.agentrust-io.com/docs/rfcs/runtime-evidence-profile/">trace.agentrust-io.com/docs/rfcs/runtime-evidence-profile</eref></t>
 </list></t>
 
 </section>
@@ -666,6 +766,10 @@ registries for coordinate identifiers, evidence roles, media types, digest algor
 <t><list style="symbols">
   <t><strong>0.2 — 26 October 2026.</strong> Initial public draft defining protocol-neutral, same-occurrence binding of PIC authority evidence, IFC evidence,
 runtime provenance, and other COSS security coordinates on one causal evidence graph.</t>
+  <t><strong>0.2 revision — 26 October 2026.</strong> Named the transportable artifact the COSS Evidence Record; defined COSS PoR, COSS PoC, and their
+distinction from the evidence record; made the relationship to PIC explicit; added execution integrity as an optional,
+implementation-independent coordinate; identified TRACE as a candidate evidence system for a future profile; and recorded the planned
+COSS Prover and Verifier and COSS-to-TRACE companion specifications without making them current dependencies.</t>
 </list></t>
 
 </section>
@@ -697,239 +801,289 @@ historical origin of the PIC Model and from stewardship of the PIC Specification
   </back>
 
 <!-- ##markdown-source:
-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
-J7E43Ugp5GjUZSdB/38BNll5f0F4AAA=
+H4sIAAAAAAAAA8197XLbRtbmf1xFl1O1sbQkbclfsbyTWYVSJsrasl9JTibr
+12WBICjBJgEOAErWZDI19/Duz93r2P97KXMle55zTn+BoOwkU1urmnEkstHo
+Pt9ffXo4HCZt0c7zPXNnnK6adD6/MS/raV7nU3OaZ6u6aG+Gp23a5ubu+OXp
+6ZY5vCqmeZnl5iTPqnp6J0knkzq/wgT0/frX0yor0wW9IKuaZpjr18Oavx7e
+300ymvyiqm/2TFHOqqRY1numrMo8aVaTRdE0RVW2N8scX0/zZU7/lG3StGk5
+fZfOadyeucmbpFmkdfvuL6uqzZs9M0vnTZ4siz3zpq2ygWmquq3zWUO/3Szw
+y9tkSq/dM7v3dx8Pd+4Pdx8nSbpqL6t6LzFmSO+iWY5H5k8EkYo+MUY2cVxk
+1TwNPq7qC3za1pXZvyjmBC5zOqpH8xF/my/SYk7b4adGF3jqv5YYnMrYUVYt
+kqSs6kXaFlc0/8+/JIBC+PeQcIR/CCht/u6gylYLgsA7IGXVJMn29qu6ep9n
+7d72tnl1NDb0J+25mvtvzI/5pClouzTizfX19WhZZMOlDhvRDt7evWzbZbN3
+717ft/e2aCr7XsyxCZPb2z/kNfCFQfdHu+buQZ3O2vBxI8vmta4m8yIzPIRG
+HJUtcDs1rxte6JEFQ1Wmc0PYNocfl3ldYJYUm/u2qJtWZmku8ymeCbC5vf08
+pa9fL4Hn9S8Pp0Vb1XebLXwTItXc7UMmtnDa5tdpPZUHevBNI6pVnQmUL4r2
+cjUBeu+F4OQ/mmWe3Zti2/cISPd6oYkxo8XUI+aTE07m1eQekVv5mVNvBUS1
+P6lW7buzy6Jx9JUkXxsioABH5p//+B/muGpNCiSWU4LF9nbyNY3Dg2ZqMUy/
+p2XIrCRSpvlVPq+WhF28vZgVGSPWLC32TNqYJXGwqWamvcwjQmbkY2ct/Z+G
+Tm5iBNAKBAX0UlO0jamreY4JT6N3Kf5GvOSj1lzSCNq9meR5adJptSQ6GRha
+clU3+C1dEpCv8FtVBwult6emUQA0Q90Z75x4JS2Lv/LrRngFgcI/OLPTZIbk
+ZZFfD2gddd7kaZ1d0os9deP5gSkWy3nu/jazPJ9O0uzDgMGxJMwWE9rmbNWu
+6twtSN9urqv6Ay9hkd7QDvmNvKs6X87TTHd1TURF1HJd0kpSQmx5Y1pagoLI
+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
+MN0oobMfoKVpTlojV77l89nQZ91ZZQjVHc3nK1SgcerQurBnkfv5/enLY+ag
+cCiDo7GlwuERYcnwXBQokYWAC1w9dEYpLzSIYd43RNc/k6S4ozr6zp6509+o
+bbR7Z4CBXhDR2J853n1Hd46HUQw/RMFvkKkbXu3wszRSOAYDm8t0uPvo8d7L
+8fj1ycnh8fjw3cHRnw5Pz+7QyF/4VeJ4bn6NFalDGXjra169fH40/mntFd4r
+xWCrbmWnod6kb9/w1D/3Tn5yeHA4Pjw9fXnyDseXTw7si8wv9NRbns4yx+b9
+iPF/6zZw0prmfbd/fPDum5/ODk/XdmQR51esOYk7bGjj4zviUOB0tefwO28H
+dmDwIb0ajVFc1uaOGxQsHiN85s6eDPNDWXZg272wOxq/Oz3bPzv0IHMPWla8
+7dnDH44OQuphiBs7Sd/mP73l7tn63l0Xs2zo/ZRfuWvSSb9513j2V+86YNvP
+Q3uPg9ELhp5xvxIWh38+HL/Gyf53R8dnh386OTr76TfD5uT18dnRi8ON8AE3
+Jr/4I0y2gIr77cihF3do29suem7WybbIzow6VzQf4srNtVo2LjheLNFTDgeW
+UQqlxQSq3zqzwc6hZ5AymebWlOk5vK9npqxCbKTKq5u+tRZikEKk1SLH2CZx
+WZCophdFWSwIFFJVKyqQGzxx76b92858wwnVgEJvNLZxXq8z9my3INohNmp7
+YUixgDs4wd02gJNEC8zFbF8L6CpqfdRc4y4d39GK5Wcw29eP8bMpxxVKYoL5
+zN9aiuhZ8oC8B47z9cxTecLqCUc8Sx6ONhW46Bb4xKObUGI5j0Z8SujG7VLO
+zLGZbC0hRP/Kq+qDBJiiegmbBJgNOuQSrNAFN4RhfNF4VHluj/GlgkBO6YjL
+T4gMw0Y6TE4LBOPObuUa9XAEYeBV9sSFOV1eSUAUGIgu0Yh49fyGEwZh5kyC
+HFpk1nqIiTciLlEnD6CFDkUp1q+Q3va2Jhh8KmqEVrVp3eSBf3prZlmyPFFB
+sE+PEAuqeyb5h4GZrrgeJgp5QcIFHprkZv2BYzS2uxaD2BWPAJ70ynQmlje3
+NkCZ2mqxlMz7brA7x14QN7S/H2JSUhfcSaRByI/cDskeSbP5IJyn4hiaCxrb
+4lo9pR7WgmF3M1rkJScypVJxjvZFUs/zYMS1c5yp0PCNYOFEPArJ+sr3ggcE
+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
+AAA=
 
 -->
 

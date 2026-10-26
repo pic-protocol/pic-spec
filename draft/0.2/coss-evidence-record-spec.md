@@ -1,7 +1,7 @@
 ---
-title: "COSS Temporal Evidence"
-abbrev: "COSS Temporal Evidence"
-docname: coss-temporal-evidence-02
+title: "Causally Ordered Security-State (COSS) Evidence Record"
+abbrev: "COSS Evidence Record"
+docname: coss-evidence-record-02
 category: info
 ipr: none
 submissiontype: independent
@@ -24,7 +24,7 @@ informative: {}
 
 **Project:** PIC Protocol
 **Project Website:** [www.pic-protocol.org](https://www.pic-protocol.org/)
-**Document:** coss-temporal-evidence-02
+**Document:** coss-evidence-record-02
 **Version:** 0.2 (Draft)
 **Document Status:** Public Draft
 **Intended Use:** Informational and Experimental
@@ -32,7 +32,7 @@ informative: {}
 **Last Updated:** 2026-10-26
 **Editor(s):** Nicola Gallo (Nitro Agility S.r.l.)
 **Steward:** Nitro Agility S.r.l.
-**Source:** [github.com/pic-protocol/pic-spec/draft/0.2/coss-evidences.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/coss-evidences.md)
+**Source:** [github.com/pic-protocol/pic-spec/draft/0.2/coss-evidence-record-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/coss-evidence-record-spec.md)
 
 --- note_About_This_Document
 
@@ -76,9 +76,11 @@ This notice does not add restrictions to that license.
 --- abstract
 
 This document is a subordinate specification of the [PIC Specification 0.2](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md).
-It defines **COSS Temporal Evidence**: a protocol-neutral way to bind evidence from several security coordinates to one causal execution
-occurrence. A record may reference PIC authority-continuity evidence, information-flow evidence, runtime provenance, geographic evidence, or
-other profile-defined evidence without absorbing the semantics of those systems.
+It defines the **Causally Ordered Security-State (COSS) Evidence Record (CER)**: a protocol-neutral, transportable record that binds evidence from several security
+coordinates to one causal execution occurrence. COSS generalizes PIC from one authority coordinate to a finite product of ordered security
+coordinates while retaining PIC as the authority coordinate and preserving the foundational distinction between Proof of Relationship (PoR)
+and Proof of Continuity (PoC). A record may reference PIC authority-continuity evidence, information-flow evidence, execution-integrity
+evidence, geographic evidence, or other profile-defined evidence without absorbing the semantics of those systems.
 
 The central rule is simple: **one occurrence, one causal history, several independently verified coordinates**. An authenticated digest
 reference proves that a record committed to exact artifact bytes; it does not prove that the referenced claim is true. Each required artifact
@@ -105,8 +107,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 This specification defines:
 
-- the logical contents of a COSS Temporal Evidence Record;
+- the logical contents of a COSS Evidence Record;
 - the binding of coordinate evidence to one execution occurrence and its causal predecessor set;
+- execution integrity as an optional security coordinate, distinct from the evidence system that realizes it;
 - the distinction between Proof of Possession (PoP), Proof of Relationship (PoR), and Proof of Continuity (PoC);
 - ordered verification of ordinary continuations, joins, and explicit authorized relaxations; and
 - the limits of digest references and external evidence.
@@ -114,6 +117,23 @@ This specification defines:
 This specification does **not** define a serialization, signature suite, transport, evidence-retention system, PIC representation, IFC model,
 or product-specific mapping. Profiles define those choices. A mapping to an execution-evidence system is a profile of this specification, not
 a redefinition of PIC or COSS semantics.
+
+## Relationship to PIC
+
+COSS is the multi-coordinate generalization of PIC. PIC remains the authority coordinate and the source of the authority-specific PoR, PoC,
+and non-expansion semantics. COSS places that coordinate beside other independently defined ordered coordinates and requires all of them to
+refer to one causal occurrence and one predecessor graph. COSS does not replace PIC, and PIC continuity alone does not establish continuity
+for the complete COSS product.
+
+## Planned Companion Specifications
+
+This document is standalone and defines the record model and the semantic conditions for COSS PoR and PoC. A future companion **COSS Prover
+and Verifier Specification** (`coss-prover-verifier-spec.md`) may define concrete proof production, recursive graph verification,
+verifier-result objects, error semantics, and protocol bindings. A separate **COSS-to-TRACE Profile** (`coss-trace-profile.md`) may define a
+concrete TRACE mapping without making TRACE a dependency of COSS.
+
+Those companion names describe planned work only. They do not identify published specifications, create conformance requirements, or alter
+the requirements of this document until separate documents are published and explicitly versioned.
 
 # One Effect, Several Questions
 
@@ -178,13 +198,13 @@ Each profile `j` defines:
 For an ordinary causal edge `p -> e`, COSS continuity requires:
 
 ~~~
-PoR(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every required j
+PoR_COSS(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every required j
 ~~~
 
 PIC is the authority coordinate of this construction. For set-valued PIC authority `C`, the order is set inclusion:
 
 ~~~
-PoR(p, e)  AND  C(e) subset-of C(p)
+PoR_COSS(p, e)  AND  C(e) subset-of C(p)
 ~~~
 
 An IFC profile may provide a different state and order. COSS does not require distinct coordinates to use the same vocabulary, verifier, or
@@ -199,25 +219,87 @@ C(e) subset-of intersection of C(p), for every p in Pred(e)
 A grant, authority composition, declassification, endorsement, or other non-conservative change MUST be represented as an explicit
 authorized relaxation. It MUST NOT be presented as an ordinary continuation.
 
-# PoP, PoR, and PoC in COSS Evidence
+## Execution Integrity Coordinate
+
+**Execution integrity** is an optional COSS coordinate describing which properties of the concrete execution a verifier has established.
+A profile may include properties such as the execution environment, measured workload, binding between that environment and the
+record-signing key, policy commitment, or transcript commitment. The coordinate is semantic and implementation-independent: an evidence
+format or project is not itself a coordinate.
+
+An execution-integrity profile MUST define its state space, the order between states, the behaviors admitted at each state, the exact
+evidence required, the verifier and trust inputs, and the treatment of missing or unsupported evidence. It MUST distinguish producer claims
+from independently verified properties. Runtime attestation or a signature over an evidence envelope MUST NOT, by itself, be treated as
+proof that every claim inside the envelope is true.
+
+TRACE is a candidate execution-evidence system for realizing such a profile [[11]](#references). A TRACE Trust Record can commit to the
+program or workload named by the producer, runtime, policy, data classification, tool transcript, build provenance, and transparency
+information. TRACE version 0.2 authenticates the producer's record but does not by itself establish the truth of each contained claim. Its
+runtime-evidence work is currently a non-normative proposal for a future version and defines candidate attestation grades and external
+platform-verifier inputs [[12]](#references).
+
+A future COSS-to-TRACE profile may use a TRACE record as occurrence evidence and may map independently verified TRACE runtime results into
+the execution-integrity coordinate. Such a profile MUST identify the exact TRACE version and revision and MUST define same-occurrence
+binding, the coordinate order, admission rules, predecessor representation, and failure semantics. Merely naming TRACE, carrying a TRACE
+signature, or asserting a runtime platform does not establish conformance to this specification or to an execution-integrity profile.
+
+# COSS Proof of Relationship and Proof of Continuity
 
 PoP, PoR, and PoC answer different questions:
 
 | Primitive | Question | Evidence consequence |
 | --- | --- | --- |
 | **PoP** | Does the presenter control a key or artifact? | Authenticates possession. It does not identify the causal occurrence. |
-| **PoR** | Does this occurrence validly continue this specific predecessor? | Establishes a profile-defined causal edge and binds the successor to the predecessor record. |
-| **PoC** | Does the whole represented execution preserve valid continuation? | Composes accepted PoR edges and coordinate refinement across the causal history. |
+| **COSS PoR** | Does this occurrence validly continue this specific predecessor on the shared causal graph? | Establishes a profile-defined causal edge, same-occurrence binding, and the required relationship checks. |
+| **COSS PoC** | Does the whole represented execution preserve valid continuation across every required coordinate? | Composes accepted COSS PoR edges, coordinate refinement, and authorized relaxations across the causal history. |
 
-PoP MAY protect a COSS record or a referenced artifact, but PoP alone MUST NOT be accepted as PoR or PoC. A digest chain establishes artifact
-linkage only. It establishes COSS continuity only when the applicable profiles also validate the causal relationships and coordinate rules.
+PoP MAY protect a COSS record or a referenced artifact, but PoP alone MUST NOT be accepted as COSS PoR or COSS PoC. A digest chain establishes
+artifact linkage only. It establishes COSS continuity only when the applicable profiles also validate the causal relationships and coordinate
+rules.
 
-PIC PoC is the authority specialization. COSS product continuity applies the same causal composition to every required ordered coordinate.
-There is one predecessor graph; there is not an unrelated "PIC chain" and "IFC chain" later correlated by time or actor name.
+`PoR_COSS(p, e)` holds only when the Verifier establishes that `CER(e)` identifies the exact authenticated `CER(p)` as a predecessor, that the
+claimed causal edge is valid under the selected profile, that every required evidence item is bound to the occurrence represented by `e`, and
+that all required profile-specific relationship checks succeed. When PIC is required, its authority-handoff relationship check contributes
+to `PoR_COSS`; that PIC check alone is not the complete COSS relationship result.
 
-# COSS Temporal Evidence Record
+For an ordinary edge, the accepted step condition is:
 
-A COSS Temporal Evidence Record `TE(e)` is an authenticated commitment with the following logical fields:
+~~~
+Step_COSS(p, e) = PoR_COSS(p, e)
+                  AND sigma_j(e) <=_j sigma_j(p) for every required j
+~~~
+
+At a join, this condition applies to every represented immediate predecessor. For an authorized relaxation, the affected coordinate checks
+are replaced only by the separately verified relaxation rule; unaffected coordinates remain subject to the ordinary condition.
+
+`PoC_COSS(e)` holds only when the resolved predecessor graph for `Hist(e)` is rooted, acyclic, and complete under the selected profile; every
+represented edge has an accepted COSS PoR; and every required coordinate transition is either ordinary and non-expanding or an explicitly
+authorized relaxation. A successful COSS PoC therefore entails PIC PoC when PIC is a required coordinate, but PIC PoC alone does not entail
+COSS PoC. Joint admission is a subsequent decision: `Admit_COSS(e)` additionally requires every coordinate selected by trusted policy to
+admit the committed behavior at the protected effect.
+
+There is one predecessor graph. There is not an unrelated PIC chain, IFC chain, and execution-integrity chain later correlated by timestamp or
+actor name.
+
+## Evidence and Verification Results
+
+A COSS Evidence Record is witness material. It carries or references the authenticated occurrence, predecessor, behavior, coordinate,
+and relaxation evidence on which a Verifier can operate. Possession, transport, signature validation, or schema validation of a record does
+not by itself establish COSS PoR or COSS PoC.
+
+The Verifier derives separate results:
+
+~~~
+PoR_COSS(p, e) = accepted or rejected
+PoC_COSS(e)    = accepted or rejected
+Admit_COSS(e)  = accepted or rejected for the committed behavior
+~~~
+
+A profile MAY define a serializable verifier-result object, but it MUST keep that result distinct from the evidence record and MUST identify
+the Verifier, trust inputs, profile versions, evaluation time, and exact record or graph evaluated.
+
+# COSS Evidence Record
+
+A COSS Evidence Record `CER(e)` is an authenticated commitment with the following logical fields:
 
 | Field | Meaning |
 | --- | --- |
@@ -240,7 +322,9 @@ An evidence entry declares one or more roles:
 - **coordinate evidence** supports a state, refinement, or admission result under a named coordinate profile.
 
 One artifact MAY fulfill several roles. A runtime or provenance record is not automatically a security-state coordinate: it becomes
-coordinate evidence only under a profile that defines its state, order, admitted behavior, and verifier.
+coordinate evidence only under a profile that defines its state, order, admitted behavior, and verifier. For example, a TRACE record may be
+occurrence evidence without thereby making TRACE a coordinate; only an execution-integrity profile can assign independently verified TRACE
+results a coordinate state.
 
 A coordinate-evidence entry MUST identify its coordinate and exact profile version. It MUST also carry or commit to the coordinate state
 established for the occurrence and reference the evidence from which that result is verified. The state MAY remain selectively disclosed if
@@ -279,7 +363,7 @@ The following JSON is illustrative and is not a wire format or a registry of ide
 
 ~~~ json
 {
-  "version": "coss-temporal-evidence-0.2",
+  "version": "coss-evidence-record-0.2",
   "occurrence": {
     "profile": "mail-send-occurrence-v1",
     "digest": "sha-256:OCCURRENCE_DIGEST"
@@ -312,20 +396,24 @@ The following JSON is illustrative and is not a wire format or a registry of ide
       "artifact": { "digest": "sha-256:IFC_EVIDENCE_DIGEST" }
     },
     {
-      "roles": ["occurrence"],
-      "profile": "runtime-evidence-profile",
+      "roles": ["occurrence", "coordinate"],
+      "coordinate": "execution-integrity",
+      "profile": "execution-integrity-profile",
+      "state": { "digest": "sha-256:EXECUTION_INTEGRITY_STATE_DIGEST" },
       "artifact": { "digest": "sha-256:RUNTIME_EVIDENCE_DIGEST" }
     }
   ]
 }
 ~~~
 
-The record binds three external artifacts to one mail-send occurrence. It does not ask the runtime-evidence system to compute PIC attenuation,
-and it does not ask PIC to decide IFC. Dave validates each required profile and then applies the joint admission rule.
+The record binds three external artifacts to one mail-send occurrence. It does not ask the execution-evidence system to compute PIC
+attenuation, and it does not ask PIC to decide IFC or execution integrity. Dave validates each required profile and then applies the joint
+admission rule.
 
 ## Minimal Integration Contract
 
-An execution-evidence system can support COSS Temporal Evidence without implementing PIC or IFC internally. Its profile needs to provide:
+An execution-evidence system can support COSS Evidence Records without implementing PIC or IFC internally. Its profile needs to
+provide:
 
 1. an authenticated record for the concrete occurrence and behavior;
 2. digest references that form the represented predecessor graph;
@@ -373,6 +461,7 @@ For Carol's proposed mail effect, assume the evidence establishes:
 ~~~
 PIC authority:       send-email is present
 IFC provenance:      the bytes depend on Alice's HIGH documents
+execution integrity: the required occurrence properties are independently established
 destination policy:  external email is LOW
 causal binding:      all results refer to this exact send occurrence
 ~~~
@@ -413,8 +502,8 @@ The record presented to Dave binds at least:
 ~~~
 behavior:                 digest of destination, message, and exact output bytes
 predecessor:              digest of the authenticated predecessor record
-PIC coordinate evidence: digest of the authorized composition and authority state
-IFC coordinate evidence: digest of the DLP/IFC result for the exact output
+PIC coordinate evidence:  digest of the authorized composition and authority state
+IFC coordinate evidence:  digest of the DLP/IFC result for the exact output
 relaxation evidence:      digest of declassification authorization, when required
 occurrence evidence:      digest of the execution evidence for this handoff
 ~~~
@@ -425,10 +514,10 @@ or declassification evidence, valid evidence in another coordinate does not repa
 
 # Conformance
 
-A **COSS Temporal Evidence Producer** conforms to this specification when it creates authenticated records that bind the occurrence,
+A **COSS Evidence Producer** conforms to this specification when it creates authenticated records that bind the occurrence,
 policy, predecessors, behavior, evidence references, and transition class as required above.
 
-A **COSS Temporal Evidence Verifier** conforms when it implements the ordered verification procedure, validates every required external
+A **COSS Evidence Verifier** conforms when it implements the ordered verification procedure, validates every required external
 profile independently, and fails closed on missing or unsupported required evidence.
 
 A **COSS Evidence Profile** conforms when it defines the concrete serialization, authenticating mechanism, exact-byte digest rules,
@@ -449,6 +538,11 @@ carried security state from authority to a finite product of ordered security co
 Specifications translate those formal results into technical requirements and are published and maintained by **Nitro Agility S.r.l.** as
 Specification Steward.
 
+The name **COSS** abbreviates **Causally Ordered Security-State**. “Causally Ordered” identifies the single causal partial order shared by all
+represented security facts; “Security-State” identifies the product of ordered security coordinates carried on that structure. The name
+records how COSS was obtained from PIC: PIC remains the authority-continuity coordinate, while additional security-state coordinates are
+added without introducing a separate temporal or causal axis.
+
 ## Historical References
 
 The publicly verifiable research record is:
@@ -468,7 +562,7 @@ The publicly verifiable research record is:
   Verifiable Lineage in Distributed Systems and AI Agents*. Accepted for the 24th IEEE International Symposium on Network Computing and
   Applications (NCA 2026) [[10]](#references). The IEEE Xplore DOI will be added as soon as it becomes available.
 
-The PIC Specification 0.2 family was first published on **15 July 2026**. This COSS Temporal Evidence subordinate specification was first
+The PIC Specification 0.2 family was first published on **15 July 2026**. This COSS Evidence Record subordinate specification was first
 published on **26 October 2026**. Published tags and immutable records identify the exact text applicable to a review or conformance claim.
 Researchers and implementers are encouraged to cite the primary publication that supports the formal property they discuss. Copyright
 attribution for reuse of PIC specification materials is governed separately by the applicable CC BY 4.0 license.
@@ -521,6 +615,8 @@ registries for coordinate identifiers, evidence roles, media types, digest algor
 - [8] Gallo, N. (5 December 2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. DOI: [10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
 - [9] Gallo, N. (1 December 2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Archived working paper. Zenodo. DOI: [10.5281/zenodo.17777421](https://doi.org/10.5281/zenodo.17777421)
 - [10] Gallo, N., Silvestri, S., & Radesca, A. (forthcoming 2026). *Authority Continuity for Verifiable Lineage in Distributed Systems and AI Agents*. Accepted paper, 24th IEEE International Symposium on Network Computing and Applications (NCA 2026), 10–13 November 2026, Ortigia–Syracuse, Italy. [nca-ieee.org/2026](https://www.nca-ieee.org/2026/). IEEE Xplore DOI forthcoming; this reference will be updated when it becomes available.
+- [11] TRACE Specification Authors. (2026). *TRACE: Evidence for AI Agent Runs*. Version 0.2 Developer Preview. [trace.agentrust-io.com](https://trace.agentrust-io.com/)
+- [12] TRACE Specification Authors. (2026). *RFC Proposal: Runtime Evidence, and What a Verifier May Conclude without It*. Non-normative draft proposal targeting TRACE v0.3. [trace.agentrust-io.com/docs/rfcs/runtime-evidence-profile](https://trace.agentrust-io.com/docs/rfcs/runtime-evidence-profile/)
 
 # Document History
 
@@ -528,6 +624,10 @@ This section is informative.
 
 - **0.2 — 26 October 2026.** Initial public draft defining protocol-neutral, same-occurrence binding of PIC authority evidence, IFC evidence,
   runtime provenance, and other COSS security coordinates on one causal evidence graph.
+- **0.2 revision — 26 October 2026.** Named the transportable artifact the COSS Evidence Record; defined COSS PoR, COSS PoC, and their
+  distinction from the evidence record; made the relationship to PIC explicit; added execution integrity as an optional,
+  implementation-independent coordinate; identified TRACE as a candidate evidence system for a future profile; and recorded the planned
+  COSS Prover and Verifier and COSS-to-TRACE companion specifications without making them current dependencies.
 
 # Acknowledgments
 

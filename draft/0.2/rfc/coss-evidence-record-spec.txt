@@ -7,19 +7,24 @@
                                                          26 October 2026
 
 
-                         COSS Temporal Evidence
-                       coss-temporal-evidence-02
+         Causally Ordered Security-State (COSS) Evidence Record
+                        coss-evidence-record-02
 
 Abstract
 
    This document is a subordinate specification of the PIC Specification
    0.2 (https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/
-   pic-spec.md).  It defines *COSS Temporal Evidence*: a protocol-
-   neutral way to bind evidence from several security coordinates to one
-   causal execution occurrence.  A record may reference PIC authority-
-   continuity evidence, information-flow evidence, runtime provenance,
-   geographic evidence, or other profile-defined evidence without
-   absorbing the semantics of those systems.
+   pic-spec.md).  It defines the *Causally Ordered Security-State (COSS)
+   Evidence Record (CER)*: a protocol-neutral, transportable record that
+   binds evidence from several security coordinates to one causal
+   execution occurrence.  COSS generalizes PIC from one authority
+   coordinate to a finite product of ordered security coordinates while
+   retaining PIC as the authority coordinate and preserving the
+   foundational distinction between Proof of Relationship (PoR) and
+   Proof of Continuity (PoC).  A record may reference PIC authority-
+   continuity evidence, information-flow evidence, execution-integrity
+   evidence, geographic evidence, or other profile-defined evidence
+   without absorbing the semantics of those systems.
 
    The central rule is simple: *one occurrence, one causal history,
    several independently verified coordinates*. An authenticated digest
@@ -32,31 +37,30 @@ Abstract
 Document Status
 
    *Project:* PIC Protocol *Project Website:* www.pic-protocol.org
-   (https://www.pic-protocol.org/) *Document:* coss-temporal-evidence-02
+   (https://www.pic-protocol.org/) *Document:* coss-evidence-record-02
    *Version:* 0.2 (Draft) *Document Status:* Public Draft *Intended
    Use:* Informational and Experimental *First Published:* 2026-10-26
    *Last Updated:* 2026-10-26 *Editor(s):* Nicola Gallo (Nitro Agility
    S.r.l.) *Steward:* Nitro Agility S.r.l. *Source:* github.com/pic-
-   protocol/pic-spec/draft/0.2/coss-evidences.md (https://github.com/
-   pic-protocol/pic-spec/blob/main/draft/0.2/coss-evidences.md)
+   protocol/pic-spec/draft/0.2/coss-evidence-record-spec.md
+   (https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/coss-
+   evidence-record-spec.md)
 
 About This Document
 
       *Public Draft — Not a Standard*
-
-      This document is an independently developed specification
-      published as part of the PIC Protocol and maintained by Nitro
-      Agility S.r.l. in its role as Specification Steward.
-
-
 
 
 
 
 Gallo                         Informational                     [Page 1]
 
-                         COSS Temporal Evidence             October 2026
+                          COSS Evidence Record              October 2026
 
+
+      This document is an independently developed specification
+      published as part of the PIC Protocol and maintained by Nitro
+      Agility S.r.l. in its role as Specification Steward.
 
       It has not been adopted, endorsed, approved, or published by a
       standards-development organization.  It is published for public
@@ -101,50 +105,53 @@ Editors
 
 Contributors
 
-   *  _Add your name via pull request (individual or organization) —
-      listing is subject to editor approval (see Section 16)._
-
-
 
 
 
 
 Gallo                         Informational                     [Page 2]
 
-                         COSS Temporal Evidence             October 2026
+                          COSS Evidence Record              October 2026
 
+
+   *  _Add your name via pull request (individual or organization) —
+      listing is subject to editor approval (see Section 16)._
 
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
      1.1.  Requirements Notation . . . . . . . . . . . . . . . . . .   4
      1.2.  Scope . . . . . . . . . . . . . . . . . . . . . . . . . .   4
-   2.  One Effect, Several Questions . . . . . . . . . . . . . . . .   4
-     2.1.  One Causal Axis . . . . . . . . . . . . . . . . . . . . .   5
-   3.  COSS Security State . . . . . . . . . . . . . . . . . . . . .   5
-   4.  PoP, PoR, and PoC in COSS Evidence  . . . . . . . . . . . . .   6
-   5.  COSS Temporal Evidence Record . . . . . . . . . . . . . . . .   7
-     5.1.  Same-Occurrence Binding . . . . . . . . . . . . . . . . .   9
-     5.2.  References Are Not Validation . . . . . . . . . . . . . .   9
-     5.3.  Illustrative Record . . . . . . . . . . . . . . . . . . .  10
-     5.4.  Minimal Integration Contract  . . . . . . . . . . . . . .  12
-   6.  Verification  . . . . . . . . . . . . . . . . . . . . . . . .  12
-   7.  Worked Decision at Dave . . . . . . . . . . . . . . . . . . .  13
-     7.1.  Rejected Ordinary Path  . . . . . . . . . . . . . . . . .  13
-     7.2.  Accepted DLP Path . . . . . . . . . . . . . . . . . . . .  14
-   8.  Conformance . . . . . . . . . . . . . . . . . . . . . . . . .  15
-   9.  Origins, Authorship, and Historical Record  . . . . . . . . .  15
-     9.1.  Historical References . . . . . . . . . . . . . . . . . .  15
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  16
-   11. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  17
-   12. Registry Considerations . . . . . . . . . . . . . . . . . . .  17
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  17
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  17
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  18
-   14. Document History  . . . . . . . . . . . . . . . . . . . . . .  18
-   15. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  19
-   16. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  19
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  19
+     1.3.  Relationship to PIC . . . . . . . . . . . . . . . . . . .   4
+     1.4.  Planned Companion Specifications  . . . . . . . . . . . .   5
+   2.  One Effect, Several Questions . . . . . . . . . . . . . . . .   5
+     2.1.  One Causal Axis . . . . . . . . . . . . . . . . . . . . .   6
+   3.  COSS Security State . . . . . . . . . . . . . . . . . . . . .   6
+     3.1.  Execution Integrity Coordinate  . . . . . . . . . . . . .   7
+   4.  COSS Proof of Relationship and Proof of Continuity  . . . . .   8
+     4.1.  Evidence and Verification Results . . . . . . . . . . . .   9
+   5.  COSS Evidence Record  . . . . . . . . . . . . . . . . . . . .   9
+     5.1.  Same-Occurrence Binding . . . . . . . . . . . . . . . . .  11
+     5.2.  References Are Not Validation . . . . . . . . . . . . . .  11
+     5.3.  Illustrative Record . . . . . . . . . . . . . . . . . . .  12
+     5.4.  Minimal Integration Contract  . . . . . . . . . . . . . .  14
+   6.  Verification  . . . . . . . . . . . . . . . . . . . . . . . .  14
+   7.  Worked Decision at Dave . . . . . . . . . . . . . . . . . . .  15
+     7.1.  Rejected Ordinary Path  . . . . . . . . . . . . . . . . .  15
+     7.2.  Accepted DLP Path . . . . . . . . . . . . . . . . . . . .  16
+   8.  Conformance . . . . . . . . . . . . . . . . . . . . . . . . .  17
+   9.  Origins, Authorship, and Historical Record  . . . . . . . . .  17
+     9.1.  Historical References . . . . . . . . . . . . . . . . . .  18
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  19
+   11. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  19
+   12. Registry Considerations . . . . . . . . . . . . . . . . . . .  19
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  20
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  20
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  20
+   14. Document History  . . . . . . . . . . . . . . . . . . . . . .  21
+   15. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  21
+   16. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  22
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  22
 
 1.  Introduction
 
@@ -154,21 +161,20 @@ Table of Contents
    what authority may continue.  It does not answer where the bytes may
    flow.
 
-   COSS places those distinct security coordinates on the same causal
-   execution [4] (Section 13).  This document specifies the evidence
-   boundary needed to carry that relationship between systems.  It does
-   not define the internal semantics or wire format of PIC, information-
-   flow control (IFC), runtime attestation, or any other coordinate.
-
-
 
 
 
 
 Gallo                         Informational                     [Page 3]
 
-                         COSS Temporal Evidence             October 2026
+                          COSS Evidence Record              October 2026
 
+
+   COSS places those distinct security coordinates on the same causal
+   execution [4] (Section 13).  This document specifies the evidence
+   boundary needed to carry that relationship between systems.  It does
+   not define the internal semantics or wire format of PIC, information-
+   flow control (IFC), runtime attestation, or any other coordinate.
 
 1.1.  Requirements Notation
 
@@ -182,10 +188,13 @@ Gallo                         Informational                     [Page 3]
 
    This specification defines:
 
-   *  the logical contents of a COSS Temporal Evidence Record;
+   *  the logical contents of a COSS Evidence Record;
 
    *  the binding of coordinate evidence to one execution occurrence and
       its causal predecessor set;
+
+   *  execution integrity as an optional security coordinate, distinct
+      from the evidence system that realizes it;
 
    *  the distinction between Proof of Possession (PoP), Proof of
       Relationship (PoR), and Proof of Continuity (PoC);
@@ -200,6 +209,39 @@ Gallo                         Informational                     [Page 3]
    model, or product-specific mapping.  Profiles define those choices.
    A mapping to an execution-evidence system is a profile of this
    specification, not a redefinition of PIC or COSS semantics.
+
+1.3.  Relationship to PIC
+
+   COSS is the multi-coordinate generalization of PIC.  PIC remains the
+   authority coordinate and the source of the authority-specific PoR,
+   PoC, and non-expansion semantics.  COSS places that coordinate beside
+   other independently defined ordered coordinates and requires all of
+   them to refer to one causal occurrence and one predecessor graph.
+   COSS does not replace PIC, and PIC continuity alone does not
+
+
+
+Gallo                         Informational                     [Page 4]
+
+                          COSS Evidence Record              October 2026
+
+
+   establish continuity for the complete COSS product.
+
+1.4.  Planned Companion Specifications
+
+   This document is standalone and defines the record model and the
+   semantic conditions for COSS PoR and PoC.  A future companion *COSS
+   Prover and Verifier Specification* (coss-prover-verifier-spec.md) may
+   define concrete proof production, recursive graph verification,
+   verifier-result objects, error semantics, and protocol bindings.  A
+   separate *COSS-to-TRACE Profile* (coss-trace-profile.md) may define a
+   concrete TRACE mapping without making TRACE a dependency of COSS.
+
+   Those companion names describe planned work only.  They do not
+   identify published specifications, create conformance requirements,
+   or alter the requirements of this document until separate documents
+   are published and explicitly versioned.
 
 2.  One Effect, Several Questions
 
@@ -217,15 +259,6 @@ Trent -- Alice's documents; classification HIGH /
 
 Dave's rule: no confidential data by email
 
-
-
-
-
-Gallo                         Informational                     [Page 4]
-
-                         COSS Temporal Evidence             October 2026
-
-
    The two permissions can be individually valid while the proposed
    effect remains inadmissible.  Dave receives a permission and bytes:
 
@@ -236,6 +269,18 @@ send request
 authority question: may this occurrence send email?
 flow question:      may these bytes flow to this destination?
 causal question:    which earlier occurrences produced this request and these bytes?
+
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 5]
+
+                          COSS Evidence Record              October 2026
+
 
    Neither the bytes nor the send permission answers all three
    questions.  A log entry with an actor and timestamp does not
@@ -274,24 +319,24 @@ Bob intent --------------------------/
 
    *  the behaviors admitted by a state; and
 
-
-
-
-Gallo                         Informational                     [Page 5]
-
-                         COSS Temporal Evidence             October 2026
-
-
    *  the evidence and verification procedure that establish its claims.
 
    For an ordinary causal edge p -> e, COSS continuity requires:
 
-   PoR(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every required j
+   PoR_COSS(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every required j
 
    PIC is the authority coordinate of this construction.  For set-valued
    PIC authority C, the order is set inclusion:
 
-   PoR(p, e)  AND  C(e) subset-of C(p)
+   PoR_COSS(p, e)  AND  C(e) subset-of C(p)
+
+
+
+
+Gallo                         Informational                     [Page 6]
+
+                          COSS Evidence Record              October 2026
+
 
    An IFC profile may provide a different state and order.  COSS does
    not require distinct coordinates to use the same vocabulary,
@@ -309,89 +354,156 @@ Gallo                         Informational                     [Page 5]
    authorized relaxation.  It MUST NOT be presented as an ordinary
    continuation.
 
-4.  PoP, PoR, and PoC in COSS Evidence
+3.1.  Execution Integrity Coordinate
 
-   PoP, PoR, and PoC answer different questions:
+   *Execution integrity* is an optional COSS coordinate describing which
+   properties of the concrete execution a verifier has established.  A
+   profile may include properties such as the execution environment,
+   measured workload, binding between that environment and the record-
+   signing key, policy commitment, or transcript commitment.  The
+   coordinate is semantic and implementation-independent: an evidence
+   format or project is not itself a coordinate.
 
+   An execution-integrity profile MUST define its state space, the order
+   between states, the behaviors admitted at each state, the exact
+   evidence required, the verifier and trust inputs, and the treatment
+   of missing or unsupported evidence.  It MUST distinguish producer
+   claims from independently verified properties.  Runtime attestation
+   or a signature over an evidence envelope MUST NOT, by itself, be
+   treated as proof that every claim inside the envelope is true.
 
+   TRACE is a candidate execution-evidence system for realizing such a
+   profile [11] (Section 13).  A TRACE Trust Record can commit to the
+   program or workload named by the producer, runtime, policy, data
+   classification, tool transcript, build provenance, and transparency
+   information.  TRACE version 0.2 authenticates the producer's record
+   but does not by itself establish the truth of each contained claim.
+   Its runtime-evidence work is currently a non-normative proposal for a
+   future version and defines candidate attestation grades and external
+   platform-verifier inputs [12] (Section 13).
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 6]
-
-                         COSS Temporal Evidence             October 2026
-
-
-     +===========+=======================+===========================+
-     | Primitive | Question              | Evidence consequence      |
-     +===========+=======================+===========================+
-     | *PoP*     | Does the presenter    | Authenticates possession. |
-     |           | control a key or      | It does not identify the  |
-     |           | artifact?             | causal occurrence.        |
-     +-----------+-----------------------+---------------------------+
-     | *PoR*     | Does this occurrence  | Establishes a profile-    |
-     |           | validly continue this | defined causal edge and   |
-     |           | specific predecessor? | binds the successor to    |
-     |           |                       | the predecessor record.   |
-     +-----------+-----------------------+---------------------------+
-     | *PoC*     | Does the whole        | Composes accepted PoR     |
-     |           | represented execution | edges and coordinate      |
-     |           | preserve valid        | refinement across the     |
-     |           | continuation?         | causal history.           |
-     +-----------+-----------------------+---------------------------+
-
-                                  Table 1
-
-   PoP MAY protect a COSS record or a referenced artifact, but PoP alone
-   MUST NOT be accepted as PoR or PoC.  A digest chain establishes
-   artifact linkage only.  It establishes COSS continuity only when the
-   applicable profiles also validate the causal relationships and
-   coordinate rules.
-
-   PIC PoC is the authority specialization.  COSS product continuity
-   applies the same causal composition to every required ordered
-   coordinate.  There is one predecessor graph; there is not an
-   unrelated "PIC chain" and "IFC chain" later correlated by time or
-   actor name.
-
-5.  COSS Temporal Evidence Record
-
-   A COSS Temporal Evidence Record TE(e) is an authenticated commitment
-   with the following logical fields:
-
-
-
-
-
-
-
-
-
-
-
-
+   A future COSS-to-TRACE profile may use a TRACE record as occurrence
+   evidence and may map independently verified TRACE runtime results
+   into the execution-integrity coordinate.  Such a profile MUST
+   identify the exact TRACE version and revision and MUST define same-
 
 
 
 Gallo                         Informational                     [Page 7]
 
-                         COSS Temporal Evidence             October 2026
+                          COSS Evidence Record              October 2026
+
+
+   occurrence binding, the coordinate order, admission rules,
+   predecessor representation, and failure semantics.  Merely naming
+   TRACE, carrying a TRACE signature, or asserting a runtime platform
+   does not establish conformance to this specification or to an
+   execution-integrity profile.
+
+4.  COSS Proof of Relationship and Proof of Continuity
+
+   PoP, PoR, and PoC answer different questions:
+
+   +===========+===========================+==========================+
+   | Primitive | Question                  | Evidence consequence     |
+   +===========+===========================+==========================+
+   | *PoP*     | Does the presenter        | Authenticates            |
+   |           | control a key or          | possession.  It does not |
+   |           | artifact?                 | identify the causal      |
+   |           |                           | occurrence.              |
+   +-----------+---------------------------+--------------------------+
+   | *COSS     | Does this occurrence      | Establishes a profile-   |
+   | PoR*      | validly continue this     | defined causal edge,     |
+   |           | specific predecessor on   | same-occurrence binding, |
+   |           | the shared causal graph?  | and the required         |
+   |           |                           | relationship checks.     |
+   +-----------+---------------------------+--------------------------+
+   | *COSS     | Does the whole            | Composes accepted COSS   |
+   | PoC*      | represented execution     | PoR edges, coordinate    |
+   |           | preserve valid            | refinement, and          |
+   |           | continuation across every | authorized relaxations   |
+   |           | required coordinate?      | across the causal        |
+   |           |                           | history.                 |
+   +-----------+---------------------------+--------------------------+
+
+                                 Table 1
+
+   PoP MAY protect a COSS record or a referenced artifact, but PoP alone
+   MUST NOT be accepted as COSS PoR or COSS PoC.  A digest chain
+   establishes artifact linkage only.  It establishes COSS continuity
+   only when the applicable profiles also validate the causal
+   relationships and coordinate rules.
+
+   PoR_COSS(p, e) holds only when the Verifier establishes that CER(e)
+   identifies the exact authenticated CER(p) as a predecessor, that the
+   claimed causal edge is valid under the selected profile, that every
+   required evidence item is bound to the occurrence represented by e,
+   and that all required profile-specific relationship checks succeed.
+   When PIC is required, its authority-handoff relationship check
+   contributes to PoR_COSS; that PIC check alone is not the complete
+   COSS relationship result.
+
+
+
+Gallo                         Informational                     [Page 8]
+
+                          COSS Evidence Record              October 2026
+
+
+   For an ordinary edge, the accepted step condition is:
+
+   Step_COSS(p, e) = PoR_COSS(p, e)
+                     AND sigma_j(e) <=_j sigma_j(p) for every required j
+
+   At a join, this condition applies to every represented immediate
+   predecessor.  For an authorized relaxation, the affected coordinate
+   checks are replaced only by the separately verified relaxation rule;
+   unaffected coordinates remain subject to the ordinary condition.
+
+   PoC_COSS(e) holds only when the resolved predecessor graph for
+   Hist(e) is rooted, acyclic, and complete under the selected profile;
+   every represented edge has an accepted COSS PoR; and every required
+   coordinate transition is either ordinary and non-expanding or an
+   explicitly authorized relaxation.  A successful COSS PoC therefore
+   entails PIC PoC when PIC is a required coordinate, but PIC PoC alone
+   does not entail COSS PoC.  Joint admission is a subsequent decision:
+   Admit_COSS(e) additionally requires every coordinate selected by
+   trusted policy to admit the committed behavior at the protected
+   effect.
+
+   There is one predecessor graph.  There is not an unrelated PIC chain,
+   IFC chain, and execution-integrity chain later correlated by
+   timestamp or actor name.
+
+4.1.  Evidence and Verification Results
+
+   A COSS Evidence Record is witness material.  It carries or references
+   the authenticated occurrence, predecessor, behavior, coordinate, and
+   relaxation evidence on which a Verifier can operate.  Possession,
+   transport, signature validation, or schema validation of a record
+   does not by itself establish COSS PoR or COSS PoC.
+
+   The Verifier derives separate results:
+
+   PoR_COSS(p, e) = accepted or rejected
+   PoC_COSS(e)    = accepted or rejected
+   Admit_COSS(e)  = accepted or rejected for the committed behavior
+
+   A profile MAY define a serializable verifier-result object, but it
+   MUST keep that result distinct from the evidence record and MUST
+   identify the Verifier, trust inputs, profile versions, evaluation
+   time, and exact record or graph evaluated.
+
+5.  COSS Evidence Record
+
+   A COSS Evidence Record CER(e) is an authenticated commitment with the
+   following logical fields:
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                          COSS Evidence Record              October 2026
 
 
         +==============+=========================================+
@@ -445,15 +557,18 @@ Gallo                         Informational                     [Page 7]
 
 
 
-Gallo                         Informational                     [Page 8]
+Gallo                         Informational                    [Page 10]
 
-                         COSS Temporal Evidence             October 2026
+                          COSS Evidence Record              October 2026
 
 
    One artifact MAY fulfill several roles.  A runtime or provenance
    record is not automatically a security-state coordinate: it becomes
    coordinate evidence only under a profile that defines its state,
-   order, admitted behavior, and verifier.
+   order, admitted behavior, and verifier.  For example, a TRACE record
+   may be occurrence evidence without thereby making TRACE a coordinate;
+   only an execution-integrity profile can assign independently verified
+   TRACE results a coordinate state.
 
    A coordinate-evidence entry MUST identify its coordinate and exact
    profile version.  It MUST also carry or commit to the coordinate
@@ -495,16 +610,17 @@ Gallo                         Informational                     [Page 8]
 
    *  the artifact establishes PoR;
 
+
+
+
+Gallo                         Informational                    [Page 11]
+
+                          COSS Evidence Record              October 2026
+
+
    *  its coordinate state is correctly ordered; or
 
    *  the behavior is admitted.
-
-
-
-Gallo                         Informational                     [Page 9]
-
-                         COSS Temporal Evidence             October 2026
-
 
    Each referenced artifact MUST therefore be resolved, integrity-
    checked, and independently validated by the verifier required by its
@@ -553,17 +669,13 @@ Gallo                         Informational                     [Page 9]
 
 
 
-
-
-
-
-Gallo                         Informational                    [Page 10]
+Gallo                         Informational                    [Page 12]
 
-                         COSS Temporal Evidence             October 2026
+                          COSS Evidence Record              October 2026
 
 
    {
-     "version": "coss-temporal-evidence-0.2",
+     "version": "coss-evidence-record-0.2",
      "occurrence": {
        "profile": "mail-send-occurrence-v1",
        "digest": "sha-256:OCCURRENCE_DIGEST"
@@ -596,31 +708,31 @@ Gallo                         Informational                    [Page 10]
          "artifact": { "digest": "sha-256:IFC_EVIDENCE_DIGEST" }
        },
        {
-         "roles": ["occurrence"],
-         "profile": "runtime-evidence-profile",
+         "roles": ["occurrence", "coordinate"],
+         "coordinate": "execution-integrity",
+         "profile": "execution-integrity-profile",
+         "state": { "digest": "sha-256:EXECUTION_INTEGRITY_STATE_DIGEST" },
          "artifact": { "digest": "sha-256:RUNTIME_EVIDENCE_DIGEST" }
        }
      ]
    }
 
    The record binds three external artifacts to one mail-send
-   occurrence.  It does not ask the runtime-evidence system to compute
-   PIC attenuation, and it does not ask PIC to decide IFC.  Dave
-   validates each required profile and then applies the joint admission
-   rule.
+   occurrence.  It does not ask the execution-evidence system to compute
+   PIC attenuation, and it does not ask PIC to decide IFC or execution
+   integrity.  Dave validates each required profile and then applies the
+   joint admission rule.
 
 
 
-
-
-Gallo                         Informational                    [Page 11]
+Gallo                         Informational                    [Page 13]
 
-                         COSS Temporal Evidence             October 2026
+                          COSS Evidence Record              October 2026
 
 
 5.4.  Minimal Integration Contract
 
-   An execution-evidence system can support COSS Temporal Evidence
+   An execution-evidence system can support COSS Evidence Records
    without implementing PIC or IFC internally.  Its profile needs to
    provide:
 
@@ -669,9 +781,9 @@ Gallo                         Informational                    [Page 11]
 
 
 
-Gallo                         Informational                    [Page 12]
+Gallo                         Informational                    [Page 14]
 
-                         COSS Temporal Evidence             October 2026
+                          COSS Evidence Record              October 2026
 
 
    6.   *Evidence validity.* Apply the verifier and trust policy
@@ -708,10 +820,11 @@ Gallo                         Informational                    [Page 12]
 
    For Carol's proposed mail effect, assume the evidence establishes:
 
-   PIC authority:       send-email is present
-   IFC provenance:      the bytes depend on Alice's HIGH documents
-   destination policy:  external email is LOW
-   causal binding:      all results refer to this exact send occurrence
+PIC authority:       send-email is present
+IFC provenance:      the bytes depend on Alice's HIGH documents
+execution integrity: the required occurrence properties are independently established
+destination policy:  external email is LOW
+causal binding:      all results refer to this exact send occurrence
 
    The authority coordinate admits send-email.  The IFC coordinate
    rejects the HIGH -> LOW flow.  Dave therefore rejects the effect.
@@ -724,10 +837,9 @@ Gallo                         Informational                    [Page 12]
 
 
 
-
-Gallo                         Informational                    [Page 13]
+Gallo                         Informational                    [Page 15]
 
-                         COSS Temporal Evidence             October 2026
+                          COSS Evidence Record              October 2026
 
 
 7.2.  Accepted DLP Path
@@ -767,8 +879,8 @@ Trent data ------------------------------------------------->|
 
 behavior:                 digest of destination, message, and exact output bytes
 predecessor:              digest of the authenticated predecessor record
-PIC coordinate evidence: digest of the authorized composition and authority state
-IFC coordinate evidence: digest of the DLP/IFC result for the exact output
+PIC coordinate evidence:  digest of the authorized composition and authority state
+IFC coordinate evidence:  digest of the DLP/IFC result for the exact output
 relaxation evidence:      digest of declassification authorization, when required
 occurrence evidence:      digest of the execution evidence for this handoff
 
@@ -781,22 +893,22 @@ occurrence evidence:      digest of the execution evidence for this handoff
 
 
 
-Gallo                         Informational                    [Page 14]
+Gallo                         Informational                    [Page 16]
 
-                         COSS Temporal Evidence             October 2026
+                          COSS Evidence Record              October 2026
 
 
 8.  Conformance
 
-   A *COSS Temporal Evidence Producer* conforms to this specification
-   when it creates authenticated records that bind the occurrence,
-   policy, predecessors, behavior, evidence references, and transition
-   class as required above.
+   A *COSS Evidence Producer* conforms to this specification when it
+   creates authenticated records that bind the occurrence, policy,
+   predecessors, behavior, evidence references, and transition class as
+   required above.
 
-   A *COSS Temporal Evidence Verifier* conforms when it implements the
-   ordered verification procedure, validates every required external
-   profile independently, and fails closed on missing or unsupported
-   required evidence.
+   A *COSS Evidence Verifier* conforms when it implements the ordered
+   verification procedure, validates every required external profile
+   independently, and fails closed on missing or unsupported required
+   evidence.
 
    A *COSS Evidence Profile* conforms when it defines the concrete
    serialization, authenticating mechanism, exact-byte digest rules,
@@ -824,6 +936,24 @@ Gallo                         Informational                    [Page 14]
    formal results into technical requirements and are published and
    maintained by *Nitro Agility S.r.l.* as Specification Steward.
 
+   The name *COSS* abbreviates *Causally Ordered Security-State*.
+   “Causally Ordered” identifies the single causal partial order shared
+   by all represented security facts; “Security-State” identifies the
+   product of ordered security coordinates carried on that structure.
+   The name records how COSS was obtained from PIC: PIC remains the
+   authority-continuity coordinate, while additional security-state
+   coordinates are added without introducing a separate temporal or
+   causal axis.
+
+
+
+
+
+Gallo                         Informational                    [Page 17]
+
+                          COSS Evidence Record              October 2026
+
+
 9.1.  Historical References
 
    The publicly verifiable research record is:
@@ -833,14 +963,6 @@ Gallo                         Informational                    [Page 14]
       Systems_, Zenodo record 17777421 [9] (Section 13).  That archived
       draft is retained for historical reference and is not an
       implementation specification.
-
-
-
-
-Gallo                         Informational                    [Page 15]
-
-                         COSS Temporal Evidence             October 2026
-
 
    *  *5 December 2025 — authority-propagation analysis.* _Authority
       Propagation Models: PoP vs PoC and the Confused Deputy Problem_,
@@ -869,13 +991,24 @@ Gallo                         Informational                    [Page 15]
       becomes available.
 
    The PIC Specification 0.2 family was first published on *15 July
-   2026*. This COSS Temporal Evidence subordinate specification was
-   first published on *26 October 2026*. Published tags and immutable
-   records identify the exact text applicable to a review or conformance
-   claim.  Researchers and implementers are encouraged to cite the
-   primary publication that supports the formal property they discuss.
+   2026*. This COSS Evidence Record subordinate specification was first
+   published on *26 October 2026*. Published tags and immutable records
+   identify the exact text applicable to a review or conformance claim.
+   Researchers and implementers are encouraged to cite the primary
+   publication that supports the formal property they discuss.
    Copyright attribution for reuse of PIC specification materials is
    governed separately by the applicable CC BY 4.0 license.
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 18]
+
+                          COSS Evidence Record              October 2026
+
 
 10.  Security Considerations
 
@@ -889,14 +1022,6 @@ Gallo                         Informational                    [Page 15]
    Weak, deprecated, ambiguous, or incorrectly canonicalized digest
    inputs can defeat the binding.  Profiles MUST define exact-byte
    hashing and algorithm-agility policy.
-
-
-
-
-Gallo                         Informational                    [Page 16]
-
-                         COSS Temporal Evidence             October 2026
-
 
    Omitting a coordinate can change a security verdict.  Required
    coordinates MUST therefore be selected by trusted policy, not by the
@@ -930,6 +1055,17 @@ Gallo                         Informational                    [Page 16]
    define registries for coordinate identifiers, evidence roles, media
    types, digest algorithms, transition classes, or error values.
 
+
+
+
+
+
+
+Gallo                         Informational                    [Page 19]
+
+                          COSS Evidence Record              October 2026
+
+
 13.  References
 
 13.1.  Normative References
@@ -946,13 +1082,6 @@ Gallo                         Informational                    [Page 16]
    *  [3] Leiba, B. (2017). _Ambiguity of Uppercase vs Lowercase in RFC
       2119 Key Words_. BCP 14, RFC 8174. rfc-editor.org/rfc/rfc8174
       (https://www.rfc-editor.org/rfc/rfc8174)
-
-
-
-Gallo                         Informational                    [Page 17]
-
-                         COSS Temporal Evidence             October 2026
-
 
 13.2.  Informative References
 
@@ -984,6 +1113,15 @@ Gallo                         Informational                    [Page 17]
       paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
       (https://doi.org/10.5281/zenodo.17777421)
 
+
+
+
+
+Gallo                         Informational                    [Page 20]
+
+                          COSS Evidence Record              October 2026
+
+
    *  [10] Gallo, N., Silvestri, S., & Radesca, A. (forthcoming 2026).
       _Authority Continuity for Verifiable Lineage in Distributed
       Systems and AI Agents_. Accepted paper, 24th IEEE International
@@ -991,6 +1129,17 @@ Gallo                         Informational                    [Page 17]
       November 2026, Ortigia–Syracuse, Italy. nca-ieee.org/2026
       (https://www.nca-ieee.org/2026/).  IEEE Xplore DOI forthcoming;
       this reference will be updated when it becomes available.
+
+   *  [11] TRACE Specification Authors. (2026). _TRACE: Evidence for AI
+      Agent Runs_. Version 0.2 Developer Preview. trace.agentrust-io.com
+      (https://trace.agentrust-io.com/)
+
+   *  [12] TRACE Specification Authors. (2026). _RFC Proposal: Runtime
+      Evidence, and What a Verifier May Conclude without It_. Non-
+      normative draft proposal targeting TRACE v0.3. trace.agentrust-
+      io.com/docs/rfcs/runtime-evidence-profile
+      (https://trace.agentrust-io.com/docs/rfcs/runtime-evidence-
+      profile/)
 
 14.  Document History
 
@@ -1001,14 +1150,14 @@ Gallo                         Informational                    [Page 17]
       evidence, runtime provenance, and other COSS security coordinates
       on one causal evidence graph.
 
-
-
-
-
-Gallo                         Informational                    [Page 18]
-
-                         COSS Temporal Evidence             October 2026
-
+   *  *0.2 revision — 26 October 2026.* Named the transportable artifact
+      the COSS Evidence Record; defined COSS PoR, COSS PoC, and their
+      distinction from the evidence record; made the relationship to PIC
+      explicit; added execution integrity as an optional,
+      implementation-independent coordinate; identified TRACE as a
+      candidate evidence system for a future profile; and recorded the
+      planned COSS Prover and Verifier and COSS-to-TRACE companion
+      specifications without making them current dependencies.
 
 15.  Acknowledgments
 
@@ -1016,6 +1165,18 @@ Gallo                         Informational                    [Page 18]
    and do not define authorship, conformance, endorsement, or technical
    responsibility.  Names are added only when a concrete contribution
    has been identified and the person agrees to be listed.
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 21]
+
+                          COSS Evidence Record              October 2026
+
 
 16.  Contributors
 
@@ -1061,4 +1222,11 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 19]
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 22]

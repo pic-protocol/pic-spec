@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/readme/hero.png" alt="PIC Specification, draft 0.2, CC BY 4.0. The normative semantics of the PIC Model. One entry point and five subordinate specifications, each readable on its own: pic-spec.md, the core invariants; Prover and Verifier; Revocation; Sandboxed Execution, the lineage guardrail; Architecture and Deployment; COSS Temporal Evidence. Public drafts, not a standard." width="860">
+  <img src="assets/readme/hero.png" alt="PIC Specification, draft 0.2, CC BY 4.0. The normative semantics of the PIC Model. One entry point and five subordinate specifications, each readable on its own: pic-spec.md, the core invariants; Prover and Verifier; Revocation; Sandboxed Execution, the lineage guardrail; Architecture and Deployment; Causally Ordered Security-State (COSS) Evidence Record. Public drafts, not a standard." width="860">
 </p>
 
 <p align="center">
@@ -32,7 +32,7 @@ Each carries its own status, license notice, historical record and references, s
 | [PIC Revocation](draft/0.2/pic-revocation-spec.md)                               | Revocation around stable lineage identifiers, path positions, depth and causal cutoffs, and authenticated revocation state. | Draft 0.2 |
 | [PIC Sandboxed Execution](draft/0.2/pic-lineage-guardrail-spec.md)               | An outer `ENFORCE` continuity governing a collection of independently verifiable continuities, with no authority union.     | Draft 0.2 |
 | [PIC Architecture and Deployment](draft/0.2/pic-architecture-deployment-spec.md) | Deployment architectures: trusted continuity services, hybrid enterprise topologies, service meshes.                        | Draft 0.2 |
-| [COSS Temporal Evidence](draft/0.2/coss-evidences.md)                            | Same-occurrence binding of PIC, IFC, runtime provenance, and other coordinate evidence on one causal history.                | Draft 0.2 |
+| [Causally Ordered Security-State (COSS) Evidence Record](draft/0.2/coss-evidence-record-spec.md) | Transportable same-occurrence evidence for PIC, IFC, execution integrity, and other coordinates, supporting COSS PoR and PoC. | Draft 0.2 |
 
 The Markdown under `draft/0.2/` is canonical.
 Each document is also rendered as RFC-style XML, HTML and text under [`draft/0.2/rfc/`](draft/0.2/rfc); the rendering is a publication format and does not confer standards status.

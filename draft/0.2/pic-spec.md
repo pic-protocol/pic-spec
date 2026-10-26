@@ -171,7 +171,7 @@ separately authorized and MUST NOT masquerade as an ordinary continuation
 | [PIC Revocation](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md) | Revocation around stable lineage identifiers, path positions, lineage-depth and causal cutoffs, optional authenticated selectors, position or ancestry witnesses, revocation authorization, and authenticated revocation state. | Draft 0.2 | 2026-07-18 |
 | [PIC Sandboxed Execution](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md) | Sandboxed Execution as an outer `ENFORCE` PIC continuity governing a Composition Collection of independently verifiable PIC continuities. The collection is bound exactly, members remain independent, and no authority union is created. | Draft 0.2 | 2026-07-20 |
 | [PIC Architecture and Deployment](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md) | Profile-selected PIC deployment architectures, including trusted continuity services, decentralized validation, hybrid enterprise topologies, service meshes, and optional interoperability through selected exchange profiles. | Draft 0.2 | 2026-08-12 |
-| [COSS Temporal Evidence](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/coss-evidences.md) | Protocol-neutral same-occurrence binding of PIC authority evidence, IFC evidence, runtime provenance, and other COSS coordinate evidence on one causal history. | Draft 0.2 | 2026-10-26 |
+| [Causally Ordered Security-State (COSS) Evidence Record](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/coss-evidence-record-spec.md) | Protocol-neutral, transportable same-occurrence evidence for PIC authority, IFC, execution integrity, and other coordinates, supporting COSS Proof of Relationship and Proof of Continuity verification. | Draft 0.2 | 2026-10-26 |
 
 Implementation mappings, product coverage reports, and deployment-specific interoperability notes are maintained outside the normative
 specification set. They may demonstrate conformance but do not define PIC semantics or modify a profile's requirements.
@@ -251,8 +251,9 @@ This section is informative.
 - **0.2 — 15 July 2026.** Initial publication of the 0.2 specification family.
 - **0.2 revision — 26 October 2026.** Aligned concrete assurance claims, relational authority, event-level causal provenance, fan-out, and
   multi-parent composition with the cited formal record; separated the research history from repository licensing and governance; and
-  established the standalone origin, authorship, and historical record used across the specification family. Added the COSS Temporal
-  Evidence subordinate specification for same-occurrence binding of evidence from several security coordinates.
+  established the standalone origin, authorship, and historical record used across the specification family. Added the Causally Ordered
+  Security-State (COSS) Evidence Record subordinate specification for transportable same-occurrence evidence from several security coordinates and explicit
+  COSS Proof of Relationship and Proof of Continuity verification.
 
 # Acknowledgments
 

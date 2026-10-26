@@ -95,7 +95,7 @@ Table of Contents
    4.  Origins, Authorship, and Historical Record  . . . . . . . . .   7
      4.1.  Historical References . . . . . . . . . . . . . . . . . .   7
    5.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
-   6.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   8
+   6.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   9
    7.  Registry Considerations . . . . . . . . . . . . . . . . . . .   9
    8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      8.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
@@ -103,7 +103,7 @@ Table of Contents
    9.  Document History  . . . . . . . . . . . . . . . . . . . . . .  10
    10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  10
    11. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  10
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  10
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  11
 
 
 
@@ -328,8 +328,8 @@ Gallo                         Informational                     [Page 5]
    |                           | exchange          |      |            |
    |                           | profiles.         |      |            |
    +---------------------------+-------------------+------+------------+
-   | COSS Temporal Evidence    | Protocol-neutral  |Draft | 2026-10-26 |
-   | (https://github.com/pic-  | same-occurrence   |0.2   |            |
+   | Causally Ordered          | Protocol-         |Draft | 2026-10-26 |
+   | Security-State (COSS)     | neutral,          |0.2   |            |
 
 
 
@@ -338,16 +338,20 @@ Gallo                         Informational                     [Page 6]
                             PIC Specification               October 2026
 
 
-   | protocol/pic-             | binding of PIC    |      |            |
-   | spec/blob/main/draft/0.2/ | authority         |      |            |
-   | coss-evidences.md)        | evidence, IFC     |      |            |
-   |                           | evidence,         |      |            |
-   |                           | runtime           |      |            |
-   |                           | provenance, and   |      |            |
-   |                           | other COSS        |      |            |
-   |                           | coordinate        |      |            |
-   |                           | evidence on one   |      |            |
-   |                           | causal history.   |      |            |
+   | Evidence Record           | transportable     |      |            |
+   | (https://github.com/pic-  | same-occurrence   |      |            |
+   | protocol/pic-             | evidence for PIC  |      |            |
+   | spec/blob/main/draft/0.2/ | authority, IFC,   |      |            |
+   | coss-evidence-record-     | execution         |      |            |
+   | spec.md)                  | integrity, and    |      |            |
+   |                           | other             |      |            |
+   |                           | coordinates,      |      |            |
+   |                           | supporting COSS   |      |            |
+   |                           | Proof of          |      |            |
+   |                           | Relationship and  |      |            |
+   |                           | Proof of          |      |            |
+   |                           | Continuity        |      |            |
+   |                           | verification.     |      |            |
    +---------------------------+-------------------+------+------------+
 
                                   Table 1
@@ -381,10 +385,6 @@ Gallo                         Informational                     [Page 6]
       draft is retained for historical reference and is not an
       implementation specification.
 
-   *  *5 December 2025 — authority-propagation analysis.* _Authority
-      Propagation Models: PoP vs PoC and the Confused Deputy Problem_,
-      Zenodo record 17833000 [6] (Section 8).
-
 
 
 
@@ -393,6 +393,10 @@ Gallo                         Informational                     [Page 7]
 
                             PIC Specification               October 2026
 
+
+   *  *5 December 2025 — authority-propagation analysis.* _Authority
+      Propagation Models: PoP vs PoC and the Confused Deputy Problem_,
+      Zenodo record 17833000 [6] (Section 8).
 
    *  *9 July 2026 — formal Proof-of-Continuity paper.* _Proof-of-
       Continuity: A Temporal Model for Authority Propagation in
@@ -434,14 +438,10 @@ Gallo                         Informational                     [Page 7]
    establish causal continuity.  The subordinate specifications define
    the detailed security requirements for their respective mechanisms.
 
-6.  Privacy Considerations
 
-   Continuity identifiers, causal relationships, authority contexts,
-   executor evidence, and revocation state can enable correlation across
-   services or execution steps.  Profiles and deployments should
-   disclose only the evidence required by the receiving Verifier, scope
-   stable identifiers to the smallest suitable trust domain, and define
-   retention and access controls for continuity records.  Data
+
+
+
 
 
 
@@ -450,6 +450,14 @@ Gallo                         Informational                     [Page 8]
                             PIC Specification               October 2026
 
 
+6.  Privacy Considerations
+
+   Continuity identifiers, causal relationships, authority contexts,
+   executor evidence, and revocation state can enable correlation across
+   services or execution steps.  Profiles and deployments should
+   disclose only the evidence required by the receiving Verifier, scope
+   stable identifiers to the smallest suitable trust domain, and define
+   retention and access controls for continuity records.  Data
    minimization must not remove evidence required for a claimed security
    property.
 
@@ -488,14 +496,6 @@ Gallo                         Informational                     [Page 8]
       Confused-Deputy Exclusion_. Zenodo.  DOI: 10.5281/zenodo.23102373
       (https://doi.org/10.5281/zenodo.23102373)
 
-   *  [6] Gallo, N. (5 December 2025). _Authority Propagation Models:
-      PoP vs PoC and the Confused Deputy Problem_. Zenodo.  DOI:
-      10.5281/zenodo.17833000 (https://doi.org/10.5281/zenodo.17833000)
-
-   *  [7] Gallo, N. (1 December 2025). _PIC Model — Provenance Identity
-      Continuity for Distributed Execution Systems_. Archived working
-      paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
-      (https://doi.org/10.5281/zenodo.17777421)
 
 
 
@@ -505,6 +505,15 @@ Gallo                         Informational                     [Page 9]
 
                             PIC Specification               October 2026
 
+
+   *  [6] Gallo, N. (5 December 2025). _Authority Propagation Models:
+      PoP vs PoC and the Confused Deputy Problem_. Zenodo.  DOI:
+      10.5281/zenodo.17833000 (https://doi.org/10.5281/zenodo.17833000)
+
+   *  [7] Gallo, N. (1 December 2025). _PIC Model — Provenance Identity
+      Continuity for Distributed Execution Systems_. Archived working
+      paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
+      (https://doi.org/10.5281/zenodo.17777421)
 
    *  [8] Gallo, N., Silvestri, S., & Radesca, A. (forthcoming 2026).
       _Authority Continuity for Verifiable Lineage in Distributed
@@ -527,8 +536,10 @@ Gallo                         Informational                     [Page 9]
       separated the research history from repository licensing and
       governance; and established the standalone origin, authorship, and
       historical record used across the specification family.  Added the
-      COSS Temporal Evidence subordinate specification for same-
-      occurrence binding of evidence from several security coordinates.
+      Causally Ordered Security-State (COSS) Evidence Record subordinate
+      specification for transportable same-occurrence evidence from
+      several security coordinates and explicit COSS Proof of
+      Relationship and Proof of Continuity verification.
 
 10.  Acknowledgments
 
@@ -544,6 +555,13 @@ Gallo                         Informational                     [Page 9]
    the historical origin of the PIC Model and from stewardship of the
    PIC Specifications.
 
+
+
+Gallo                         Informational                    [Page 10]
+
+                            PIC Specification               October 2026
+
+
 Author's Address
 
    Nicola Gallo
@@ -557,4 +575,42 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 10]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 11]
