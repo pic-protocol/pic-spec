@@ -23,10 +23,8 @@ author:
 > context of that discussion; it does not reproduce, restate, or interpret the cA2A
 > specification.
 >
-> License: CC BY 4.0. The PIC Legal Appendices
-> (https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md) are
-> incorporated by reference. PIC Model: Nicola Gallo. PIC Specifications: stewarded by
-> Nitro Agility S.r.l.
+> License: CC BY 4.0; see the repository LICENSE and NOTICE. The PIC Model was developed by
+> Nicola Gallo. The PIC Specifications are stewarded by Nitro Agility S.r.l.
 
 # 0. Terms, as defined in PIC
 
@@ -220,13 +218,12 @@ representations and tooling for analyzing it. An agent-layer analysis of that hi
 is welcome and consumes PIC evidence; it does not become the place where that evidence
 is defined.
 
-# 6. Attribution
+# 6. Research Record and License
 
-Any document, profile, or implementation that uses PIC carries the attribution set
-out by CC BY 4.0 and the PIC Legal Appendices: the PIC Model by Nicola Gallo; the PIC
-Specifications published and stewarded by Nitro Agility S.r.l. The PIC Specifications
-remain the normative reference; a protocol binding references them, it does not
-reproduce them.
+The PIC Specification records the origin and dated research history of the PIC Model.
+Reuse of licensed specification material is governed by CC BY 4.0 and the repository
+LICENSE and NOTICE. The PIC Specifications remain the normative reference; a protocol
+binding references them, it does not reproduce them.
 
 # 7. Status
 
@@ -243,7 +240,7 @@ semantic compatibility should be assumed.
 - PIC Revocation: https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md
 - PIC Sandboxed Execution: https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md
 - PIC Architecture and Deployment: https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md
-- PIC Legal Appendices: https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md
+- PIC Project Notice: https://github.com/pic-protocol/pic-spec/blob/main/NOTICE.md
 - Formal model: https://www.pic-protocol.org/formal-model
 - PIC-X: https://github.com/pic-protocol/pic-x
 - Gallo, N. (2026). *Designing PIC-X: Exposing Configuration through .well-known/pic-x-configuration* (1 August 2026): https://www.ngallo.it/blog/2026-08-01/pic-x-well-known-config/

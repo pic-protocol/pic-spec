@@ -4,7 +4,7 @@
 
                                                                 N. Gallo
                                                     Nitro Agility S.r.l.
-                                                            15 July 2026
+                                                         26 October 2026
 
 
         Provenance Identity Continuity (PIC) Model Specification
@@ -29,11 +29,11 @@ Document Status
    *Project:* PIC Protocol *Project Website:* www.pic-protocol.org
    (https://www.pic-protocol.org/) *Document:* pic-specification-02
    *Version:* 0.2 (Draft) *Document Status:* Public Draft *Intended
-   Use:* Informational and Experimental *Published:* 2026-07-15
-   *Editor(s):* Nicola Gallo (Nitro Agility S.r.l.) *Steward:* Nitro
-   Agility S.r.l. *Source:* github.com/pic-protocol/pic-spec/draft/0.2/
-   pic-spec.md (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-spec.md)
+   Use:* Informational and Experimental *First Published:* 2026-07-15
+   *Last Updated:* 2026-10-26 *Editor(s):* Nicola Gallo (Nitro Agility
+   S.r.l.) *Steward:* Nitro Agility S.r.l. *Source:* github.com/pic-
+   protocol/pic-spec/draft/0.2/pic-spec.md (https://github.com/pic-
+   protocol/pic-spec/blob/main/draft/0.2/pic-spec.md)
 
 About This Document
 
@@ -43,52 +43,81 @@ About This Document
       published as part of the PIC Protocol and maintained by Nitro
       Agility S.r.l. in its role as Specification Steward.
 
-      It has not been adopted, endorsed, approved, or published by the
-      IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
-      Foundation, or any other standards-development organization,
-      unless a later version explicitly states otherwise.
+      It has not been adopted, endorsed, approved, or published by a
+      standards-development organization.  It is published for public
+      review, research, experimentation, implementation feedback, and
+      possible future standardization work.  It may be revised,
+      replaced, or withdrawn at any time.
 
-      It is not an RFC, an Internet Standard, or an official work item
-      of any working group or standards body.
+
 
 
 
 Gallo                         Informational                     [Page 1]
 
-                            PIC Specification                  July 2026
+                            PIC Specification               October 2026
 
-
-      This document is published for public review, research,
-      experimentation, implementation feedback, and possible future
-      standardization work.  It may be revised, replaced, or withdrawn
-      at any time.
 
       Implementers use this draft at their own risk.  Any
       implementation, interoperability statement, or conformance claim
       applies only to the exact document version identified above.
 
-      Publication of this draft does not constitute certification,
-      endorsement, security approval, interoperability assurance,
-      regulatory approval, or standards-body recognition.
+      Publication does not constitute certification, endorsement,
+      security approval, interoperability assurance, or regulatory
+      approval.
 
       Current project information and published specifications are
       available at https://www.pic-protocol.org/.
 
+Feedback and Issue Tracking
+
+   The source for this document and the issue tracker for technical
+   discussion are maintained at github.com/pic-protocol/pic-spec
+   (https://github.com/pic-protocol/pic-spec).  Changes are accepted
+   through the repository contribution process.  Published releases,
+   tags, and immutable research references identify the version to which
+   a review or conformance statement applies.
+
+Copyright and License
+
+   This document is made available under the Creative Commons
+   Attribution 4.0 International license.  See the repository LICENSE
+   (https://github.com/pic-protocol/pic-spec/blob/main/LICENSE) and
+   NOTICE (https://github.com/pic-protocol/pic-spec/blob/main/
+   NOTICE.md).  This notice does not add restrictions to that license.
+
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-     1.1.  Requirements Notation . . . . . . . . . . . . . . . . . .   2
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.1.  Requirements Notation . . . . . . . . . . . . . . . . . .   3
    2.  Core Invariants . . . . . . . . . . . . . . . . . . . . . . .   3
-   3.  Documents . . . . . . . . . . . . . . . . . . . . . . . . . .   3
-   4.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .   6
-   5.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .   6
-   6.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   7
+   3.  Documents . . . . . . . . . . . . . . . . . . . . . . . . . .   5
+   4.  Origins, Authorship, and Historical Record  . . . . . . . . .   7
+     4.1.  Historical References . . . . . . . . . . . . . . . . . .   8
+   5.  Implementation Status . . . . . . . . . . . . . . . . . . . .   8
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
+   7.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   9
+   8.  Registry Considerations . . . . . . . . . . . . . . . . . . .   9
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .  10
+   10. Document History  . . . . . . . . . . . . . . . . . . . . . .  10
+   11. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  10
+   12. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  11
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  11
+
+
+
+
+Gallo                         Informational                     [Page 2]
+
+                            PIC Specification               October 2026
+
 
 1.  Introduction
 
    *  The *PIC Model* defines the foundational execution theory and
-      invariants (see Section 6).
+      invariants (see Section 9).
 
    *  The *PIC Specification* (this document and its subordinate
       specifications) defines the normative semantics of the PIC Model.
@@ -98,7 +127,7 @@ Table of Contents
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
    "OPTIONAL" are to be interpreted as described in BCP 14 [2]
-   (Section 6) [3] (Section 6) when, and only when, they appear in all
+   (Section 9) [3] (Section 9) when, and only when, they appear in all
    capitals.
 
    Documents and implementations claiming conformance with PIC *MUST*
@@ -106,21 +135,13 @@ Table of Contents
    expressed by this Specification.  Anything that violates these
    invariants is *not PIC-compliant*, regardless of naming or intent.
 
-
-
-
-Gallo                         Informational                     [Page 2]
-
-                            PIC Specification                  July 2026
-
-
    Subordinate specifications:
 
    *  MUST NOT redefine, extend, or alter the invariants of the PIC
       Model,
 
-   *  MUST incorporate the PIC Legal Appendices (https://github.com/pic-
-      protocol/pic-spec/blob/main/draft/0.2/pic-legal.md) by reference,
+   *  MUST identify the version of this specification on which they
+      depend,
 
    *  are canonical only in the version designated by the Specification
       Steward.
@@ -142,6 +163,13 @@ Gallo                         Informational                     [Page 2]
        Relationship (PoR) relation between the predecessor and
        successor.
 
+
+
+Gallo                         Informational                     [Page 3]
+
+                            PIC Specification               October 2026
+
+
    4.  Successor authority MUST be no greater than predecessor authority
        under the selected profile's attenuation order.  For set-valued
        authority, successor authority is a subset of predecessor
@@ -153,6 +181,57 @@ Gallo                         Informational                     [Page 2]
    6.  A Proof of Continuity is the composition of valid hops that
        preserve these invariants.
 
+   When a selected profile carries a relational executor envelope or
+   execution contract, the predecessor envelope governs admission of the
+   successor, the successor profile MUST satisfy it under sound
+   evidence, and the carried successor envelope MUST preserve or
+   strengthen it.  In logical notation, rho(i+1) => rho(i).  Withholding
+   profile evidence MUST NOT widen admission [4] (Section 9).
+
+   When a selected profile generalizes carried state to several ordered
+   security coordinates, every ordinary transition MUST be non-expansive
+   in every coordinate under that coordinate's declared semantic order.
+   Any non-conservative coordinate change is an explicit authorized
+   relaxation, not an ordinary continuation [5] (Section 9).
+
+   These invariants define full PIC continuity.  A concrete profile or
+   implementation MUST NOT claim a Proof of Continuity, the PIC
+   confused-deputy exclusion result, or full PIC conformance merely
+   because it authenticates artifacts, links checkpoint bytes, proves
+   control of a key, or enforces non-expansion.  Its receiving predicate
+   MUST also soundly establish the profile's concrete realization of the
+   abstract PoR relation.  An implementation that establishes only a
+   strict subset MAY describe those properties as a partial or artifact-
+   linked assurance level, but MUST identify the missing refinement
+   obligations and MUST NOT present that level as full PIC continuity
+   [4] (Section 9).
+
+   Claims about concrete protected effects require additional
+   realization obligations: the modeled causal dependencies MUST be
+   complete for the stated threat model, evidence for causal edges MUST
+   be sound, and every protected effect in scope MUST be mediated
+   against the authority state of its occurrence.  PIC continuity alone
+   does not prove that hidden state, an omitted physical path, or an
+   unmediated effect was represented [4] (Section 9) [5] (Section 9).
+
+   The exactly-one-predecessor rule applies to an ordinary linear
+   advancement.  Forks produce separate valid paths.  A profile that
+   represents an ordinary multi-parent causal join MUST keep the child
+   security state no more permissive than every parent; for set-valued
+
+
+
+Gallo                         Informational                     [Page 4]
+
+                            PIC Specification               October 2026
+
+
+   authority, the child authority is therefore a subset of the
+   intersection of the parent authorities.  A composition, grant,
+   endorsement, or other non-conservative transition MUST be explicit
+   and separately authorized and MUST NOT masquerade as an ordinary
+   continuation [5] (Section 9).
+
 3.  Documents
 
    +===========================+===================+======+============+
@@ -162,14 +241,6 @@ Gallo                         Informational                     [Page 2]
    | (https://github.com/pic-  | requirements for  |0.2   |            |
    | protocol/pic-             | PIC Provers and   |      |            |
    | spec/blob/main/draft/0.2/ | Verifiers:        |      |            |
-
-
-
-Gallo                         Informational                     [Page 3]
-
-                            PIC Specification                  July 2026
-
-
    | pic-prover-verifier-      | trusted roots,    |      |            |
    | spec.md)                  | non-root          |      |            |
    |                           | continuity        |      |            |
@@ -186,16 +257,31 @@ Gallo                         Informational                     [Page 3]
    |                           | authority as an   |      |            |
    |                           | abstract          |      |            |
    |                           | attenuation       |      |            |
-   |                           | domain, and       |      |            |
-   |                           | profile-selected  |      |            |
+   |                           | domain, profile-  |      |            |
+   |                           | selected          |      |            |
    |                           | continuity        |      |            |
-   |                           | representations.  |      |            |
+   |                           | representations,  |      |            |
+   |                           | and explicit      |      |            |
+   |                           | separation        |      |            |
+   |                           | between full PIC  |      |            |
+   |                           | continuity and    |      |            |
+   |                           | partial           |      |            |
+   |                           | artifact-linked   |      |            |
+   |                           | assurance.        |      |            |
    |                           | Current Profile   |      |            |
    |                           | 0.2 uses          |      |            |
    |                           | centralized       |      |            |
    |                           | settlement with   |      |            |
    |                           | PIC Token JWTs    |      |            |
    |                           | carrying settled  |      |            |
+
+
+
+Gallo                         Informational                     [Page 5]
+
+                            PIC Specification               October 2026
+
+
    |                           | PIC Continuity    |      |            |
    |                           | COSE, PIC PCA     |      |            |
    |                           | COSE              |      |            |
@@ -206,31 +292,33 @@ Gallo                         Informational                     [Page 3]
    |                           | artifacts.        |      |            |
    +---------------------------+-------------------+------+------------+
    | PIC Revocation            | Revocation        |Draft | 2026-07-18 |
-   | (https://github.com/pic-  | around PCA ID,    |0.2   |            |
-   | protocol/pic-             | position,         |      |            |
-   | spec/blob/main/draft/0.2/ | optional          |      |            |
-   | pic-revocation-spec.md)   | authenticated     |      |            |
+   | (https://github.com/pic-  | around stable     |0.2   |            |
+   | protocol/pic-             | lineage           |      |            |
+   | spec/blob/main/draft/0.2/ | identifiers,      |      |            |
+   | pic-revocation-spec.md)   | path positions,   |      |            |
+   |                           | lineage-depth     |      |            |
+   |                           | and causal        |      |            |
+   |                           | cutoffs,          |      |            |
+   |                           | optional          |      |            |
+   |                           | authenticated     |      |            |
    |                           | selectors,        |      |            |
-   |                           | authorized        |      |            |
-   |                           | causal cutoffs,   |      |            |
-   |                           | position          |      |            |
+   |                           | position or       |      |            |
+   |                           | ancestry          |      |            |
    |                           | witnesses,        |      |            |
    |                           | revocation        |      |            |
    |                           | authorization,    |      |            |
    |                           | and               |      |            |
-
-
-
-Gallo                         Informational                     [Page 4]
-
-                            PIC Specification                  July 2026
-
-
    |                           | authenticated     |      |            |
    |                           | revocation        |      |            |
+   |                           | state.  PIC-X     |      |            |
+   |                           | 0.2.3 exposes     |      |            |
+   |                           | useful signed     |      |            |
+   |                           | coordinates but   |      |            |
+   |                           | implements no     |      |            |
+   |                           | PIC revocation    |      |            |
    |                           | state.            |      |            |
    +---------------------------+-------------------+------+------------+
-   | PIC Sandboxed Execution   | Sandboxed         |Draft | 2026-08-12 |
+   | PIC Sandboxed Execution   | Sandboxed         |Draft | 2026-07-20 |
    | (https://github.com/pic-  | Execution as an   |0.2   |            |
    | protocol/pic-             | outer ENFORCE     |      |            |
    | spec/blob/main/draft/0.2/ | PIC continuity    |      |            |
@@ -242,12 +330,23 @@ Gallo                         Informational                     [Page 4]
    |                           | continuities.     |      |            |
    |                           | The collection    |      |            |
    |                           | is bound          |      |            |
+
+
+
+Gallo                         Informational                     [Page 6]
+
+                            PIC Specification               October 2026
+
+
    |                           | exactly, members  |      |            |
    |                           | remain            |      |            |
    |                           | independent, and  |      |            |
    |                           | no authority      |      |            |
    |                           | union is          |      |            |
-   |                           | created.          |      |            |
+   |                           | created.  PIC-X   |      |            |
+   |                           | 0.2.3 does not    |      |            |
+   |                           | implement this    |      |            |
+   |                           | profile.          |      |            |
    +---------------------------+-------------------+------+------------+
    | PIC Architecture and      | Profile-selected  |Draft | 2026-08-12 |
    | Deployment                | PIC deployment    |0.2   |            |
@@ -265,89 +364,130 @@ Gallo                         Informational                     [Page 4]
    |                           | exchange          |      |            |
    |                           | profiles.         |      |            |
    |                           | Current Profile   |      |            |
-   |                           | 0.2 is            |      |            |
-   |                           | centralized,      |      |            |
-   |                           | with PIC-X as     |      |            |
-   |                           | one realization;  |      |            |
+   |                           | 0.2 settlement    |      |            |
+   |                           | is centralized;   |      |            |
+   |                           | PIC-X implements  |      |            |
+   |                           | its current       |      |            |
+   |                           | artifact-linked   |      |            |
+   |                           | settlement        |      |            |
+   |                           | subset, while     |      |            |
    |                           | future or other   |      |            |
    |                           | profiles may      |      |            |
    |                           | define other      |      |            |
    |                           | modes.            |      |            |
    +---------------------------+-------------------+------+------------+
 
-
-
-Gallo                         Informational                     [Page 5]
-
-                            PIC Specification                  July 2026
-
-
                                   Table 1
 
-4.  Acknowledgement
+4.  Origins, Authorship, and Historical Record
 
-   The *Provenance Identity Continuity (PIC) Model* — the theoretical
-   framework this specification expresses in normative form — was
-   created by *Nicola Gallo*. It first appeared on Zenodo on 1 December
-   2025 and is developed in full in the Proof-of-Continuity paper:
+   This section is informative.
 
-   *  Gallo, N. (2025). _PIC Model — Provenance Identity Continuity for
-      Distributed Execution Systems_. Zenodo. zenodo.org/
-      records/17777421 (https://zenodo.org/records/17777421) (DOI:
-      10.5281/zenodo.17777421).
-
-   *  Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
-      Authority Propagation in Distributed Systems and AI Agents_.
-      Zenodo. zenodo.org/records/21285112 (https://zenodo.org/
-      records/21285112) (DOI: 10.5281/zenodo.21285112).
-
-   Authorship of the PIC Model remains with Nicola Gallo; the PIC
-   specifications are published and maintained by *Nitro Agility S.r.l.*
-   as Specification Steward.  Any work that references, implements, or
-   claims conformance with PIC must preserve this attribution,
-   distinguishing the *PIC Model* (author: Nicola Gallo) from the *PIC
-   Specifications* (steward: Nitro Agility S.r.l.), as required by the
-   *PIC Legal Appendices (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-legal.md)* (Appendix B, Attribution;
-   Appendix D, Acknowledgements), which are incorporated into this
-   specification by reference.
-
-5.  Legal Notices
-
-   The appendices governing:
-
-   *  *A.* Use of Automated Language Assistance,
-
-   *  *B.* Authorship, Stewardship, Attribution, and Derivative Works,
-
-   *  *C.* Disclaimer and Limitation of Liability,
-
-   *  *D.* Acknowledgements,
-
-   are maintained in a single canonical document, the *PIC Legal
-   Appendices (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-legal.md)* (draft/0.2/pic-legal.md), and
-   are *incorporated into this specification by reference* as if fully
-   set forth herein.
+   The *Provenance Identity Continuity (PIC) Model* was originally
+   developed by *Nicola Gallo* as a formal framework for reasoning about
+   causal authority propagation across distributed execution.  Its
 
 
 
-
-Gallo                         Informational                     [Page 6]
+Gallo                         Informational                     [Page 7]
 
-                            PIC Specification                  July 2026
+                            PIC Specification               October 2026
 
 
-   In case of conflict between this document and the PIC Legal
-   Appendices, the PIC Legal Appendices prevail for legal, governance,
-   licensing, and attribution matters.
+   development introduced Proof of Relationship (PoR), Proof of
+   Continuity (PoC), authority non-expansion, relational attenuation,
+   and event-level causal provenance as connected parts of the
+   framework.  The PIC Specifications translate those formal results
+   into technical requirements and are published and maintained by
+   *Nitro Agility S.r.l.* as Specification Steward.
 
-6.  References
+4.1.  Historical References
 
-   *  [1] Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
-      Authority Propagation in Distributed Systems and AI Agents_.
-      arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
-      (https://arxiv.org/abs/2607.08906)
+   The publicly verifiable research record is:
+
+   *  *1 December 2025 — initial public PIC Model working paper.* _PIC
+      Model — Provenance Identity Continuity for Distributed Execution
+      Systems_, Zenodo record 17777421 [7] (Section 9).  That archived
+      draft is retained for historical reference and is not an
+      implementation specification.
+
+   *  *5 December 2025 — authority-propagation analysis.* _Authority
+      Propagation Models: PoP vs PoC and the Confused Deputy Problem_,
+      Zenodo record 17833000 [6] (Section 9).
+
+   *  *9 July 2026 — formal Proof-of-Continuity paper.* _Proof-of-
+      Continuity: A Temporal Model for Authority Propagation in
+      Distributed Systems and AI Agents_, arXiv:2607.08906 [1]
+      (Section 9).
+
+   *  *25 September 2026 — relational authority theory.* _Beyond Proof
+      of Possession: A Relational Theory of Authority_, Zenodo record
+      23102206 [4] (Section 9).
+
+   *  *2 October 2026 — event-level causal closure.* _Full Provenance on
+      the COSS Causal Axis: An Event-Level Closure of Causal Attribution
+      and Confused-Deputy Exclusion_, Zenodo record 23102373 [5]
+      (Section 9).
+
+   The PIC Specification 0.2 family was first published on *15 July
+   2026* and subsequently revised as the formal record developed.
+   Published tags and immutable records identify the exact text
+   applicable to a review or conformance claim.  Researchers and
+   implementers are encouraged to cite the primary publication that
+   supports the formal property they discuss.  Copyright attribution for
+   reuse of PIC specification materials is governed separately by the
+   applicable CC BY 4.0 license.
+
+5.  Implementation Status
+
+   This section is informative and records implementation coverage at
+   the time of this draft.
+
+
+
+Gallo                         Informational                     [Page 8]
+
+                            PIC Specification               October 2026
+
+
+   PIC-X 0.2.3 implements the current centralized artifact and
+   settlement subset described by the PIC Prover and Verifier
+   Specification.  Its current assurance level is artifact-linked; it
+   does not implement all obligations required for full semantic PoR,
+   request/execution binding, causal attribution, revocation, or
+   Sandboxed Execution.  Implementation coverage is evidence of running
+   code, not a redefinition of PIC conformance.
+
+6.  Security Considerations
+
+   The security consequences of PIC depend on the concrete profile and
+   its realization of PoR, non-expansion, freshness, request or
+   execution binding, revocation, and complete mediation.
+   Authentication of artifacts or possession of keys alone does not
+   establish causal continuity.  The subordinate specifications define
+   the detailed security requirements for their respective mechanisms.
+
+7.  Privacy Considerations
+
+   Continuity identifiers, causal relationships, authority contexts,
+   executor evidence, and revocation state can enable correlation across
+   services or execution steps.  Profiles and deployments should
+   disclose only the evidence required by the receiving Verifier, scope
+   stable identifiers to the smallest suitable trust domain, and define
+   retention and access controls for continuity records.  Data
+   minimization must not remove evidence required for a claimed security
+   property.
+
+8.  Registry Considerations
+
+   This version defines no shared protocol registry and requests no
+   external registry action.  A future wire-format or interoperability
+   profile may define registries for identifiers, algorithms, evidence
+   types, or error values.
+
+9.  References
+
+9.1.  Normative References
 
    *  [2] Bradner, S. (1997). _Key words for use in RFCs to Indicate
       Requirement Levels_. BCP 14, RFC 2119. rfc-editor.org/rfc/rfc2119
@@ -356,6 +496,78 @@ Gallo                         Informational                     [Page 6]
    *  [3] Leiba, B. (2017). _Ambiguity of Uppercase vs Lowercase in RFC
       2119 Key Words_. BCP 14, RFC 8174. rfc-editor.org/rfc/rfc8174
       (https://www.rfc-editor.org/rfc/rfc8174)
+
+
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                            PIC Specification               October 2026
+
+
+9.2.  Informative References
+
+   *  [1] Gallo, N. (9 July 2026). _Proof-of-Continuity: A Temporal
+      Model for Authority Propagation in Distributed Systems and AI
+      Agents_. arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
+      (https://arxiv.org/abs/2607.08906)
+
+   *  [4] Gallo, N. (25 September 2026). _Beyond Proof of Possession: A
+      Relational Theory of Authority_. Zenodo.  DOI: 10.5281/
+      zenodo.23102206 (https://doi.org/10.5281/zenodo.23102206)
+
+   *  [5] Gallo, N. (2 October 2026). _Full Provenance on the COSS
+      Causal Axis: An Event-Level Closure of Causal Attribution and
+      Confused-Deputy Exclusion_. Zenodo.  DOI: 10.5281/zenodo.23102373
+      (https://doi.org/10.5281/zenodo.23102373)
+
+   *  [6] Gallo, N. (5 December 2025). _Authority Propagation Models:
+      PoP vs PoC and the Confused Deputy Problem_. Zenodo.  DOI:
+      10.5281/zenodo.17833000 (https://doi.org/10.5281/zenodo.17833000)
+
+   *  [7] Gallo, N. (1 December 2025). _PIC Model — Provenance Identity
+      Continuity for Distributed Execution Systems_. Archived working
+      paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
+      (https://doi.org/10.5281/zenodo.17777421)
+
+10.  Document History
+
+   This section is informative.
+
+   *  *0.2 — 15 July 2026.* Initial publication of the 0.2 specification
+      family.
+
+   *  *0.2 revision — 26 October 2026.* Aligned concrete assurance
+      claims, relational authority, event-level causal provenance, fan-
+      out, and multi-parent composition with the cited formal record;
+      separated the research history from repository licensing and
+      governance; and established the standalone origin, authorship, and
+      historical record used across the specification family.
+
+11.  Acknowledgments
+
+   Acknowledgments recognize review, discussion, or editorial assistance
+   and do not define authorship, conformance, endorsement, or technical
+   responsibility.  Names are added only when a concrete contribution
+   has been identified and the person agrees to be listed.
+
+
+
+
+
+
+Gallo                         Informational                    [Page 10]
+
+                            PIC Specification               October 2026
+
+
+12.  Contributors
+
+   The editor and current contributors are identified in the document
+   header and repository history.  Contribution credit is distinct from
+   the historical origin of the PIC Model and from stewardship of the
+   PIC Specifications.
 
 Author's Address
 
@@ -389,4 +601,16 @@ Author's Address
 
 
 
-Gallo                         Informational                     [Page 7]
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 11]

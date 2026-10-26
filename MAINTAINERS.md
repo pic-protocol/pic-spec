@@ -3,16 +3,8 @@
 This document defines the scope and limits of the *Maintainer* role for the
 official PIC repositories.
 
-Maintainer status concerns **repository operations only** and does **not**
-create, transfer, modify, or imply:
-
-- authorship or co-authorship of the PIC Model,
-- ownership of the PIC Model or the PIC Specification,
-- normative authority over the PIC Model or the PIC Specification,
-- legal, professional, or operational responsibility for the PIC Model.
-
-All such matters are defined **exclusively** in the PIC Specification
-(see Appendix B).
+Maintainer status concerns repository operations. Scientific history is recorded in the PIC Specification, licensing in `LICENSE` and
+`NOTICE.md`, and project roles in `GOVERNANCE.md`.
 
 ---
 
@@ -25,12 +17,8 @@ Maintainers MAY:
 - merge changes,
 - coordinate issues and documentation.
 
-Maintainers MAY NOT:
-
-- alter authorship or attribution,
-- declare or imply canonical status of any document,
-- modify normative authority of the PIC Specification,
-- create obligations, warranties, or liabilities regarding the PIC Model.
+Maintainers MAY NOT independently designate a document as canonical, change a released specification outside the review process, or imply
+endorsement on behalf of the project or its contributors.
 
 Final editorial and normative authority remains with the
 **Specification Steward**, as defined in the PIC Specification.

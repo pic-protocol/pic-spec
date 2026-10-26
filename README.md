@@ -9,17 +9,10 @@ This repository hosts the **official materials for the Provenance Identity Conti
 Together, these documents define what it means for a system to be
 **PIC-compliant**.
 
-> **Attribution Notice**  
-> This work is based on the **Provenance Identity Continuity (PIC) Model**,  
-> a theoretical framework created by **Nicola Gallo**, including its foundational
-> definitions, invariants, and the structural resolution of the *confused deputy*
-> class of vulnerabilities.  
->  
-> The **PIC Specification** and all related official documents are published,
-> maintained, and governed by **Nitro Agility S.r.l.** as the Specification Steward.
->  
-> Authorship of the PIC Model remains with its original author and is independent
-> of repository ownership, governance, or publication activities.
+> **Project record**
+> The PIC Model was developed by **Nicola Gallo**. Its dated research history and primary publications are recorded in the PIC Specification.
+> The PIC Specifications are published and maintained by **Nitro Agility S.r.l.** as Specification Steward. Licensing and attribution
+> information is summarized in [`NOTICE.md`](NOTICE.md).
 
 ---
 
@@ -54,17 +47,15 @@ task rfc:clean     # remove generated outputs and logs
 task rfc:rebuild   # clean + build
 ```
 
-Builds are atomic per document: outputs land in the version's `rfc/` directory only if that document
-converts and renders without errors; per-document logs are written to `.cache/rfc-logs/`. The list of
-specs to build is `scripts/rfc/sources.txt` (`pic-legal.md` is intentionally excluded: it is a legal
-appendix incorporated by reference, not a specification).
+Builds are atomic per document: outputs land in the version's `rfc/` directory only if that document converts and renders without errors;
+per-document logs are written to `.cache/rfc-logs/`. The list of specifications to build is `scripts/rfc/sources.txt`.
 
 In the generated HTML, cross-references between the built specs are relative `.html` links, so the
 set is navigable wherever it is served: a static host, a local checkout, or directly from GitHub via
 [htmlpreview](https://htmlpreview.github.io/), e.g.
 `https://htmlpreview.github.io/?https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/rfc/pic-spec.html`.
-Each document's *Source* link and `pic-legal.md` keep pointing to the canonical markdown on GitHub. When a new draft version is created (e.g.
-`draft/0.3/`), add its specs to `sources.txt` and keep the old versions listed: a single
+Each document's *Source* link keeps pointing to the canonical markdown on GitHub. When a new draft version is created (e.g. `draft/0.3/`),
+add its specifications to `sources.txt` and keep the old versions listed: a single
 `task rfc:build` then rebuilds every configured version — `draft/0.2/rfc/`, `draft/0.3/rfc/`, and so on.
 
 ---
@@ -76,6 +67,8 @@ This project is licensed under the
 
 See `LICENSE` for full terms.
 
+See `NOTICE.md` for project attribution information. The notice does not add restrictions to the license.
+
 ---
 
 ## Governance and Contributions
@@ -84,14 +77,11 @@ Project process and responsibilities are defined by the following documents:
 
 - **Governance:** `GOVERNANCE.md`
 - **Contributing:** `CONTRIBUTING.md`
+- **Project notice:** `NOTICE.md`
 - **Code of Conduct:** `CODE_OF_CONDUCT.md`
 - **Maintainers:** `MAINTAINERS.md`
 - **Security Policy:** `SECURITY.md`
 
-Authorship, attribution requirements, and the normative status of the
-PIC Model, PIC Spec, and PIC Protocol documents are defined **exclusively**
-in the PIC Specification (Appendix B).
-
-In case of conflict, the applicable LICENSE files and the normative text of the
-PIC Specification and any Official PIC Protocol specifications take precedence
-over this README.
+The PIC Specification records the mathematical model, conformance requirements, and dated research history. Repository process and legal
+information remain in their conventional project files so that the technical specifications can be carried into a future standards process
+without a separate incorporated legal appendix.

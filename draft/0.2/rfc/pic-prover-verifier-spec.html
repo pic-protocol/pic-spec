@@ -8,39 +8,40 @@
 <meta content="Nicola Gallo" name="author">
 <meta content="
        This document is the  PIC Prover and Verifier Specification , a subordinate specification of the  PIC Specification . It
-defines the normative requirements for the two complementary components of Proof of Continuity handling: 
-       
-         
-           PIC Provers : the components that construct Proofs of Continuity for an execution hop; 
-         
-         
-           PIC Verifiers : the trusted components that validate Proofs of Continuity and enforce the invariants of the
- Provenance Identity Continuity (PIC) Model  at verification time. 
-         
-       
-       At every hop, a node acts in both roles: it  verifies  the continuity state received from its predecessor and  proves  continuity to its
-successor by producing the next continuity advancement required by the selected profile. 
+defines the normative requirements for the two complementary components of continuity handling:
+
+
+           PIC Provers : the components that construct candidate continuity advancements and the evidence required by the selected profile;
+
+
+           PIC Verifiers : the trusted components that validate those advancements and enforce the invariants claimed by the selected profile at
+verification time.
+
+
+       At every hop, a node can act in both roles: it  verifies  the continuity state received from its predecessor and  proposes  the next
+continuity advancement required by the selected profile. A profile may call the accepted result a Proof of Continuity only to the extent
+that its concrete acceptance predicate is shown to refine the abstract PoR and non-expansion predicates of the PIC Model.
        It specifies the per-hop  Proof of Relationship  and continuity-advancement requirements (Section 2), the ordered  Verifier checks  -
 including profile-conditional request/execution binding - that validate a hop before authority is exercised (Section 3), authority as an abstract
- attenuation domain  with a Policy Decision Point boundary (Section 4), and profile-selected  continuity representations  (Section 5). 
-       This document does not redefine, extend, or alter the PIC Model or the normative semantics defined by the PIC Specification. 
-       In case of conflict, the  PIC Specification  is authoritative. 
+ attenuation domain  with a Policy Decision Point boundary (Section 4), and profile-selected  continuity representations  (Section 5).
+       This document does not redefine, extend, or alter the PIC Model or the normative semantics defined by the PIC Specification.
+       In case of conflict, the  PIC Specification  is authoritative.
     " name="description">
 <meta content="xml2rfc 3.32.0" name="generator">
 <meta content="pic-prover-verifier-02" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.32.0
-    Python 3.14.5
-    ConfigArgParse 1.7.5
+    Python 3.14.7
+    ConfigArgParse 1.8.0
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 6.1.1
-    platformdirs 4.10.1
+    lxml 6.1.3
+    platformdirs 4.13.5
     pycountry 26.2.16
     PyYAML 6.0.3
     requests 2.34.2
-    wcwidth 0.8.2
+    wcwidth 0.9.4
 -->
 <link href="0.2-pic-prover-verifier-spec.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -244,7 +245,7 @@ dl > dt {
   float: left;
   margin-right: 1em;
 }
-/* 
+/*
 dl.nohang > dt {
   float: none;
 }
@@ -1230,7 +1231,7 @@ li > p:last-of-type:only-child {
 <thead><tr>
 <td class="left"></td>
 <td class="center">PIC Prover and Verifier</td>
-<td class="right">July 2026</td>
+<td class="right">October 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Gallo</td>
@@ -1243,7 +1244,7 @@ li > p:last-of-type:only-child {
 <dl id="identifiers">
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-07-15" class="published">15 July 2026</time>
+<time datetime="2026-10-26" class="published">26 October 2026</time>
     </dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
@@ -1258,18 +1259,19 @@ li > p:last-of-type:only-child {
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document is the <strong>PIC Prover and Verifier Specification</strong>, a subordinate specification of the <a href="pic-spec.html">PIC Specification</a>. It
-defines the normative requirements for the two complementary components of Proof of Continuity handling:<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+defines the normative requirements for the two complementary components of continuity handling:<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-abstract-2.1">
-          <p id="section-abstract-2.1.1"><strong>PIC Provers</strong>: the components that construct Proofs of Continuity for an execution hop;<a href="#section-abstract-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-abstract-2.1.1"><strong>PIC Provers</strong>: the components that construct candidate continuity advancements and the evidence required by the selected profile;<a href="#section-abstract-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-abstract-2.2">
-          <p id="section-abstract-2.2.1"><strong>PIC Verifiers</strong>: the trusted components that validate Proofs of Continuity and enforce the invariants of the
-<strong>Provenance Identity Continuity (PIC) Model</strong> at verification time.<a href="#section-abstract-2.2.1" class="pilcrow">¶</a></p>
+          <p id="section-abstract-2.2.1"><strong>PIC Verifiers</strong>: the trusted components that validate those advancements and enforce the invariants claimed by the selected profile at
+verification time.<a href="#section-abstract-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-abstract-3">At every hop, a node acts in both roles: it <strong>verifies</strong> the continuity state received from its predecessor and <strong>proves</strong> continuity to its
-successor by producing the next continuity advancement required by the selected profile.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
+<p id="section-abstract-3">At every hop, a node can act in both roles: it <strong>verifies</strong> the continuity state received from its predecessor and <strong>proposes</strong> the next
+continuity advancement required by the selected profile. A profile may call the accepted result a Proof of Continuity only to the extent
+that its concrete acceptance predicate is shown to refine the abstract PoR and non-expansion predicates of the PIC Model.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
 <p id="section-abstract-4">It specifies the per-hop <strong>Proof of Relationship</strong> and continuity-advancement requirements (Section 2), the ordered <strong>Verifier checks</strong> -
 including profile-conditional request/execution binding - that validate a hop before authority is exercised (Section 3), authority as an abstract
 <strong>attenuation domain</strong> with a Policy Decision Point boundary (Section 4), and profile-selected <strong>continuity representations</strong> (Section 5).<a href="#section-abstract-4" class="pilcrow">¶</a></p>
@@ -1286,7 +1288,8 @@ including profile-conditional request/execution binding - that validate a hop be
 <strong>Version:</strong> 0.2 (Draft)
 <strong>Document Status:</strong> Public Draft
 <strong>Intended Use:</strong> Informational and Experimental
-<strong>Published:</strong> 2026-07-15
+<strong>First Published:</strong> 2026-07-15
+<strong>Last Updated:</strong> 2026-10-26
 <strong>Editor(s):</strong> Nicola Gallo (Nitro Agility S.r.l.)
 <strong>Steward:</strong> Nitro Agility S.r.l.
 <strong>Source:</strong> <a href="https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md">github.com/pic-protocol/pic-spec/draft/0.2/pic-prover-verifier-spec.md</a><a href="#section-note.1-1" class="pilcrow">¶</a></p>
@@ -1300,39 +1303,52 @@ including profile-conditional request/execution binding - that validate a hop be
           <p id="section-note.2-1.1.1"><strong>Public Draft — Not a Standard</strong><a href="#section-note.2-1.1.1" class="pilcrow">¶</a></p>
 <p id="section-note.2-1.1.2">This document is an independently developed specification published as part of the PIC Protocol and maintained by Nitro Agility
 S.r.l. in its role as Specification Steward.<a href="#section-note.2-1.1.2" class="pilcrow">¶</a></p>
-<p id="section-note.2-1.1.3">It has not been adopted, endorsed, approved, or published by the IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
-Foundation, or any other standards-development organization, unless a later version explicitly states otherwise.<a href="#section-note.2-1.1.3" class="pilcrow">¶</a></p>
-<p id="section-note.2-1.1.4">It is not an RFC, an Internet Standard, or an official work item of any working group or standards body.<a href="#section-note.2-1.1.4" class="pilcrow">¶</a></p>
-<p id="section-note.2-1.1.5">This document is published for public review, research, experimentation, implementation feedback, and possible future
-standardization work. It may be revised, replaced, or withdrawn at any time.<a href="#section-note.2-1.1.5" class="pilcrow">¶</a></p>
-<p id="section-note.2-1.1.6">Implementers use this draft at their own risk. Any implementation, interoperability statement, or conformance claim applies only
-to the exact document version identified above.<a href="#section-note.2-1.1.6" class="pilcrow">¶</a></p>
-<p id="section-note.2-1.1.7">Publication of this draft does not constitute certification, endorsement, security approval, interoperability assurance,
-regulatory approval, or standards-body recognition.<a href="#section-note.2-1.1.7" class="pilcrow">¶</a></p>
-<p id="section-note.2-1.1.8">Current project information and published specifications are available at <code>https://www.pic-protocol.org/</code>.<a href="#section-note.2-1.1.8" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.3">It has not been adopted, endorsed, approved, or published by a standards-development organization. It is published for public review,
+research, experimentation, implementation feedback, and possible future standardization work. It may be revised, replaced, or withdrawn
+at any time.<a href="#section-note.2-1.1.3" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.4">Implementers use this draft at their own risk. Any implementation, interoperability statement, or conformance claim applies only
+to the exact document version identified above.<a href="#section-note.2-1.1.4" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.5">Publication does not constitute certification, endorsement, security approval, interoperability assurance, or regulatory approval.<a href="#section-note.2-1.1.5" class="pilcrow">¶</a></p>
+<p id="section-note.2-1.1.6">Current project information and published specifications are available at <code>https://www.pic-protocol.org/</code>.<a href="#section-note.2-1.1.6" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 <section class="note" id="section-note.3">
+      <h2 id="name-feedback-and-issue-tracking">
+<a href="#name-feedback-and-issue-tracking" class="section-name selfRef">Feedback and Issue Tracking</a>
+      </h2>
+<p id="section-note.3-1">The source for this document and the issue tracker for technical discussion are maintained at
+<a href="https://github.com/pic-protocol/pic-spec">github.com/pic-protocol/pic-spec</a>. Changes are accepted through the repository contribution
+process. Published releases, tags, and immutable research references identify the version to which a review or conformance statement applies.<a href="#section-note.3-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.4">
+      <h2 id="name-copyright-and-license">
+<a href="#name-copyright-and-license" class="section-name selfRef">Copyright and License</a>
+      </h2>
+<p id="section-note.4-1">This document is made available under the Creative Commons Attribution 4.0 International license. See the repository
+<a href="https://github.com/pic-protocol/pic-spec/blob/main/LICENSE">LICENSE</a> and <a href="https://github.com/pic-protocol/pic-spec/blob/main/NOTICE.md">NOTICE</a>.
+This notice does not add restrictions to that license.<a href="#section-note.4-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.5">
       <h2 id="name-editors">
 <a href="#name-editors" class="section-name selfRef">Editors</a>
       </h2>
 <ul class="normal note">
-<li class="normal note" id="section-note.3-1.1">
-          <p id="section-note.3-1.1.1"><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor<a href="#section-note.3-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal note" id="section-note.5-1.1">
+          <p id="section-note.5-1.1.1"><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor<a href="#section-note.5-1.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal note" id="section-note.3-1.2">
-          <p id="section-note.3-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 9</a>).</em><a href="#section-note.3-1.2.1" class="pilcrow">¶</a></p>
+        <li class="normal note" id="section-note.5-1.2">
+          <p id="section-note.5-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 16</a>).</em><a href="#section-note.5-1.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
-<section class="note" id="section-note.4">
+<section class="note" id="section-note.6">
       <h2 id="name-contributors">
 <a href="#name-contributors" class="section-name selfRef">Contributors</a>
       </h2>
 <ul class="normal note">
-<li class="normal note" id="section-note.4-1.1">
-          <p id="section-note.4-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 9</a>).</em><a href="#section-note.4-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal note" id="section-note.6-1.1">
+          <p id="section-note.6-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 16</a>).</em><a href="#section-note.6-1.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1426,93 +1442,116 @@ regulatory approval, or standards-body recognition.<a href="#section-note.2-1.1.
                 <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-current-profile-02-represen" class="internal xref">Current Profile 0.2 Representation</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-profile-02-artifact-semanti" class="internal xref">Profile 0.2 Artifact Semantics</a></p>
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-profile-02-assurance-bounda" class="internal xref">Profile 0.2 Assurance Boundary</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-profile-02-artifact-semanti" class="internal xref">Profile 0.2 Artifact Semantics</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.1">
-                    <p id="section-toc.1-1.5.2.2.2.1.1"><a href="#section-5.2.1" class="auto internal xref">5.2.1</a>.  <a href="#name-pic-token-jwt" class="internal xref">PIC Token JWT</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3.2.1">
+                    <p id="section-toc.1-1.5.2.3.2.1.1"><a href="#section-5.3.1" class="auto internal xref">5.3.1</a>.  <a href="#name-pic-token-jwt" class="internal xref">PIC Token JWT</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.2">
-                    <p id="section-toc.1-1.5.2.2.2.2.1"><a href="#section-5.2.2" class="auto internal xref">5.2.2</a>.  <a href="#name-pic-pca-cose" class="internal xref">PIC PCA COSE</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3.2.2">
+                    <p id="section-toc.1-1.5.2.3.2.2.1"><a href="#section-5.3.2" class="auto internal xref">5.3.2</a>.  <a href="#name-pic-pca-cose" class="internal xref">PIC PCA COSE</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.3">
-                    <p id="section-toc.1-1.5.2.2.2.3.1"><a href="#section-5.2.3" class="auto internal xref">5.2.3</a>.  <a href="#name-pic-continuity-cose" class="internal xref">PIC Continuity COSE</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3.2.3">
+                    <p id="section-toc.1-1.5.2.3.2.3.1"><a href="#section-5.3.3" class="auto internal xref">5.3.3</a>.  <a href="#name-pic-continuity-cose" class="internal xref">PIC Continuity COSE</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.4">
-                    <p id="section-toc.1-1.5.2.2.2.4.1"><a href="#section-5.2.4" class="auto internal xref">5.2.4</a>.  <a href="#name-pic-continuity-transition-c" class="internal xref">PIC Continuity Transition COSE</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3.2.4">
+                    <p id="section-toc.1-1.5.2.3.2.4.1"><a href="#section-5.3.4" class="auto internal xref">5.3.4</a>.  <a href="#name-pic-continuity-transition-c" class="internal xref">PIC Continuity Transition COSE</a></p>
 </li>
                 </ul>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
-                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-profile-02-oauth-token-exch" class="internal xref">Profile 0.2 OAuth Token Exchange Binding</a></p>
-</li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.4">
-                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-self-contained-transition-g" class="internal xref">Self-Contained Transition Graphs</a></p>
+                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-profile-02-oauth-token-exch" class="internal xref">Profile 0.2 OAuth Token Exchange Binding</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.5">
-                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="auto internal xref">5.5</a>.  <a href="#name-incremental-checkpointed-or" class="internal xref">Incremental, Checkpointed, or Referenced History</a></p>
+                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="auto internal xref">5.5</a>.  <a href="#name-profile-02-failure-behavior" class="internal xref">Profile 0.2 Failure Behavior</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.6">
-                <p id="section-toc.1-1.5.2.6.1"><a href="#section-5.6" class="auto internal xref">5.6</a>.  <a href="#name-succinct-proofs" class="internal xref">Succinct Proofs</a></p>
+                <p id="section-toc.1-1.5.2.6.1"><a href="#section-5.6" class="auto internal xref">5.6</a>.  <a href="#name-self-contained-transition-g" class="internal xref">Self-Contained Transition Graphs</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.7">
+                <p id="section-toc.1-1.5.2.7.1"><a href="#section-5.7" class="auto internal xref">5.7</a>.  <a href="#name-incremental-checkpointed-or" class="internal xref">Incremental, Checkpointed, or Referenced History</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.8">
+                <p id="section-toc.1-1.5.2.8.1"><a href="#section-5.8" class="auto internal xref">5.8</a>.  <a href="#name-succinct-proofs" class="internal xref">Succinct Proofs</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-origins-authorship-and-hist" class="internal xref">Origins, Authorship, and Historical Record</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
-                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-freshness-replay-and-fan-ou" class="internal xref">Freshness, Replay, and Fan-out</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
-                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-origin-trust-boundary" class="internal xref">Origin Trust Boundary</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
-                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-temporal-rules-and-per-hop-" class="internal xref">Temporal Rules and Per-Hop Expiry</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.4">
-                <p id="section-toc.1-1.6.2.4.1"><a href="#section-6.4" class="auto internal xref">6.4</a>.  <a href="#name-canonicalization-and-crypto" class="internal xref">Canonicalization and Cryptographic Agility</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.5">
-                <p id="section-toc.1-1.6.2.5.1"><a href="#section-6.5" class="auto internal xref">6.5</a>.  <a href="#name-formal-scope" class="internal xref">Formal Scope</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.6">
-                <p id="section-toc.1-1.6.2.6.1"><a href="#section-6.6" class="auto internal xref">6.6</a>.  <a href="#name-proof-of-possession-optiona" class="internal xref">Proof of Possession (Optional)</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.7">
-                <p id="section-toc.1-1.6.2.7.1"><a href="#section-6.7" class="auto internal xref">6.7</a>.  <a href="#name-transport-separation-and-co" class="internal xref">Transport Separation and Confidentiality</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.8">
-                <p id="section-toc.1-1.6.2.8.1"><a href="#section-6.8" class="auto internal xref">6.8</a>.  <a href="#name-incremental-verification-an" class="internal xref">Incremental Verification and Trusted Hops</a></p>
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-historical-references" class="internal xref">Historical References</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-deployment-models" class="internal xref">Deployment Models</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-implementation-status" class="internal xref">Implementation Status</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-zero-trust" class="internal xref">Zero Trust</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-acknowledgement" class="internal xref">Acknowledgement</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-legal-notices" class="internal xref">Legal Notices</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
-                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="auto internal xref">12.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-freshness-replay-and-fan-ou" class="internal xref">Freshness, Replay, and Fan-out</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
-                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-origin-trust-boundary" class="internal xref">Origin Trust Boundary</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-temporal-rules-and-per-hop-" class="internal xref">Temporal Rules and Per-Hop Expiry</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.4">
+                <p id="section-toc.1-1.8.2.4.1"><a href="#section-8.4" class="auto internal xref">8.4</a>.  <a href="#name-canonicalization-and-crypto" class="internal xref">Canonicalization and Cryptographic Agility</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.5">
+                <p id="section-toc.1-1.8.2.5.1"><a href="#section-8.5" class="auto internal xref">8.5</a>.  <a href="#name-formal-scope" class="internal xref">Formal Scope</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.6">
+                <p id="section-toc.1-1.8.2.6.1"><a href="#section-8.6" class="auto internal xref">8.6</a>.  <a href="#name-proof-of-possession-optiona" class="internal xref">Proof of Possession (Optional)</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.7">
+                <p id="section-toc.1-1.8.2.7.1"><a href="#section-8.7" class="auto internal xref">8.7</a>.  <a href="#name-transport-separation-and-co" class="internal xref">Transport Separation and Confidentiality</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.8">
+                <p id="section-toc.1-1.8.2.8.1"><a href="#section-8.8" class="auto internal xref">8.8</a>.  <a href="#name-incremental-verification-an" class="internal xref">Incremental Verification and Trusted Hops</a></p>
 </li>
             </ul>
 </li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-deployment-models" class="internal xref">Deployment Models</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-zero-trust" class="internal xref">Zero Trust</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-registry-considerations" class="internal xref">Registry Considerations</a></p>
+</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
+                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
+                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-document-history" class="internal xref">Document History</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
+            <p id="section-toc.1-1.15.1"><a href="#section-15" class="auto internal xref">15</a>. <a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
+            <p id="section-toc.1-1.16.1"><a href="#section-16" class="auto internal xref">16</a>. <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17">
+            <p id="section-toc.1-1.17.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1530,32 +1569,42 @@ Normative requirements are defined in Sections 2, 3, 4, and 6, together with the
 valid across the steps of a distributed execution. This specification defines how the <strong>Provenance Identity Continuity (PIC) Model</strong> is
 implemented at each execution hop to close that gap. The model, including
 <strong>Proof of Relationship (PoR)</strong>, <strong>Proof of Continuity (PoC)</strong>, and the resulting safety guarantees, is formally defined in the companion
-paper <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> and formally verified with the Lean theorem prover <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>. The paper treats PoR as an abstract,
-unforgeable primitive. This document specifies the two components that realize it:<a href="#section-1-2" class="pilcrow">¶</a></p>
+paper <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span> and formally verified with the Lean theorem prover <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>. The paper treats PoR as an abstract,
+unforgeable primitive. A concrete profile realizes the full model only when it defines evidence and a receiving predicate that soundly
+witness that primitive. This document specifies the two components that process such evidence:<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">The earlier authority-propagation analysis records the transition from possession-based reasoning to continuity-based reasoning and its
+application to the confused-deputy problem <span><a href="#references" class="internal xref">[15]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>. Later relational and event-level results refine the realization boundary
+without changing the core non-expansion invariant <span><a href="#references" class="internal xref">[13]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span> <span><a href="#references" class="internal xref">[14]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-1-3.1">
-          <p id="section-1-3.1.1">The <strong>PIC Prover</strong> constructs the relationship evidence required by the selected profile to witness the PoR relation binding the current
-execution step to its causal predecessor, and uses the resulting valid advancement to construct the PoC handed to the next hop. A PoC is
-valid only if it satisfies the PIC invariants: causal linkage witnessed by PoR at every hop, and a non-expansive authority context.<a href="#section-1-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-1-4.1">
+          <p id="section-1-4.1.1">The <strong>PIC Prover</strong> constructs the relationship or profile evidence required by the selected profile and uses it to construct a candidate
+advancement handed to the next verification boundary.<a href="#section-1-4.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-1-3.2">
-          <p id="section-1-3.2.1">The <strong>PIC Verifier</strong> validates both proofs at the receiving hop: the PoR, which establishes that the incoming step is a genuine
-continuation of its predecessor, and the PoC, which establishes that the invariants hold along the entire received lineage. If either
-proof is invalid, the hop is rejected before any authority is exercised.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-1-4.2">
+          <p id="section-1-4.2.1">The <strong>PIC Verifier</strong> validates the candidate at the receiving hop. For a full-continuity profile, it validates concrete evidence that
+soundly witnesses the abstract PoR together with non-expansion and all other profile checks. For an artifact-linked profile, it validates
+only the narrower artifact, key, authority, and contract relationships the profile defines.<a href="#section-1-4.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-1-4">PIC <strong>does not require a central server</strong>. Depending on deployment topology and selected profile, a chain can be validated <em>fully
+<p id="section-1-5">These assurance levels are not interchangeable. In particular, a signed predecessor, an executor-profile credential, possession of a
+workload key, and a non-expansive authority transition do not by themselves prove that a trusted boundary observed the concrete handoff or
+request occurrence that caused the successor action.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">PIC <strong>does not require a central server</strong>. Depending on deployment topology and selected profile, a chain can be validated <em>fully
 decentralized</em> — each hop carrying everything the next needs to verify it — or with the help of a trusted component such as a snapshot
 server. Section 5 describes these representations; the PIC <em>invariants</em> are the same in every case, but the concrete assurance and trust
-assumptions differ by profile (Sections 6.8, 7) — the profiles are not equivalent.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">This statement concerns the abstract PIC model and profile space. The current PIC Profile 0.2 uses centralized advancement and settlement by
-a trusted settlement authority. PIC-X is one conforming realization of that profile, not a required component of the abstract PIC model.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">PIC also draws a <strong>clean line between the security model and transport</strong>. The guarantees come from the signed continuity chain, not from how
+assumptions differ by profile (Sections 6.8, 7) — the profiles are not equivalent.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">This statement concerns the abstract PIC model and profile space. The current PIC Profile 0.2 artifact family uses centralized advancement
+and settlement by a trusted settlement authority. PIC-X implements the artifact and settlement subset of that profile; it is not a required
+component of the abstract PIC model and is not yet a full semantic-PoR realization. The current PIC-X implementation advertises
+<code>artifact-linked</code> continuity evidence: it enforces signed predecessor linkage, key binding, authority
+attenuation, and execution-contract conformance, but it does not yet claim observed-handoff PoR, request binding, complete mediation, or
+causal attribution of a runtime action.<a href="#section-1-7" class="pilcrow">¶</a></p>
+<p id="section-1-8">PIC also draws a <strong>clean line between the security model and transport</strong>. The guarantees come from the signed continuity chain, not from how
 it travels: an implementation must not rely on the transport — a TLS session, a network perimeter, a message bus — to obtain them (the
 normative requirement is stated in Section 6.7). Transport
 is only transport. A compromised channel can read or drop messages but cannot forge a valid PCA; confidentiality and attack-surface concerns
 belong to transport and are addressed in Section 6.7. This separation is what lets the same model run unchanged over HTTP, over messaging
-systems such as Apache Kafka, or over any other carrier.<a href="#section-1-6" class="pilcrow">¶</a></p>
+systems such as Apache Kafka, or over any other carrier.<a href="#section-1-8" class="pilcrow">¶</a></p>
 <div id="security-guarantees-of-the-model">
 <section id="section-1.1">
         <h3 id="name-security-guarantees-of-the-">
@@ -1660,11 +1709,15 @@ signed; nothing in the model distinguishes them by origin. The bug has created a
 <p id="section-1.4-4">Under PIC the same state cannot be represented as valid. <code>READ-ALL</code> is absent from the origin context of lineage B, and no valid
 continuation can expand an authority context: the composed proof does not satisfy the lineage, and the Verifier at executor <code>n+1</code> rejects
 it. The bug can still execute locally, as stated in Section 1.1, but the state it produces is invalid and stops at that hop.<a href="#section-1.4-4" class="pilcrow">¶</a></p>
-<p id="section-1.4-5">This is a <em>structural</em> elimination of cross-lineage confused-deputy authority composition from the PIC state model, and it is what PIC
-shares with the object-capability approach: a capability
+<p id="section-1.4-5">This document's ordinary advancement has exactly one predecessor. A future causal-DAG profile that defines an ordinary multi-parent join
+must preserve every parent bound; for set-valued authority, the joined authority is a subset of the intersection of the parent authorities.
+If a join intentionally creates a state more permissive than any parent, it is an explicit, separately authorized composition or relaxation
+event, not an ordinary continuation <span><a href="#references" class="internal xref">[14]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-1.4-5" class="pilcrow">¶</a></p>
+<p id="section-1.4-6">This is a <em>structural</em> elimination of silent cross-lineage confused-deputy authority composition from the ordinary PIC continuation model,
+and it is what PIC shares with the object-capability approach: a capability
 removes the mismatch by construction at a single hop, by fusing designation and authority at invocation; PIC extends the same by-construction
-guarantee across the whole lineage, so the mismatch is not a state a valid chain can represent at any hop. It is ruled out by construction,
-not caught by runtime vigilance — and this is exactly the property the Lean formalization verifies <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-1.4-5" class="pilcrow">¶</a></p>
+guarantee across an ordinary lineage, so the mismatch is not a state a valid chain can represent at any hop. It is ruled out by construction,
+not caught by runtime vigilance — and this is exactly the property the Lean formalization verifies <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-1.4-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="the-execution-flow-as-part-of-the-security-model">
@@ -1751,7 +1804,7 @@ prerequisites.<a href="#section-1.6-6" class="pilcrow">¶</a></p>
 <p id="section-1.7-1">The <strong>normative</strong> sections of this document are Sections 2, 3, 4, and 6, together with the requirement explicitly marked normative in
 Section 5. Sections 1, 7, and 8 are non-normative.<a href="#section-1.7-1" class="pilcrow">¶</a></p>
 <p id="section-1.7-2">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" in this document are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> when, and only when, they
+"OPTIONAL" in this document are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span> <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span> when, and only when, they
 appear in all capitals within normative text.<a href="#section-1.7-2" class="pilcrow">¶</a></p>
 <p id="section-1.7-3">Examples in this document are illustrative and non-normative.<a href="#section-1.7-3" class="pilcrow">¶</a></p>
 </section>
@@ -1771,7 +1824,7 @@ COSE bytes for the current trusted checkpoint. A workload proposes one centraliz
 COSE</strong>, placing it in a workload-signed candidate <strong>PIC Continuity COSE</strong>, and carrying that candidate in a workload-signed candidate PIC
 Token JWT. The trusted settlement authority validates the candidate and issues the next settled PIC Token JWT.<a href="#section-1.8-2" class="pilcrow">¶</a></p>
 <p id="section-1.8-3">The examples represent authority as an <code>operations</code> set — the reference profile, matching the operation-resource privileges of the model
-<span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>. PIC does not require this representation, nor does it define the application's authorization vocabulary; Section 4
+<span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>. PIC does not require this representation, nor does it define the application's authorization vocabulary; Section 4
 covers authority as an abstract domain (roles, labels, scopes, policy references) and its relationship to a Policy Decision Point.<a href="#section-1.8-3" class="pilcrow">¶</a></p>
 <p id="section-1.8-4">The following root-PCA examples are illustrative views of a generic example profile, not the PIC Profile 0.2 logical PCA or wire schema. In
 particular, the illustrative <code>continuation.mode = "single-use"</code> member is not a Profile 0.2 field or invariant.<a href="#section-1.8-4" class="pilcrow">¶</a></p>
@@ -1856,7 +1909,7 @@ advancement produced by a Prover MUST:<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-2-2.2.1">include or bind a <strong>cryptographic reference</strong> to that predecessor;<a href="#section-2-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-2-2.3">
-          <p id="section-2-2.3.1">include or bind the <strong>Proof of Relationship</strong> required by the selected profile;<a href="#section-2-2.3.1" class="pilcrow">¶</a></p>
+          <p id="section-2-2.3.1">include or bind the relationship or executor-profile evidence required by the selected profile;<a href="#section-2-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-2-2.4">
           <p id="section-2-2.4.1">yield authority equal to or more restrictive than the predecessor materialized authority;<a href="#section-2-2.4.1" class="pilcrow">¶</a></p>
@@ -1886,7 +1939,7 @@ fails:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
             <p id="section-2.1-2.2.1">establish exactly one causal predecessor;<a href="#section-2.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-2.1-2.3">
-            <p id="section-2.1-2.3.1">build the Proof of Relationship required by the selected profile (Section 2.3);<a href="#section-2.1-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-2.3.1">build the relationship or executor-profile evidence required by the selected profile (Section 2.3);<a href="#section-2.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-2.1-2.4">
             <p id="section-2.1-2.4.1">keep or attenuate the predecessor materialized authority (Section 2.4);<a href="#section-2.1-2.4.1" class="pilcrow">¶</a></p>
@@ -1906,10 +1959,11 @@ fails:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
 receive current continuity state
       |
       v
-validate predecessor continuity state
+validate predecessor continuity state, or construct an untrusted candidate
+that a trusted receiving boundary will validate before authority is exercised
       |
       v
-build PoR and profile-required request/execution binding
+build relationship/profile evidence and profile-required request/execution binding
       |
       v
 keep or attenuate materialized authority
@@ -1932,8 +1986,25 @@ JWT carrying a settled PIC Continuity COSE with <code>transitions = null</code>.
         <h3 id="name-predecessor-validation">
 <a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-predecessor-validation" class="section-name selfRef">Predecessor Validation</a>
         </h3>
-<p id="section-2.2-1">The Prover MUST validate the predecessor continuity state by applying the Verifier procedure of Section 3. If validation fails, the Prover
-MUST NOT emit a continuity advancement. The rest of this section assumes a valid predecessor.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-1">Before treating predecessor authority as trusted or exercising it, the Prover MUST validate the predecessor continuity state by applying the
+Verifier procedure of Section 3. A candidate-construction library MAY parse and semantically validate a predecessor without authenticating
+it when all of the following hold:<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2-2.1">
+            <p id="section-2.2-2.1.1">the output is explicitly an untrusted candidate and is not treated as settled authority;<a href="#section-2.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.2-2.2">
+            <p id="section-2.2-2.2.1">no protected effect is authorized from the unauthenticated parse;<a href="#section-2.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.2-2.3">
+            <p id="section-2.2-2.3.1">the trusted receiving or settlement boundary independently performs the complete Verifier procedure before accepting the advancement;<a href="#section-2.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.2-2.4">
+            <p id="section-2.2-2.4.1">failure at that boundary prevents issuance and authority exercise.<a href="#section-2.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.2-3">This exception matches the current PIC-X workload flow, in which a workload may lack the realm verification key while constructing a
+candidate, and PIC-X revalidates the realm-signed predecessor during settlement. It changes no receiving-side safety requirement.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="proof-of-relationship">
@@ -1941,13 +2012,15 @@ MUST NOT emit a continuity advancement. The rest of this section assumes a valid
         <h3 id="name-proof-of-relationship">
 <a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-proof-of-relationship" class="section-name selfRef">Proof of Relationship</a>
         </h3>
-<p id="section-2.3-1">The abstract <strong>PoR</strong> relation binds the current execution to exactly one predecessor. A non-root continuity advancement MUST carry or
-cryptographically bind the relationship evidence required by the selected profile. The selected profile MUST define the concrete checks that
-soundly witness the abstract single-hop PoR relation.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
-<p id="section-2.3-2">A <code>proof_of_relationship</code> field, when defined by a profile, is relationship evidence. It is not by itself the complete Proof of Continuity
-and does not by itself establish semantic continuity. A transition is accepted as valid only when the required PoR relation holds and the
-separate non-expansion requirement, together with all other applicable profile checks such as predecessor binding, freshness, integrity,
-evidence or conformance, request/execution binding, revocation, and policy, also succeeds.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<p id="section-2.3-1">The abstract <strong>PoR</strong> relation binds the current execution to exactly one predecessor. A non-root advancement in a profile claiming full
+continuity MUST carry or cryptographically bind evidence whose concrete checks soundly witness the abstract single-hop PoR relation. A
+profile that validates a narrower relationship MAY define an artifact-linked assurance level, but it MUST identify the missing refinement
+obligation and MUST NOT claim that its evidence establishes the abstract PoR.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">A <code>proof_of_relationship</code> field, when defined by a profile, is relationship or profile evidence. It is not by itself the complete Proof of
+Continuity and does not by itself establish semantic continuity. A transition is accepted as a full PIC continuation only when the required
+PoR relation holds and the separate non-expansion requirement, together with all other applicable profile checks such as predecessor
+binding, freshness, integrity, evidence or conformance, request/execution binding, revocation, and policy, also succeeds. An artifact-linked
+acceptance establishes only the subset its profile states.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
 <p id="section-2.3-3">Profile-defined concrete relationship validation may cover, as applicable:<a href="#section-2.3-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-2.3-4.1">
@@ -1962,7 +2035,7 @@ evidence or conformance, request/execution binding, revocation, and policy, also
         </ul>
 <p id="section-2.3-5">Request/execution binding and executor or execution-contract conformance remain separate applicable advancement-validation checks; they are
 not, merely by being required for acceptance, part of the abstract PoR relation.<a href="#section-2.3-5" class="pilcrow">¶</a></p>
-<p id="section-2.3-6">For PIC Profile 0.2, the PIC Continuity Transition COSE carries <code>proof_of_relationship</code> as a typed object:<a href="#section-2.3-6" class="pilcrow">¶</a></p>
+<p id="section-2.3-6">For PIC Profile 0.2, the PIC Continuity Transition COSE retains the field name <code>proof_of_relationship</code> as a typed object:<a href="#section-2.3-6" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.3-7">
 <pre>
 proof_of_relationship.type = "sd-jwt"
@@ -1970,9 +2043,11 @@ proof_of_relationship.evidence = exact UTF-8 bytes of the textual issuer-signed
                                  Profile 0.2 SD-JWT presentation
 </pre><a href="#section-2.3-7" class="pilcrow">¶</a>
 </div>
-<p id="section-2.3-8">The <code>type</code> value controls parsing and validation of <code>evidence</code>. The selected Profile 0.2 PoR schema MUST bind or identify the workload
-verification key; this specification does not define a universal claim name and does not define a separate generic <code>key_binding</code> field. The
-predecessor reference for the current centralized Profile 0.2 realization is:<a href="#section-2.3-8" class="pilcrow">¶</a></p>
+<p id="section-2.3-8">The <code>type</code> value controls parsing and validation of <code>evidence</code>. In the current <code>artifact-linked</code> assurance level, this field contains
+executor-profile and workload-key evidence; the historical field name does not, by itself, establish the abstract relation
+<code>PoR(s_i, s_{i+1})</code>. A Profile 0.2 schema MUST bind or identify the workload verification key. This specification does not define a universal
+claim name and does not define a separate generic <code>key_binding</code> field. The predecessor reference for the current centralized Profile 0.2
+realization is:<a href="#section-2.3-8" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.3-9">
 <pre>
 predecessor.type = "pca"
@@ -1982,16 +2057,16 @@ predecessor.hash = SHA-256(exact signed current root.pca PIC PCA COSE bytes)
 <p id="section-2.3-10">The first transition consumes the bootstrap challenge from the current PIC PCA COSE checkpoint's <code>challenge.next_challenge</code>. Later transitions
 use the <code>challenge.next_challenge</code> value carried by the current signed PIC PCA COSE checkpoint. The hash input is the exact signed PIC PCA
 COSE artifact bytes, not a decoded payload, diagnostic notation, JSON representation, Base64url text, or reserialized structure.<a href="#section-2.3-10" class="pilcrow">¶</a></p>
-<p id="section-2.3-11">The Prover MUST check its own PoR before proceeding: if the predecessor reference does not match the predecessor continuity state, or if the
-challenge or equivalent freshness evidence does not satisfy the selected relationship-validation rules, the required PoR relation is not
-established and the Prover MUST stop. If profile-required executor, contract, request/execution, or other required evidence is missing or
-invalid, the advancement is invalid and the Prover MUST stop. A continuity advancement carrying invalid required evidence is rejected at the
-next hop anyway.<a href="#section-2.3-11" class="pilcrow">¶</a></p>
-<p id="section-2.3-12"><strong>What the PoR proves.</strong> The PoR does not prove physical, counterfactual, or prior-designation causation. Taken in isolation, a challenge
-response or concrete relationship artifact proves only the relationship semantics defined by the selected profile. A hop is accepted as a
-valid PIC continuation only when the Verifier also applies the other required PIC and profile checks, including non-expansion and any
-applicable contract, request/execution, evidence, freshness, revocation, and policy checks. The selected concrete relationship checks are
-assumed to soundly witness the abstract single-hop PoR relation used by the model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> and Lean formalization <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-2.3-12" class="pilcrow">¶</a></p>
+<p id="section-2.3-11">The Prover MUST check the profile evidence it can validate before proceeding: if the predecessor reference does not match the predecessor
+continuity state, or if the challenge or equivalent freshness evidence does not satisfy the selected validation rules, the candidate is
+invalid and the Prover MUST stop. If profile-required executor, contract, request/execution, or other required evidence is missing or
+invalid, the advancement is invalid and the Prover MUST stop. The trusted Verifier MUST repeat every acceptance check independently.<a href="#section-2.3-11" class="pilcrow">¶</a></p>
+<p id="section-2.3-12"><strong>What the PoR proves.</strong> The abstract PoR does not prove physical or counterfactual causation beyond the relation it models. A concrete
+challenge response or relationship artifact proves only the semantics defined by its selected profile. A profile MUST NOT claim the abstract
+single-hop PoR relation used by the model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span> and Lean formalization <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span> unless it states the concrete evidence,
+trust assumptions, and refinement argument by which its receiving predicate soundly witnesses that relation. Current PIC-X Profile 0.2 does
+not make that full claim: its SD-JWT evidence establishes trusted executor-profile claims and control of the bound workload key, not an
+observed causal handoff occurrence.<a href="#section-2.3-12" class="pilcrow">¶</a></p>
 <p id="section-2.3-13"><strong>Continuation is open by default.</strong> The core model does not require a predecessor to preselect a concrete successor. A profile MAY constrain
 holder keys, recipients, or channels, but those constraints are profile-specific. When a selected profile defines a request or execution
 commitment, that binding fixes the concrete action accepted under that profile (Section 3.3).<a href="#section-2.3-13" class="pilcrow">¶</a></p>
@@ -2025,9 +2100,12 @@ attenuated, <strong>never expanded</strong>:<a href="#section-2.4-1" class="pilc
         </ul>
 <p id="section-2.4-3">A Prover MAY drop operations, add constraints, or shorten the validity period. A Prover MUST NOT add operations, relax constraints,
 or extend the validity period. <em>What is dropped at a hop is lost:</em> no later hop can reintroduce it.<a href="#section-2.4-3" class="pilcrow">¶</a></p>
-<p id="section-2.4-4">The root authority context (Section 1.8) granted <code>READ-ALL</code> and <code>BACKUP</code>. The backup service needs only read access downstream, so it drops
-<code>BACKUP</code> and sets the attenuated <code>invariants</code>:<a href="#section-2.4-4" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-2.4-5">
+<p id="section-2.4-4">For a relational execution contract, the predecessor contract governs admission of the current executor, and the successor contract must
+logically imply the predecessor contract: <code>rho(i+1) =&gt; rho(i)</code>. Concrete profile evidence must be sound for the executor attributes it
+establishes; missing or withheld required evidence causes rejection and cannot widen admission <span><a href="#references" class="internal xref">[13]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-2.4-4" class="pilcrow">¶</a></p>
+<p id="section-2.4-5">The root authority context (Section 1.8) granted <code>READ-ALL</code> and <code>BACKUP</code>. The backup service needs only read access downstream, so it drops
+<code>BACKUP</code> and sets the attenuated <code>invariants</code>:<a href="#section-2.4-5" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-2.4-6">
 <pre>
 {
   "operations": ["READ-ALL"],
@@ -2040,68 +2118,68 @@ or extend the validity period. <em>What is dropped at a hop is lost:</em> no lat
     "executionModel": "deterministic"
   }
 }
-</pre><a href="#section-2.4-5" class="pilcrow">¶</a>
+</pre><a href="#section-2.4-6" class="pilcrow">¶</a>
 </div>
-<p id="section-2.4-6">The order that decides "more restrictive" is defined by the profile (Section 4): here <code>operations</code> uses subset inclusion and the
-<code>executionContract</code> fields use the reference profile's order.<a href="#section-2.4-6" class="pilcrow">¶</a></p>
-<p id="section-2.4-7">In PIC Profile 0.2, the PIC PCA COSE payload <code>context_of_authority</code> carries an Indexed Authority Map, not the normalized Logical Context of
+<p id="section-2.4-7">The order that decides "more restrictive" is defined by the profile (Section 4): here <code>operations</code> uses subset inclusion and the
+<code>executionContract</code> fields use the reference profile's order.<a href="#section-2.4-7" class="pilcrow">¶</a></p>
+<p id="section-2.4-8">In PIC Profile 0.2, the PIC PCA COSE payload <code>context_of_authority</code> carries an Indexed Authority Map, not the normalized Logical Context of
 Authority directly. The logical authority shape contains optional <code>identity_context</code> and <code>execution</code>, where <code>execution.invariants</code> carries
 executable PIC authority and <code>execution.contract</code> carries constraints. The canonical Indexed Authority Map sections are <code>identity_context</code>,
 <code>invariants</code>, and <code>execution_contract</code>; logical <code>execution.contract</code> maps to <code>execution_contract</code>. <code>identity_context</code> is descriptive or
-contextual and does not itself grant execution authority.<a href="#section-2.4-7" class="pilcrow">¶</a></p>
-<p id="section-2.4-8">Section-local numeric indexes start at <code>0</code>. Bitmap identity is <code>(section, numeric index)</code>, for example <code>identity_context/0</code> or
-<code>invariants/1</code>; JSON object member order has no protocol meaning.<a href="#section-2.4-8" class="pilcrow">¶</a></p>
-<p id="section-2.4-9">Indexed Authority Map entries use compact tuples. Tuple element order is normative:<a href="#section-2.4-9" class="pilcrow">¶</a></p>
+contextual and does not itself grant execution authority.<a href="#section-2.4-8" class="pilcrow">¶</a></p>
+<p id="section-2.4-9">Section-local numeric indexes start at <code>0</code>. Bitmap identity is <code>(section, numeric index)</code>, for example <code>identity_context/0</code> or
+<code>invariants/1</code>; JSON object member order has no protocol meaning.<a href="#section-2.4-9" class="pilcrow">¶</a></p>
+<p id="section-2.4-10">Indexed Authority Map entries use compact tuples. Tuple element order is normative:<a href="#section-2.4-10" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.4-10.1">
-            <p id="section-2.4-10.1.1"><code>identity_context</code>: <code>[key, value]</code>;<a href="#section-2.4-10.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2.4-11.1">
+            <p id="section-2.4-11.1.1"><code>identity_context</code>: <code>[key, value]</code>;<a href="#section-2.4-11.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-2.4-10.2">
-            <p id="section-2.4-10.2.1"><code>execution_contract</code>: <code>[key, value]</code>;<a href="#section-2.4-10.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-2.4-11.2">
+            <p id="section-2.4-11.2.1"><code>execution_contract</code>: <code>[key, value]</code>;<a href="#section-2.4-11.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-2.4-10.3">
-            <p id="section-2.4-10.3.1"><code>invariants</code>: <code>[scope, operation, resourceType, resourceId]</code>.<a href="#section-2.4-10.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-2.4-11.3">
+            <p id="section-2.4-11.3.1"><code>invariants</code>: <code>[scope, operation, resourceType, resourceId]</code>.<a href="#section-2.4-11.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.4-11">A logical Profile 0.2 <code>execution.contract</code> value MUST contain at least one attribute. Each logical attribute value MUST be either a non-empty
+<p id="section-2.4-12">A logical Profile 0.2 <code>execution.contract</code> value MUST contain at least one attribute. Each logical attribute value MUST be either a non-empty
 string or a non-empty array of non-empty strings. Profile 0.2 implementations MUST reject logical <code>execution.contract</code> values containing a
-number, boolean, object, null, empty string, empty array, array containing an empty string, or array containing a non-string value.<a href="#section-2.4-11" class="pilcrow">¶</a></p>
-<p id="section-2.4-12">Scalar logical values become one indexed tuple. Set or list membership is denormalized into independently indexed boolean membership tuples,
+number, boolean, object, null, empty string, empty array, array containing an empty string, or array containing a non-string value.<a href="#section-2.4-12" class="pilcrow">¶</a></p>
+<p id="section-2.4-13">Scalar logical values become one indexed tuple. Set or list membership is denormalized into independently indexed boolean membership tuples,
 for example <code>["roles:payment-approver", true]</code>. That <code>true</code> is a canonical denormalized membership representation in the Indexed Authority
 Map; it is not permission for arbitrary boolean values in the logical <code>execution.contract</code> input domain. This document defines no
-false-valued membership semantics for Profile 0.2.<a href="#section-2.4-12" class="pilcrow">¶</a></p>
-<p id="section-2.4-13">Removal attenuation applies only to <code>attenuations.identity_context.remove_bitmap</code> and <code>attenuations.invariants.remove_bitmap</code>, each evaluated
+false-valued membership semantics for Profile 0.2.<a href="#section-2.4-13" class="pilcrow">¶</a></p>
+<p id="section-2.4-14">Removal attenuation applies only to <code>attenuations.identity_context.remove_bitmap</code> and <code>attenuations.invariants.remove_bitmap</code>, each evaluated
 against the section-local numeric indexes of its own map section. Removal never adds authority, and a removed entry cannot reappear later in
-the same continuity.<a href="#section-2.4-13" class="pilcrow">¶</a></p>
-<p id="section-2.4-14">For Profile 0.2 removal bitmaps, <code>byte_index = floor(i / 8)</code>, <code>bit_index = i mod 8</code>, and <code>mask = 1 &lt;&lt; bit_index</code>; bits are interpreted
+the same continuity.<a href="#section-2.4-14" class="pilcrow">¶</a></p>
+<p id="section-2.4-15">For Profile 0.2 removal bitmaps, <code>byte_index = floor(i / 8)</code>, <code>bit_index = i mod 8</code>, and <code>mask = 1 &lt;&lt; bit_index</code>; bits are interpreted
 least-significant-bit first. Thus index <code>0</code> is <code>h'01'</code>, index <code>1</code> is <code>h'02'</code>, index <code>2</code> is <code>h'04'</code>, index <code>7</code> is <code>h'80'</code>, and index <code>8</code> is
 <code>h'0001'</code>. A set bit referring to a nonexistent predecessor index MUST be rejected. Trailing zero bytes MUST be omitted. A no-op bitmap
-SHOULD be omitted together with its optional attenuation member.<a href="#section-2.4-14" class="pilcrow">¶</a></p>
-<p id="section-2.4-15">Execution-contract restriction does not use a removal bitmap. Accepted restrictions are carried as
+SHOULD be omitted together with its optional attenuation member.<a href="#section-2.4-15" class="pilcrow">¶</a></p>
+<p id="section-2.4-16">Execution-contract restriction does not use a removal bitmap. Accepted restrictions are carried as
 <code>attenuations.execution_contract.additions</code>. Each proposed addition is a <code>[key, value]</code> tuple for the <code>execution_contract</code> section; the
 workload MUST NOT assign its numeric index. The settlement verifier validates proposed additions and assigns the next section-local numeric indexes in the
 materialized/effective <code>execution_contract</code> section. Existing execution-contract constraints are not removed, replaced, or weakened; accepted
-constraints accumulate with logical AND.<a href="#section-2.4-15" class="pilcrow">¶</a></p>
-<p id="section-2.4-16">When one PIC Continuity Transition COSE proposes multiple execution-contract additions, the settlement verifier validates the proposed
+constraints accumulate with logical AND.<a href="#section-2.4-16" class="pilcrow">¶</a></p>
+<p id="section-2.4-17">When one PIC Continuity Transition COSE proposes multiple execution-contract additions, the settlement verifier validates the proposed
 additions and denormalizes any collection-valued logical proposal material into individual canonical <code>[key, value]</code> additions when applicable.
 After denormalization, more than one accepted addition with the same canonical key MUST be rejected. The settlement verifier then sorts the
 remaining accepted additions lexicographically by canonical key using Unicode code point order, assigns the next section-local numeric indexes
 in that sorted order, and materializes the additions. Input array order MUST NOT determine materialized index assignment. The workload is
-not required to pre-sort the additions.<a href="#section-2.4-16" class="pilcrow">¶</a></p>
-<p id="section-2.4-17">Initial PIC PCA COSE canonicalization for Profile 0.2 is deterministic. Implementations denormalize the Logical Context of Authority into
-canonical tuple candidates, sort candidates within each section, and then assign section-local numeric indexes starting at <code>0</code>.<a href="#section-2.4-17" class="pilcrow">¶</a></p>
-<p id="section-2.4-18">For <code>identity_context</code> and <code>execution_contract</code>, candidates are sorted lexicographically by canonical <code>key</code>, using Unicode code
+not required to pre-sort the additions.<a href="#section-2.4-17" class="pilcrow">¶</a></p>
+<p id="section-2.4-18">Initial PIC PCA COSE canonicalization for Profile 0.2 is deterministic. Implementations denormalize the Logical Context of Authority into
+canonical tuple candidates, sort candidates within each section, and then assign section-local numeric indexes starting at <code>0</code>.<a href="#section-2.4-18" class="pilcrow">¶</a></p>
+<p id="section-2.4-19">For <code>identity_context</code> and <code>execution_contract</code>, candidates are sorted lexicographically by canonical <code>key</code>, using Unicode code
 point order. Collection memberships are denormalized before sorting; each member becomes its own <code>[key, true]</code> tuple, and the complete
 resulting canonical membership key determines ordering. For <code>invariants</code>, candidates are sorted lexicographically by tuple elements in this
 order: <code>scope</code>, <code>operation</code>, <code>resourceType</code>, <code>resourceId</code>, using Unicode code point order for each element. After sorting, indexes <code>0</code>, <code>1</code>,
-<code>2</code>, and so on are assigned within each section. Implementations MUST NOT derive index values from JSON object member order.<a href="#section-2.4-18" class="pilcrow">¶</a></p>
-<p id="section-2.4-19">Canonical serialization of an already indexed Profile 0.2 authority map is separate from initial index assignment. For serialization and
+<code>2</code>, and so on are assigned within each section. Implementations MUST NOT derive index values from JSON object member order.<a href="#section-2.4-19" class="pilcrow">¶</a></p>
+<p id="section-2.4-20">Canonical serialization of an already indexed Profile 0.2 authority map is separate from initial index assignment. For serialization and
 authority-state structural ordering, sections are ordered as <code>identity_context</code>, <code>invariants</code>, <code>execution_contract</code>, and entries
 within each indexed section are ordered by ascending numeric index. This ordering defines the deterministic canonical structure, but does not
 by itself define an interoperable hash-input byte string. An authority-state hash, when defined by a selected profile or schema, requires
 that profile or schema to define the exact byte serialization used as hash input. Profile 0.2 signed-artifact references such as
 <code>root.pca_hash</code> and <code>predecessor.hash</code> are computed over exact signed COSE artifact bytes. Authority-state identity and signed-artifact
-identity are separate domains.<a href="#section-2.4-19" class="pilcrow">¶</a></p>
+identity are separate domains.<a href="#section-2.4-20" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="continuity-advancement-construction">
@@ -2183,7 +2261,8 @@ by the root authority, so a privilege absent from the root cannot be authorized 
             <p id="section-3.1-2.4.1">validate predecessor continuity for each required advancement;<a href="#section-3.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-2.5">
-            <p id="section-3.1-2.5.1">validate PoR for each non-root advancement;<a href="#section-3.1-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-2.5.1">validate the relationship/profile evidence required for each non-root advancement and, when full PoR is claimed, validate the
+concrete predicate that witnesses the abstract PoR;<a href="#section-3.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-2.6">
             <p id="section-3.1-2.6.1">validate challenge continuity or the equivalent freshness mechanism used by the profile;<a href="#section-3.1-2.6.1" class="pilcrow">¶</a></p>
@@ -2192,7 +2271,8 @@ by the root authority, so a privilege absent from the root cannot be authorized 
             <p id="section-3.1-2.7.1">validate profile-required evidence, conformance, freshness, temporal state, and revocation state;<a href="#section-3.1-2.7.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-2.8">
-            <p id="section-3.1-2.8.1">validate request/execution binding when required by the selected profile;<a href="#section-3.1-2.8.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-2.8.1">validate request/execution binding when required by the selected profile, and do not claim that property when no authenticated
+occurrence or request commitment is available;<a href="#section-3.1-2.8.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-2.9">
             <p id="section-3.1-2.9.1">apply profile-defined attenuations and verify non-expansion;<a href="#section-3.1-2.9.1" class="pilcrow">¶</a></p>
@@ -2207,11 +2287,14 @@ by the root authority, so a privilege absent from the root cannot be authorized 
 <p id="section-3.1-3">For PIC Profile 0.2, ordinary verification of a settled artifact includes verifying the settled PIC Token JWT signature, obtaining <code>pic.root</code>
 as the exact PIC Continuity COSE bytes, verifying the settled PIC Continuity COSE signature and profile, verifying that <code>transitions = null</code>,
 verifying <code>root.pca</code> as the exact signed PIC PCA COSE bytes for the current trusted checkpoint, recomputing <code>root.pca_hash</code>, and verifying
-that the signed PIC PCA COSE payload supplies the materialized authority, <code>position</code>, and <code>challenge.next_challenge</code>. When revocation is
+that the signed PIC PCA COSE payload supplies the materialized authority, <code>position</code>, and <code>challenge.next_challenge</code>. When <code>lineage_id</code> or
+<code>expires_at</code> is present in that checkpoint, a binding that mirrors those values into PIC Token JWT <code>jti</code> or <code>exp</code> MUST validate equality and
+MUST NOT extend the checkpoint lifetime. When revocation is
 enabled for a revocable continuity, the Verifier also validates the authenticated revocation coordinates required by the PIC Revocation
-Specification before evaluating applicable authenticated revocation state. This document does not assign concrete settled-token fields or
-placement for revocation coordinates other than the Profile 0.2 PCA <code>position</code>. Ordinary Profile 0.2 Verifiers are not required to replay a
-transported transition history.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+Specification before evaluating applicable authenticated revocation state. The base Profile 0.2 artifact schema does not assign one
+universal PCA-ID mapping. The current PIC-X binding uses the signed PCA <code>lineage_id</code> as its stable lineage/PCA identifier and mirrors it into
+JWT <code>jti</code>, while PCA <code>position</code> supplies path depth; PIC-X 0.2.3 configures no PIC revocation state. Ordinary Profile 0.2 Verifiers are not
+required to replay a transported transition history.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <p id="section-3.1-4">When a trusted settlement authority processes a Profile 0.2 advancement candidate, it additionally:<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.1-5">
 <li id="section-3.1-5.1">
@@ -2231,7 +2314,8 @@ transported transition history.<a href="#section-3.1-3" class="pilcrow">¶</a></
             <p id="section-3.1-5.5.1">parses that Transition as untrusted input and extracts <code>proof_of_relationship</code>;<a href="#section-3.1-5.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.6">
-            <p id="section-3.1-5.6.1">validates the <code>proof_of_relationship</code> structure;<a href="#section-3.1-5.6.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-5.6.1">validates the <code>proof_of_relationship</code> structure, treating the field name as a Profile 0.2 compatibility name rather than proof that the
+abstract PoR has been discharged;<a href="#section-3.1-5.6.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.7">
             <p id="section-3.1-5.7.1">requires <code>proof_of_relationship.type = "sd-jwt"</code>;<a href="#section-3.1-5.7.1" class="pilcrow">¶</a></p>
@@ -2240,17 +2324,20 @@ transported transition history.<a href="#section-3.1-3" class="pilcrow">¶</a></
             <p id="section-3.1-5.8.1">parses <code>proof_of_relationship.evidence</code> as the exact UTF-8 bytes of the textual issuer-signed Profile 0.2 SD-JWT presentation;<a href="#section-3.1-5.8.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.9">
-            <p id="section-3.1-5.9.1">validates the SD-JWT issuer signature, issuer trust, required disclosures, claims, and schema requirements;<a href="#section-3.1-5.9.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-5.9.1">validates the SD-JWT issuer signature, issuer trust, required disclosures, claims, validity interval, and schema requirements;<a href="#section-3.1-5.9.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.10">
-            <p id="section-3.1-5.10.1">obtains or resolves the workload verification key accepted from the PoR;<a href="#section-3.1-5.10.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-5.10.1">obtains or resolves the workload verification key accepted from the profile evidence;<a href="#section-3.1-5.10.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.11">
             <p id="section-3.1-5.11.1">verifies the Transition COSE signature, candidate Continuity COSE signature, and candidate PIC Token JWT signature using that accepted
-   workload key, and verifies signer consistency as required by the profile;<a href="#section-3.1-5.11.1" class="pilcrow">¶</a></p>
+   workload key; verifies that the declared JOSE and COSE algorithms match the accepted key; and verifies signer-key identifier consistency
+   as required by the profile;<a href="#section-3.1-5.11.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.12">
-            <p id="section-3.1-5.12.1">verifies <code>root.pca</code> as the exact signed PIC PCA COSE bytes for the currently trusted checkpoint;<a href="#section-3.1-5.12.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-5.12.1">verifies <code>root.pca</code> as the exact signed PIC PCA COSE bytes for the currently trusted checkpoint; when the deployment requires a stable
+   lineage identifier and absolute expiration, verifies their presence and verifies that candidate JWT <code>jti</code> and <code>exp</code> equal the predecessor
+   PCA <code>lineage_id</code> and <code>expires_at</code>;<a href="#section-3.1-5.12.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.13">
             <p id="section-3.1-5.13.1">recomputes <code>SHA-256(exact signed root.pca PIC PCA COSE bytes)</code> and compares it with <code>root.pca_hash</code>;<a href="#section-3.1-5.13.1" class="pilcrow">¶</a></p>
@@ -2262,14 +2349,16 @@ transported transition history.<a href="#section-3.1-3" class="pilcrow">¶</a></
             <p id="section-3.1-5.15.1">verifies <code>predecessor.type = "pca"</code> and <code>predecessor.hash = SHA-256(exact signed current root.pca PIC PCA COSE bytes)</code>;<a href="#section-3.1-5.15.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.16">
-            <p id="section-3.1-5.16.1">verifies that <code>Transition.challenge.previous_challenge = current PCA.challenge.next_challenge</code> and validates <code>challenge.next_challenge</code>;<a href="#section-3.1-5.16.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-5.16.1">verifies that <code>Transition.challenge.previous_challenge = current PCA.challenge.next_challenge</code>, requires a non-empty
+   <code>challenge.next_challenge</code>, and, for the current PIC-X binding, requires that it differ from <code>previous_challenge</code>;<a href="#section-3.1-5.16.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.17">
             <p id="section-3.1-5.17.1">validates removal bitmaps and execution-contract additions, including deterministic ordering and section-local index assignment for
 accepted additions;<a href="#section-3.1-5.17.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.18">
-            <p id="section-3.1-5.18.1">validates request/execution binding and executor evidence or conformance when required by the selected profile;<a href="#section-3.1-5.18.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-5.18.1">validates request/execution binding and executor evidence or conformance when required by the selected profile; a deployment with no
+   authenticated request or occurrence commitment MUST treat request binding as unsupported rather than satisfied;<a href="#section-3.1-5.18.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-5.19">
             <p id="section-3.1-5.19.1">validates authority non-expansion, revocation, and local/profile policy;<a href="#section-3.1-5.19.1" class="pilcrow">¶</a></p>
@@ -2280,7 +2369,10 @@ PIC PCA COSE checkpoint, creates a settled PIC Continuity COSE with the new <cod
 null</code>, and creates/signs the settled PIC Token JWT.<a href="#section-3.1-5.20.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-3.1-6">If validation succeeds, the settlement authority issues the next settled PIC Token JWT. PIC-X is one realization of this settlement role.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
+<p id="section-3.1-6">If validation succeeds, the settlement authority issues the next settled PIC Token JWT. PIC-X is one realization of this settlement role.
+Its current acceptance predicate implements the artifact-linked subset of these checks. In particular, current PIC-X validates
+executor-profile conformance but has no trusted runtime occurrence or request to compare with <code>request_digest</code>; it therefore does not claim
+request binding or observed-handoff PoR.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="root-validation">
@@ -2382,12 +2474,13 @@ authority(i+1)  ≤  authority(i)
 </pre><a href="#section-4.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-4.1-3">where <code>≤</code> is an <em>attenuation order</em> defined by the profile. The <code>operations</code> set with subset inclusion, used in the examples, is the
-<strong>reference profile</strong>: it corresponds to the operation-resource privileges of the model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<strong>reference profile</strong>: it corresponds to the operation-resource privileges of the model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
 <p id="section-4.1-4">A label may <em>denote</em> authority without listing it: <code>EU-BACKUP-READONLY</code> denotes a set of operation-resource permissions and carries that
-meaning by reference. This keeps the confused-deputy result intact rather than discarding it — a label is defined to denote a semantic set
-(in the reference case an O×R set), and the label order is required to <strong>refine</strong> the subset order on those denotations. O×R is thus the
-profile where non-expansion is immediate, and any other profile inherits the guarantee exactly to the extent that its order refines its
-denotation order.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+meaning by reference. This preserves the authority non-expansion premise rather than discarding it: a label is defined to denote a semantic
+set (in the reference case an O×R set), and the label order is required to <strong>refine</strong> the subset order on those denotations. O×R is thus the
+profile where non-expansion is immediate, and any other profile inherits that premise exactly to the extent that its order refines its
+denotation order. The full confused-deputy result still requires the separate PoR, causal-attribution, and mediation assumptions stated in
+Section 6.5.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="attenuation-profiles">
@@ -2435,7 +2528,7 @@ implementers who choose that path.<a href="#section-4.3-3" class="pilcrow">¶</a
 <p id="section-4.3-4">Whoever takes that path takes an obligation with it, and it is <strong>theirs, not PIC's</strong>: the declared attenuation order on labels MUST be
 <em>monotone with respect to their semantics</em>. If <code>current ≤ predecessor</code> in the label order but the meaning of <code>current</code> is not contained in the
 meaning of <code>predecessor</code>, PIC's non-expansion is vacuous — the labels shrink while what they authorize grows. Establishing that the label order refines
-its denotation order is up to the application or its PDP. It does <strong>not inherit the Lean proof</strong> <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>: the proof covers
+its denotation order is up to the application or its PDP. It does <strong>not inherit the Lean proof</strong> <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>: the proof covers
 non-expansion of the <em>abstract</em> order only; semantic monotonicity of a concrete vocabulary is a separate proof obligation that PIC does not
 discharge. This is the same boundary the model already draws for heterogeneous translation, and it is a natural point of standardization —
 label vocabularies with provably semantic-monotone orders, and the PIC↔PDP interface that carries the obligation.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
@@ -2450,8 +2543,10 @@ label vocabularies with provably semantic-monotone orders, and the PIC↔PDP int
       </h2>
 <p id="section-5-1">A PIC continuity state can be represented and validated in more than one way. The choice does not change the model - the invariants and the
 checks of Section 3 stay the same - but it changes validation cost and trust assumptions. This section contains non-normative representation
-guidance and explicit profile requirements. A representation does not inherit the Lean proof automatically; each profile MUST show that its
-concrete acceptance predicate implies the abstract PoC (Section 6.5).<a href="#section-5-1" class="pilcrow">¶</a></p>
+guidance and explicit profile requirements. A representation does not inherit the Lean proof automatically. A profile claiming full PIC
+continuity MUST show that its concrete acceptance predicate implies the abstract PoC (Section 6.5). A partial implementation MAY expose a
+narrower assurance level only when it names the verified subset and the missing refinement obligations, and it MUST NOT label that result a
+Proof of Continuity or full PIC conformance.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">A continuity profile MAY use:<a href="#section-5-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5-3.1">
@@ -2474,8 +2569,9 @@ concrete acceptance predicate implies the abstract PoC (Section 6.5).<a href="#s
 </li>
       </ul>
 <p id="section-5-4">The profile MUST define its acceptance predicate, canonicalization, cryptographic references, freshness mechanism, authority materialization,
-and failure behavior. It MUST preserve exactly-one-predecessor continuity, PoR, non-expansion, request/execution binding when required by that
-profile, and verifier independence.<a href="#section-5-4" class="pilcrow">¶</a></p>
+and failure behavior. A full-continuity profile MUST preserve exactly-one-predecessor continuity, PoR, non-expansion,
+request/execution binding when required by that profile, and verifier independence. A partial assurance level MUST preserve every property
+it claims and MUST fail closed for every check declared mandatory at that level.<a href="#section-5-4" class="pilcrow">¶</a></p>
 <div id="current-profile-02-representation">
 <section id="section-5.1">
         <h3 id="name-current-profile-02-represen">
@@ -2511,7 +2607,7 @@ trusted settled PIC Token JWT N+1
 </pre><a href="#section-5.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-5.1-3">The candidate is not a trusted settled continuity artifact. The settlement authority validates the current settled continuity, the candidate
-PIC Token JWT, the candidate PIC Continuity COSE, the single PIC Continuity Transition COSE, PoR/key binding, predecessor hash over the exact
+PIC Token JWT, the candidate PIC Continuity COSE, the single PIC Continuity Transition COSE, profile/key evidence, predecessor hash over the exact
 current PIC PCA COSE bytes, position increment, challenge continuity, removal attenuations, execution-contract additions including
 deterministic canonical ordering and index assignment for accepted additions, non-expansion, revocation, and local/profile policy. If
 validation succeeds, the settlement authority materializes the new authority into a new PIC PCA COSE checkpoint and issues the next settled
@@ -2521,23 +2617,96 @@ challenge material are represented by the latest trusted PIC PCA COSE checkpoint
 <code>position</code> field and no <code>challenge</code> field.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="profile-02-artifact-semantics">
+<div id="profile-02-assurance-boundary">
 <section id="section-5.2">
-        <h3 id="name-profile-02-artifact-semanti">
-<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-profile-02-artifact-semanti" class="section-name selfRef">Profile 0.2 Artifact Semantics</a>
+        <h3 id="name-profile-02-assurance-bounda">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-profile-02-assurance-bounda" class="section-name selfRef">Profile 0.2 Assurance Boundary</a>
         </h3>
-<p id="section-5.2-1">This subsection is normative for PIC Profile 0.2. The semantic field names below are normative for this profile. Exact CBOR integer labels,
-COSE protected-header <code>typ</code> values, media-type registrations, and any IANA assignments are deferred to the applicable profile registry or a
-later byte-level wire assignment; this subsection does not invent them.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<p id="section-5.2-2">The active PIC Profile 0.2 identifier is:<a href="#section-5.2-2" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-5.2-3">
-<pre>
-https://pic-protocol.org/profiles/0.2
-</pre><a href="#section-5.2-3" class="pilcrow">¶</a>
-</div>
-<p id="section-5.2-4">Profile 0.2 uses the following artifact format identifiers:<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-1">The abstract PIC Model and the current PIC-X Profile 0.2 implementation have different claim boundaries. A conforming document or
+implementation MUST identify which boundary it is claiming. The <code>artifact-linked</code> level is a partial implementation assurance class, not an
+alternative definition of PoR and not full PIC conformance.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <table class="center" id="table-1">
           <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Property</th>
+              <th class="text-left" rowspan="1" colspan="1">Current PIC-X Profile 0.2 status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Signed artifact lineage and exactly-one predecessor reference</td>
+              <td class="text-left" rowspan="1" colspan="1">Implemented</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Authority attenuation and irreversible branch-local removal</td>
+              <td class="text-left" rowspan="1" colspan="1">Implemented</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Additive execution-contract refinement and executor-profile conformance</td>
+              <td class="text-left" rowspan="1" colspan="1">Implemented</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Trusted-issuer executor-profile evidence and workload-key binding</td>
+              <td class="text-left" rowspan="1" colspan="1">Implemented</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Unknown successor and sibling fan-out</td>
+              <td class="text-left" rowspan="1" colspan="1">Implemented intentionally</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Stable lineage correlation and absolute lineage expiry</td>
+              <td class="text-left" rowspan="1" colspan="1">Implemented by the PIC-X binding</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Abstract semantic <code>PoR(s_i, s_{i+1})</code> for an observed handoff occurrence</td>
+              <td class="text-left" rowspan="1" colspan="1">Not established by current evidence</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Authenticated request or runtime-occurrence binding</td>
+              <td class="text-left" rowspan="1" colspan="1">Not implemented by current PIC-X settlement</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Global single consumption or exactly-once execution</td>
+              <td class="text-left" rowspan="1" colspan="1">Not claimed</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Per-lineage early revocation</td>
+              <td class="text-left" rowspan="1" colspan="1">Not implemented; absolute expiry and signing-key policy are the current bounds</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Complete mediation and causal attribution of protected actions</td>
+              <td class="text-left" rowspan="1" colspan="1">Outside current PIC-X settlement</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-5.2-3">The current assurance level is called <strong><code>artifact-linked</code></strong>. It is valid to claim that PIC-X excludes authority import from an unrelated
+lineage within an accepted artifact transition and enforces the configured executor profile. It is not valid to infer from that claim that a
+trusted boundary observed the physical or runtime handoff, that a particular request caused the candidate, or that every protected effect
+passed through settlement.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4">A future profile may claim full semantic PoR only after defining authenticated occurrence evidence, the trusted observer and its failure
+model, request or message binding where applicable, verification and retention rules, and a refinement argument from its concrete acceptance
+predicate to the abstract relation used by the formal model. Adding another workload-self-asserted field does not by itself provide that
+refinement <span><a href="#references" class="internal xref">[13]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="profile-02-artifact-semantics">
+<section id="section-5.3">
+        <h3 id="name-profile-02-artifact-semanti">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-profile-02-artifact-semanti" class="section-name selfRef">Profile 0.2 Artifact Semantics</a>
+        </h3>
+<p id="section-5.3-1">This subsection is normative for PIC Profile 0.2. The semantic field names below are normative for this profile. Exact CBOR integer labels,
+COSE protected-header <code>typ</code> values, media-type registrations, and any IANA assignments are deferred to the applicable profile registry or a
+later byte-level wire assignment; this subsection does not invent them.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-2">The active PIC Profile 0.2 identifier is:<a href="#section-5.3-2" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.3-3">
+<pre>
+https://pic-protocol.org/profiles/0.2
+</pre><a href="#section-5.3-3" class="pilcrow">¶</a>
+</div>
+<p id="section-5.3-4">Profile 0.2 uses the following artifact format identifiers:<a href="#section-5.3-4" class="pilcrow">¶</a></p>
+<table class="center" id="table-2">
+          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
 <thead>
             <tr>
               <th class="text-left" rowspan="1" colspan="1">Artifact</th>
@@ -2571,10 +2740,10 @@ https://pic-protocol.org/profiles/0.2
             </tr>
           </tbody>
         </table>
-<p id="section-5.2-6">These identifiers are Profile 0.2 format identifiers, not IANA-assigned media types unless and until a registration assigns that status.<a href="#section-5.2-6" class="pilcrow">¶</a></p>
-<p id="section-5.2-7">Profile 0.2 also uses the following stable semantic definition URIs:<a href="#section-5.2-7" class="pilcrow">¶</a></p>
-<table class="center" id="table-2">
-          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
+<p id="section-5.3-6">These identifiers are Profile 0.2 format identifiers, not IANA-assigned media types unless and until a registration assigns that status.<a href="#section-5.3-6" class="pilcrow">¶</a></p>
+<p id="section-5.3-7">Profile 0.2 also uses the following stable semantic definition URIs:<a href="#section-5.3-7" class="pilcrow">¶</a></p>
+<table class="center" id="table-3">
+          <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
 <thead>
             <tr>
               <th class="text-left" rowspan="1" colspan="1">Concept</th>
@@ -2597,64 +2766,88 @@ https://pic-protocol.org/profiles/0.2
           </tbody>
         </table>
 <div id="pic-token-jwt">
-<section id="section-5.2.1">
+<section id="section-5.3.1">
           <h4 id="name-pic-token-jwt">
-<a href="#section-5.2.1" class="section-number selfRef">5.2.1. </a><a href="#name-pic-token-jwt" class="section-name selfRef">PIC Token JWT</a>
+<a href="#section-5.3.1" class="section-number selfRef">5.3.1. </a><a href="#name-pic-token-jwt" class="section-name selfRef">PIC Token JWT</a>
           </h4>
-<p id="section-5.2.1-1">A PIC Token JWT has format identifier <code>pic+jwt</code>.<a href="#section-5.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.2.1-2">The <code>pic.root</code> member MUST contain the unpadded Base64url encoding of the exact binary PIC Continuity COSE artifact bytes.<a href="#section-5.2.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.2.1-3">A candidate PIC Token JWT is workload-signed. A settled PIC Token JWT is signed by the trusted settlement authority. Candidate and settled
-tokens use the same <code>pic+jwt</code> format; no second token format is defined for the candidate role. Exact JOSE <code>typ</code> assignment is deferred to
-the applicable profile registry or later byte-level wire assignment.<a href="#section-5.2.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.3.1-1">A PIC Token JWT has format identifier <code>pic+jwt</code>.<a href="#section-5.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.3.1-2">The <code>pic.root</code> member MUST contain the unpadded Base64url encoding of the exact binary PIC Continuity COSE artifact bytes.<a href="#section-5.3.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.3.1-3">A candidate PIC Token JWT is workload-signed. A settled PIC Token JWT is signed by the trusted settlement authority. Candidate and settled
+tokens use the same <code>pic+jwt</code> format; no second token format is defined for the candidate role. The current PIC-X binding requires JOSE
+<code>typ = "pic+jwt"</code> and a <code>profile</code> claim equal to <code>https://pic-protocol.org/profiles/0.2</code>.<a href="#section-5.3.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.3.1-4">PIC Token JWT may carry the standard claims <code>iss</code>, <code>sub</code>, <code>aud</code>, <code>iat</code>, <code>exp</code>, and <code>jti</code>. In the current PIC-X binding:<a href="#section-5.3.1-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.3.1-5.1">
+              <p id="section-5.3.1-5.1.1">every initialized lineage has a non-empty PCA <code>lineage_id</code> and a positive PCA <code>expires_at</code>;<a href="#section-5.3.1-5.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.3.1-5.2">
+              <p id="section-5.3.1-5.2.1">settled and candidate JWT <code>jti</code> MUST equal that <code>lineage_id</code>;<a href="#section-5.3.1-5.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.3.1-5.3">
+              <p id="section-5.3.1-5.3.1">settled and candidate JWT <code>exp</code> MUST equal that <code>expires_at</code>;<a href="#section-5.3.1-5.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.3.1-5.4">
+              <p id="section-5.3.1-5.4.1">advancement MUST preserve both PCA values unchanged and MUST NOT mint a later expiration;<a href="#section-5.3.1-5.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.3.1-5.5">
+              <p id="section-5.3.1-5.5.1">the settlement authority MUST reject a candidate whose <code>jti</code> or <code>exp</code> is missing or mismatched, or whose predecessor has expired.<a href="#section-5.3.1-5.5.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-5.3.1-6">These bindings provide stable correlation and prevent lifetime extension. They do not by themselves establish request binding or semantic
+PoR.<a href="#section-5.3.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="pic-pca-cose">
-<section id="section-5.2.2">
+<section id="section-5.3.2">
           <h4 id="name-pic-pca-cose">
-<a href="#section-5.2.2" class="section-number selfRef">5.2.2. </a><a href="#name-pic-pca-cose" class="section-name selfRef">PIC PCA COSE</a>
+<a href="#section-5.3.2" class="section-number selfRef">5.3.2. </a><a href="#name-pic-pca-cose" class="section-name selfRef">PIC PCA COSE</a>
           </h4>
-<p id="section-5.2.2-1">A PIC PCA COSE is the signed checkpoint artifact representing a logical PCA. Its Profile 0.2 semantic payload contains:<a href="#section-5.2.2-1" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-5.2.2-2">
+<p id="section-5.3.2-1">A PIC PCA COSE is the signed checkpoint artifact representing a logical PCA. Its Profile 0.2 semantic payload contains:<a href="#section-5.3.2-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.3.2-2">
 <pre>
 profile
+lineage_id              optional in the base Profile 0.2 artifact; required by PIC-X
+expires_at              optional in the base Profile 0.2 artifact; required by PIC-X
 position
 context_of_authority
 challenge.next_challenge
-</pre><a href="#section-5.2.2-2" class="pilcrow">¶</a>
+</pre><a href="#section-5.3.2-2" class="pilcrow">¶</a>
 </div>
-<p id="section-5.2.2-3"><code>position</code> is a non-negative canonical integer defined by Profile 0.2. <code>context_of_authority</code> is the canonical Indexed Authority Map defined
-in Section 2.4. <code>challenge.next_challenge</code> is binary challenge material for the next Profile 0.2 transition.<a href="#section-5.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.3.2-3"><code>position</code> is a non-negative canonical integer defined by Profile 0.2. <code>context_of_authority</code> is the canonical Indexed Authority Map defined
+in Section 2.4. <code>challenge.next_challenge</code> is non-empty binary challenge material for the next Profile 0.2 transition. <code>lineage_id</code>, when
+present, is a non-empty stable identifier preserved by every advancement. <code>expires_at</code>, when present, is a positive NumericDate preserved by
+every advancement. The current PIC-X binding requires both fields and mirrors them into JWT <code>jti</code> and <code>exp</code> as described above.<a href="#section-5.3.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="pic-continuity-cose">
-<section id="section-5.2.3">
+<section id="section-5.3.3">
           <h4 id="name-pic-continuity-cose">
-<a href="#section-5.2.3" class="section-number selfRef">5.2.3. </a><a href="#name-pic-continuity-cose" class="section-name selfRef">PIC Continuity COSE</a>
+<a href="#section-5.3.3" class="section-number selfRef">5.3.3. </a><a href="#name-pic-continuity-cose" class="section-name selfRef">PIC Continuity COSE</a>
           </h4>
-<p id="section-5.2.3-1">A PIC Continuity COSE has the following Profile 0.2 semantic payload:<a href="#section-5.2.3-1" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-5.2.3-2">
+<p id="section-5.3.3-1">A PIC Continuity COSE has the following Profile 0.2 semantic payload:<a href="#section-5.3.3-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.3.3-2">
 <pre>
 profile
 root:
     pca_hash
     pca
 transitions
-</pre><a href="#section-5.2.3-2" class="pilcrow">¶</a>
+</pre><a href="#section-5.3.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-5.2.3-3"><code>root.pca</code> MUST contain the exact signed PIC PCA COSE bytes for the current trusted checkpoint. <code>root.pca_hash</code> MUST equal
-<code>SHA-256(exact signed root.pca bytes)</code>, and Verifiers MUST recompute it.<a href="#section-5.2.3-3" class="pilcrow">¶</a></p>
-<p id="section-5.2.3-4">A settled Profile 0.2 Continuity MUST have <code>transitions = null</code>. A candidate Profile 0.2 Continuity MUST have <code>transitions</code> containing
+<p id="section-5.3.3-3"><code>root.pca</code> MUST contain the exact signed PIC PCA COSE bytes for the current trusted checkpoint. <code>root.pca_hash</code> MUST equal
+<code>SHA-256(exact signed root.pca bytes)</code>, and Verifiers MUST recompute it.<a href="#section-5.3.3-3" class="pilcrow">¶</a></p>
+<p id="section-5.3.3-4">A settled Profile 0.2 Continuity MUST have <code>transitions = null</code>. A candidate Profile 0.2 Continuity MUST have <code>transitions</code> containing
 exactly one PIC Continuity Transition COSE. PIC Continuity COSE itself does not require a <code>position</code> field or <code>challenge</code> field in Profile
-0.2; those values belong to PIC PCA COSE checkpoints and PIC Continuity Transition COSE artifacts.<a href="#section-5.2.3-4" class="pilcrow">¶</a></p>
+0.2; those values belong to PIC PCA COSE checkpoints and PIC Continuity Transition COSE artifacts.<a href="#section-5.3.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="pic-continuity-transition-cose">
-<section id="section-5.2.4">
+<section id="section-5.3.4">
           <h4 id="name-pic-continuity-transition-c">
-<a href="#section-5.2.4" class="section-number selfRef">5.2.4. </a><a href="#name-pic-continuity-transition-c" class="section-name selfRef">PIC Continuity Transition COSE</a>
+<a href="#section-5.3.4" class="section-number selfRef">5.3.4. </a><a href="#name-pic-continuity-transition-c" class="section-name selfRef">PIC Continuity Transition COSE</a>
           </h4>
-<p id="section-5.2.4-1">A PIC Continuity Transition COSE has the following Profile 0.2 semantic payload:<a href="#section-5.2.4-1" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-5.2.4-2">
+<p id="section-5.3.4-1">A PIC Continuity Transition COSE has the following Profile 0.2 semantic payload:<a href="#section-5.3.4-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.3.4-2">
 <pre>
 profile
 position
@@ -2670,23 +2863,31 @@ proof_of_relationship:
     evidence
 request_digest           optional/profile-defined
 executor_evidence        optional/profile-defined
-</pre><a href="#section-5.2.4-2" class="pilcrow">¶</a>
+</pre><a href="#section-5.3.4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-5.2.4-3">For current Profile 0.2, <code>predecessor.type</code> MUST be <code>"pca"</code> and <code>predecessor.hash</code> MUST equal
+<p id="section-5.3.4-3">For current Profile 0.2, <code>predecessor.type</code> MUST be <code>"pca"</code> and <code>predecessor.hash</code> MUST equal
 <code>SHA-256(exact signed current root.pca PIC PCA COSE bytes)</code>. A future or separate profile MAY define another predecessor representation while
-preserving exactly-one-predecessor semantics.<a href="#section-5.2.4-3" class="pilcrow">¶</a></p>
-<p id="section-5.2.4-4"><code>proof_of_relationship</code> is a typed object. For current Profile 0.2, <code>proof_of_relationship.type</code> MUST be <code>"sd-jwt"</code> and
+preserving exactly-one-predecessor semantics.<a href="#section-5.3.4-3" class="pilcrow">¶</a></p>
+<p id="section-5.3.4-4"><code>position</code> MUST equal the predecessor PCA position plus one.
+<code>challenge.previous_challenge</code> MUST equal the predecessor PCA <code>challenge.next_challenge</code>. Both challenge values MUST be non-empty. The
+current PIC-X binding additionally requires <code>challenge.next_challenge != challenge.previous_challenge</code>; this prevents a successor checkpoint
+from retaining the challenge answered by the transition. It is challenge-state progress, not global single-consumption: valid sibling
+candidates from one predecessor remain permitted, and replay or exactly-once effect control remains a separate property.<a href="#section-5.3.4-4" class="pilcrow">¶</a></p>
+<p id="section-5.3.4-5"><code>proof_of_relationship</code> is a typed object. For current Profile 0.2, <code>proof_of_relationship.type</code> MUST be <code>"sd-jwt"</code> and
 <code>proof_of_relationship.evidence</code> MUST be a byte string containing the exact UTF-8 bytes of the textual issuer-signed SD-JWT presentation
-selected by the Profile 0.2 PoR schema. That schema MUST bind or identify the workload verification key used to verify the workload-signed
-candidate artifacts. Profile 0.2 does not define a universal claim path, does not require <code>cnf.jwk</code> at the PIC protocol level, and does not
-require a separate SD-JWT KB-JWT for continuity advancement.<a href="#section-5.2.4-4" class="pilcrow">¶</a></p>
-<p id="section-5.2.4-5">Signer roles are:<a href="#section-5.2.4-5" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-5.2.4-6">
+selected by the Profile 0.2 evidence schema. That schema MUST bind or identify the workload verification key used to verify the
+workload-signed candidate artifacts. Profile 0.2 does not define a universal claim path. The current PIC-X binding obtains the workload key
+from disclosed <code>cnf.jwk</code>, rejects SD-JWT presentations carrying a separate key-binding JWT, validates the configured issuer signature and
+trust, disclosure integrity and uniqueness, credential validity, and algorithm compatibility, and requires the candidate JWT, Continuity
+COSE, and Transition COSE signatures to match that key. Another binding may define a different authenticated claim path without changing the
+base artifact schema.<a href="#section-5.3.4-5" class="pilcrow">¶</a></p>
+<p id="section-5.3.4-6">Signer roles are:<a href="#section-5.3.4-6" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.3.4-7">
 <pre>
 PoR issuer
     signs issuer-signed SD-JWT
 
-workload key accepted through PoR
+workload key accepted through profile evidence
     signs PIC Continuity Transition COSE
     signs candidate PIC Continuity COSE
     signs candidate PIC Token JWT
@@ -2695,23 +2896,29 @@ trusted settlement authority
     signs new PIC PCA COSE
     signs settled PIC Continuity COSE
     signs settled PIC Token JWT
-</pre><a href="#section-5.2.4-6" class="pilcrow">¶</a>
+</pre><a href="#section-5.3.4-7" class="pilcrow">¶</a>
 </div>
-<p id="section-5.2.4-7">The workload signatures prove control of the selected workload key and authenticate the candidate objects. They do not, by themselves,
-establish semantic continuity; the Verifier still performs the complete Profile 0.2 validation procedure.<a href="#section-5.2.4-7" class="pilcrow">¶</a></p>
+<p id="section-5.3.4-8">The candidate Continuity COSE and Transition COSE MUST declare algorithms compatible with the accepted workload key. The current PIC-X
+binding also requires their protected-header key identifiers to match. The candidate JWT JOSE algorithm MUST be compatible with the same
+key. Algorithm labels and key identifiers are inputs to verification; a valid signature under a different declared algorithm or inconsistent
+candidate signer metadata MUST be rejected.<a href="#section-5.3.4-8" class="pilcrow">¶</a></p>
+<p id="section-5.3.4-9">The workload signatures prove control of the selected workload key and authenticate the candidate objects. The SD-JWT proves only the
+issuer-authenticated profile claims and key binding selected by its schema. Neither fact, alone or together, proves an observed handoff or
+request occurrence; the Verifier still performs the complete Profile 0.2 validation procedure and reports only the assurance level it
+actually establishes.<a href="#section-5.3.4-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="profile-02-oauth-token-exchange-binding">
-<section id="section-5.3">
+<section id="section-5.4">
         <h3 id="name-profile-02-oauth-token-exch">
-<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-profile-02-oauth-token-exch" class="section-name selfRef">Profile 0.2 OAuth Token Exchange Binding</a>
+<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-profile-02-oauth-token-exch" class="section-name selfRef">Profile 0.2 OAuth Token Exchange Binding</a>
         </h3>
-<p id="section-5.3-1">OAuth is not required by the PIC model. This subsection is normative only for a Profile 0.2 binding that uses OAuth Token Exchange <span><a href="#references" class="internal xref">[7]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>
-as an entry or advancement transport.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-<p id="section-5.3-2">For initialization:<a href="#section-5.3-2" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-5.3-3">
+<p id="section-5.4-1">OAuth is not required by the PIC model. This subsection is normative only for a Profile 0.2 binding that uses OAuth Token Exchange <span><a href="#references" class="internal xref">[7]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>
+as an entry or advancement transport.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+<p id="section-5.4-2">For initialization:<a href="#section-5.4-2" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.4-3">
 <pre>
 grant_type
     urn:ietf:params:oauth:grant-type:token-exchange
@@ -2732,10 +2939,10 @@ continuity_proposal
 
 result
     settlement-authority-signed settled PIC Token JWT 0
-</pre><a href="#section-5.3-3" class="pilcrow">¶</a>
+</pre><a href="#section-5.4-3" class="pilcrow">¶</a>
 </div>
-<p id="section-5.3-4">For PIC-to-PIC advancement:<a href="#section-5.3-4" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-5.3-5">
+<p id="section-5.4-4">For PIC-to-PIC advancement:<a href="#section-5.4-4" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-5.4-5">
 <pre>
 grant_type
     urn:ietf:params:oauth:grant-type:token-exchange
@@ -2754,67 +2961,144 @@ continuity_proposal
 
 result
     settlement-authority-signed settled PIC Token JWT N+1
-</pre><a href="#section-5.3-5" class="pilcrow">¶</a>
+</pre><a href="#section-5.4-5" class="pilcrow">¶</a>
 </div>
-<p id="section-5.3-6">The initialization proposal is interpreted by its internal <code>type</code> member. Current Profile 0.2 PIC-to-PIC advancement omits
-<code>continuity_proposal</code>.<a href="#section-5.3-6" class="pilcrow">¶</a></p>
-<p id="section-5.3-7">The RFC 8693 response MAY transport the returned PIC Token JWT in the <code>access_token</code> response member. That placement does not make the PIC
+<p id="section-5.4-6">The initialization proposal is interpreted by its internal <code>type</code> member. Current Profile 0.2 PIC-to-PIC advancement MUST omit
+<code>continuity_proposal</code>; the current PIC-X binding rejects an advancement request that supplies it.<a href="#section-5.4-6" class="pilcrow">¶</a></p>
+<p id="section-5.4-7">The RFC 8693 response MAY transport the returned PIC Token JWT in the <code>access_token</code> response member. That placement does not make the PIC
 Token JWT an OAuth Bearer token. For this Profile 0.2 binding, when an <code>issued_token_type</code> response member is returned for a PIC Token JWT,
 its value is <code>https://pic-protocol.org/definitions/token-types/pic</code>. When a <code>token_type</code> response member is returned for a PIC Token JWT, its
-value is <code>"N_A"</code>.<a href="#section-5.3-7" class="pilcrow">¶</a></p>
-<p id="section-5.3-8">Endpoint paths, client authentication, and the complete Initial Continuity Proposal schema are defined by the selected exchange binding. This
+value is <code>"N_A"</code>.<a href="#section-5.4-7" class="pilcrow">¶</a></p>
+<p id="section-5.4-8">Endpoint paths, client authentication, and the complete Initial Continuity Proposal schema are defined by the selected exchange binding. This
 document does not assign additional OAuth endpoint paths, client-authentication rules, proposal schema fields, or URI values beyond the
-Profile 0.2 identifiers above.<a href="#section-5.3-8" class="pilcrow">¶</a></p>
+Profile 0.2 identifiers above.<a href="#section-5.4-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="profile-02-failure-behavior">
+<section id="section-5.5">
+        <h3 id="name-profile-02-failure-behavior">
+<a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-profile-02-failure-behavior" class="section-name selfRef">Profile 0.2 Failure Behavior</a>
+        </h3>
+<p id="section-5.5-1">A settlement implementation MUST fail closed when any required parsing, signature, trust, predecessor, challenge, attenuation,
+conformance, temporal, revocation, or policy check fails, and MUST NOT issue a successor checkpoint from a rejected candidate.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
+<p id="section-5.5-2">When Profile 0.2 advancement is transported through the OAuth Token Exchange binding above, the current PIC-X implementation reports a
+candidate-validation refusal as OAuth <code>invalid_grant</code> and may include human-readable <code>error_description</code>. Its protocol surface does not yet
+define stable machine-readable subcodes for individual Verifier checks. Implementations and conformance vectors therefore MUST NOT treat
+PIC-X prose descriptions as stable reason identifiers. A later binding may define stable refusal codes without changing the acceptance
+predicate, but those codes are not assigned by this version.<a href="#section-5.5-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="self-contained-transition-graphs">
-<section id="section-5.4">
+<section id="section-5.6">
         <h3 id="name-self-contained-transition-g">
-<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-self-contained-transition-g" class="section-name selfRef">Self-Contained Transition Graphs</a>
+<a href="#section-5.6" class="section-number selfRef">5.6. </a><a href="#name-self-contained-transition-g" class="section-name selfRef">Self-Contained Transition Graphs</a>
         </h3>
-<p id="section-5.4-1">A future or separate profile MAY use a self-contained transition graph, provided the profile defines the graph format, predecessor
-references, authority materialization, proof requirements, and acceptance predicate. Such a graph is not the current Profile 0.2 realization.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+<p id="section-5.6-1">A future or separate profile MAY use a self-contained transition graph, provided the profile defines the graph format, predecessor
+references, authority materialization, proof requirements, and acceptance predicate. A graph whose ordinary nodes retain the core
+exactly-one-predecessor rule represents forks as separate paths. A causal-DAG profile that permits ordinary multi-parent nodes MUST enforce
+the every-parent bound described in Section 1.4; non-conservative joins require an explicit authorized composition or relaxation rule.
+Such a graph is not the current Profile 0.2 realization.<a href="#section-5.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="incremental-checkpointed-or-referenced-history">
-<section id="section-5.5">
+<section id="section-5.7">
         <h3 id="name-incremental-checkpointed-or">
-<a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-incremental-checkpointed-or" class="section-name selfRef">Incremental, Checkpointed, or Referenced History</a>
+<a href="#section-5.7" class="section-number selfRef">5.7. </a><a href="#name-incremental-checkpointed-or" class="section-name selfRef">Incremental, Checkpointed, or Referenced History</a>
         </h3>
-<p id="section-5.5-1">A profile MAY carry only the information needed for the receiving Verifier, rely on external authenticated state, use checkpoints, use
+<p id="section-5.7-1">A profile MAY carry only the information needed for the receiving Verifier, rely on external authenticated state, use checkpoints, use
 compacted or referenced history, or combine those mechanisms. Such a profile MUST define what the Verifier independently verifies and what
-trust assumption, if any, is placed on a validator, checkpoint issuer, history service, or prior verifier.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
+trust assumption, if any, is placed on a validator, checkpoint issuer, history service, or prior verifier.<a href="#section-5.7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="succinct-proofs">
-<section id="section-5.6">
+<section id="section-5.8">
         <h3 id="name-succinct-proofs">
-<a href="#section-5.6" class="section-number selfRef">5.6. </a><a href="#name-succinct-proofs" class="section-name selfRef">Succinct Proofs</a>
+<a href="#section-5.8" class="section-number selfRef">5.8. </a><a href="#name-succinct-proofs" class="section-name selfRef">Succinct Proofs</a>
         </h3>
-<p id="section-5.6-1">The validity of a continuity prefix can be represented by a succinct proof - for example a zero-knowledge proof or accumulator proof - that a
+<p id="section-5.8-1">The validity of a continuity prefix can be represented by a succinct proof - for example a zero-knowledge proof or accumulator proof - that a
 Verifier checks without walking the entire prefix. The choice of construction, soundness assumptions, setup, disclosure properties, and
-verification procedure are out of scope for this document and MUST be defined by the selected profile.<a href="#section-5.6-1" class="pilcrow">¶</a></p>
+verification procedure are out of scope for this document and MUST be defined by the selected profile.<a href="#section-5.8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
+</section>
+</div>
+<div id="origins-authorship-and-historical-record">
+<section id="section-6">
+      <h2 id="name-origins-authorship-and-hist">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-origins-authorship-and-hist" class="section-name selfRef">Origins, Authorship, and Historical Record</a>
+      </h2>
+<p id="section-6-1">This section is informative and is included so that the document preserves its provenance when distributed independently.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">The <strong>Provenance Identity Continuity (PIC) Model</strong> was originally developed by <strong>Nicola Gallo</strong> as a formal framework for reasoning about causal
+authority propagation across distributed execution. Its development introduced Proof of Relationship (PoR), Proof of Continuity (PoC),
+authority non-expansion, relational attenuation, and event-level causal provenance as connected parts of the framework. The PIC
+Specifications translate those formal results into technical requirements and are published and maintained by <strong>Nitro Agility S.r.l.</strong> as
+Specification Steward.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<div id="historical-references">
+<section id="section-6.1">
+        <h3 id="name-historical-references">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-historical-references" class="section-name selfRef">Historical References</a>
+        </h3>
+<p id="section-6.1-1">The publicly verifiable research record is:<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.1-2.1">
+            <p id="section-6.1-2.1.1"><strong>1 December 2025 — initial public PIC Model working paper.</strong> <em>PIC Model — Provenance Identity Continuity for Distributed Execution
+Systems</em>, Zenodo record 17777421 <span><a href="#references" class="internal xref">[16]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>. That archived draft is retained for historical reference and is not an implementation
+specification.<a href="#section-6.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.1-2.2">
+            <p id="section-6.1-2.2.1"><strong>5 December 2025 — authority-propagation analysis.</strong> <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>,
+Zenodo record 17833000 <span><a href="#references" class="internal xref">[15]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-6.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.1-2.3">
+            <p id="section-6.1-2.3.1"><strong>9 July 2026 — formal Proof-of-Continuity paper.</strong> <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed
+Systems and AI Agents</em>, arXiv:2607.08906 <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.1-2.4">
+            <p id="section-6.1-2.4.1"><strong>25 September 2026 — relational authority theory.</strong> <em>Beyond Proof of Possession: A Relational Theory of Authority</em>, Zenodo record
+23102206 <span><a href="#references" class="internal xref">[13]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.1-2.5">
+            <p id="section-6.1-2.5.1"><strong>2 October 2026 — event-level causal closure.</strong> <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
+and Confused-Deputy Exclusion</em>, Zenodo record 23102373 <span><a href="#references" class="internal xref">[14]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-6.1-3">This document was first published as a public draft on <strong>15 July 2026</strong> as part of the PIC Specification 0.2 family. Published tags and
+immutable records identify the exact text applicable to a review or conformance claim. Researchers and implementers are encouraged to cite
+the primary publication that supports the formal property they discuss. Copyright attribution for reuse of PIC specification materials is
+governed separately by the applicable CC BY 4.0 license.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="implementation-status">
+<section id="section-7">
+      <h2 id="name-implementation-status">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
+      </h2>
+<p id="section-7-1">This section is informative and records implementation coverage at the time of this draft.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">PIC-X 0.2.3 implements the centralized Profile 0.2 artifact and settlement path described in Section 5.1. It validates signed predecessor
+linkage, workload-key binding, authority non-expansion, execution-contract conformance, stable lineage coordinates, time bounds, and
+challenge progress. Its current assurance level is <code>artifact-linked</code>; request/execution binding, observed-handoff PoR, causal attribution,
+complete mediation, and PIC revocation state are not implemented.<a href="#section-7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
-<section id="section-6">
+<section id="section-8">
       <h2 id="name-security-considerations">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
 <div id="freshness-replay-and-fan-out">
-<section id="section-6.1">
+<section id="section-8.1">
         <h3 id="name-freshness-replay-and-fan-ou">
-<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-freshness-replay-and-fan-ou" class="section-name selfRef">Freshness, Replay, and Fan-out</a>
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-freshness-replay-and-fan-ou" class="section-name selfRef">Freshness, Replay, and Fan-out</a>
         </h3>
-<p id="section-6.1-1">Freshness protects against <strong>replay</strong>. Because a PCA travels in the clear, anyone who observes one could otherwise present it again as if it
+<p id="section-8.1-1">Freshness protects against <strong>replay</strong>. Because a PCA travels in the clear, anyone who observes one could otherwise present it again as if it
 were continuing the lineage now. The authority it carries is still bounded by the origin, so replay cannot <em>escalate</em> — but it could re-run a
 past action, or run it in a context that no longer applies. Freshness closes that window by making each continuation answer something the
-predecessor issued specifically for this hop.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">The following JSON is an illustrative example of a profile that explicitly models challenge-consumption policy. It is not the current Profile
-0.2 wire schema and does not define generic PIC fields:<a href="#section-6.1-2" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-6.1-3">
+predecessor issued specifically for this hop.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">The following JSON is an illustrative example of a profile that explicitly models challenge-consumption policy. It is not the current Profile
+0.2 wire schema and does not define generic PIC fields:<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-8.1-3">
 <pre>
 {
   "continuation": {
@@ -2824,163 +3108,182 @@ predecessor issued specifically for this hop.<a href="#section-6.1-1" class="pil
     "expiresAt": "2026-07-17T10:06:00Z"
   }
 }
-</pre><a href="#section-6.1-3" class="pilcrow">¶</a>
+</pre><a href="#section-8.1-3" class="pilcrow">¶</a>
 </div>
-<p id="section-6.1-4">In that example profile, <code>continuation</code> carries no recipient selector. In the core, continuation is <strong>open</strong>: the predecessor need not
+<p id="section-8.1-4">In that example profile, <code>continuation</code> carries no recipient selector. In the core, continuation is <strong>open</strong>: the predecessor need not
 preselect the successor. When a selected profile defines <code>mode</code> and <code>maxUses</code>, those fields govern consumption, replay, and fan-out — not
-<em>who</em> may continue. Recipient-, key-, or channel-constrained continuations are future extension profiles (Section 6.6).<a href="#section-6.1-4" class="pilcrow">¶</a></p>
-<p id="section-6.1-5">For a profile-defined <code>single-use</code> challenge, a Verifier MUST prevent it from being consumed twice within the enforcement scope declared by
+<em>who</em> may continue. Recipient-, key-, or channel-constrained continuations are future extension profiles (Section 6.6).<a href="#section-8.1-4" class="pilcrow">¶</a></p>
+<p id="section-8.1-5">For a profile-defined <code>single-use</code> challenge, a Verifier MUST prevent it from being consumed twice within the enforcement scope declared by
 that profile, keeping state or an equivalent mechanism. Note the scope: <code>maxUses</code> enforced per Verifier is a <em>local</em> bound — it does not cap
 total uses across independent Verifiers. A global limit needs shared state or coordination, whose delivery semantics (at-most-once vs
 at-least-once) are out of scope for this document. <strong>Fan-out</strong> is the case where reuse is intentional: several successors continue the same
 predecessor, which is permitted provided each branch references that predecessor, each branch is individually valid, and no branch composes
 authority from — or recovers authority attenuated by — another branch. Authorized fan-out is therefore distinct from unauthorized replay: in
-the example profile, the difference is declared by <code>mode</code>/<code>maxUses</code> and enforced by the Verifier.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
-<p id="section-6.1-6">Three consumption semantics are therefore distinct. <strong>Local single-use</strong>: the challenge is consumed once per Verifier state; independent
+the example profile, the difference is declared by <code>mode</code>/<code>maxUses</code> and enforced by the Verifier.<a href="#section-8.1-5" class="pilcrow">¶</a></p>
+<p id="section-8.1-6">Current PIC-X Profile 0.2 does not define <code>mode</code>, <code>maxUses</code>, or a global predecessor-consumption register. It intentionally permits multiple
+successors to advance the same checkpoint and requires only challenge continuity plus a non-repeating next challenge. Consequently, Profile
+0.2 continuity MUST NOT be described as exactly-once execution, global replay prevention, or successor uniqueness. A deployment needing
+those properties requires an occurrence-scoped mechanism that preserves legitimate sibling fan-out; globally consuming the predecessor is
+not equivalent and would remove the unknown-successor worker-pool behavior the profile supports.<a href="#section-8.1-6" class="pilcrow">¶</a></p>
+<p id="section-8.1-7">Three consumption semantics are therefore distinct. <strong>Local single-use</strong>: the challenge is consumed once per Verifier state; independent
 Verifiers without shared state can each accept the same continuation.
 <strong>Coordinated single-use</strong>: the challenge is consumed once across Verifiers; it requires shared state or a coordinating component — the
 Trust Plane of the <a href="pic-architecture-deployment-spec.html">PIC Architecture and Deployment Specification</a>, or a future federation profile.
 <strong>Bounded multi-use (fan-out)</strong>: reuse explicitly authorized and declared by the selected profile. A property that depends exclusively on
 local Verifier state MUST NOT be described as global single-use. Replay never expands authority, but it can duplicate effects or
-continuations; coordination adds the bound on their global cardinality.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
-<p id="section-6.1-7">The continuation challenge is <strong>one</strong> freshness mechanism, not a mandatory one. A profile MAY meet the same goal differently — for example
+continuations; coordination adds the bound on their global cardinality.<a href="#section-8.1-7" class="pilcrow">¶</a></p>
+<p id="section-8.1-8">The continuation challenge is <strong>one</strong> freshness mechanism, not a mandatory one. A profile MAY meet the same goal differently — for example
 with a monotonic per-lineage counter, a server-issued single-use ticket, or a bounded acceptance window (Section 6.3). A profile MAY rely on
 an external anti-replay mechanism only when that mechanism is explicitly part of the profile's authenticated acceptance predicate, has a
 defined enforcement scope, and preserves the profile's continuity guarantees. Ordinary transport security by itself does not create PIC
 continuity. What is normative is conformance to the consumption semantics and enforcement scope declared by the selected profile, not the
 specific freshness mechanism: the anti-replay enforcement MUST match the scope the profile declares, and a profile claiming coordinated
-single-use MUST provide the shared state or coordination required to enforce that claim across the participating Verifiers.<a href="#section-6.1-7" class="pilcrow">¶</a></p>
+single-use MUST provide the shared state or coordination required to enforce that claim across the participating Verifiers.<a href="#section-8.1-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="origin-trust-boundary">
-<section id="section-6.2">
+<section id="section-8.2">
         <h3 id="name-origin-trust-boundary">
-<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-origin-trust-boundary" class="section-name selfRef">Origin Trust Boundary</a>
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-origin-trust-boundary" class="section-name selfRef">Origin Trust Boundary</a>
         </h3>
-<p id="section-6.2-1">PIC governs propagation <em>after</em> an origin authority context has been validly established. It does not by itself determine whether an actor
+<p id="section-8.2-1">PIC governs propagation <em>after</em> an origin authority context has been validly established. It does not by itself determine whether an actor
 was entitled to originate that context. Minting or deriving a root PCA (Section 1.8) MUST be permissioned, policy-controlled, attributable, and
 auditable. In particular, distinguishing a request-caused action from an action an executor re-originates as a new lineage of its own is a
 responsibility of the origination policy and the enforcement architecture, not of the continuity invariant: a compromised executor that
-re-originates authority is outside the guarantee.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+re-originates authority is outside the guarantee.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="temporal-rules-and-per-hop-expiry">
-<section id="section-6.3">
+<section id="section-8.3">
         <h3 id="name-temporal-rules-and-per-hop-">
-<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-temporal-rules-and-per-hop-" class="section-name selfRef">Temporal Rules and Per-Hop Expiry</a>
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-temporal-rules-and-per-hop-" class="section-name selfRef">Temporal Rules and Per-Hop Expiry</a>
         </h3>
-<p id="section-6.3-1">For every non-root continuity advancement a Verifier MUST check the temporal constraints defined by the selected profile. A simple profile
-may use:<a href="#section-6.3-1" class="pilcrow">¶</a></p>
-<div class="lang-text sourcecode" id="section-6.3-2">
+<p id="section-8.3-1">For every non-root continuity advancement a Verifier MUST check the temporal constraints defined by the selected profile. A simple profile
+may use:<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-8.3-2">
 <pre>
 current.issuedAt    ≥ predecessor.issuedAt
 current.expiresAt   ≤ predecessor.expiresAt
 current.issuedAt    ≤ verificationTime &lt; current.expiresAt
 challenge.expiresAt ≤ predecessor.expiresAt
-</pre><a href="#section-6.3-2" class="pilcrow">¶</a>
+</pre><a href="#section-8.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-6.3-3">Beyond this lineage bound, each advancement SHOULD carry its own short expiry or equivalent freshness bound, set from its creation time and
+<p id="section-8.3-3">Beyond this lineage bound, each advancement SHOULD carry its own short expiry or equivalent freshness bound, set from its creation time and
 distinct from the lineage's total validity. The lineage <code>expiresAt</code> bounds the whole continuity state; a tighter per-advancement window
 bounds a single continuation. This second, shorter expiry limits the damage of a replay: even if a continuation is duplicated within the
 lineage's total validity, it is accepted only for the brief window after its creation, not for the full remaining lifetime of the lineage.
-The root need not carry the tighter window; later advancements SHOULD.<a href="#section-6.3-3" class="pilcrow">¶</a></p>
-<p id="section-6.3-4">Allowed clock skew is a profile parameter. Online verification uses the current time; retrospective (audit) verification requires
-trusted-time evidence for the execution instant and is left to a profile.<a href="#section-6.3-4" class="pilcrow">¶</a></p>
+The root need not carry the tighter window; later advancements SHOULD.<a href="#section-8.3-3" class="pilcrow">¶</a></p>
+<p id="section-8.3-4">Allowed clock skew is a profile parameter. Online verification uses the current time; retrospective (audit) verification requires
+trusted-time evidence for the execution instant and is left to a profile.<a href="#section-8.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="canonicalization-and-cryptographic-agility">
-<section id="section-6.4">
+<section id="section-8.4">
         <h3 id="name-canonicalization-and-crypto">
-<a href="#section-6.4" class="section-number selfRef">6.4. </a><a href="#name-canonicalization-and-crypto" class="section-name selfRef">Canonicalization and Cryptographic Agility</a>
+<a href="#section-8.4" class="section-number selfRef">8.4. </a><a href="#name-canonicalization-and-crypto" class="section-name selfRef">Canonicalization and Cryptographic Agility</a>
         </h3>
-<p id="section-6.4-1">The byte representation covered by a hash or signature MUST be unambiguous and deterministically reproducible under the selected profile.
+<p id="section-8.4-1">The byte representation covered by a hash or signature MUST be unambiguous and deterministically reproducible under the selected profile.
 Each profile MUST state its canonical encoding, hash algorithm, signature algorithm, domain-separation rules, and a suite identifier. The
-illustrative profile uses canonical JSON, SHA-256, and Ed25519; these are not required of every implementation.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
-<p id="section-6.4-2">PIC is not tied to JSON. A profile MAY carry and sign root authority and continuity artifacts with established envelopes such as <strong>JOSE</strong>
+illustrative profile uses canonical JSON, SHA-256, and Ed25519; these are not required of every implementation.<a href="#section-8.4-1" class="pilcrow">¶</a></p>
+<p id="section-8.4-2">PIC is not tied to JSON. A profile MAY carry and sign root authority and continuity artifacts with established envelopes such as <strong>JOSE</strong>
 (JWS/JWT) or <strong>COSE</strong>, or with any canonical binary encoding. For network-heavy or resource-constrained infrastructure, a binary format is RECOMMENDED — in particular
 <strong>CBOR</strong> (with COSE for signing) — to reduce size and parsing cost; deterministic CBOR gives the reproducible byte representation this
 section requires. Selective-disclosure or zero-knowledge mechanisms MAY replace full-attestation signing, provided the Verifier can still
 establish the required attributes, issuer validity, subject binding, validity period, and conformance. Such mechanisms do not change PIC
-semantics, but they may change the cryptographic trust model.<a href="#section-6.4-2" class="pilcrow">¶</a></p>
+semantics, but they may change the cryptographic trust model.<a href="#section-8.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="formal-scope">
-<section id="section-6.5">
+<section id="section-8.5">
         <h3 id="name-formal-scope">
-<a href="#section-6.5" class="section-number selfRef">6.5. </a><a href="#name-formal-scope" class="section-name selfRef">Formal Scope</a>
+<a href="#section-8.5" class="section-number selfRef">8.5. </a><a href="#name-formal-scope" class="section-name selfRef">Formal Scope</a>
         </h3>
-<p id="section-6.5-1">The Lean formalization <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> proves the logical safety properties of the abstract model and, through a refinement mapping, that
-any chain accepted under the modeled verifier assumptions satisfies the abstract PIC invariants. The computational security of the chosen
-cryptographic primitives, the soundness of concrete PoR mechanisms and issuer infrastructure, runtime or attestation integrity, revocation
-state, and the semantic monotonicity of a concrete authority profile (Section 4.3), remain <strong>external assumptions</strong>. It is not claimed that
-Lean proves the security of ES256, SHA-256, COSE, JWS, SD-JWT, or any deployment-specific cryptographic implementation.<a href="#section-6.5-1" class="pilcrow">¶</a></p>
+<p id="section-8.5-1">The Lean formalization <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span> proves the logical safety properties of the abstract model and, through a refinement mapping, that
+any chain accepted under the modeled verifier assumptions satisfies the abstract PIC invariants. A concrete profile inherits the full
+continuity result only when its accepted evidence soundly discharges the refinement assumptions, including the abstract PoR bridge. An
+implementation that verifies only artifact linkage, key control, and non-expansion may claim those verified properties, but MUST NOT cite the
+abstract theorem as proof of an observed causal handoff.<a href="#section-8.5-1" class="pilcrow">¶</a></p>
+<p id="section-8.5-2">The current PIC-X <code>artifact-linked</code> acceptance predicate does not yet discharge that PoR bridge because no trusted execution boundary
+attests the concrete predecessor-to-successor occurrence or request. It does enforce signed predecessor linkage, Profile 0.2 attenuation,
+contract conformance, workload-key control, stable lineage correlation, and absolute expiry under its stated settlement assumptions
+<span><a href="#references" class="internal xref">[13]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-8.5-2" class="pilcrow">¶</a></p>
+<p id="section-8.5-3">Claims about accepted protected effects additionally depend on causal completeness, sound causal evidence, and complete mediation. A
+correct artifact verifier cannot prove those deployment facts when relevant causes or effects are outside its observation boundary
+<span><a href="#references" class="internal xref">[13]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span> <span><a href="#references" class="internal xref">[14]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-8.5-3" class="pilcrow">¶</a></p>
+<p id="section-8.5-4">The computational security of the chosen cryptographic primitives, the soundness of concrete relationship or profile-evidence mechanisms
+and issuer infrastructure, runtime or attestation integrity, revocation state, and the semantic monotonicity of a concrete authority profile
+(Section 4.3), remain <strong>external assumptions</strong>. It is not claimed that Lean proves the security of ES256, SHA-256, COSE, JWS, SD-JWT, or any
+deployment-specific cryptographic implementation.<a href="#section-8.5-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="proof-of-possession-optional">
-<section id="section-6.6">
+<section id="section-8.6">
         <h3 id="name-proof-of-possession-optiona">
-<a href="#section-6.6" class="section-number selfRef">6.6. </a><a href="#name-proof-of-possession-optiona" class="section-name selfRef">Proof of Possession (Optional)</a>
+<a href="#section-8.6" class="section-number selfRef">8.6. </a><a href="#name-proof-of-possession-optiona" class="section-name selfRef">Proof of Possession (Optional)</a>
         </h3>
-<p id="section-6.6-1">The core binds a hop to its accepted continuity advancement. When a selected profile defines a request/execution binding, that profile pins
+<p id="section-8.6-1">The core binds a hop to its accepted continuity advancement. When a selected profile defines a request/execution binding, that profile pins
 the accepted or executed action through that binding (Section 2.3). A profile MAY add a <strong>proof of possession</strong> of the request or channel —
-for example <strong>DPoP</strong> <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>, <strong>HTTP Message Signatures</strong> <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>, or an equivalent signed request binding — or
+for example <strong>DPoP</strong> <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>, <strong>HTTP Message Signatures</strong> <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>, or an equivalent signed request binding — or
 otherwise constrain the recipient or channel. These are <strong>not core continuation modes</strong> and are <strong>not needed for the N+1 model</strong>, whose
-successor is unknown; they serve profiles that require additional presentation constraints.<a href="#section-6.6-1" class="pilcrow">¶</a></p>
+successor is unknown; they serve profiles that require additional presentation constraints.<a href="#section-8.6-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-6.6-2.1">
-            <p id="section-6.6-2.1.1">Profiles MAY define recipient- or channel-constrained continuations when the successor or presentation key is known in advance. Such
+<li class="normal ulEmpty" id="section-8.6-2.1">
+            <p id="section-8.6-2.1.1">Profiles MAY define recipient- or channel-constrained continuations when the successor or presentation key is known in advance. Such
 profiles remain PIC-compatible but do not address the unknown-successor case that motivates the core N+1 model, and are outside the scope
-of this specification.<a href="#section-6.6-2.1.1" class="pilcrow">¶</a></p>
+of this specification.<a href="#section-8.6-2.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="transport-separation-and-confidentiality">
-<section id="section-6.7">
+<section id="section-8.7">
         <h3 id="name-transport-separation-and-co">
-<a href="#section-6.7" class="section-number selfRef">6.7. </a><a href="#name-transport-separation-and-co" class="section-name selfRef">Transport Separation and Confidentiality</a>
+<a href="#section-8.7" class="section-number selfRef">8.7. </a><a href="#name-transport-separation-and-co" class="section-name selfRef">Transport Separation and Confidentiality</a>
         </h3>
-<p id="section-6.7-1">The security model is independent of transport (Section 1): the guarantees rest on the signed continuity state, and an implementation MUST NOT rely on
+<p id="section-8.7-1">The security model is independent of transport (Section 1): the guarantees rest on the signed continuity state, and an implementation MUST NOT rely on
 the channel to obtain them. Transport nonetheless matters for <strong>confidentiality and attack surface</strong>, exactly as it does for OAuth. A
 man-in-the-middle on an unprotected channel cannot forge a valid continuity state - the signatures or proofs prevent that - but it can read message contents,
-including the result of a command, and attempt interception. That is a transport problem, addressed by transport, not by PIC.<a href="#section-6.7-1" class="pilcrow">¶</a></p>
-<p id="section-6.7-2">PIC is carrier-agnostic: the same continuity state can run over HTTP, over messaging systems such as Apache Kafka, or over any other
-transport. For messaging in particular, channels SHOULD be encrypted. A plain outsider who reads a continuity artifact cannot continue it
-without satisfying the selected profile's PoR and conformance requirements. In the open core (Section 2.3), the core does not restrict who
-continues; it pins the action and prevents authority expansion. Constraints on recipient or channel are profile-specific (Section 6.6).
-Encryption protects payload confidentiality and reduces the man-in-the-middle surface; it is not a source of the model's integrity.<a href="#section-6.7-2" class="pilcrow">¶</a></p>
+including the result of a command, and attempt interception. That is a transport problem, addressed by transport, not by PIC.<a href="#section-8.7-1" class="pilcrow">¶</a></p>
+<p id="section-8.7-2">PIC is carrier-agnostic: the same continuity state can run over HTTP, over messaging systems such as Apache Kafka, or over any other
+transport. For messaging in particular, channels SHOULD be encrypted. An unauthenticated outsider who only reads a continuity artifact
+cannot forge the signatures or evidence required by the selected profile. That is not equivalent to successor designation. In the open core
+(Section 2.3), the core does not preselect who continues. In current artifact-linked PIC-X, a realm-accepted, contract-conforming workload
+that obtains the settled checkpoint can advance it; within that accepted workload class, the checkpoint is bearer-like. A full profile must
+separately establish PoR and any request binding it claims. Constraints on recipient or channel are profile-specific (Section 6.6).
+Encryption protects payload confidentiality and reduces the man-in-the-middle surface; it is not a source of the model's integrity.<a href="#section-8.7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="incremental-verification-and-trusted-hops">
-<section id="section-6.8">
+<section id="section-8.8">
         <h3 id="name-incremental-verification-an">
-<a href="#section-6.8" class="section-number selfRef">6.8. </a><a href="#name-incremental-verification-an" class="section-name selfRef">Incremental Verification and Trusted Hops</a>
+<a href="#section-8.8" class="section-number selfRef">8.8. </a><a href="#name-incremental-verification-an" class="section-name selfRef">Incremental Verification and Trusted Hops</a>
         </h3>
-<p id="section-6.8-1">An incremental or history-limited profile validates only the continuity evidence it carries or references at the receiving hop, and relies
+<p id="section-8.8-1">An incremental or history-limited profile validates only the continuity evidence it carries or references at the receiving hop, and relies
 on authenticated prior validation state for earlier positions. Global validity back to the root is then inductive under that profile's trust
-assumptions.<a href="#section-6.8-1" class="pilcrow">¶</a></p>
-<p id="section-6.8-2">This profile makes one explicit assumption: <strong>the prior validation boundary is trusted according to the selected profile</strong>. It can contain a
+assumptions.<a href="#section-8.8-1" class="pilcrow">¶</a></p>
+<p id="section-8.8-2">This profile makes one explicit assumption: <strong>the prior validation boundary is trusted according to the selected profile</strong>. It can contain a
 single faulty hop when the next honest Verifier has the evidence needed to reject that hop. It does not, by itself, resist two or more
-consecutive colluding hops when the receiving Verifier lacks authenticated evidence of the earlier prefix.<a href="#section-6.8-2" class="pilcrow">¶</a></p>
-<p id="section-6.8-3">Cryptographic predecessor references do not close this gap by themselves. They prove linkage and order. They do not prove that omitted
+consecutive colluding hops when the receiving Verifier lacks authenticated evidence of the earlier prefix.<a href="#section-8.8-2" class="pilcrow">¶</a></p>
+<p id="section-8.8-3">Cryptographic predecessor references do not close this gap by themselves. They prove linkage and order. They do not prove that omitted
 authority-state content did not expand. A deployment that must resist consecutive collusion MUST use a profile that independently
 authenticates the relevant prefix: full-history validation, trusted central validation, authenticated checkpoints, succinct proofs, or an
-equivalent profile-defined mechanism.<a href="#section-6.8-3" class="pilcrow">¶</a></p>
+equivalent profile-defined mechanism.<a href="#section-8.8-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="deployment-models">
-<section id="section-7">
+<section id="section-9">
       <h2 id="name-deployment-models">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-deployment-models" class="section-name selfRef">Deployment Models</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-deployment-models" class="section-name selfRef">Deployment Models</a>
       </h2>
-<p id="section-7-1">PIC runs the same model in different topologies. The trade-off is between three properties the lightweight profile cannot maximize at once:
+<p id="section-9-1">PIC runs the same model in different topologies. The trade-off is between three properties the lightweight profile cannot maximize at once:
 <strong>decentralization</strong>, <strong>low per-hop cost</strong>, and <strong>resistance to consecutive colluding hops</strong> (Section 6.8). A single faulty hop is contained
-in <em>every</em> model (Section 1.1); deployment only decides how much — and on what — to spend to also resist collusion among
-compromised-but-authorized parties.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<table class="center" id="table-3">
-        <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
+with respect to every invariant that the selected concrete profile soundly realizes and that the receiving Verifier actually checks
+(Section 1.1); deployment decides how much — and on what — to spend to resist collusion among compromised-but-authorized parties. Neither a
+central service nor full history compensates for an unsound PoR realization or an unobserved request/effect boundary.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-4">
+        <caption><a href="#table-4" class="selfRef">Table 4</a></caption>
 <thead>
           <tr>
             <th class="text-left" rowspan="1" colspan="1">Model</th>
@@ -3017,190 +3320,205 @@ compromised-but-authorized parties.<a href="#section-7-1" class="pilcrow">¶</a>
         </tbody>
       </table>
 <ul class="normal">
-<li class="normal" id="section-7-3.1">
-          <p id="section-7-3.1.1"><strong>Decentralized, history-limited.</strong> Each hop verifies the evidence available under the selected profile. It can be lightweight, but does
-not resist consecutive collusion unless the profile supplies authenticated prefix evidence.<a href="#section-7-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-9-3.1">
+          <p id="section-9-3.1.1"><strong>Decentralized, history-limited.</strong> Each hop verifies the evidence available under the selected profile. It can be lightweight, but does
+not resist consecutive collusion unless the profile supplies authenticated prefix evidence.<a href="#section-9-3.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-7-3.2">
-          <p id="section-7-3.2.1"><strong>Decentralized, full-history.</strong> The Verifier independently validates the relevant prefix. No central party is required, but size and
-validation cost grow with the represented history unless the profile defines compaction.<a href="#section-7-3.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-9-3.2">
+          <p id="section-9-3.2.1"><strong>Decentralized, full-history.</strong> The Verifier independently validates the relevant prefix. No central party is required, but size and
+validation cost grow with the represented history unless the profile defines compaction.<a href="#section-9-3.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-7-3.3">
-          <p id="section-7-3.3.1"><strong>Central validator or checkpoint issuer.</strong> A trusted service validates advancements, maintains or authenticates validation state, or
-issues checkpoints. This can resist collusion under the central-validator assumptions, at the cost of a trust and availability dependency.<a href="#section-7-3.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-9-3.3">
+          <p id="section-9-3.3.1"><strong>Central validator or checkpoint issuer.</strong> A trusted service validates advancements, maintains or authenticates validation state, or
+issues checkpoints. This can resist collusion under the central-validator assumptions, at the cost of a trust and availability dependency.<a href="#section-9-3.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-7-3.4">
-          <p id="section-7-3.4.1"><strong>Succinct proof.</strong> A succinct proof — for example a SNARK or accumulator — proves non-expansion over the whole prefix (Section 5.3): decentralized, O(1) to verify, and
-collusion-resistant, all at once — at the cost of proof-generation complexity and a heavier cryptographic profile.<a href="#section-7-3.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-9-3.4">
+          <p id="section-9-3.4.1"><strong>Succinct proof.</strong> A succinct proof — for example a SNARK or accumulator — may prove the selected profile's complete prefix-acceptance
+predicate (Section 5.3), with succinct verification and resistance to omitted invalid prefix steps under the proof-system assumptions, at
+the cost of proof-generation complexity and a heavier cryptographic profile. A proof circuit that establishes only non-expansion does not
+establish PoR or request binding.<a href="#section-9-3.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-7-4">Stated plainly: <strong>to resist collusion among compromised-but-authorized hops while keeping bounded forwarding and no advanced cryptography,
+<p id="section-9-4">Stated plainly: <strong>to resist collusion among compromised-but-authorized hops while keeping bounded forwarding and no advanced cryptography,
 use a central or federated validator, or another profile-defined authenticated-prefix mechanism.</strong> Fully decentralized and lightweight means
-trusting the prior validation boundary according to the selected profile.<a href="#section-7-4" class="pilcrow">¶</a></p>
+trusting the prior validation boundary according to the selected profile.<a href="#section-9-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="zero-trust">
-<section id="section-8">
-      <h2 id="name-zero-trust">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-zero-trust" class="section-name selfRef">Zero Trust</a>
-      </h2>
-<p id="section-8-1">PIC is zero-trust in a precise, checkable sense, not as a label. Each property below is a concrete consequence of the model, not an
-aspiration.<a href="#section-8-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-8-2.1">
-          <p id="section-8-2.1.1"><strong>No implicit trust from network location.</strong> Authorization comes from the signed continuity state, never from where a request originates. A
-caller inside the perimeter has exactly the authority its lineage carries, and no more (Section 6.7).<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-8-2.2">
-          <p id="section-8-2.2.1"><strong>Every hop is verified, never assumed.</strong> No step is trusted because a previous one was: the Verifier re-checks the transition it holds —
-signature, predecessor link, freshness, profile-required evidence and conformance, non-expansion, time, and profile-required request/execution
-binding (Section 3.3) — and never assumes the Prover already did. The full-chain profile re-checks <em>every</em> hop; the incremental profile re-checks the immediate transition and trusts prior verifiers
-inductively (Section 6.8).<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-8-2.3">
-          <p id="section-8-2.3.1"><strong>Least privilege by construction.</strong> Authority only attenuates; each hop carries or materializes the smallest context it needs and can never regain what an
-ancestor dropped (Section 2.4). A privilege absent from the origin cannot appear anywhere downstream.<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-8-2.4">
-          <p id="section-8-2.4.1"><strong>Assume breach, contain it.</strong> A buggy or compromised executor can act arbitrarily in its own step, but it cannot propagate an invalid
-authority state as a valid continuation (Section 1.1). The blast radius is one hop, not the chain.<a href="#section-8-2.4.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-8-2.5">
-          <p id="section-8-2.5.1"><strong>Per-request, contextual decisions.</strong> Each continuation is authorized against the context that caused it, with freshness (Section 6.1) and
-time bounds (Section 6.3) making the decision specific to this request rather than a standing grant.<a href="#section-8-2.5.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-8-2.6">
-          <p id="section-8-2.6.1"><strong>Identity is not authority.</strong> Authenticating who acts does not by itself grant continuation; the authority exercised must be a valid
-continuation of the lineage (Section 1.2). Compromising an identity does not confer authority the lineage never delegated to it.<a href="#section-8-2.6.1" class="pilcrow">¶</a></p>
-</li>
-      </ul>
-<p id="section-8-3">These hold against a single faulty hop when the selected profile gives the receiving Verifier the evidence needed to reject that hop. The
-properties that quantify over the whole continuity prefix hold absolutely only when the relevant prefix is independently authenticated:
-full-history validation, trusted central validation, authenticated checkpoints, succinct proofs, or an equivalent profile-defined mechanism.
-The result is not "trust nothing" as a slogan but a model where trust is earned per hop, verified explicitly, and bounded by construction.<a href="#section-8-3" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="contributors">
-<section id="section-9">
-      <h2 id="name-contributors-2">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
-      </h2>
-<p id="section-9-1">The editors and contributors of this document are listed in the <strong>document header</strong> above. Listing is governed by Appendix B.7 of the
-<a href="pic-legal.html">PIC Legal Appendices</a>.<a href="#section-9-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="acknowledgement">
 <section id="section-10">
-      <h2 id="name-acknowledgement">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-acknowledgement" class="section-name selfRef">Acknowledgement</a>
+      <h2 id="name-zero-trust">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-zero-trust" class="section-name selfRef">Zero Trust</a>
       </h2>
-<p id="section-10-1">The <strong>Provenance Identity Continuity (PIC) Model</strong> — the theoretical framework this specification expresses in normative form — was created
-by <strong>Nicola Gallo</strong>. It first appeared on Zenodo on 1 December 2025 and is developed in full in the Proof-of-Continuity paper:<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-10-1">For a full-continuity realization, PIC supports zero-trust properties in a precise, checkable sense, not as a label. Each property below is
+either an abstract-model consequence or explicitly profile-conditional. A partial <code>artifact-linked</code> implementation inherits only the
+properties its concrete receiving predicate establishes.<a href="#section-10-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-10-2.1">
-          <p id="section-10-2.1.1">Gallo, N. (2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Zenodo.
-<a href="https://zenodo.org/records/17777421">zenodo.org/records/17777421</a> (DOI: 10.5281/zenodo.17777421).<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.1.1"><strong>No implicit trust from network location.</strong> Authorization comes from the validated continuity state and applicable policy, never merely
+from where a request originates. A caller inside the perimeter has no more accepted authority than its validated lineage carries
+(Section 6.7).<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-10-2.2">
-          <p id="section-10-2.2.1">Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. Zenodo.
-<a href="https://zenodo.org/records/21285112">zenodo.org/records/21285112</a> (DOI: 10.5281/zenodo.21285112).<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.2.1"><strong>Every received advancement is checked under the selected profile.</strong> The Verifier re-checks the transition it holds — signature,
+predecessor link, freshness, profile-required evidence and conformance, non-expansion, time, and profile-required request/execution binding
+(Section 3.3) — and never assumes the Prover already did. A full-chain profile re-checks <em>every</em> represented hop; an incremental profile
+checks the immediate transition and explicitly trusts authenticated prior validation state (Section 6.8).<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-2.3">
+          <p id="section-10-2.3.1"><strong>Non-expansion by construction.</strong> Authority only attenuates and can never regain what an ancestor dropped (Section 2.4). A privilege
+absent from the origin cannot appear anywhere downstream. PIC permits retaining predecessor authority and therefore does not, by itself,
+prove that each hop carries the smallest authority it could have used.<a href="#section-10-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-2.4">
+          <p id="section-10-2.4.1"><strong>Assume breach, bound accepted authority.</strong> A buggy or compromised executor can act arbitrarily in its own step, but a following
+conforming Verifier with the required evidence rejects an authority-expanding state (Section 1.1). This statement does not claim that
+physical effects, omitted causes, consecutive collusion, or unobserved handoffs have a one-hop blast radius.<a href="#section-10-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-2.5">
+          <p id="section-10-2.5.1"><strong>Per-request, contextual decisions when bound.</strong> When the selected profile provides authenticated request/execution binding and the
+enforcement point applies the executed-vs-bound rule, the continuation decision is specific to that occurrence. Freshness (Section 6.1)
+and time bounds (Section 6.3) limit reuse but do not by themselves prove which request caused the action. Current artifact-linked PIC-X
+does not implement this binding.<a href="#section-10-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-2.6">
+          <p id="section-10-2.6.1"><strong>Identity is not authority.</strong> Authenticating who acts does not by itself grant continuation; the authority exercised must be a valid
+continuation of the lineage (Section 1.2). Compromising an identity does not confer authority the lineage never delegated to it.<a href="#section-10-2.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-10-3">Authorship of the PIC Model remains with Nicola Gallo; the PIC specifications are published and maintained by <strong>Nitro Agility S.r.l.</strong> as
-Specification Steward. Any work that references, implements, or claims conformance with PIC must preserve this attribution, distinguishing the
-<strong>PIC Model</strong> (author: Nicola Gallo) from the <strong>PIC Specifications</strong> (steward: Nitro Agility S.r.l.), as required by the
-<strong><a href="pic-legal.html">PIC Legal Appendices</a></strong> (Appendix B, Attribution; Appendix D,
-Acknowledgements), which are incorporated into this specification by reference.<a href="#section-10-3" class="pilcrow">¶</a></p>
+<p id="section-10-3">These hold against a single faulty hop only to the extent that the selected profile gives the receiving Verifier sound evidence needed to
+reject that hop. Properties that quantify over the whole continuity prefix hold absolutely only when the relevant prefix is independently
+authenticated:
+full-history validation, trusted central validation, authenticated checkpoints, succinct proofs, or an equivalent profile-defined mechanism.
+Claims about request-caused protected effects additionally require causal completeness and complete mediation. The result is not "trust
+nothing" as a slogan but a model where each claimed property has an explicit verification and trust boundary.<a href="#section-10-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="legal-notices">
+<div id="privacy-considerations">
 <section id="section-11">
-      <h2 id="name-legal-notices">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-legal-notices" class="section-name selfRef">Legal Notices</a>
+      <h2 id="name-privacy-considerations">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<p id="section-11-1">The appendices governing:<a href="#section-11-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-11-2.1">
-          <p id="section-11-2.1.1"><strong>A.</strong> Use of Automated Language Assistance,<a href="#section-11-2.1.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-11-2.2">
-          <p id="section-11-2.2.1"><strong>B.</strong> Authorship, Stewardship, Attribution, and Derivative Works,<a href="#section-11-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-11-2.3">
-          <p id="section-11-2.3.1"><strong>C.</strong> Disclaimer and Limitation of Liability,<a href="#section-11-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-11-2.4">
-          <p id="section-11-2.4.1"><strong>D.</strong> Acknowledgements,<a href="#section-11-2.4.1" class="pilcrow">¶</a></p>
-</li>
-      </ul>
-<p id="section-11-3">are maintained in a single canonical document, the <strong><a href="pic-legal.html">PIC Legal Appendices</a></strong> (<code>draft/0.2/pic-legal.md</code>), and are
-<strong>incorporated into this specification by reference</strong> as if fully set forth herein.<a href="#section-11-3" class="pilcrow">¶</a></p>
-<p id="section-11-4">In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
-and attribution matters.<a href="#section-11-4" class="pilcrow">¶</a></p>
-<p id="section-11-5">This specification is subordinate to the <a href="pic-spec.html">PIC Specification</a>, which defines the normative semantics of the PIC Model and is
-the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or authorship claims beyond
-those defined in the PIC Legal Appendices.<a href="#section-11-5" class="pilcrow">¶</a></p>
+<p id="section-11-1">Continuity artifacts can expose stable lineage identifiers, positions, authority contexts, executor characteristics, key identifiers,
+timestamps, and predecessor relationships. Full-history representations reveal more execution structure than checkpoints or profile-defined
+selective evidence. A profile should minimize disclosed fields and retention while preserving every input required by its claimed acceptance
+predicate, audit model, and revocation behavior.<a href="#section-11-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="registry-considerations">
+<section id="section-12">
+      <h2 id="name-registry-considerations">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-registry-considerations" class="section-name selfRef">Registry Considerations</a>
+      </h2>
+<p id="section-12-1">This document defines abstract and Profile 0.2 artifact semantics but requests no external registry action. A future interoperable wire
+profile may define registry actions for token types, media types, claims, algorithms, evidence types, or error values.<a href="#section-12-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="references">
-<section id="section-12">
+<section id="section-13">
       <h2 id="name-references">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <div id="normative-references">
-<section id="section-12.1">
+<section id="section-13.1">
         <h3 id="name-normative-references">
-<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <ul class="normal">
-<li class="normal" id="section-12.1-1.1">
-            <p id="section-12.1-1.1.1">[3] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-12.1-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13.1-1.1">
+            <p id="section-13.1-1.1.1">[3] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-13.1-1.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-1.2">
-            <p id="section-12.1-1.2.1">[4] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-12.1-1.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.1-1.2">
+            <p id="section-13.1-1.2.1">[4] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-13.1-1.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-1.3">
-            <p id="section-12.1-1.3.1">[7] Jones, M., Nadalin, A., Campbell, B., Bradley, J., &amp; Mortimore, C. (2020). <em>OAuth 2.0 Token Exchange</em>. RFC 8693. <a href="https://www.rfc-editor.org/rfc/rfc8693">rfc-editor.org/rfc/rfc8693</a><a href="#section-12.1-1.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.1-1.3">
+            <p id="section-13.1-1.3.1">[7] Jones, M., Nadalin, A., Campbell, B., Bradley, J., &amp; Mortimore, C. (2020). <em>OAuth 2.0 Token Exchange</em>. RFC 8693. <a href="https://www.rfc-editor.org/rfc/rfc8693">rfc-editor.org/rfc/rfc8693</a><a href="#section-13.1-1.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-1.4">
-            <p id="section-12.1-1.4.1">[8] Jones, M., Bradley, J., &amp; Sakimura, N. (2015). <em>JSON Web Token (JWT)</em>. RFC 7519. <a href="https://www.rfc-editor.org/rfc/rfc7519">rfc-editor.org/rfc/rfc7519</a><a href="#section-12.1-1.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.1-1.4">
+            <p id="section-13.1-1.4.1">[8] Jones, M., Bradley, J., &amp; Sakimura, N. (2015). <em>JSON Web Token (JWT)</em>. RFC 7519. <a href="https://www.rfc-editor.org/rfc/rfc7519">rfc-editor.org/rfc/rfc7519</a><a href="#section-13.1-1.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-1.5">
-            <p id="section-12.1-1.5.1">[9] Jones, M., Bradley, J., &amp; Sakimura, N. (2015). <em>JSON Web Signature (JWS)</em>. RFC 7515. <a href="https://www.rfc-editor.org/rfc/rfc7515">rfc-editor.org/rfc/rfc7515</a><a href="#section-12.1-1.5.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.1-1.5">
+            <p id="section-13.1-1.5.1">[9] Jones, M., Bradley, J., &amp; Sakimura, N. (2015). <em>JSON Web Signature (JWS)</em>. RFC 7515. <a href="https://www.rfc-editor.org/rfc/rfc7515">rfc-editor.org/rfc/rfc7515</a><a href="#section-13.1-1.5.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-1.6">
-            <p id="section-12.1-1.6.1">[10] Bormann, C., &amp; Hoffman, P. (2020). <em>Concise Binary Object Representation (CBOR)</em>. STD 94, RFC 8949. <a href="https://www.rfc-editor.org/rfc/rfc8949">rfc-editor.org/rfc/rfc8949</a><a href="#section-12.1-1.6.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.1-1.6">
+            <p id="section-13.1-1.6.1">[10] Bormann, C., &amp; Hoffman, P. (2020). <em>Concise Binary Object Representation (CBOR)</em>. STD 94, RFC 8949. <a href="https://www.rfc-editor.org/rfc/rfc8949">rfc-editor.org/rfc/rfc8949</a><a href="#section-13.1-1.6.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-1.7">
-            <p id="section-12.1-1.7.1">[11] Schaad, J. (2022). <em>CBOR Object Signing and Encryption (COSE): Structures and Process</em>. STD 96, RFC 9052. <a href="https://www.rfc-editor.org/rfc/rfc9052">rfc-editor.org/rfc/rfc9052</a><a href="#section-12.1-1.7.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.1-1.7">
+            <p id="section-13.1-1.7.1">[11] Schaad, J. (2022). <em>CBOR Object Signing and Encryption (COSE): Structures and Process</em>. STD 96, RFC 9052. <a href="https://www.rfc-editor.org/rfc/rfc9052">rfc-editor.org/rfc/rfc9052</a><a href="#section-13.1-1.7.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-1.8">
-            <p id="section-12.1-1.8.1">[12] Fett, D., Yasuda, K., &amp; Campbell, B. (2025). <em>Selective Disclosure for JSON Web Tokens</em>. RFC 9901. <a href="https://www.rfc-editor.org/rfc/rfc9901">rfc-editor.org/rfc/rfc9901</a><a href="#section-12.1-1.8.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.1-1.8">
+            <p id="section-13.1-1.8.1">[12] Fett, D., Yasuda, K., &amp; Campbell, B. (2025). <em>Selective Disclosure for JSON Web Tokens</em>. RFC 9901. <a href="https://www.rfc-editor.org/rfc/rfc9901">rfc-editor.org/rfc/rfc9901</a><a href="#section-13.1-1.8.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="informative-references">
-<section id="section-12.2">
+<section id="section-13.2">
         <h3 id="name-informative-references">
-<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <ul class="normal">
-<li class="normal" id="section-12.2-1.1">
-            <p id="section-12.2-1.1.1">[1] Gallo, N. (2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-12.2-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13.2-1.1">
+            <p id="section-13.2-1.1.1">[1] Gallo, N. (9 July 2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-13.2-1.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-1.2">
-            <p id="section-12.2-1.2.1">[2] Gallo, N. (2026). <em>PIC Lean Verification</em>. Lean 4 formalization of the definitions and theorems of [1]. <a href="https://github.com/ngallo/pic-model/tree/main/draft/0.1/pic-model-math/pic-lean">github.com/ngallo/pic-model/draft/0.1/pic-model-math/pic-lean</a><a href="#section-12.2-1.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.2-1.2">
+            <p id="section-13.2-1.2.1">[2] Gallo, N. (2026). <em>PIC Lean Verification</em>. Lean 4 formalization of the definitions and theorems of [1]. <a href="https://github.com/ngallo/pic-model/tree/main/draft/0.1/pic-model-math/pic-lean">github.com/ngallo/pic-model/draft/0.1/pic-model-math/pic-lean</a><a href="#section-13.2-1.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-1.3">
-            <p id="section-12.2-1.3.1">[5] Fett, D., Campbell, B., Bradley, J., Lodderstedt, T., Jones, M. B., &amp; Waite, D. (2023). <em>OAuth 2.0 Demonstrating Proof of Possession (DPoP)</em>. RFC 9449. <a href="https://www.rfc-editor.org/rfc/rfc9449">rfc-editor.org/rfc/rfc9449</a><a href="#section-12.2-1.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.2-1.3">
+            <p id="section-13.2-1.3.1">[5] Fett, D., Campbell, B., Bradley, J., Lodderstedt, T., Jones, M. B., &amp; Waite, D. (2023). <em>OAuth 2.0 Demonstrating Proof of Possession (DPoP)</em>. RFC 9449. <a href="https://www.rfc-editor.org/rfc/rfc9449">rfc-editor.org/rfc/rfc9449</a><a href="#section-13.2-1.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-1.4">
-            <p id="section-12.2-1.4.1">[6] Backman, A., Richer, J., &amp; Sporny, M. (2024). <em>HTTP Message Signatures</em>. RFC 9421. <a href="https://www.rfc-editor.org/rfc/rfc9421">rfc-editor.org/rfc/rfc9421</a><a href="#section-12.2-1.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.2-1.4">
+            <p id="section-13.2-1.4.1">[6] Backman, A., Richer, J., &amp; Sporny, M. (2024). <em>HTTP Message Signatures</em>. RFC 9421. <a href="https://www.rfc-editor.org/rfc/rfc9421">rfc-editor.org/rfc/rfc9421</a><a href="#section-13.2-1.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-13.2-1.5">
+            <p id="section-13.2-1.5.1">[13] Gallo, N. (25 September 2026). <em>Beyond Proof of Possession: A Relational Theory of Authority</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102206">10.5281/zenodo.23102206</a><a href="#section-13.2-1.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-13.2-1.6">
+            <p id="section-13.2-1.6.1">[14] Gallo, N. (2 October 2026). <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102373">10.5281/zenodo.23102373</a><a href="#section-13.2-1.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-13.2-1.7">
+            <p id="section-13.2-1.7.1">[15] Gallo, N. (5 December 2025). <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17833000">10.5281/zenodo.17833000</a><a href="#section-13.2-1.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-13.2-1.8">
+            <p id="section-13.2-1.8.1">[16] Gallo, N. (1 December 2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Archived working paper. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17777421">10.5281/zenodo.17777421</a><a href="#section-13.2-1.8.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
+</section>
+</div>
+<div id="document-history">
+<section id="section-14">
+      <h2 id="name-document-history">
+<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
+      </h2>
+<p id="section-14-1">This section is informative.<a href="#section-14-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-14-2.1">
+          <p id="section-14-2.1.1"><strong>0.2 — 15 July 2026.</strong> Initial public draft of the Prover and Verifier procedures and Profile 0.2 representation.<a href="#section-14-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-14-2.2">
+          <p id="section-14-2.2.1"><strong>0.2 revision — 26 October 2026.</strong> Clarified full versus artifact-linked assurance, relational refinement, request/execution binding,
+fan-out, causal completeness, current PIC-X behavior, and standards-oriented document structure; added a standalone origin, authorship,
+and historical record for independent distribution.<a href="#section-14-2.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="section-15">
+      <h2 id="name-acknowledgments">
+<a href="#section-15" class="section-number selfRef">15. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="section-15-1">The origins and research history of the PIC Model are recorded above. This document reserves acknowledgments for concrete review,
+discussion, and editorial contributions to the Prover and Verifier specification.<a href="#section-15-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="contributors">
+<section id="section-16">
+      <h2 id="name-contributors-2">
+<a href="#section-16" class="section-number selfRef">16. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
+      </h2>
+<p id="section-16-1">The editor and current contributors are identified in the document header and repository history.<a href="#section-16-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">

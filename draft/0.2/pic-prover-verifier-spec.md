@@ -8,7 +8,7 @@ submissiontype: independent
 stand_alone: yes
 smart_quotes: false
 pi: [toc, sortrefs, symrefs]
-date: 2026-07-15
+date: 2026-10-26
 
 author:
   - ins: N. Gallo
@@ -28,7 +28,8 @@ informative: {}
 **Version:** 0.2 (Draft)
 **Document Status:** Public Draft
 **Intended Use:** Informational and Experimental
-**Published:** 2026-07-15
+**First Published:** 2026-07-15
+**Last Updated:** 2026-10-26
 **Editor(s):** Nicola Gallo (Nitro Agility S.r.l.)
 **Steward:** Nitro Agility S.r.l.
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-prover-verifier-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md)
@@ -40,21 +41,28 @@ informative: {}
 > This document is an independently developed specification published as part of the PIC Protocol and maintained by Nitro Agility
 > S.r.l. in its role as Specification Steward.
 >
-> It has not been adopted, endorsed, approved, or published by the IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
-> Foundation, or any other standards-development organization, unless a later version explicitly states otherwise.
->
-> It is not an RFC, an Internet Standard, or an official work item of any working group or standards body.
->
-> This document is published for public review, research, experimentation, implementation feedback, and possible future
-> standardization work. It may be revised, replaced, or withdrawn at any time.
+> It has not been adopted, endorsed, approved, or published by a standards-development organization. It is published for public review,
+> research, experimentation, implementation feedback, and possible future standardization work. It may be revised, replaced, or withdrawn
+> at any time.
 >
 > Implementers use this draft at their own risk. Any implementation, interoperability statement, or conformance claim applies only
 > to the exact document version identified above.
 >
-> Publication of this draft does not constitute certification, endorsement, security approval, interoperability assurance,
-> regulatory approval, or standards-body recognition.
+> Publication does not constitute certification, endorsement, security approval, interoperability assurance, or regulatory approval.
 >
 > Current project information and published specifications are available at `https://www.pic-protocol.org/`.
+
+--- note_Feedback_and_Issue_Tracking
+
+The source for this document and the issue tracker for technical discussion are maintained at
+[github.com/pic-protocol/pic-spec](https://github.com/pic-protocol/pic-spec). Changes are accepted through the repository contribution
+process. Published releases, tags, and immutable research references identify the version to which a review or conformance statement applies.
+
+--- note_Copyright_and_License
+
+This document is made available under the Creative Commons Attribution 4.0 International license. See the repository
+[LICENSE](https://github.com/pic-protocol/pic-spec/blob/main/LICENSE) and [NOTICE](https://github.com/pic-protocol/pic-spec/blob/main/NOTICE.md).
+This notice does not add restrictions to that license.
 
 --- note_Editors
 
@@ -101,6 +109,10 @@ implemented at each execution hop to close that gap. The model, including
 paper [[1]](#references) and formally verified with the Lean theorem prover [[2]](#references). The paper treats PoR as an abstract,
 unforgeable primitive. A concrete profile realizes the full model only when it defines evidence and a receiving predicate that soundly
 witness that primitive. This document specifies the two components that process such evidence:
+
+The earlier authority-propagation analysis records the transition from possession-based reasoning to continuity-based reasoning and its
+application to the confused-deputy problem [[15]](#references). Later relational and event-level results refine the realization boundary
+without changing the core non-expansion invariant [[13]](#references) [[14]](#references).
 
 - The **PIC Prover** constructs the relationship or profile evidence required by the selected profile and uses it to construct a candidate
   advancement handed to the next verification boundary.
@@ -1203,6 +1215,46 @@ The validity of a continuity prefix can be represented by a succinct proof - for
 Verifier checks without walking the entire prefix. The choice of construction, soundness assumptions, setup, disclosure properties, and
 verification procedure are out of scope for this document and MUST be defined by the selected profile.
 
+# Origins, Authorship, and Historical Record
+
+This section is informative and is included so that the document preserves its provenance when distributed independently.
+
+The **Provenance Identity Continuity (PIC) Model** was originally developed by **Nicola Gallo** as a formal framework for reasoning about causal
+authority propagation across distributed execution. Its development introduced Proof of Relationship (PoR), Proof of Continuity (PoC),
+authority non-expansion, relational attenuation, and event-level causal provenance as connected parts of the framework. The PIC
+Specifications translate those formal results into technical requirements and are published and maintained by **Nitro Agility S.r.l.** as
+Specification Steward.
+
+## Historical References
+
+The publicly verifiable research record is:
+
+- **1 December 2025 — initial public PIC Model working paper.** *PIC Model — Provenance Identity Continuity for Distributed Execution
+  Systems*, Zenodo record 17777421 [[16]](#references). That archived draft is retained for historical reference and is not an implementation
+  specification.
+- **5 December 2025 — authority-propagation analysis.** *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*,
+  Zenodo record 17833000 [[15]](#references).
+- **9 July 2026 — formal Proof-of-Continuity paper.** *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed
+  Systems and AI Agents*, arXiv:2607.08906 [[1]](#references).
+- **25 September 2026 — relational authority theory.** *Beyond Proof of Possession: A Relational Theory of Authority*, Zenodo record
+  23102206 [[13]](#references).
+- **2 October 2026 — event-level causal closure.** *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
+  and Confused-Deputy Exclusion*, Zenodo record 23102373 [[14]](#references).
+
+This document was first published as a public draft on **15 July 2026** as part of the PIC Specification 0.2 family. Published tags and
+immutable records identify the exact text applicable to a review or conformance claim. Researchers and implementers are encouraged to cite
+the primary publication that supports the formal property they discuss. Copyright attribution for reuse of PIC specification materials is
+governed separately by the applicable CC BY 4.0 license.
+
+# Implementation Status
+
+This section is informative and records implementation coverage at the time of this draft.
+
+PIC-X 0.2.3 implements the centralized Profile 0.2 artifact and settlement path described in Section 5.1. It validates signed predecessor
+linkage, workload-key binding, authority non-expansion, execution-contract conformance, stable lineage coordinates, time bounds, and
+challenge progress. Its current assurance level is `artifact-linked`; request/execution binding, observed-handoff PoR, causal attribution,
+complete mediation, and PIC revocation state are not implemented.
+
 # Security Considerations
 
 ## Freshness, Replay, and Fan-out
@@ -1429,45 +1481,17 @@ full-history validation, trusted central validation, authenticated checkpoints, 
 Claims about request-caused protected effects additionally require causal completeness and complete mediation. The result is not "trust
 nothing" as a slogan but a model where each claimed property has an explicit verification and trust boundary.
 
-# Contributors {#contributors}
+# Privacy Considerations
 
-The editors and contributors of this document are listed in the **document header** above. Listing is governed by Appendix B.7 of the
-[PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md).
+Continuity artifacts can expose stable lineage identifiers, positions, authority contexts, executor characteristics, key identifiers,
+timestamps, and predecessor relationships. Full-history representations reveal more execution structure than checkpoints or profile-defined
+selective evidence. A profile should minimize disclosed fields and retention while preserving every input required by its claimed acceptance
+predicate, audit model, and revocation behavior.
 
-# Acknowledgement
+# Registry Considerations
 
-The **Provenance Identity Continuity (PIC) Model** — the theoretical framework this specification expresses in normative form — was created
-by **Nicola Gallo**. It first appeared on Zenodo on 1 December 2025 and is developed in full in the Proof-of-Continuity paper:
-
-- Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Zenodo.
-  [zenodo.org/records/17777421](https://zenodo.org/records/17777421) (DOI: 10.5281/zenodo.17777421).
-- Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. Zenodo.
-  [zenodo.org/records/21285112](https://zenodo.org/records/21285112) (DOI: 10.5281/zenodo.21285112).
-
-Authorship of the PIC Model remains with Nicola Gallo; the PIC specifications are published and maintained by **Nitro Agility S.r.l.** as
-Specification Steward. Any work that references, implements, or claims conformance with PIC must preserve this attribution, distinguishing the
-**PIC Model** (author: Nicola Gallo) from the **PIC Specifications** (steward: Nitro Agility S.r.l.), as required by the
-**[PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md)** (Appendix B, Attribution; Appendix D,
-Acknowledgements), which are incorporated into this specification by reference.
-
-# Legal Notices
-
-The appendices governing:
-
-- **A.** Use of Automated Language Assistance,
-- **B.** Authorship, Stewardship, Attribution, and Derivative Works,
-- **C.** Disclaimer and Limitation of Liability,
-- **D.** Acknowledgements,
-
-are maintained in a single canonical document, the **[PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md)** (`draft/0.2/pic-legal.md`), and are
-**incorporated into this specification by reference** as if fully set forth herein.
-
-In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
-and attribution matters.
-
-This specification is subordinate to the [PIC Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md), which defines the normative semantics of the PIC Model and is
-the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or authorship claims beyond
-those defined in the PIC Legal Appendices.
+This document defines abstract and Profile 0.2 artifact semantics but requests no external registry action. A future interoperable wire
+profile may define registry actions for token types, media types, claims, algorithms, evidence types, or error values.
 
 # References {#references}
 
@@ -1484,9 +1508,29 @@ those defined in the PIC Legal Appendices.
 
 ## Informative References
 
-- [1] Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. arXiv:2607.08906 [cs.CR]. [arxiv.org/abs/2607.08906](https://arxiv.org/abs/2607.08906)
+- [1] Gallo, N. (9 July 2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. arXiv:2607.08906 [cs.CR]. [arxiv.org/abs/2607.08906](https://arxiv.org/abs/2607.08906)
 - [2] Gallo, N. (2026). *PIC Lean Verification*. Lean 4 formalization of the definitions and theorems of [1]. [github.com/ngallo/pic-model/draft/0.1/pic-model-math/pic-lean](https://github.com/ngallo/pic-model/tree/main/draft/0.1/pic-model-math/pic-lean)
 - [5] Fett, D., Campbell, B., Bradley, J., Lodderstedt, T., Jones, M. B., & Waite, D. (2023). *OAuth 2.0 Demonstrating Proof of Possession (DPoP)*. RFC 9449. [rfc-editor.org/rfc/rfc9449](https://www.rfc-editor.org/rfc/rfc9449)
 - [6] Backman, A., Richer, J., & Sporny, M. (2024). *HTTP Message Signatures*. RFC 9421. [rfc-editor.org/rfc/rfc9421](https://www.rfc-editor.org/rfc/rfc9421)
-- [13] Gallo, N. (2026). *Beyond Proof of Possession: A Relational Theory of Authority*.
-- [14] Gallo, N. (2026). *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion*.
+- [13] Gallo, N. (25 September 2026). *Beyond Proof of Possession: A Relational Theory of Authority*. Zenodo. DOI: [10.5281/zenodo.23102206](https://doi.org/10.5281/zenodo.23102206)
+- [14] Gallo, N. (2 October 2026). *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion*. Zenodo. DOI: [10.5281/zenodo.23102373](https://doi.org/10.5281/zenodo.23102373)
+- [15] Gallo, N. (5 December 2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. DOI: [10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
+- [16] Gallo, N. (1 December 2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Archived working paper. Zenodo. DOI: [10.5281/zenodo.17777421](https://doi.org/10.5281/zenodo.17777421)
+
+# Document History
+
+This section is informative.
+
+- **0.2 — 15 July 2026.** Initial public draft of the Prover and Verifier procedures and Profile 0.2 representation.
+- **0.2 revision — 26 October 2026.** Clarified full versus artifact-linked assurance, relational refinement, request/execution binding,
+  fan-out, causal completeness, current PIC-X behavior, and standards-oriented document structure; added a standalone origin, authorship,
+  and historical record for independent distribution.
+
+# Acknowledgments
+
+The origins and research history of the PIC Model are recorded above. This document reserves acknowledgments for concrete review,
+discussion, and editorial contributions to the Prover and Verifier specification.
+
+# Contributors {#contributors}
+
+The editor and current contributors are identified in the document header and repository history.

@@ -1021,7 +1021,7 @@ This is a legal and factual classification, not a consequence of technical simil
 
 An implementation or document may independently implement equivalent continuity ideas without thereby being a derivative of the PIC Documents.
 
-Modified specifications, extensions, profiles, or adaptations of the PIC Documents are subject to the applicable license, attribution, derivative-work, and canonical-status provisions of the PIC Legal Appendices.
+Modified specifications, extensions, profiles, or adaptations of PIC specification material are subject to the repository `LICENSE`; project attribution information is summarized in `NOTICE.md`, and canonical status is governed by `GOVERNANCE.md`.
 
 Technical similarity or structural convergence alone does not establish copying, derivation, endorsement, or canonical status.
 

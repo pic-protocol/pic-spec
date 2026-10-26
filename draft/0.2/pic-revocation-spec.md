@@ -8,7 +8,7 @@ submissiontype: independent
 stand_alone: yes
 smart_quotes: false
 pi: [toc, sortrefs, symrefs]
-date: 2026-07-18
+date: 2026-10-26
 
 author:
   - ins: N. Gallo
@@ -28,7 +28,8 @@ informative: {}
 **Version:** 0.2 (Draft)
 **Document Status:** Public Draft
 **Intended Use:** Informational and Experimental
-**Published:** 2026-07-18
+**First Published:** 2026-07-18
+**Last Updated:** 2026-10-26
 **Editor(s):** Nicola Gallo (Nitro Agility S.r.l.)
 **Steward:** Nitro Agility S.r.l.
 **Source:** [github.com/pic-protocol/pic-spec/draft/0.2/pic-revocation-spec.md](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md)
@@ -40,21 +41,28 @@ informative: {}
 > This document is an independently developed specification published as part of the PIC Protocol and maintained by Nitro Agility
 > S.r.l. in its role as Specification Steward.
 >
-> It has not been adopted, endorsed, approved, or published by the IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
-> Foundation, or any other standards-development organization, unless a later version explicitly states otherwise.
->
-> It is not an RFC, an Internet Standard, or an official work item of any working group or standards body.
->
-> This document is published for public review, research, experimentation, implementation feedback, and possible future
-> standardization work. It may be revised, replaced, or withdrawn at any time.
+> It has not been adopted, endorsed, approved, or published by a standards-development organization. It is published for public review,
+> research, experimentation, implementation feedback, and possible future standardization work. It may be revised, replaced, or withdrawn
+> at any time.
 >
 > Implementers use this draft at their own risk. Any implementation, interoperability statement, or conformance claim applies only
 > to the exact document version identified above.
 >
-> Publication of this draft does not constitute certification, endorsement, security approval, interoperability assurance,
-> regulatory approval, or standards-body recognition.
+> Publication does not constitute certification, endorsement, security approval, interoperability assurance, or regulatory approval.
 >
 > Current project information and published specifications are available at `https://www.pic-protocol.org/`.
+
+--- note_Feedback_and_Issue_Tracking
+
+The source for this document and the issue tracker for technical discussion are maintained at
+[github.com/pic-protocol/pic-spec](https://github.com/pic-protocol/pic-spec). Changes are accepted through the repository contribution
+process. Published releases, tags, and immutable research references identify the version to which a review or conformance statement applies.
+
+--- note_Copyright_and_License
+
+This document is made available under the Creative Commons Attribution 4.0 International license. See the repository
+[LICENSE](https://github.com/pic-protocol/pic-spec/blob/main/LICENSE) and [NOTICE](https://github.com/pic-protocol/pic-spec/blob/main/NOTICE.md).
+This notice does not add restrictions to that license.
 
 --- to_be_removed_note_Work_In_Progress
 
@@ -400,6 +408,45 @@ network, and application logic and is not fixed here. Under any realistic per-pa
 though a profile that wants the mathematically unbounded case may use an unbounded integer encoding. The normative point is only that
 overflow and wraparound are rejected when the selected representation can overflow.
 
+# Origins, Authorship, and Historical Record
+
+This section is informative and is included so that the document preserves its provenance when distributed independently.
+
+The **Provenance Identity Continuity (PIC) Model** was originally developed by **Nicola Gallo** as a formal framework for reasoning about causal
+authority propagation across distributed execution. Its development introduced Proof of Relationship (PoR), Proof of Continuity (PoC),
+authority non-expansion, relational attenuation, and event-level causal provenance as connected parts of the framework. The PIC
+Specifications translate those formal results into technical requirements and are published and maintained by **Nitro Agility S.r.l.** as
+Specification Steward.
+
+## Historical References
+
+The publicly verifiable research record is:
+
+- **1 December 2025 — initial public PIC Model working paper.** *PIC Model — Provenance Identity Continuity for Distributed Execution
+  Systems*, Zenodo record 17777421 [[7]](#references). That archived draft is retained for historical reference and is not an implementation
+  specification.
+- **5 December 2025 — authority-propagation analysis.** *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*,
+  Zenodo record 17833000 [[6]](#references).
+- **9 July 2026 — formal Proof-of-Continuity paper.** *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed
+  Systems and AI Agents*, arXiv:2607.08906 [[1]](#references).
+- **25 September 2026 — relational authority theory.** *Beyond Proof of Possession: A Relational Theory of Authority*, Zenodo record
+  23102206 [[4]](#references).
+- **2 October 2026 — event-level causal closure.** *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
+  and Confused-Deputy Exclusion*, Zenodo record 23102373 [[5]](#references).
+
+This document was first published as a public draft on **18 July 2026** as part of the PIC Specification 0.2 family. Published tags and
+immutable records identify the exact text applicable to a review or conformance claim. Researchers and implementers are encouraged to cite
+the primary publication that supports the formal property they discuss. Copyright attribution for reuse of PIC specification materials is
+governed separately by the applicable CC BY 4.0 license.
+
+# Implementation Status
+
+This section is informative and records implementation coverage at the time of this draft.
+
+PIC-X 0.2.3 authenticates stable `lineage_id` and `position` coordinates that can support future revocation profiles, but its current
+revocation hook is a no-op and it implements no PIC revocation state. Expiration and settlement-key retention are lifetime controls, not the
+early revocation mechanism specified here.
+
 # Security Considerations
 
 Revocation security depends on authenticated, fresh, rollback-protected revocation state and explicit behavior when that state is unavailable.
@@ -415,52 +462,41 @@ key revocation, evidence authenticated only by the compromised key is not suffic
 Dynamic restrictions need to remain monotonic: they can make effective authority or execution-contract conformance more restrictive, but cannot
 rewrite signed checkpoints, mutate history, replace Proof of Relationship, or expand authority.
 
-# Contributors {#contributors}
+# Privacy Considerations
 
-The editors and contributors of this document are listed in the **document header** above. Listing is governed by Appendix B.7 of the
-[PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md).
+Revocation lookups and distribution can expose stable lineage identifiers, positions, issuers, keys, delegates, resources, and policy
+selectors. Branch or occurrence coordinates can reveal execution structure. Profiles should disclose only the selectors needed for the
+selected scope, prevent unauthorized enumeration, and define retention, access-control, and correlation boundaries for revocation records.
 
-# Acknowledgement
+# Registry Considerations
 
-The **Provenance Identity Continuity (PIC) Model** — the theoretical framework this specification expresses in normative form — was created
-by **Nicola Gallo**. It first appeared on Zenodo on 1 December 2025 and is developed in full in the Proof-of-Continuity paper:
-
-- Gallo, N. (2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Zenodo.
-  [zenodo.org/records/17777421](https://zenodo.org/records/17777421) (DOI: 10.5281/zenodo.17777421).
-- Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. Zenodo.
-  [zenodo.org/records/21285112](https://zenodo.org/records/21285112) (DOI: 10.5281/zenodo.21285112).
-
-Authorship of the PIC Model remains with Nicola Gallo; the PIC specifications are published and maintained by **Nitro Agility S.r.l.** as
-Specification Steward. Any work that references, implements, or claims conformance with PIC must preserve this attribution, distinguishing the
-**PIC Model** (author: Nicola Gallo) from the **PIC Specifications** (steward: Nitro Agility S.r.l.), as required by the
-**[PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md)** (Appendix B, Attribution; Appendix D,
-Acknowledgements), which are incorporated into this specification by reference.
-
-# Legal Notices
-
-The appendices governing:
-
-- **A.** Use of Automated Language Assistance,
-- **B.** Authorship, Stewardship, Attribution, and Derivative Works,
-- **C.** Disclaimer and Limitation of Liability,
-- **D.** Acknowledgements,
-
-are maintained in a single canonical document, the
-**[PIC Legal Appendices](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-legal.md)** (`draft/0.2/pic-legal.md`), and are
-**incorporated into this specification by reference** as if fully set forth herein.
-
-In case of conflict between this document and the PIC Legal Appendices, the PIC Legal Appendices prevail for legal, governance, licensing,
-and attribution matters.
-
-This specification is subordinate to the
-[PIC Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md), which defines the normative semantics of the
-PIC Model and is the entry point of the specification set. This document does not introduce new conceptual authority, invariants, or
-authorship claims beyond those defined in the PIC Legal Appendices.
+This document defines abstract revocation operations and requests no external registry action. Concrete wire profiles may define registries
+for revocation operations, selector types, status values, and error codes.
 
 # References {#references}
 
-- [1] Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. arXiv:2607.08906 [cs.CR]. [arxiv.org/abs/2607.08906](https://arxiv.org/abs/2607.08906)
+- [1] Gallo, N. (9 July 2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. arXiv:2607.08906 [cs.CR]. [arxiv.org/abs/2607.08906](https://arxiv.org/abs/2607.08906)
 - [2] Bradner, S. (1997). *Key words for use in RFCs to Indicate Requirement Levels*. BCP 14, RFC 2119. [rfc-editor.org/rfc/rfc2119](https://www.rfc-editor.org/rfc/rfc2119)
 - [3] Leiba, B. (2017). *Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words*. BCP 14, RFC 8174. [rfc-editor.org/rfc/rfc8174](https://www.rfc-editor.org/rfc/rfc8174)
-- [4] Gallo, N. (2026). *Beyond Proof of Possession: A Relational Theory of Authority*.
-- [5] Gallo, N. (2026). *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion*.
+- [4] Gallo, N. (25 September 2026). *Beyond Proof of Possession: A Relational Theory of Authority*. Zenodo. DOI: [10.5281/zenodo.23102206](https://doi.org/10.5281/zenodo.23102206)
+- [5] Gallo, N. (2 October 2026). *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion*. Zenodo. DOI: [10.5281/zenodo.23102373](https://doi.org/10.5281/zenodo.23102373)
+- [6] Gallo, N. (5 December 2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. DOI: [10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
+- [7] Gallo, N. (1 December 2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Archived working paper. Zenodo. DOI: [10.5281/zenodo.17777421](https://doi.org/10.5281/zenodo.17777421)
+
+# Document History
+
+This section is informative.
+
+- **0.2 — 18 July 2026.** Initial public draft of PIC revocation.
+- **0.2 revision — 26 October 2026.** Clarified fan-out, lineage-depth versus branch-selective cutoffs, selector resolution, monotonic
+  restriction, the current PIC-X implementation boundary, and standards-oriented document structure; added a standalone origin,
+  authorship, and historical record for independent distribution.
+
+# Acknowledgments
+
+The origins and research history of the PIC Model are recorded above. This document reserves acknowledgments for concrete review,
+discussion, and editorial contributions to the revocation specification.
+
+# Contributors {#contributors}
+
+The editor and current contributors are identified in the document header and repository history.

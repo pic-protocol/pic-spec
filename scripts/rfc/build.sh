@@ -64,7 +64,7 @@ while IFS= read -r src; do
   # links, so the generated set is navigable wherever it is served — a static
   # host, a local checkout, or htmlpreview.github.io (which resolves relative
   # links through the <base> it injects). The document's own "Source:" link
-  # and unbuilt documents (e.g. pic-legal.md) keep pointing to GitHub.
+  # keeps pointing to GitHub.
   # XML and TXT keep the .md URLs: a relative .html link is meaningless there.
   src_dir_re="$(dirname "${src}" | sed 's/[.[\*^$()+?{|]/\\&/g')"
   while IFS= read -r sib; do

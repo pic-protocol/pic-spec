@@ -1,157 +1,75 @@
 # PIC Project Governance
 
-This document describes the governance model for the PIC ecosystem, including
-the PIC Spec and related PIC Protocol specifications.
+This document defines project process and operational roles for the PIC Specification and related protocol documents. Licensing is defined by
+`LICENSE`; attribution information is summarized in `NOTICE.md`; contribution terms are defined by `CONTRIBUTING.md`; and the dated research
+record is maintained in the PIC Specification.
 
-It defines **project process and operational roles only** and is fully aligned
-with the authorship, attribution, ownership, and legal framework defined in the
-PIC Specification (see Appendix B of the PIC Spec).
+## Scope
 
-Nothing in this document creates, transfers, limits, or modifies any authorship,
-ownership, or intellectual property rights in the PIC Model.
+This governance applies to the `pic-spec` repository and to related repositories explicitly placed under the same governance by the
+Specification Steward. It governs how changes are proposed, reviewed, accepted, released, and identified as canonical. It does not change the
+license or the historical research record.
 
----
+## Roles
 
-## 1. Scope
+### Specification Steward
 
-This governance document applies to:
+**Nitro Agility S.r.l.** is the current Specification Steward. The steward is responsible for:
 
-- The `pic-spec` repository and other Official PIC Spec repositories.
-- Official PIC Protocol specification repositories, when created.
-- Supporting repositories under the official PIC organization
-  (e.g., reference implementations, tooling, examples), unless stated otherwise
-  in those repositories.
+- publication and maintenance of the PIC Specifications;
+- appointment of document editors and repository maintainers;
+- contribution review and acceptance;
+- release management and designation of canonical versions; and
+- coordination of future submission to an external standards process, if pursued.
 
-It governs **how changes are proposed, reviewed, and merged**, but **does not**
-alter authorship, licensing, ownership, intellectual property, or normative
-semantics, which are defined exclusively by the PIC Spec and applicable
-LICENSE files.
+Stewardship is an operational and editorial role. The scientific origin of the PIC Model is recorded separately in the PIC Specification.
 
----
+### Document Editors
 
-## 2. Roles
+Editors maintain one or more specification documents, resolve editorial issues, coordinate technical review, and prepare release text.
+Editors are listed in document metadata and remain responsible for responding to review of the versions they edit.
 
-### 2.1 Specification Steward
+### Maintainers
 
-**Nitro Agility S.r.l.** is the **Specification Steward** of the PIC project.
+Maintainers have repository permissions granted by the Specification Steward. They review changes, merge accepted pull requests, manage
+issues, and enforce repository policy. Repository permissions do not independently confer editorial control over released specifications.
 
-The Specification Steward is responsible for:
+### Contributors
 
-- publication and maintenance of the PIC Specification,
-- editorial decisions and normative text,
-- contribution review and acceptance,
-- release management and designation of canonical versions,
-- specification governance and project process.
+Contributors provide text, review, analysis, implementation reports, examples, or other project material under `CONTRIBUTING.md`. Significant
+contributions should be credited in the affected document or repository history according to their concrete nature.
 
-All operational authority for the PIC Spec and related repositories
-resides with the Specification Steward.
+## Decision Process
 
-Nothing in this role implies or affects authorship of the PIC Model, which
-remains solely with its original author as defined in the PIC Spec.
+Technical changes are proposed through issues and pull requests. Substantive changes should include motivation, security and privacy impact,
+compatibility impact, implementation impact, and any effect on the mathematical model or conformance claims.
 
----
+Consensus is preferred. When consensus cannot be reached, the Specification Steward decides whether a change enters the canonical project
+release. Unresolved designs may remain experimental or be developed as separate profiles without altering the core invariants.
 
-### 2.2 Maintainers (PIC Spec Contributors)
+## Canonical Releases
 
-*Maintainers* are contributors granted write and merge access to one or more
-official PIC repositories by the Specification Steward.
+A document becomes canonical only through a release explicitly designated by the Specification Steward. Branch contents, pull requests,
+forks, mirrors, generated previews, and implementation experiments are not canonical releases by themselves.
 
-Maintainers:
+Release records should identify the source revision, publication date, version, generated artifacts, and any immutable archive or DOI. These
+records allow technical and conformance statements to identify the exact document reviewed.
 
-- review and merge pull requests,
-- triage issues and manage labels,
-- help enforce the Code of Conduct,
-- support contributors and the review process.
+## Forks and Adaptations
 
-Maintainer status is **operational only** and **does not imply**:
+The repository license permits forks and adapted material subject to its terms. A fork or adaptation must not represent itself as an official
+or canonical PIC release or imply endorsement. Governance of a fork belongs to its maintainers.
 
-- authorship or co-authorship of the PIC Model,
-- editorial ownership of the PIC Spec,
-- control over canonical designation,
-- any legal, professional, or operational responsibility for the PIC Model.
+## External Standards Work
 
-A current list of maintainers SHOULD be kept in the repository
-(e.g., in this document or in `MAINTAINERS.md`) and updated via pull request.
+If a PIC document enters an external standards-development process, the Specification Steward and editors will apply that process's
+contribution, disclosure, authorship, change-control, and publication rules. Repository contributors must have granted the rights described in
+`CONTRIBUTING.md`; additional confirmation will be obtained where existing or third-party material requires it.
 
----
+Transfer of document change control to an external process requires an explicit project decision and a recorded transition plan. Until such a
+decision is published, the PIC documents remain independent public drafts governed by this repository.
 
-## 3. Decision-Making
+## Changes to Governance
 
-### 3.1 Technical Changes to the PIC Spec
-
-All technical changes MUST be proposed via pull request.
-
-Substantive changes SHOULD:
-
-- include motivation and rationale,
-- describe security, continuity, and compatibility implications,
-- note any impact on existing implementations or PIC Protocol designs.
-
-Final inclusion of changes into the normative PIC Specification is decided by
-the Specification Steward.
-
-Consensus is preferred.  
-When consensus cannot be reached, the Specification Steward has final authority
-on **specification semantics and inclusion**.
-
-No governance process, maintainer action, or repository permission can modify
-the authorship, ownership, or theoretical foundations of the PIC Model.
-
-Unresolved disagreements MAY result in:
-
-- a separate profile or extension document, or
-- a clearly labeled experimental or non-normative section.
-
----
-
-### 3.2 PIC Protocol Specifications
-
-PIC Protocol specifications define concrete protocol encodings,
-interoperability profiles, and wire formats that implement the PIC Model
-as defined by the PIC Spec.
-
-Editors for PIC Protocol specifications are appointed by the Specification
-Steward from the contributor or maintainer community.
-
-PIC Protocol editors:
-
-- MUST preserve the core PIC Model invariants,
-- MUST clearly document any protocol-specific constraints, assumptions,
-  or deviations.
-
-PIC Protocol work does **not** modify the PIC Model and does **not**
-create any new authorship of the PIC Model.
-
----
-
-## 4. Forks and Derivative Specifications
-
-Anyone MAY fork the PIC repositories and create derivative works under the
-terms of the Creative Commons Attribution 4.0 International (CC BY 4.0)
-license.
-
-Forks MUST:
-
-- clearly state that they are derivative works,
-- not represent themselves as the canonical PIC Spec or PIC Model,
-- comply with the attribution requirements defined in the PIC Spec
-  (particularly Appendix B).
-
-Governance of forks is the responsibility of their respective maintainers.
-
-Forking or contributing does not transfer any ownership, authorship, or
-responsibility for the PIC Model.
-
----
-
-## 5. Changes to Governance
-
-Changes to this `GOVERNANCE.md` document MUST be proposed via pull request.
-
-All governance changes MUST remain consistent with:
-
-- the authorship and attribution requirements in the PIC Spec (Appendix B),
-- the ownership and legal framework defined in the PIC Spec,
-- and the applicable LICENSE terms (CC BY 4.0).
-
-No governance change may ov
+Changes to this document are proposed by pull request and approved by the Specification Steward. They must remain consistent with the
+repository license, contribution terms, canonical release policy, and technical invariants of the PIC Specification.

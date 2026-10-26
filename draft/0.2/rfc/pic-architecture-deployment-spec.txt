@@ -4,7 +4,7 @@
 
                                                                 N. Gallo
                                                     Nitro Agility S.r.l.
-                                                          12 August 2026
+                                                         26 October 2026
 
 
                     PIC Architecture and Deployment
@@ -41,12 +41,12 @@ Document Status
    *Project:* PIC Protocol *Project Website:* www.pic-protocol.org
    (https://www.pic-protocol.org/) *Document:* pic-architecture-
    deployment-02 *Version:* 0.2 (Draft) *Document Status:* Public Draft
-   *Intended Use:* Informational and Experimental *Published:*
-   2026-08-12 *Editor(s):* Nicola Gallo (Nitro Agility S.r.l.)
-   *Steward:* Nitro Agility S.r.l. *Source:* github.com/pic-protocol/
-   pic-spec/draft/0.2/pic-architecture-deployment-spec.md
-   (https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-
-   architecture-deployment-spec.md)
+   *Intended Use:* Informational and Experimental *First Published:*
+   2026-08-12 *Last Updated:* 2026-10-26 *Editor(s):* Nicola Gallo
+   (Nitro Agility S.r.l.) *Steward:* Nitro Agility S.r.l. *Source:*
+   github.com/pic-protocol/pic-spec/draft/0.2/pic-architecture-
+   deployment-spec.md (https://github.com/pic-protocol/pic-
+   spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md)
 
 About This Document
 
@@ -55,7 +55,7 @@ About This Document
 
 Gallo                         Informational                     [Page 1]
 
-                     PIC Architecture and Deployment         August 2026
+                     PIC Architecture and Deployment        October 2026
 
 
       *Public Draft — Not a Standard*
@@ -64,29 +64,39 @@ Gallo                         Informational                     [Page 1]
       published as part of the PIC Protocol and maintained by Nitro
       Agility S.r.l. in its role as Specification Steward.
 
-      It has not been adopted, endorsed, approved, or published by the
-      IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
-      Foundation, or any other standards-development organization,
-      unless a later version explicitly states otherwise.
-
-      It is not an RFC, an Internet Standard, or an official work item
-      of any working group or standards body.
-
-      This document is published for public review, research,
-      experimentation, implementation feedback, and possible future
-      standardization work.  It may be revised, replaced, or withdrawn
-      at any time.
+      It has not been adopted, endorsed, approved, or published by a
+      standards-development organization.  It is published for public
+      review, research, experimentation, implementation feedback, and
+      possible future standardization work.  It may be revised,
+      replaced, or withdrawn at any time.
 
       Implementers use this draft at their own risk.  Any
       implementation, interoperability statement, or conformance claim
       applies only to the exact document version identified above.
 
-      Publication of this draft does not constitute certification,
-      endorsement, security approval, interoperability assurance,
-      regulatory approval, or standards-body recognition.
+      Publication does not constitute certification, endorsement,
+      security approval, interoperability assurance, or regulatory
+      approval.
 
       Current project information and published specifications are
       available at https://www.pic-protocol.org/.
+
+Feedback and Issue Tracking
+
+   The source for this document and the issue tracker for technical
+   discussion are maintained at github.com/pic-protocol/pic-spec
+   (https://github.com/pic-protocol/pic-spec).  Changes are accepted
+   through the repository contribution process.  Published releases,
+   tags, and immutable research references identify the version to which
+   a review or conformance statement applies.
+
+Copyright and License
+
+   This document is made available under the Creative Commons
+   Attribution 4.0 International license.  See the repository LICENSE
+   (https://github.com/pic-protocol/pic-spec/blob/main/LICENSE) and
+   NOTICE (https://github.com/pic-protocol/pic-spec/blob/main/
+   NOTICE.md).  This notice does not add restrictions to that license.
 
 Work In Progress
 
@@ -97,6 +107,13 @@ Work In Progress
    The deployment and architecture model described in this document is
    under active development.
 
+
+
+Gallo                         Informational                     [Page 2]
+
+                     PIC Architecture and Deployment        October 2026
+
+
    This model may change substantially before a later stable revision.
 
    Implementers MUST NOT assume wire compatibility, semantic
@@ -106,14 +123,6 @@ Work In Progress
    structures, processing rules, profile bindings, and interoperability
    requirements.
 
-
-
-
-Gallo                         Informational                     [Page 2]
-
-                     PIC Architecture and Deployment         August 2026
-
-
    The current text is published for design review, experimentation, and
    implementation feedback.
 
@@ -122,31 +131,44 @@ Editors
    *  *Nicola Gallo* (Nitro Agility S.r.l.)  Lead Editor
 
    *  _Add your name via pull request (individual or organization) —
-      listing is subject to editor approval (see Section 7)._
+      listing is subject to editor approval (see Section 14)._
 
 Contributors
 
    *  _Add your name via pull request (individual or organization) —
-      listing is subject to editor approval (see Section 7)._
+      listing is subject to editor approval (see Section 14)._
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   4
      1.1.  Requirements Notation . . . . . . . . . . . . . . . . . .   4
    2.  Architectures . . . . . . . . . . . . . . . . . . . . . . . .   4
-     2.1.  Centralized . . . . . . . . . . . . . . . . . . . . . . .   4
-     2.2.  Decentralized . . . . . . . . . . . . . . . . . . . . . .   5
-     2.3.  Consecutive Collusion and History . . . . . . . . . . . .   6
-   3.  Trusted and Untrusted Environments  . . . . . . . . . . . . .   7
-   4.  Hybrid Enterprise Architectures . . . . . . . . . . . . . . .   8
-     4.1.  Service Meshes  . . . . . . . . . . . . . . . . . . . . .   9
-   5.  Interoperability  . . . . . . . . . . . . . . . . . . . . . .   9
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
-   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  11
-   8.  Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .  11
-   9.  Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  11
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  12
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  12
+     2.1.  Centralized . . . . . . . . . . . . . . . . . . . . . . .   5
+     2.2.  Decentralized . . . . . . . . . . . . . . . . . . . . . .   6
+     2.3.  Consecutive Collusion and History . . . . . . . . . . . .   7
+   3.  Trusted and Untrusted Environments  . . . . . . . . . . . . .   8
+   4.  Hybrid Enterprise Architectures . . . . . . . . . . . . . . .   9
+     4.1.  Service Meshes  . . . . . . . . . . . . . . . . . . . . .  10
+   5.  Interoperability  . . . . . . . . . . . . . . . . . . . . . .  11
+   6.  Origins, Authorship, and Historical Record  . . . . . . . . .  11
+     6.1.  Historical References . . . . . . . . . . . . . . . . . .  12
+   7.  Implementation Status . . . . . . . . . . . . . . . . . . . .  13
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  13
+   9.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .  13
+   10. Registry Considerations . . . . . . . . . . . . . . . . . . .  14
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  14
+   12. Document History  . . . . . . . . . . . . . . . . . . . . . .  14
+   13. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  15
+   14. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  15
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  15
+
+
+
+
+Gallo                         Informational                     [Page 3]
+
+                     PIC Architecture and Deployment        October 2026
+
 
 1.  Introduction
 
@@ -163,19 +185,12 @@ Table of Contents
    Specification (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md).
 
-
-
-Gallo                         Informational                     [Page 3]
-
-                     PIC Architecture and Deployment         August 2026
-
-
 1.1.  Requirements Notation
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
    "OPTIONAL" are to be interpreted as described in BCP 14 [2]
-   (Section 10) [3] (Section 10) when, and only when, they appear in all
+   (Section 11) [3] (Section 11) when, and only when, they appear in all
    capitals, and only within the normative sections of this document.
    Examples are illustrative and non-normative.
 
@@ -187,6 +202,29 @@ Gallo                         Informational                     [Page 3]
    Specification (https://github.com/pic-protocol/pic-
    spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Sections 5 and
    7) provide different cost and assurance properties.
+
+   Deployment topology and semantic assurance are independent axes.  A
+   central service does not establish PoR merely because it signs a
+   checkpoint, and a decentralized verifier does not lose PoR merely
+   because it validates locally.  A full-continuity deployment must
+   identify the trusted observation boundary and concrete evidence that
+   soundly establishes the predecessor-to-successor relation.  A
+   deployment that validates only predecessor artifacts, workload-key
+   control, non-expansion, and executor-profile conformance has
+   artifact-linked assurance and must not claim observed handoff,
+   request causation, complete mediation, or the full PIC confused-
+   deputy result [5] (Section 11).
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 4]
+
+                     PIC Architecture and Deployment        October 2026
+
 
 2.1.  Centralized
 
@@ -218,21 +256,31 @@ Gallo                         Informational                     [Page 3]
        +-- root.pca = exact signed PIC PCA COSE N+1 bytes
        `-- transitions = null
 
-
-
-
-Gallo                         Informational                     [Page 4]
-
-                     PIC Architecture and Deployment         August 2026
-
-
    The trusted settlement service validates the workload-signed
    candidate and PIC Continuity Transition COSE.  It does not centrally
    sign the workload's Transition COSE; after successful validation it
    signs the new PIC PCA COSE checkpoint, settled PIC Continuity COSE,
-   and settled PIC Token JWT.  PIC-X is a concrete implementation and
-   profile realization of this role, not a required component of the
-   abstract PIC model.
+   and settled PIC Token JWT.  PIC-X 0.2.3 is a concrete implementation
+   of this settlement and artifact-processing role, not a required
+   component of the abstract PIC model.  Its current assurance level is
+   artifact-linked: it does not yet observe the concrete handoff or bind
+   a trusted request occurrence, and its configured PIC revocation hook
+   is a no-op.  Those implementation gaps do not weaken the requirements
+   of a full PIC profile.
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 5]
+
+                     PIC Architecture and Deployment        October 2026
+
 
    +--------+        +--------+        +--------+
    | HOP 1  |        | HOP 2  |        | HOP 3  |
@@ -275,17 +323,20 @@ Gallo                         Informational                     [Page 4]
    no central component on every hop;
    advancement and verification follow the selected profile
 
-
-
-Gallo                         Informational                     [Page 5]
-
-                     PIC Architecture and Deployment         August 2026
-
-
    Central validation or re-issuance of locally advanced state is a
    possible future or separate-profile mechanism, distinct from
    advancement.  It is not part of current Profile 0.2.  Such a profile
    could validate and re-issue the same continuity state:
+
+
+
+
+
+
+Gallo                         Informational                     [Page 6]
+
+                     PIC Architecture and Deployment        October 2026
+
 
    locally issued profile-defined continuity state M
            |
@@ -333,9 +384,14 @@ Gallo                         Informational                     [Page 5]
 
 
 
-Gallo                         Informational                     [Page 6]
+
+
+
+
+
+Gallo                         Informational                     [Page 7]
 
-                     PIC Architecture and Deployment         August 2026
+                     PIC Architecture and Deployment        October 2026
 
 
    +==============+=========+=============+=============+=============+
@@ -389,9 +445,9 @@ Gallo                         Informational                     [Page 6]
 
 
 
-Gallo                         Informational                     [Page 7]
+Gallo                         Informational                     [Page 8]
 
-                     PIC Architecture and Deployment         August 2026
+                     PIC Architecture and Deployment        October 2026
 
 
    Plane, full-history validation, authenticated checkpoints, or an
@@ -401,6 +457,13 @@ Gallo                         Informational                     [Page 7]
    property of the deployment threat model, its trust anchors, and the
    adopted profile — a single administrative domain is not trusted by
    itself.
+
+   Declaring a segment trusted also does not silently discharge causal
+   completeness, handoff observation, request binding, or protected-
+   effect mediation.  If a deployment relies on those assumptions for a
+   full-continuity or confused-deputy claim, it must state which
+   component observes and enforces them and what failures remain outside
+   scope [5] (Section 11) [6] (Section 11).
 
     +=============+==============+====================================+
     | Environment | Threat       | Suitable topology and profile      |
@@ -417,11 +480,14 @@ Gallo                         Informational                     [Page 7]
 
                                   Table 2
 
-   The same segmentation drives the guardrail deployment modes of the
-   PIC Sandboxed Execution Specification (https://github.com/pic-
-   protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md)
-   (Section 3.4): trusted segments may operate hops in non-sandbox mode;
-   untrusted or high-risk segments use sandbox mode.
+   Sandboxed Execution may be required at selected high-risk boundaries
+   by deployment policy.  Trusted segments may use ordinary continuity
+   without wrapping every hop in a Sandboxed Execution, while an
+   untrusted boundary may require the outer ENFORCE continuity defined
+   by the PIC Sandboxed Execution Specification (https://github.com/pic-
+   protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md).
+   These are deployment choices, not protocol-defined “sandbox” and
+   “non-sandbox” modes.
 
 4.  Hybrid Enterprise Architectures
 
@@ -432,6 +498,14 @@ Gallo                         Informational                     [Page 7]
    incremental verification may be used; when it enters a segment in
    which consecutive collusion is in scope, the deployment uses the
    selected collusion-resistant profile - Trust Plane validation, full-
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                     PIC Architecture and Deployment        October 2026
+
+
    history validation, authenticated checkpoints, or an approved
    succinct-proof profile (Section 3).  The PIC invariants are the same
    everywhere (PIC Specification (https://github.com/pic-protocol/pic-
@@ -440,15 +514,6 @@ Gallo                         Informational                     [Page 7]
    spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Sections 2.4
    and 3.3); only the validation topology, the chain-validation profile,
    and the resulting assurance assumptions change.
-
-
-
-
-
-Gallo                         Informational                     [Page 8]
-
-                     PIC Architecture and Deployment         August 2026
-
 
    The following diagram illustrates the Trust Plane variant of a hybrid
    deployment.
@@ -488,6 +553,15 @@ Gallo                         Informational                     [Page 8]
    accepts it as such: hops inside the mesh then verify locally, as in
    the trusted segment above.
 
+
+
+
+
+Gallo                         Informational                    [Page 10]
+
+                     PIC Architecture and Deployment        October 2026
+
+
 5.  Interoperability
 
    This section is non-normative.  OAuth is one possible entry mechanism
@@ -496,15 +570,6 @@ Gallo                         Informational                     [Page 8]
    a validated OAuth access token under an exchange profile and local
    policy, with execution constraints supplied by the initial continuity
    proposal when defined by that binding.
-
-
-
-
-
-Gallo                         Informational                     [Page 9]
-
-                     PIC Architecture and Deployment         August 2026
-
 
    OAUTH INFRASTRUCTURE                      PIC
 
@@ -532,7 +597,95 @@ Gallo                         Informational                     [Page 9]
    binding specification, not by this informational architecture
    section.
 
-6.  Security Considerations
+6.  Origins, Authorship, and Historical Record
+
+   This section is informative and is included so that the document
+   preserves its provenance when distributed independently.
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 11]
+
+                     PIC Architecture and Deployment        October 2026
+
+
+   The *Provenance Identity Continuity (PIC) Model* was originally
+   developed by *Nicola Gallo* as a formal framework for reasoning about
+   causal authority propagation across distributed execution.  Its
+   development introduced Proof of Relationship (PoR), Proof of
+   Continuity (PoC), authority non-expansion, relational attenuation,
+   and event-level causal provenance as connected parts of the
+   framework.  The PIC Specifications translate those formal results
+   into technical requirements and are published and maintained by
+   *Nitro Agility S.r.l.* as Specification Steward.
+
+6.1.  Historical References
+
+   The publicly verifiable research record is:
+
+   *  *1 December 2025 — initial public PIC Model working paper.* _PIC
+      Model — Provenance Identity Continuity for Distributed Execution
+      Systems_, Zenodo record 17777421 [8] (Section 11).  That archived
+      draft is retained for historical reference and is not an
+      implementation specification.
+
+   *  *5 December 2025 — authority-propagation analysis.* _Authority
+      Propagation Models: PoP vs PoC and the Confused Deputy Problem_,
+      Zenodo record 17833000 [7] (Section 11).
+
+   *  *9 July 2026 — formal Proof-of-Continuity paper.* _Proof-of-
+      Continuity: A Temporal Model for Authority Propagation in
+      Distributed Systems and AI Agents_, arXiv:2607.08906 [1]
+      (Section 11).
+
+   *  *25 September 2026 — relational authority theory.* _Beyond Proof
+      of Possession: A Relational Theory of Authority_, Zenodo record
+      23102206 [5] (Section 11).
+
+   *  *2 October 2026 — event-level causal closure.* _Full Provenance on
+      the COSS Causal Axis: An Event-Level Closure of Causal Attribution
+      and Confused-Deputy Exclusion_, Zenodo record 23102373 [6]
+      (Section 11).
+
+   This document was first published as a public draft on *12 August
+   2026* as part of the PIC Specification 0.2 family.  Published tags
+   and immutable records identify the exact text applicable to a review
+   or conformance claim.  Researchers and implementers are encouraged to
+   cite the primary publication that supports the formal property they
+   discuss.  Copyright attribution for reuse of PIC specification
+   materials is governed separately by the applicable CC BY 4.0 license.
+
+
+
+
+
+
+Gallo                         Informational                    [Page 12]
+
+                     PIC Architecture and Deployment        October 2026
+
+
+7.  Implementation Status
+
+   This section is informative and records implementation coverage at
+   the time of this draft.
+
+   PIC-X 0.2.3 implements the centralized artifact and settlement subset
+   of Profile 0.2.  It does not implement the decentralized, federated,
+   Sandboxed Execution, or full semantic-PoR deployment profiles
+   described as future or profile-selected possibilities in this
+   document.
+
+8.  Security Considerations
 
    This document describes deployment topology and trust placement; it
    does not replace the security requirements of the PIC Prover and
@@ -551,95 +704,42 @@ Gallo                         Informational                     [Page 9]
    validation, non-expansion checks, freshness checks, or authenticated
    revocation evaluation.
 
+   For claims about accepted physical effects, deployments additionally
+   need sound causal evidence, causal completeness for the stated threat
+   model, and complete mediation of the protected effects in scope.
+   Artifact verification or centralized settlement alone does not supply
+   those properties.  Multi-parent ordinary joins must preserve every
+   participating parent bound; a non-conservative composition must be an
+   explicit, separately authorized event rather than an ordinary
+   continuation [6] (Section 11).
+
+9.  Privacy Considerations
+
+   Centralized and federated continuity services can observe stable
+   lineage identifiers, executor metadata, authority contexts, and
+   service-to- service relationships.  Decentralized deployments may
+   disclose the same information through carried history.  Deployments
+   should minimize disclosure, retention, and cross-domain correlation
+   while preserving the evidence required by the selected assurance
+   profile.
 
 
 
-
-
-
-Gallo                         Informational                    [Page 10]
+Gallo                         Informational                    [Page 13]
 
-                     PIC Architecture and Deployment         August 2026
+                     PIC Architecture and Deployment        October 2026
 
 
-7.  Contributors
+10.  Registry Considerations
 
-   The editors and contributors of this document are listed in the
-   *document header* above.  Listing is governed by Appendix B.7 of the
-   PIC Legal Appendices (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-legal.md).
+   This document defines deployment architectures and requests no
+   external registry action.
 
-8.  Acknowledgement
+11.  References
 
-   The *Provenance Identity Continuity (PIC) Model* — the theoretical
-   framework this specification expresses in normative form — was
-   created by *Nicola Gallo*. It first appeared on Zenodo on 1 December
-   2025 and is developed in full in the Proof-of-Continuity paper:
-
-   *  Gallo, N. (2025). _PIC Model — Provenance Identity Continuity for
-      Distributed Execution Systems_. Zenodo. zenodo.org/
-      records/17777421 (https://zenodo.org/records/17777421) (DOI:
-      10.5281/zenodo.17777421).
-
-   *  Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
-      Authority Propagation in Distributed Systems and AI Agents_.
-      Zenodo. zenodo.org/records/21285112 (https://zenodo.org/
-      records/21285112) (DOI: 10.5281/zenodo.21285112).
-
-   Authorship of the PIC Model remains with Nicola Gallo; the PIC
-   specifications are published and maintained by *Nitro Agility S.r.l.*
-   as Specification Steward.  Any work that references, implements, or
-   claims conformance with PIC must preserve this attribution,
-   distinguishing the *PIC Model* (author: Nicola Gallo) from the *PIC
-   Specifications* (steward: Nitro Agility S.r.l.), as required by the
-   *PIC Legal Appendices (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-legal.md)* (Appendix B, Attribution;
-   Appendix D, Acknowledgements), which are incorporated into this
-   specification by reference.
-
-9.  Legal Notices
-
-   The appendices governing:
-
-   *  *A.* Use of Automated Language Assistance,
-
-   *  *B.* Authorship, Stewardship, Attribution, and Derivative Works,
-
-   *  *C.* Disclaimer and Limitation of Liability,
-
-   *  *D.* Acknowledgements,
-
-
-
-
-
-Gallo                         Informational                    [Page 11]
-
-                     PIC Architecture and Deployment         August 2026
-
-
-   are maintained in a single canonical document, the *PIC Legal
-   Appendices (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-legal.md)* (draft/0.2/pic-legal.md), and
-   are *incorporated into this specification by reference* as if fully
-   set forth herein.
-
-   In case of conflict between this document and the PIC Legal
-   Appendices, the PIC Legal Appendices prevail for legal, governance,
-   licensing, and attribution matters.
-
-   This specification is subordinate to the PIC Specification
-   (https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-
-   spec.md), which defines the normative semantics of the PIC Model and
-   is the entry point of the specification set.  This document does not
-   introduce new conceptual authority, invariants, or authorship claims
-   beyond those defined in the PIC Legal Appendices.
-
-10.  References
-
-   *  [1] Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
-      Authority Propagation in Distributed Systems and AI Agents_.
-      arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
+   *  [1] Gallo, N. (9 July 2026). _Proof-of-Continuity: A Temporal
+      Model for Authority Propagation in Distributed Systems and AI
+      Agents_. arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
       (https://arxiv.org/abs/2607.08906)
 
    *  [2] Bradner, S. (1997). _Key words for use in RFCs to Indicate
@@ -653,6 +753,60 @@ Gallo                         Informational                    [Page 11]
    *  [4] Jones, M., Nadalin, A., Campbell, B., Bradley, J., &
       Mortimore, C. (2020). _OAuth 2.0 Token Exchange_. RFC 8693. rfc-
       editor.org/rfc/rfc8693 (https://www.rfc-editor.org/rfc/rfc8693)
+
+   *  [5] Gallo, N. (25 September 2026). _Beyond Proof of Possession: A
+      Relational Theory of Authority_. Zenodo.  DOI: 10.5281/
+      zenodo.23102206 (https://doi.org/10.5281/zenodo.23102206)
+
+   *  [6] Gallo, N. (2 October 2026). _Full Provenance on the COSS
+      Causal Axis: An Event-Level Closure of Causal Attribution and
+      Confused-Deputy Exclusion_. Zenodo.  DOI: 10.5281/zenodo.23102373
+      (https://doi.org/10.5281/zenodo.23102373)
+
+   *  [7] Gallo, N. (5 December 2025). _Authority Propagation Models:
+      PoP vs PoC and the Confused Deputy Problem_. Zenodo.  DOI:
+      10.5281/zenodo.17833000 (https://doi.org/10.5281/zenodo.17833000)
+
+   *  [8] Gallo, N. (1 December 2025). _PIC Model — Provenance Identity
+      Continuity for Distributed Execution Systems_. Archived working
+      paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
+      (https://doi.org/10.5281/zenodo.17777421)
+
+12.  Document History
+
+   This section is informative.
+
+
+
+
+
+
+Gallo                         Informational                    [Page 14]
+
+                     PIC Architecture and Deployment        October 2026
+
+
+   *  *0.2 — 12 August 2026.* Initial public draft describing
+      centralized, decentralized, trusted, untrusted, and hybrid
+      deployment models.
+
+   *  *0.2 revision — 26 October 2026.* Distinguished topology from
+      assurance and current PIC-X coverage from future profiles, adopted
+      a standards-oriented document structure, and added a standalone
+      origin, authorship, and historical record for independent
+      distribution.
+
+13.  Acknowledgments
+
+   The origins and research history of the PIC Model are recorded above.
+   This document reserves acknowledgments for concrete review,
+   discussion, and editorial contributions to this architecture
+   specification.
+
+14.  Contributors
+
+   The editor and current contributors are identified in the document
+   header and repository history.
 
 Author's Address
 
@@ -669,4 +823,18 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 12]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 15]

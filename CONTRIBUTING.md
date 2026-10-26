@@ -1,205 +1,81 @@
 # Contributing to the PIC Project
 
-(PIC Model, PIC Spec, and PIC Protocol)
+Thank you for contributing to the Provenance Identity Continuity (PIC) project. This repository contains the PIC Model specification, its
+subordinate technical specifications, and the tooling used to publish them.
 
-Thank you for your interest in contributing to the **Provenance Identity Continuity (PIC)** project.
+## Scope
 
-The PIC project is structured across three distinct but related layers:
+Contributions may include:
 
-1. **PIC Model** — the formal theoretical model  
-2. **PIC Spec** — the normative specification of the model  
-3. **PIC Protocol** — concrete protocol encodings and interoperability profiles
+- editorial corrections and clearer terminology;
+- formal or security analysis;
+- examples and interoperability material;
+- protocol encodings, profiles, and test vectors;
+- implementation-status reports; and
+- alignment fixes between the mathematical model, specifications, and implementations.
 
-This document explains **what can be contributed**, **how contributions are handled**, and **how authorship, attribution, and responsibility boundaries are preserved**.
+Substantive semantic changes should begin with an issue that explains the motivation, security implications, compatibility impact, and any
+effect on the PIC invariants.
 
----
+## Technical Integrity
 
-## 1. Project Structure and Scope
+A contribution to a PIC specification must identify whether it is editorial, normative, informative, or profile-specific. It must not
+silently weaken the model invariants, present partial implementation coverage as full conformance, or mix authority from unrelated causal
+histories as an ordinary continuation.
 
-### 1.1 PIC Model (Foundational Layer)
+The dated origin and research history of the PIC Model are recorded in the PIC Specification. Contributors receive credit for their concrete
+contributions; contribution does not rewrite that historical record or imply endorsement, stewardship, warranty, or operational responsibility.
 
-The **PIC Model** defines the core theoretical concepts, invariants, and impossibility results
-(e.g., Provenance Identity Continuity, Proof of Continuity, CAT, PCA).
+## Contribution Process
 
-- The PIC Model is **original theoretical work** introduced by **Nicola Gallo**
-- Authorship of the PIC Model is **historical, personal, and immutable**
-- Contributions **do not** confer co-authorship of the PIC Model
-- Nothing in this repository or contribution process transfers, licenses, or assigns
-  any ownership or authorship of the PIC Model
+1. Open or identify an issue for substantive work.
+2. Create a focused branch and scoped commits.
+3. Update affected cross-references, examples, and implementation-status statements.
+4. Run the available validation and RFC-rendering checks.
+5. Open a pull request describing the change and its security and compatibility impact.
 
-Contributions MAY include:
+Editors may request revision or decline changes that conflict with the project scope or the PIC invariants. Accepted changes become part of
+the canonical specification only when included in a release designated by the Specification Steward.
 
-- formal critique or validation
-- clarifying explanations
-- examples illustrating the model
-- discussion of implications or limitations
+## Licensing and Right to Contribute
 
-Contributions MUST NOT:
+Unless a file states otherwise, this repository is licensed under CC BY 4.0. By submitting a contribution, each contributor confirms that:
 
-- reassign authorship
-- claim independent invention of the PIC Model
-- redefine core invariants without explicit acknowledgment
+- they created the contribution or otherwise have the right to submit it;
+- the contribution contains no confidential material and does not knowingly include third-party material without the required permission;
+- the contribution may be edited, reorganized, published, and distributed under the repository license;
+- they identify any pre-existing material, applicable license, or third-party rights; and
+- if accepted into a document later submitted to a standards-development process, the contribution may be submitted and developed under the
+  applicable contribution and publication rules of that process.
 
----
+The final point preserves the ability to develop the specification in an open standards process. A contributor who cannot make these
+confirmations should open an issue before submitting text.
 
-### 1.2 PIC Spec (Normative Specification)
+Pull requests should include a Developer Certificate of Origin style sign-off in each commit:
 
-The **PIC Spec** formalizes the PIC Model into a normative, RFC-style document and is
-**published, maintained, and stewarded by Nitro Agility S.r.l.**
+~~~text
+Signed-off-by: Full Name <email@example.com>
+~~~
 
-Contributors MAY submit:
+The sign-off states that the contributor has the right to submit the contribution under these terms. Existing contributions are not assigned
+new rights merely by a later edit to this file; any additional permission needed for an external standards submission must be confirmed for
+those contributions when applicable.
 
-- editorial improvements
-- clearer definitions or examples
-- security analysis
-- detection of ambiguities
-- alignment fixes across sections
-- non-normative appendices
+## Editors, Contributors, and Stewardship
 
-Contributors MUST NOT:
+Document editors maintain the text and respond to review. Contributors are credited for significant technical or editorial work. Nitro
+Agility S.r.l. currently acts as Specification Steward and designates canonical project releases. These roles are distinct from the dated
+scientific origin of the PIC Model.
 
-- remove or obscure attribution
-- alter the canonical status of the PIC Spec
-- redefine the PIC Model indirectly
-- reintroduce PoP-, token-, or credential-based authority models
+Contributor and acknowledgment lists should describe concrete contributions and should not be used to allocate liability or imply
+endorsement.
 
-Substantive semantic changes MUST be discussed via issues prior to submission.
+## Automated Language Assistance
 
----
+Automated language assistance may be used for editing, formatting, or analysis. The human contributor remains responsible for accuracy,
+originality, licensing, and the technical content submitted.
 
-### 1.3 PIC Protocol (Implementation Layer)
+## Conduct and Discussion
 
-The **PIC Protocol** layer defines concrete encodings, message formats, and interoperability rules that implement the PIC Model.
-
-Contributors MAY submit:
-
-- protocol designs
-- message schemas
-- wire-format proposals
-- reference flows or examples
-- interoperability considerations
-
-Contributors MUST:
-
-- preserve PIC Model invariants
-- clearly identify protocol-level assumptions
-- document deviations, extensions, or profiles
-
-Protocol work **DOES NOT alter** authorship of the PIC Model or the PIC Spec.
-
----
-
-## 2. Authorship vs Contribution (Critical)
-
-**Authorship of the PIC Model is personal, historical, and legally independent of:**
-
-- repository ownership
-- organizational governance
-- maintainer or editor status
-- contribution volume
-- protocol implementations
-
-By contributing, you explicitly acknowledge that:
-
-- **Nicola Gallo** is the original and sole author of the PIC Model
-- your contributions apply only to text, examples, reviews, or protocol material
-- your contributions do **not** imply ownership, co-authorship, endorsement, warranty,
-  or operational responsibility for the PIC Model
-
-Contributors are credited for **their contributions only**, not as authors of the PIC Model.
-
----
-
-## 3. Canonical Status
-
-- The **Official PIC Spec** repositories define the canonical normative reference
-- Forks, mirrors, or derivative works MAY exist
-- Forks MUST NOT present themselves as canonical unless explicitly designated
-
-Submitting a pull request:
-
-- does not grant editorial authority
-- does not change canonicity
-- does not alter attribution rules
-- does not create any legal, operational, or professional obligation for the
-  PIC Model author
-
----
-
-## 4. Licensing of Contributions
-
-Unless stated otherwise, PIC repositories are licensed under **CC BY 4.0**.
-
-By submitting a contribution, you agree that:
-
-- your contribution is licensed under CC BY 4.0
-- attribution requirements are preserved
-- your contribution may be edited, reorganized, or declined
-- attribution to the PIC Model author is mandatory and non-removable
-
-You retain copyright to your contribution text,
-subject to the repository license.
-
----
-
-## 5. Use of Automated Language Assistance (LLMs)
-
-Contributors MAY use automated language assistance tools solely for improving clarity,
-structure, grammar, or phrasing.
-
-Such tools are treated as **editorial assistants**, not sources of theory, authorship,
-or legal responsibility.
-
-The human contributor remains fully responsible for submitted content.
-
----
-
-## 6. Contribution Process
-
-1. Fork the repository  
-2. Create a feature branch  
-3. Make changes with clear, scoped commits  
-4. Open a Pull Request  
-5. Describe:
-   - what the change addresses
-   - whether it is editorial, semantic, or protocol-level
-   - any impact on PIC invariants
-
-Maintainers may request clarification, revision, or decline changes
-that conflict with the PIC Model or project scope.
-
----
-
-## 7. Behavioral Expectations
-
-All participants must follow the
-[Code of Conduct](CODE_OF_CONDUCT.md).
-
-Good-faith technical disagreement is welcome.
-Personal attacks, misrepresentation, authorship disputes, or attempts to
-reassign responsibility are not.
-
----
-
-## 8. Contributor Recognition & Governance Context
-
-All contributions to this repository are governed by **Nitro Agility S.r.l.**  
-and are incorporated under its stewardship.
-
-Contributions made by employees, associates, contractors, or co-founders of
-Nitro Agility S.r.l. — **regardless of the account (e.g., GitHub), platform, 
-signing keys, or method used** — are made **on behalf of Nitro Agility S.r.l.** 
-unless explicitly stated otherwise.
-
-No contribution creates any personal legal, operational, or professional
-obligation for the PIC Model author.
-
----
-
-## 9. Questions and Discussion
-
-If you are unsure where your contribution fits
-(Model vs Spec vs Protocol),
-open an issue before submitting a pull request.
-
-Thank you for contributing to the PIC ecosystem.
+All participants must follow the [Code of Conduct](CODE_OF_CONDUCT.md). Technical disagreement is welcome when it is specific, evidence-based,
+and respectful. Questions about scope or contribution rights should be raised in the issue tracker before a pull request is submitted.

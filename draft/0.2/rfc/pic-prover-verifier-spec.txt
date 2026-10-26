@@ -4,7 +4,7 @@
 
                                                                 N. Gallo
                                                     Nitro Agility S.r.l.
-                                                            15 July 2026
+                                                         26 October 2026
 
 
                         PIC Prover and Verifier
@@ -16,19 +16,21 @@ Abstract
    subordinate specification of the PIC Specification
    (https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-
    spec.md).  It defines the normative requirements for the two
-   complementary components of Proof of Continuity handling:
+   complementary components of continuity handling:
 
-   *  *PIC Provers*: the components that construct Proofs of Continuity
-      for an execution hop;
+   *  *PIC Provers*: the components that construct candidate continuity
+      advancements and the evidence required by the selected profile;
 
-   *  *PIC Verifiers*: the trusted components that validate Proofs of
-      Continuity and enforce the invariants of the *Provenance Identity
-      Continuity (PIC) Model* at verification time.
+   *  *PIC Verifiers*: the trusted components that validate those
+      advancements and enforce the invariants claimed by the selected
+      profile at verification time.
 
-   At every hop, a node acts in both roles: it *verifies* the continuity
-   state received from its predecessor and *proves* continuity to its
-   successor by producing the next continuity advancement required by
-   the selected profile.
+   At every hop, a node can act in both roles: it *verifies* the
+   continuity state received from its predecessor and *proposes* the
+   next continuity advancement required by the selected profile.  A
+   profile may call the accepted result a Proof of Continuity only to
+   the extent that its concrete acceptance predicate is shown to refine
+   the abstract PoR and non-expansion predicates of the PIC Model.
 
    It specifies the per-hop *Proof of Relationship* and continuity-
    advancement requirements (Section 2), the ordered *Verifier checks* -
@@ -48,19 +50,20 @@ Document Status
    *Project:* PIC Protocol *Project Website:* www.pic-protocol.org
    (https://www.pic-protocol.org/) *Document:* pic-prover-verifier-02
    *Version:* 0.2 (Draft) *Document Status:* Public Draft *Intended
-   Use:* Informational and Experimental *Published:* 2026-07-15
-   *Editor(s):* Nicola Gallo (Nitro Agility S.r.l.) *Steward:* Nitro
 
 
 
 Gallo                         Informational                     [Page 1]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
-   Agility S.r.l. *Source:* github.com/pic-protocol/pic-spec/draft/0.2/
-   pic-prover-verifier-spec.md (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-prover-verifier-spec.md)
+   Use:* Informational and Experimental *First Published:* 2026-07-15
+   *Last Updated:* 2026-10-26 *Editor(s):* Nicola Gallo (Nitro Agility
+   S.r.l.) *Steward:* Nitro Agility S.r.l. *Source:* github.com/pic-
+   protocol/pic-spec/draft/0.2/pic-prover-verifier-spec.md
+   (https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-
+   prover-verifier-spec.md)
 
 About This Document
 
@@ -70,112 +73,128 @@ About This Document
       published as part of the PIC Protocol and maintained by Nitro
       Agility S.r.l. in its role as Specification Steward.
 
-      It has not been adopted, endorsed, approved, or published by the
-      IETF, IRTF, IAB, RFC Editor, ISO, IEC, W3C, CNCF, OpenID
-      Foundation, or any other standards-development organization,
-      unless a later version explicitly states otherwise.
-
-      It is not an RFC, an Internet Standard, or an official work item
-      of any working group or standards body.
-
-      This document is published for public review, research,
-      experimentation, implementation feedback, and possible future
-      standardization work.  It may be revised, replaced, or withdrawn
-      at any time.
+      It has not been adopted, endorsed, approved, or published by a
+      standards-development organization.  It is published for public
+      review, research, experimentation, implementation feedback, and
+      possible future standardization work.  It may be revised,
+      replaced, or withdrawn at any time.
 
       Implementers use this draft at their own risk.  Any
       implementation, interoperability statement, or conformance claim
       applies only to the exact document version identified above.
 
-      Publication of this draft does not constitute certification,
-      endorsement, security approval, interoperability assurance,
-      regulatory approval, or standards-body recognition.
+      Publication does not constitute certification, endorsement,
+      security approval, interoperability assurance, or regulatory
+      approval.
 
       Current project information and published specifications are
       available at https://www.pic-protocol.org/.
+
+Feedback and Issue Tracking
+
+   The source for this document and the issue tracker for technical
+   discussion are maintained at github.com/pic-protocol/pic-spec
+   (https://github.com/pic-protocol/pic-spec).  Changes are accepted
+   through the repository contribution process.  Published releases,
+   tags, and immutable research references identify the version to which
+   a review or conformance statement applies.
+
+Copyright and License
+
+   This document is made available under the Creative Commons
+   Attribution 4.0 International license.  See the repository LICENSE
+   (https://github.com/pic-protocol/pic-spec/blob/main/LICENSE) and
+   NOTICE (https://github.com/pic-protocol/pic-spec/blob/main/
+   NOTICE.md).  This notice does not add restrictions to that license.
+
+
+
+Gallo                         Informational                     [Page 2]
+
+                         PIC Prover and Verifier            October 2026
+
 
 Editors
 
    *  *Nicola Gallo* (Nitro Agility S.r.l.)  Lead Editor
 
    *  _Add your name via pull request (individual or organization) —
-      listing is subject to editor approval (see Section 9)._
+      listing is subject to editor approval (see Section 16)._
 
 Contributors
 
    *  _Add your name via pull request (individual or organization) —
-      listing is subject to editor approval (see Section 9)._
-
-
-
-
-Gallo                         Informational                     [Page 2]
-
-                         PIC Prover and Verifier               July 2026
-
+      listing is subject to editor approval (see Section 16)._
 
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   4
-     1.1.  Security Guarantees of the Model  . . . . . . . . . . . .   5
+     1.1.  Security Guarantees of the Model  . . . . . . . . . . . .   6
      1.2.  Delegating the Future . . . . . . . . . . . . . . . . . .   6
      1.3.  The N+1 Executor Problem (Canonical Execution Model)  . .   7
-     1.4.  Cross-Lineage Authority Composition . . . . . . . . . . .   7
-     1.5.  The Execution Flow as Part of the Security Model  . . . .   8
+     1.4.  Cross-Lineage Authority Composition . . . . . . . . . . .   8
+     1.5.  The Execution Flow as Part of the Security Model  . . . .   9
      1.6.  Attribute Attestations  . . . . . . . . . . . . . . . . .   9
-     1.7.  Requirements Notation . . . . . . . . . . . . . . . . . .  10
+     1.7.  Requirements Notation . . . . . . . . . . . . . . . . . .  11
      1.8.  Origin Authority Context  . . . . . . . . . . . . . . . .  11
    2.  Prover Requirements . . . . . . . . . . . . . . . . . . . . .  13
      2.1.  Prover Procedure  . . . . . . . . . . . . . . . . . . . .  14
      2.2.  Predecessor Validation  . . . . . . . . . . . . . . . . .  15
-     2.3.  Proof of Relationship . . . . . . . . . . . . . . . . . .  15
-     2.4.  Invariant Monotonicity  . . . . . . . . . . . . . . . . .  17
-     2.5.  Continuity Advancement Construction . . . . . . . . . . .  20
-   3.  Verifier Requirements . . . . . . . . . . . . . . . . . . . .  21
-     3.1.  Verifier Procedure  . . . . . . . . . . . . . . . . . . .  22
-     3.2.  Root Validation . . . . . . . . . . . . . . . . . . . . .  24
-     3.3.  Advancement Validation  . . . . . . . . . . . . . . . . .  25
-   4.  Authority Domains and Attenuation Profiles  . . . . . . . . .  26
-     4.1.  Authority as an Abstract Domain . . . . . . . . . . . . .  26
-     4.2.  Attenuation Profiles  . . . . . . . . . . . . . . . . . .  27
-     4.3.  Policy Decision Point (PDP) Integration . . . . . . . . .  27
-   5.  Continuity Representations  . . . . . . . . . . . . . . . . .  28
-     5.1.  Current Profile 0.2 Representation  . . . . . . . . . . .  29
-     5.2.  Profile 0.2 Artifact Semantics  . . . . . . . . . . . . .  30
-       5.2.1.  PIC Token JWT . . . . . . . . . . . . . . . . . . . .  31
-       5.2.2.  PIC PCA COSE  . . . . . . . . . . . . . . . . . . . .  31
-       5.2.3.  PIC Continuity COSE . . . . . . . . . . . . . . . . .  31
-       5.2.4.  PIC Continuity Transition COSE  . . . . . . . . . . .  32
-     5.3.  Profile 0.2 OAuth Token Exchange Binding  . . . . . . . .  33
-     5.4.  Self-Contained Transition Graphs  . . . . . . . . . . . .  35
-     5.5.  Incremental, Checkpointed, or Referenced History  . . . .  35
-     5.6.  Succinct Proofs . . . . . . . . . . . . . . . . . . . . .  35
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  35
-     6.1.  Freshness, Replay, and Fan-out  . . . . . . . . . . . . .  35
-     6.2.  Origin Trust Boundary . . . . . . . . . . . . . . . . . .  37
-     6.3.  Temporal Rules and Per-Hop Expiry . . . . . . . . . . . .  38
-     6.4.  Canonicalization and Cryptographic Agility  . . . . . . .  38
-     6.5.  Formal Scope  . . . . . . . . . . . . . . . . . . . . . .  39
-     6.6.  Proof of Possession (Optional)  . . . . . . . . . . . . .  39
-     6.7.  Transport Separation and Confidentiality  . . . . . . . .  39
-     6.8.  Incremental Verification and Trusted Hops . . . . . . . .  40
-   7.  Deployment Models . . . . . . . . . . . . . . . . . . . . . .  40
-   8.  Zero Trust  . . . . . . . . . . . . . . . . . . . . . . . . .  42
-   9.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  43
+     2.3.  Proof of Relationship . . . . . . . . . . . . . . . . . .  16
+     2.4.  Invariant Monotonicity  . . . . . . . . . . . . . . . . .  18
+     2.5.  Continuity Advancement Construction . . . . . . . . . . .  21
+   3.  Verifier Requirements . . . . . . . . . . . . . . . . . . . .  22
+     3.1.  Verifier Procedure  . . . . . . . . . . . . . . . . . . .  23
+     3.2.  Root Validation . . . . . . . . . . . . . . . . . . . . .  26
+     3.3.  Advancement Validation  . . . . . . . . . . . . . . . . .  26
+   4.  Authority Domains and Attenuation Profiles  . . . . . . . . .  27
+     4.1.  Authority as an Abstract Domain . . . . . . . . . . . . .  27
+     4.2.  Attenuation Profiles  . . . . . . . . . . . . . . . . . .  28
+     4.3.  Policy Decision Point (PDP) Integration . . . . . . . . .  29
+   5.  Continuity Representations  . . . . . . . . . . . . . . . . .  29
+     5.1.  Current Profile 0.2 Representation  . . . . . . . . . . .  30
+     5.2.  Profile 0.2 Assurance Boundary  . . . . . . . . . . . . .  31
+     5.3.  Profile 0.2 Artifact Semantics  . . . . . . . . . . . . .  33
+       5.3.1.  PIC Token JWT . . . . . . . . . . . . . . . . . . . .  34
+       5.3.2.  PIC PCA COSE  . . . . . . . . . . . . . . . . . . . .  35
+       5.3.3.  PIC Continuity COSE . . . . . . . . . . . . . . . . .  35
+       5.3.4.  PIC Continuity Transition COSE  . . . . . . . . . . .  35
+     5.4.  Profile 0.2 OAuth Token Exchange Binding  . . . . . . . .  37
+     5.5.  Profile 0.2 Failure Behavior  . . . . . . . . . . . . . .  39
+     5.6.  Self-Contained Transition Graphs  . . . . . . . . . . . .  39
 
 
 
 Gallo                         Informational                     [Page 3]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
-   10. Acknowledgement . . . . . . . . . . . . . . . . . . . . . . .  43
-   11. Legal Notices . . . . . . . . . . . . . . . . . . . . . . . .  43
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  44
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  44
-     12.2.  Informative References . . . . . . . . . . . . . . . . .  45
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  45
+     5.7.  Incremental, Checkpointed, or Referenced History  . . . .  40
+     5.8.  Succinct Proofs . . . . . . . . . . . . . . . . . . . . .  40
+   6.  Origins, Authorship, and Historical Record  . . . . . . . . .  40
+     6.1.  Historical References . . . . . . . . . . . . . . . . . .  40
+   7.  Implementation Status . . . . . . . . . . . . . . . . . . . .  41
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  41
+     8.1.  Freshness, Replay, and Fan-out  . . . . . . . . . . . . .  41
+     8.2.  Origin Trust Boundary . . . . . . . . . . . . . . . . . .  43
+     8.3.  Temporal Rules and Per-Hop Expiry . . . . . . . . . . . .  44
+     8.4.  Canonicalization and Cryptographic Agility  . . . . . . .  44
+     8.5.  Formal Scope  . . . . . . . . . . . . . . . . . . . . . .  45
+     8.6.  Proof of Possession (Optional)  . . . . . . . . . . . . .  45
+     8.7.  Transport Separation and Confidentiality  . . . . . . . .  46
+     8.8.  Incremental Verification and Trusted Hops . . . . . . . .  46
+   9.  Deployment Models . . . . . . . . . . . . . . . . . . . . . .  47
+   10. Zero Trust  . . . . . . . . . . . . . . . . . . . . . . . . .  48
+   11. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  50
+   12. Registry Considerations . . . . . . . . . . . . . . . . . . .  50
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  50
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  50
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  51
+   14. Document History  . . . . . . . . . . . . . . . . . . . . . .  52
+   15. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  52
+   16. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  52
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  52
 
 1.  Introduction
 
@@ -192,39 +211,44 @@ Gallo                         Informational                     [Page 3]
    Model* is implemented at each execution hop to close that gap.  The
    model, including *Proof of Relationship (PoR)*, *Proof of Continuity
    (PoC)*, and the resulting safety guarantees, is formally defined in
-   the companion paper [1] (Section 12) and formally verified with the
-   Lean theorem prover [2] (Section 12).  The paper treats PoR as an
-   abstract, unforgeable primitive.  This document specifies the two
-   components that realize it:
-
-   *  The *PIC Prover* constructs the relationship evidence required by
-      the selected profile to witness the PoR relation binding the
-      current execution step to its causal predecessor, and uses the
-      resulting valid advancement to construct the PoC handed to the
-      next hop.  A PoC is valid only if it satisfies the PIC invariants:
-      causal linkage witnessed by PoR at every hop, and a non-expansive
-      authority context.
-
-   *  The *PIC Verifier* validates both proofs at the receiving hop: the
-      PoR, which establishes that the incoming step is a genuine
-      continuation of its predecessor, and the PoC, which establishes
-      that the invariants hold along the entire received lineage.  If
-      either proof is invalid, the hop is rejected before any authority
-      is exercised.
-
-
-
-
-
-
+   the companion paper [1] (Section 13) and formally verified with the
+   Lean theorem prover [2] (Section 13).  The paper treats PoR as an
+   abstract, unforgeable primitive.  A concrete profile realizes the
+   full model only when it defines evidence and a receiving predicate
+   that soundly witness that primitive.  This document specifies the two
+   components that process such evidence:
 
 
 
 
 Gallo                         Informational                     [Page 4]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
+
+   The earlier authority-propagation analysis records the transition
+   from possession-based reasoning to continuity-based reasoning and its
+   application to the confused-deputy problem [15] (Section 13).  Later
+   relational and event-level results refine the realization boundary
+   without changing the core non-expansion invariant [13] (Section 13)
+   [14] (Section 13).
+
+   *  The *PIC Prover* constructs the relationship or profile evidence
+      required by the selected profile and uses it to construct a
+      candidate advancement handed to the next verification boundary.
+
+   *  The *PIC Verifier* validates the candidate at the receiving hop.
+      For a full-continuity profile, it validates concrete evidence that
+      soundly witnesses the abstract PoR together with non-expansion and
+      all other profile checks.  For an artifact-linked profile, it
+      validates only the narrower artifact, key, authority, and contract
+      relationships the profile defines.
+
+   These assurance levels are not interchangeable.  In particular, a
+   signed predecessor, an executor-profile credential, possession of a
+   workload key, and a non-expansive authority transition do not by
+   themselves prove that a trusted boundary observed the concrete
+   handoff or request occurrence that caused the successor action.
 
    PIC *does not require a central server*. Depending on deployment
    topology and selected profile, a chain can be validated _fully
@@ -236,14 +260,28 @@ Gallo                         Informational                     [Page 4]
    profiles are not equivalent.
 
    This statement concerns the abstract PIC model and profile space.
-   The current PIC Profile 0.2 uses centralized advancement and
-   settlement by a trusted settlement authority.  PIC-X is one
-   conforming realization of that profile, not a required component of
-   the abstract PIC model.
+   The current PIC Profile 0.2 artifact family uses centralized
+   advancement and settlement by a trusted settlement authority.  PIC-X
+   implements the artifact and settlement subset of that profile; it is
+   not a required component of the abstract PIC model and is not yet a
+   full semantic-PoR realization.  The current PIC-X implementation
+   advertises artifact-linked continuity evidence: it enforces signed
+   predecessor linkage, key binding, authority attenuation, and
+   execution-contract conformance, but it does not yet claim observed-
+   handoff PoR, request binding, complete mediation, or causal
+   attribution of a runtime action.
 
    PIC also draws a *clean line between the security model and
    transport*. The guarantees come from the signed continuity chain, not
    from how it travels: an implementation must not rely on the transport
+
+
+
+Gallo                         Informational                     [Page 5]
+
+                         PIC Prover and Verifier            October 2026
+
+
    — a TLS session, a network perimeter, a message bus — to obtain them
    (the normative requirement is stated in Section 6.7).  Transport is
    only transport.  A compromised channel can read or drop messages but
@@ -274,14 +312,6 @@ Gallo                         Informational                     [Page 4]
    token systems, such as OAuth, rest on the unforgeability of their
    credentials: if the underlying cryptography is broken, none of their
    properties survive.  PIC rests on the same cryptographic assumptions,
-
-
-
-Gallo                         Informational                     [Page 5]
-
-                         PIC Prover and Verifier               July 2026
-
-
    and so does the Proof of Relationship: the relationship evidence is
    assumed unforgeable, and a break of the underlying cryptography is
    outside the model, as it is for every protocol in this space.
@@ -300,6 +330,13 @@ Gallo                         Informational                     [Page 5]
    not hard-code future components.  It defines an interface.  The
    interface specifies the contract, and any future implementation can
    participate, provided it proves that it satisfies the contract.
+
+
+
+Gallo                         Informational                     [Page 6]
+
+                         PIC Prover and Verifier            October 2026
+
 
    PIC applies the same principle to distributed execution.  A
    continuation does not name or preselect its successor.  It defines
@@ -325,19 +362,6 @@ Gallo                         Informational                     [Page 5]
    The contract defines the continuation.  The executor proves
    conformance.  Continuity, not identity, delegates the future.
 
-
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 6]
-
-                         PIC Prover and Verifier               July 2026
-
-
 1.3.  The N+1 Executor Problem (Canonical Execution Model)
 
    The N+1 Executor Problem is future delegation made concrete.  This
@@ -356,6 +380,19 @@ Gallo                         Informational                     [Page 6]
    emits its proofs and the successor's Verifier validates them.  Each
    boundary is an act of future delegation, and the linear chain is the
    minimal case: a step may delegate to several successors in parallel.
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 7]
+
+                         PIC Prover and Verifier            October 2026
+
 
    The problem is the executor at position n+1.  Executor n acts at time
    x.  Executor n+1 acts at a later time x + y, and at time x it does
@@ -381,19 +418,6 @@ Gallo                         Informational                     [Page 6]
    authority across those lineages: a privilege carried by one lineage
    is attached to the continuation of another.
 
-
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 7]
-
-                         PIC Prover and Verifier               July 2026
-
-
    LINEAGE A:  { READ-ALL, BACKUP }       ---->  { READ-ALL }
                                                       |
                                                       |  cross-lineage composition (bug)
@@ -415,15 +439,32 @@ Gallo                         Informational                     [Page 7]
    The bug can still execute locally, as stated in Section 1.1, but the
    state it produces is invalid and stops at that hop.
 
-   This is a _structural_ elimination of cross-lineage confused-deputy
-   authority composition from the PIC state model, and it is what PIC
-   shares with the object-capability approach: a capability removes the
-   mismatch by construction at a single hop, by fusing designation and
-   authority at invocation; PIC extends the same by-construction
-   guarantee across the whole lineage, so the mismatch is not a state a
-   valid chain can represent at any hop.  It is ruled out by
-   construction, not caught by runtime vigilance — and this is exactly
-   the property the Lean formalization verifies [2] (Section 12).
+   This document's ordinary advancement has exactly one predecessor.  A
+   future causal-DAG profile that defines an ordinary multi-parent join
+   must preserve every parent bound; for set-valued authority, the
+
+
+
+Gallo                         Informational                     [Page 8]
+
+                         PIC Prover and Verifier            October 2026
+
+
+   joined authority is a subset of the intersection of the parent
+   authorities.  If a join intentionally creates a state more permissive
+   than any parent, it is an explicit, separately authorized composition
+   or relaxation event, not an ordinary continuation [14] (Section 13).
+
+   This is a _structural_ elimination of silent cross-lineage confused-
+   deputy authority composition from the ordinary PIC continuation
+   model, and it is what PIC shares with the object-capability approach:
+   a capability removes the mismatch by construction at a single hop, by
+   fusing designation and authority at invocation; PIC extends the same
+   by-construction guarantee across an ordinary lineage, so the mismatch
+   is not a state a valid chain can represent at any hop.  It is ruled
+   out by construction, not caught by runtime vigilance — and this is
+   exactly the property the Lean formalization verifies [2]
+   (Section 13).
 
 1.5.  The Execution Flow as Part of the Security Model
 
@@ -438,18 +479,6 @@ Gallo                         Informational                     [Page 7]
    security model is built around, and authority crosses it only as
    verified continuity, never as possession by a pre-existing holder.
 
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 8]
-
-                         PIC Prover and Verifier               July 2026
-
-
 1.6.  Attribute Attestations
 
    To describe the model, this specification uses one illustrative
@@ -459,6 +488,23 @@ Gallo                         Informational                     [Page 8]
    running scenario: a backup service operating in the European region
    under compliance constraints, authorized for the operations READ-ALL
    and BACKUP.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                         PIC Prover and Verifier            October 2026
+
 
    {
      "subject": "did:example:workloads:eu:backup-service",
@@ -484,28 +530,6 @@ Gallo                         Informational                     [Page 8]
    its execution is not deterministic.  Its attestation differs in role,
    accountable party, network placement, and execution model:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 9]
-
-                         PIC Prover and Verifier               July 2026
-
-
    {
      "subject": "did:example:workloads:eu:summary-service",
      "attributes": {
@@ -524,6 +548,19 @@ Gallo                         Informational                     [Page 9]
      "expiresAt": "2026-08-17T10:00:00Z",
      "issuer": "did:example:org-authority"
    }
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 10]
+
+                         PIC Prover and Verifier            October 2026
+
 
    The identifiers in the examples use DIDs, but this is a
    _presentational_ choice, not a requirement. *PIC does not depend on
@@ -550,17 +587,10 @@ Gallo                         Informational                     [Page 9]
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
    "OPTIONAL" in this document are to be interpreted as described in BCP
-   14 [3] (Section 12) [4] (Section 12) when, and only when, they appear
+   14 [3] (Section 13) [4] (Section 13) when, and only when, they appear
    in all capitals within normative text.
 
    Examples in this document are illustrative and non-normative.
-
-
-
-Gallo                         Informational                    [Page 10]
-
-                         PIC Prover and Verifier               July 2026
-
 
 1.8.  Origin Authority Context
 
@@ -580,6 +610,14 @@ Gallo                         Informational                    [Page 10]
    Continuity COSE* in pic.root; the settled Continuity carries the
    exact signed PIC PCA COSE bytes for the current trusted checkpoint.
    A workload proposes one centralized advancement by signing a *PIC
+
+
+
+Gallo                         Informational                    [Page 11]
+
+                         PIC Prover and Verifier            October 2026
+
+
    Continuity Transition COSE*, placing it in a workload-signed
    candidate *PIC Continuity COSE*, and carrying that candidate in a
    workload-signed candidate PIC Token JWT.  The trusted settlement
@@ -588,7 +626,7 @@ Gallo                         Informational                    [Page 10]
 
    The examples represent authority as an operations set — the reference
    profile, matching the operation-resource privileges of the model [1]
-   (Section 12).  PIC does not require this representation, nor does it
+   (Section 13).  PIC does not require this representation, nor does it
    define the application's authorization vocabulary; Section 4 covers
    authority as an abstract domain (roles, labels, scopes, policy
    references) and its relationship to a Policy Decision Point.
@@ -604,19 +642,6 @@ Gallo                         Informational                    [Page 10]
    terms she grants access to all her files for backup.  Her client
    produces a root PCA, signed or otherwise authenticated by the
    selected origin profile:
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 11]
-
-                         PIC Prover and Verifier               July 2026
-
 
    {
      "issuer": "did:example:users:alice",
@@ -639,6 +664,15 @@ Gallo                         Informational                    [Page 11]
      "issuedAt": "2026-07-17T10:00:00Z",
      "expiresAt": "2026-07-18T10:00:00Z"
    }
+
+
+
+
+
+Gallo                         Informational                    [Page 12]
+
+                         PIC Prover and Verifier            October 2026
+
 
    Later, Alice uses the same SaaS to summarize a document.  The terms
    are different this time: the service runs in the United States and
@@ -666,14 +700,6 @@ Gallo                         Informational                    [Page 11]
      "expiresAt": "2026-07-18T10:00:00Z"
    }
 
-
-
-
-Gallo                         Informational                    [Page 12]
-
-                         PIC Prover and Verifier               July 2026
-
-
    Each root PCA starts a distinct lineage with its own authority bound,
    and no later continuity advancement can expand it.  These are the two
    lineages of Section 1.4.  The continuation block in these examples is
@@ -697,12 +723,19 @@ Gallo                         Informational                    [Page 12]
    lineage.  Except for the root establishment step, every continuity
    advancement produced by a Prover MUST:
 
+
+
+Gallo                         Informational                    [Page 13]
+
+                         PIC Prover and Verifier            October 2026
+
+
    1.  identify *exactly one* predecessor continuity state;
 
    2.  include or bind a *cryptographic reference* to that predecessor;
 
-   3.  include or bind the *Proof of Relationship* required by the
-       selected profile;
+   3.  include or bind the relationship or executor-profile evidence
+       required by the selected profile;
 
    4.  yield authority equal to or more restrictive than the predecessor
        materialized authority;
@@ -718,18 +751,6 @@ Gallo                         Informational                    [Page 12]
    An executor can always assemble arbitrary bytes locally; what it
    cannot do is have such a state accepted.
 
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 13]
-
-                         PIC Prover and Verifier               July 2026
-
-
 2.1.  Prover Procedure
 
    Given a predecessor continuity state, the Prover MUST perform the
@@ -740,8 +761,8 @@ Gallo                         Informational                    [Page 13]
 
    2.  establish exactly one causal predecessor;
 
-   3.  build the Proof of Relationship required by the selected profile
-       (Section 2.3);
+   3.  build the relationship or executor-profile evidence required by
+       the selected profile (Section 2.3);
 
    4.  keep or attenuate the predecessor materialized authority
        (Section 2.4);
@@ -754,13 +775,25 @@ Gallo                         Informational                    [Page 13]
    7.  ensure the resulting authority is no greater than the predecessor
        authority.
 
+
+
+
+
+
+
+Gallo                         Informational                    [Page 14]
+
+                         PIC Prover and Verifier            October 2026
+
+
    receive current continuity state
          |
          v
-   validate predecessor continuity state
+   validate predecessor continuity state, or construct an untrusted candidate
+   that a trusted receiving boundary will validate before authority is exercised
          |
          v
-   build PoR and profile-required request/execution binding
+   build relationship/profile evidence and profile-required request/execution binding
          |
          v
    keep or attenuate materialized authority
@@ -770,21 +803,6 @@ Gallo                         Informational                    [Page 13]
          |
          v
    emit updated continuity state
-
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 14]
-
-                         PIC Prover and Verifier               July 2026
-
 
    At the abstract level, the advancement is not required to be a PCA.
    The PIC Continuity Transition COSE is the proposed Profile 0.2
@@ -797,27 +815,59 @@ Gallo                         Informational                    [Page 14]
 
 2.2.  Predecessor Validation
 
-   The Prover MUST validate the predecessor continuity state by applying
-   the Verifier procedure of Section 3.  If validation fails, the Prover
-   MUST NOT emit a continuity advancement.  The rest of this section
-   assumes a valid predecessor.
+   Before treating predecessor authority as trusted or exercising it,
+   the Prover MUST validate the predecessor continuity state by applying
+   the Verifier procedure of Section 3.  A candidate-construction
+   library MAY parse and semantically validate a predecessor without
+   authenticating it when all of the following hold:
+
+   *  the output is explicitly an untrusted candidate and is not treated
+      as settled authority;
+
+   *  no protected effect is authorized from the unauthenticated parse;
+
+   *  the trusted receiving or settlement boundary independently
+      performs the complete Verifier procedure before accepting the
+      advancement;
+
+   *  failure at that boundary prevents issuance and authority exercise.
+
+
+
+
+
+
+Gallo                         Informational                    [Page 15]
+
+                         PIC Prover and Verifier            October 2026
+
+
+   This exception matches the current PIC-X workload flow, in which a
+   workload may lack the realm verification key while constructing a
+   candidate, and PIC-X revalidates the realm-signed predecessor during
+   settlement.  It changes no receiving-side safety requirement.
 
 2.3.  Proof of Relationship
 
    The abstract *PoR* relation binds the current execution to exactly
-   one predecessor.  A non-root continuity advancement MUST carry or
-   cryptographically bind the relationship evidence required by the
-   selected profile.  The selected profile MUST define the concrete
-   checks that soundly witness the abstract single-hop PoR relation.
+   one predecessor.  A non-root advancement in a profile claiming full
+   continuity MUST carry or cryptographically bind evidence whose
+   concrete checks soundly witness the abstract single-hop PoR relation.
+   A profile that validates a narrower relationship MAY define an
+   artifact-linked assurance level, but it MUST identify the missing
+   refinement obligation and MUST NOT claim that its evidence
+   establishes the abstract PoR.
 
    A proof_of_relationship field, when defined by a profile, is
-   relationship evidence.  It is not by itself the complete Proof of
-   Continuity and does not by itself establish semantic continuity.  A
-   transition is accepted as valid only when the required PoR relation
-   holds and the separate non-expansion requirement, together with all
-   other applicable profile checks such as predecessor binding,
-   freshness, integrity, evidence or conformance, request/execution
-   binding, revocation, and policy, also succeeds.
+   relationship or profile evidence.  It is not by itself the complete
+   Proof of Continuity and does not by itself establish semantic
+   continuity.  A transition is accepted as a full PIC continuation only
+   when the required PoR relation holds and the separate non-expansion
+   requirement, together with all other applicable profile checks such
+   as predecessor binding, freshness, integrity, evidence or
+   conformance, request/execution binding, revocation, and policy, also
+   succeeds.  An artifact-linked acceptance establishes only the subset
+   its profile states.
 
    Profile-defined concrete relationship validation may cover, as
    applicable:
@@ -834,24 +884,26 @@ Gallo                         Informational                    [Page 14]
    they are not, merely by being required for acceptance, part of the
    abstract PoR relation.
 
-
-
-
-Gallo                         Informational                    [Page 15]
-
-                         PIC Prover and Verifier               July 2026
-
-
-   For PIC Profile 0.2, the PIC Continuity Transition COSE carries
-   proof_of_relationship as a typed object:
+   For PIC Profile 0.2, the PIC Continuity Transition COSE retains the
+   field name proof_of_relationship as a typed object:
 
    proof_of_relationship.type = "sd-jwt"
    proof_of_relationship.evidence = exact UTF-8 bytes of the textual issuer-signed
                                     Profile 0.2 SD-JWT presentation
 
-   The type value controls parsing and validation of evidence.  The
-   selected Profile 0.2 PoR schema MUST bind or identify the workload
-   verification key; this specification does not define a universal
+
+
+Gallo                         Informational                    [Page 16]
+
+                         PIC Prover and Verifier            October 2026
+
+
+   The type value controls parsing and validation of evidence.  In the
+   current artifact-linked assurance level, this field contains
+   executor-profile and workload-key evidence; the historical field name
+   does not, by itself, establish the abstract relation PoR(s_i,
+   s_{i+1}).  A Profile 0.2 schema MUST bind or identify the workload
+   verification key.  This specification does not define a universal
    claim name and does not define a separate generic key_binding field.
    The predecessor reference for the current centralized Profile 0.2
    realization is:
@@ -867,35 +919,39 @@ Gallo                         Informational                    [Page 15]
    notation, JSON representation, Base64url text, or reserialized
    structure.
 
-   The Prover MUST check its own PoR before proceeding: if the
-   predecessor reference does not match the predecessor continuity
-   state, or if the challenge or equivalent freshness evidence does not
-   satisfy the selected relationship-validation rules, the required PoR
-   relation is not established and the Prover MUST stop.  If profile-
+   The Prover MUST check the profile evidence it can validate before
+   proceeding: if the predecessor reference does not match the
+   predecessor continuity state, or if the challenge or equivalent
+   freshness evidence does not satisfy the selected validation rules,
+   the candidate is invalid and the Prover MUST stop.  If profile-
    required executor, contract, request/execution, or other required
    evidence is missing or invalid, the advancement is invalid and the
-   Prover MUST stop.  A continuity advancement carrying invalid required
-   evidence is rejected at the next hop anyway.
+   Prover MUST stop.  The trusted Verifier MUST repeat every acceptance
+   check independently.
 
-   *What the PoR proves.* The PoR does not prove physical,
-   counterfactual, or prior-designation causation.  Taken in isolation,
-   a challenge response or concrete relationship artifact proves only
-   the relationship semantics defined by the selected profile.  A hop is
-   accepted as a valid PIC continuation only when the Verifier also
-   applies the other required PIC and profile checks, including non-
-   expansion and any applicable contract, request/execution, evidence,
-   freshness, revocation, and policy checks.  The selected concrete
-   relationship checks are assumed to soundly witness the abstract
-   single-hop PoR relation used by the model [1] (Section 12) and Lean
-   formalization [2] (Section 12).
-
-
+   *What the PoR proves.* The abstract PoR does not prove physical or
+   counterfactual causation beyond the relation it models.  A concrete
+   challenge response or relationship artifact proves only the semantics
+   defined by its selected profile.  A profile MUST NOT claim the
+   abstract single-hop PoR relation used by the model [1] (Section 13)
+   and Lean formalization [2] (Section 13) unless it states the concrete
+   evidence, trust assumptions, and refinement argument by which its
+   receiving predicate soundly witnesses that relation.  Current PIC-X
+   Profile 0.2 does not make that full claim: its SD-JWT evidence
+   establishes trusted executor-profile claims and control of the bound
+   workload key, not an observed causal handoff occurrence.
 
 
 
-Gallo                         Informational                    [Page 16]
+
+
+
+
+
+
+Gallo                         Informational                    [Page 17]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
    *Continuation is open by default.* The core model does not require a
@@ -940,19 +996,23 @@ Gallo                         Informational                    [Page 16]
    constraints, or extend the validity period. _What is dropped at a hop
    is lost:_ no later hop can reintroduce it.
 
+   For a relational execution contract, the predecessor contract governs
+   admission of the current executor, and the successor contract must
+   logically imply the predecessor contract: rho(i+1) => rho(i).
+   Concrete profile evidence must be sound for the executor attributes
+   it establishes; missing or withheld required evidence causes
+   rejection and cannot widen admission [13] (Section 13).
+
+
+
+Gallo                         Informational                    [Page 18]
+
+                         PIC Prover and Verifier            October 2026
+
+
    The root authority context (Section 1.8) granted READ-ALL and BACKUP.
    The backup service needs only read access downstream, so it drops
    BACKUP and sets the attenuated invariants:
-
-
-
-
-
-
-Gallo                         Informational                    [Page 17]
-
-                         PIC Prover and Verifier               July 2026
-
 
    {
      "operations": ["READ-ALL"],
@@ -993,6 +1053,19 @@ Gallo                         Informational                    [Page 17]
 
    *  invariants: [scope, operation, resourceType, resourceId].
 
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 19]
+
+                         PIC Prover and Verifier            October 2026
+
+
    A logical Profile 0.2 execution.contract value MUST contain at least
    one attribute.  Each logical attribute value MUST be either a non-
    empty string or a non-empty array of non-empty strings.  Profile 0.2
@@ -1000,15 +1073,6 @@ Gallo                         Informational                    [Page 17]
    containing a number, boolean, object, null, empty string, empty
    array, array containing an empty string, or array containing a non-
    string value.
-
-
-
-
-
-Gallo                         Informational                    [Page 18]
-
-                         PIC Prover and Verifier               July 2026
-
 
    Scalar logical values become one indexed tuple.  Set or list
    membership is denormalized into independently indexed boolean
@@ -1050,21 +1114,19 @@ Gallo                         Informational                    [Page 18]
    applicable.  After denormalization, more than one accepted addition
    with the same canonical key MUST be rejected.  The settlement
    verifier then sorts the remaining accepted additions
+
+
+
+Gallo                         Informational                    [Page 20]
+
+                         PIC Prover and Verifier            October 2026
+
+
    lexicographically by canonical key using Unicode code point order,
    assigns the next section-local numeric indexes in that sorted order,
    and materializes the additions.  Input array order MUST NOT determine
    materialized index assignment.  The workload is not required to pre-
    sort the additions.
-
-
-
-
-
-
-Gallo                         Informational                    [Page 19]
-
-                         PIC Prover and Verifier               July 2026
-
 
    Initial PIC PCA COSE canonicalization for Profile 0.2 is
    deterministic.  Implementations denormalize the Logical Context of
@@ -1105,26 +1167,17 @@ Gallo                         Informational                    [Page 19]
    material for the next step.  The profile defines the signed artifact
    that protects those values.
 
-
-
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 20]
-
-                         PIC Prover and Verifier               July 2026
-
-
    In PIC Profile 0.2, a PIC Continuity Transition COSE contains
    position, a structured predecessor reference,
    challenge.previous_challenge, challenge.next_challenge, optional
+
+
+
+Gallo                         Informational                    [Page 21]
+
+                         PIC Prover and Verifier            October 2026
+
+
    attenuations, and typed proof_of_relationship.  It is carried only by
    the workload-produced candidate PIC Continuity COSE for the current
    exchange.  The settlement authority validates the candidate and, if
@@ -1169,19 +1222,17 @@ Gallo                         Informational                    [Page 20]
 
    5.  accept only if every required check succeeds; otherwise reject.
 
-
-
-
-
-Gallo                         Informational                    [Page 21]
-
-                         PIC Prover and Verifier               July 2026
-
-
    The authority a Verifier may authorize at the current hop is the
    current materialized authority.  By monotonicity (Section 2.4), it is
    bounded by the root authority, so a privilege absent from the root
    cannot be authorized downstream.
+
+
+
+Gallo                         Informational                    [Page 22]
+
+                         PIC Prover and Verifier            October 2026
+
 
 3.1.  Verifier Procedure
 
@@ -1196,7 +1247,9 @@ Gallo                         Informational                    [Page 21]
 
    4.   validate predecessor continuity for each required advancement;
 
-   5.   validate PoR for each non-root advancement;
+   5.   validate the relationship/profile evidence required for each
+        non-root advancement and, when full PoR is claimed, validate the
+        concrete predicate that witnesses the abstract PoR;
 
    6.   validate challenge continuity or the equivalent freshness
         mechanism used by the profile;
@@ -1205,7 +1258,8 @@ Gallo                         Informational                    [Page 21]
         temporal state, and revocation state;
 
    8.   validate request/execution binding when required by the selected
-        profile;
+        profile, and do not claim that property when no authenticated
+        occurrence or request commitment is available;
 
    9.   apply profile-defined attenuations and verify non-expansion;
 
@@ -1222,22 +1276,27 @@ Gallo                         Informational                    [Page 21]
    COSE bytes for the current trusted checkpoint, recomputing
    root.pca_hash, and verifying that the signed PIC PCA COSE payload
    supplies the materialized authority, position, and
-   challenge.next_challenge.  When revocation is enabled for a revocable
+   challenge.next_challenge.  When lineage_id or expires_at is present
+   in that checkpoint, a binding that mirrors those values into PIC
+   Token JWT jti or exp MUST validate equality and MUST NOT extend the
+   checkpoint lifetime.  When revocation is enabled for a revocable
    continuity, the Verifier also validates the authenticated revocation
    coordinates required by the PIC Revocation Specification before
-   evaluating applicable authenticated revocation state.  This document
 
 
 
-Gallo                         Informational                    [Page 22]
+Gallo                         Informational                    [Page 23]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
-   does not assign concrete settled-token fields or placement for
-   revocation coordinates other than the Profile 0.2 PCA position.
-   Ordinary Profile 0.2 Verifiers are not required to replay a
-   transported transition history.
+   evaluating applicable authenticated revocation state.  The base
+   Profile 0.2 artifact schema does not assign one universal PCA-ID
+   mapping.  The current PIC-X binding uses the signed PCA lineage_id as
+   its stable lineage/PCA identifier and mirrors it into JWT jti, while
+   PCA position supplies path depth; PIC-X 0.2.3 configures no PIC
+   revocation state.  Ordinary Profile 0.2 Verifiers are not required to
+   replay a transported transition history.
 
    When a trusted settlement authority processes a Profile 0.2
    advancement candidate, it additionally:
@@ -1258,7 +1317,9 @@ Gallo                         Informational                    [Page 22]
    5.   parses that Transition as untrusted input and extracts
         proof_of_relationship;
 
-   6.   validates the proof_of_relationship structure;
+   6.   validates the proof_of_relationship structure, treating the
+        field name as a Profile 0.2 compatibility name rather than proof
+        that the abstract PoR has been discharged;
 
    7.   requires proof_of_relationship.type = "sd-jwt";
 
@@ -1266,29 +1327,33 @@ Gallo                         Informational                    [Page 22]
         of the textual issuer-signed Profile 0.2 SD-JWT presentation;
 
    9.   validates the SD-JWT issuer signature, issuer trust, required
-        disclosures, claims, and schema requirements;
+        disclosures, claims, validity interval, and schema requirements;
 
    10.  obtains or resolves the workload verification key accepted from
-        the PoR;
+        the profile evidence;
 
    11.  verifies the Transition COSE signature, candidate Continuity
         COSE signature, and candidate PIC Token JWT signature using that
-        accepted workload key, and verifies signer consistency as
-        required by the profile;
+        accepted workload key; verifies that the declared JOSE and COSE
+        algorithms match the accepted key; and verifies signer-key
+        identifier consistency as required by the profile;
+
+
+
+
+Gallo                         Informational                    [Page 24]
+
+                         PIC Prover and Verifier            October 2026
+
 
    12.  verifies root.pca as the exact signed PIC PCA COSE bytes for the
-        currently trusted checkpoint;
+        currently trusted checkpoint; when the deployment requires a
+        stable lineage identifier and absolute expiration, verifies
+        their presence and verifies that candidate JWT jti and exp equal
+        the predecessor PCA lineage_id and expires_at;
 
    13.  recomputes SHA-256(exact signed root.pca PIC PCA COSE bytes) and
         compares it with root.pca_hash;
-
-
-
-
-Gallo                         Informational                    [Page 23]
-
-                         PIC Prover and Verifier               July 2026
-
 
    14.  verifies that Transition.position = current PCA.position + 1;
 
@@ -1296,15 +1361,18 @@ Gallo                         Informational                    [Page 23]
         256(exact signed current root.pca PIC PCA COSE bytes);
 
    16.  verifies that Transition.challenge.previous_challenge = current
-        PCA.challenge.next_challenge and validates
-        challenge.next_challenge;
+        PCA.challenge.next_challenge, requires a non-empty
+        challenge.next_challenge, and, for the current PIC-X binding,
+        requires that it differ from previous_challenge;
 
    17.  validates removal bitmaps and execution-contract additions,
         including deterministic ordering and section-local index
         assignment for accepted additions;
 
    18.  validates request/execution binding and executor evidence or
-        conformance when required by the selected profile;
+        conformance when required by the selected profile; a deployment
+        with no authenticated request or occurrence commitment MUST
+        treat request binding as unsupported rather than satisfied;
 
    19.  validates authority non-expansion, revocation, and local/profile
         policy;
@@ -1318,7 +1386,21 @@ Gallo                         Informational                    [Page 23]
 
    If validation succeeds, the settlement authority issues the next
    settled PIC Token JWT.  PIC-X is one realization of this settlement
-   role.
+   role.  Its current acceptance predicate implements the artifact-
+   linked subset of these checks.  In particular, current PIC-X
+   validates executor-profile conformance but has no trusted runtime
+   occurrence or request to compare with request_digest; it therefore
+   does not claim request binding or observed-handoff PoR.
+
+
+
+
+
+
+Gallo                         Informational                    [Page 25]
+
+                         PIC Prover and Verifier            October 2026
+
 
 3.2.  Root Validation
 
@@ -1335,16 +1417,6 @@ Gallo                         Informational                    [Page 23]
 
    *  extract the root authority and any root bootstrap challenge or
       equivalent freshness material.
-
-
-
-
-
-
-Gallo                         Informational                    [Page 24]
-
-                         PIC Prover and Verifier               July 2026
-
 
    In PIC Profile 0.2, the root representation is the signed PIC PCA
    COSE checkpoint carried as exact bytes in root.pca by the settled PIC
@@ -1378,6 +1450,14 @@ Gallo                         Informational                    [Page 24]
        attestation, or equivalent relationship evidence is valid
        according to that profile;
 
+
+
+
+Gallo                         Informational                    [Page 26]
+
+                         PIC Prover and Verifier            October 2026
+
+
    5.  *execution-contract conformance* — when the predecessor authority
        context contains an execution contract and the selected profile
        requires executor conformance evidence, the presented executor or
@@ -1391,16 +1471,6 @@ Gallo                         Informational                    [Page 24]
 
    7.  *temporal* — the advancement and resulting continuity state
        satisfy the profile's temporal rules (Section 6.3);
-
-
-
-
-
-
-Gallo                         Informational                    [Page 25]
-
-                         PIC Prover and Verifier               July 2026
-
 
    8.  *request/execution binding* — when the selected profile defines
        or requires a request/execution commitment, the concrete action
@@ -1436,6 +1506,14 @@ Gallo                         Informational                    [Page 25]
    is defined by the application or by an applicable PIC profile.  That
    context may be represented as operation-resource pairs, roles,
    labels, scopes (for example lifted from an OAuth token), capability
+
+
+
+Gallo                         Informational                    [Page 27]
+
+                         PIC Prover and Verifier            October 2026
+
+
    classes, or policy references.  Normatively the requirement is only:
 
    authority(i+1)  ≤  authority(i)
@@ -1443,25 +1521,19 @@ Gallo                         Informational                    [Page 25]
    where ≤ is an _attenuation order_ defined by the profile.  The
    operations set with subset inclusion, used in the examples, is the
    *reference profile*: it corresponds to the operation-resource
-   privileges of the model [1] (Section 12).
+   privileges of the model [1] (Section 13).
 
    A label may _denote_ authority without listing it: EU-BACKUP-READONLY
    denotes a set of operation-resource permissions and carries that
-   meaning by reference.  This keeps the confused-deputy result intact
-   rather than discarding it — a label is defined to denote a semantic
-   set (in the reference case an O×R set), and the label order is
-
-
-
-Gallo                         Informational                    [Page 26]
-
-                         PIC Prover and Verifier               July 2026
-
-
-   required to *refine* the subset order on those denotations.  O×R is
-   thus the profile where non-expansion is immediate, and any other
-   profile inherits the guarantee exactly to the extent that its order
-   refines its denotation order.
+   meaning by reference.  This preserves the authority non-expansion
+   premise rather than discarding it: a label is defined to denote a
+   semantic set (in the reference case an O×R set), and the label order
+   is required to *refine* the subset order on those denotations.  O×R
+   is thus the profile where non-expansion is immediate, and any other
+   profile inherits that premise exactly to the extent that its order
+   refines its denotation order.  The full confused-deputy result still
+   requires the separate PoR, causal-attribution, and mediation
+   assumptions stated in Section 6.5.
 
 4.2.  Attenuation Profiles
 
@@ -1488,6 +1560,16 @@ Gallo                         Informational                    [Page 26]
    consistent with the model, an overly permissive translation is a
    profile error, not a violation of the continuity invariant.
 
+
+
+
+
+
+Gallo                         Informational                    [Page 28]
+
+                         PIC Prover and Verifier            October 2026
+
+
 4.3.  Policy Decision Point (PDP) Integration
 
    PIC and access control answer different questions:
@@ -1505,15 +1587,6 @@ Gallo                         Informational                    [Page 26]
    ones.  PIC neither requires a PDP nor defines one; this section
    exists only for implementers who choose that path.
 
-
-
-
-
-Gallo                         Informational                    [Page 27]
-
-                         PIC Prover and Verifier               July 2026
-
-
    Whoever takes that path takes an obligation with it, and it is
    *theirs, not PIC's*: the declared attenuation order on labels MUST be
    _monotone with respect to their semantics_. If current ≤ predecessor
@@ -1521,7 +1594,7 @@ Gallo                         Informational                    [Page 27]
    meaning of predecessor, PIC's non-expansion is vacuous — the labels
    shrink while what they authorize grows.  Establishing that the label
    order refines its denotation order is up to the application or its
-   PDP.  It does *not inherit the Lean proof* [2] (Section 12): the
+   PDP.  It does *not inherit the Lean proof* [2] (Section 13): the
    proof covers non-expansion of the _abstract_ order only; semantic
    monotonicity of a concrete vocabulary is a separate proof obligation
    that PIC does not discharge.  This is the same boundary the model
@@ -1537,9 +1610,21 @@ Gallo                         Informational                    [Page 27]
    the checks of Section 3 stay the same - but it changes validation
    cost and trust assumptions.  This section contains non-normative
    representation guidance and explicit profile requirements.  A
-   representation does not inherit the Lean proof automatically; each
-   profile MUST show that its concrete acceptance predicate implies the
-   abstract PoC (Section 6.5).
+   representation does not inherit the Lean proof automatically.  A
+   profile claiming full PIC continuity MUST show that its concrete
+   acceptance predicate implies the abstract PoC (Section 6.5).  A
+   partial implementation MAY expose a narrower assurance level only
+   when it names the verified subset and the missing refinement
+   obligations, and it MUST NOT label that result a Proof of Continuity
+   or full PIC conformance.
+
+
+
+
+Gallo                         Informational                    [Page 29]
+
+                         PIC Prover and Verifier            October 2026
+
 
    A continuity profile MAY use:
 
@@ -1557,18 +1642,12 @@ Gallo                         Informational                    [Page 27]
 
    The profile MUST define its acceptance predicate, canonicalization,
    cryptographic references, freshness mechanism, authority
-   materialization, and failure behavior.  It MUST preserve exactly-one-
-   predecessor continuity, PoR, non-expansion, request/execution binding
-   when required by that profile, and verifier independence.
-
-
-
-
-
-Gallo                         Informational                    [Page 28]
-
-                         PIC Prover and Verifier               July 2026
-
+   materialization, and failure behavior.  A full-continuity profile
+   MUST preserve exactly-one-predecessor continuity, PoR, non-expansion,
+   request/execution binding when required by that profile, and verifier
+   independence.  A partial assurance level MUST preserve every property
+   it claims and MUST fail closed for every check declared mandatory at
+   that level.
 
 5.1.  Current Profile 0.2 Representation
 
@@ -1580,6 +1659,28 @@ Gallo                         Informational                    [Page 28]
    root.pca is the current checkpoint, not an immutable genesis
    artifact: after an accepted advancement it changes from PIC PCA COSE
    N to PIC PCA COSE N+1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 30]
+
+                         PIC Prover and Verifier            October 2026
+
 
    trusted settled PIC Token JWT N
    `-- pic.root = settled PIC Continuity COSE N
@@ -1606,25 +1707,14 @@ Gallo                         Informational                    [Page 28]
    The candidate is not a trusted settled continuity artifact.  The
    settlement authority validates the current settled continuity, the
    candidate PIC Token JWT, the candidate PIC Continuity COSE, the
-   single PIC Continuity Transition COSE, PoR/key binding, predecessor
-   hash over the exact current PIC PCA COSE bytes, position increment,
-   challenge continuity, removal attenuations, execution-contract
-   additions including deterministic canonical ordering and index
-   assignment for accepted additions, non-expansion, revocation, and
-   local/profile policy.  If validation succeeds, the settlement
+   single PIC Continuity Transition COSE, profile/key evidence,
+   predecessor hash over the exact current PIC PCA COSE bytes, position
+   increment, challenge continuity, removal attenuations, execution-
+   contract additions including deterministic canonical ordering and
+   index assignment for accepted additions, non-expansion, revocation,
+   and local/profile policy.  If validation succeeds, the settlement
    authority materializes the new authority into a new PIC PCA COSE
    checkpoint and issues the next settled PIC Token JWT.
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 29]
-
-                         PIC Prover and Verifier               July 2026
-
 
    Profile 0.2 does not transport a replayable transition graph in the
    settled PIC Continuity COSE.  The current authority and post-initial
@@ -1632,7 +1722,95 @@ Gallo                         Informational                    [Page 29]
    checkpoint carried in root.pca; the settled Continuity itself has no
    position field and no challenge field.
 
-5.2.  Profile 0.2 Artifact Semantics
+5.2.  Profile 0.2 Assurance Boundary
+
+   The abstract PIC Model and the current PIC-X Profile 0.2
+   implementation have different claim boundaries.  A conforming
+   document or implementation MUST identify which boundary it is
+   claiming.  The artifact-linked level is a partial implementation
+   assurance class, not an alternative definition of PoR and not full
+   PIC conformance.
+
+
+
+Gallo                         Informational                    [Page 31]
+
+                         PIC Prover and Verifier            October 2026
+
+
+   +===================================+===============================+
+   | Property                          | Current PIC-X Profile 0.2     |
+   |                                   | status                        |
+   +===================================+===============================+
+   | Signed artifact lineage and       | Implemented                   |
+   | exactly-one predecessor           |                               |
+   | reference                         |                               |
+   +-----------------------------------+-------------------------------+
+   | Authority attenuation and         | Implemented                   |
+   | irreversible branch-local         |                               |
+   | removal                           |                               |
+   +-----------------------------------+-------------------------------+
+   | Additive execution-contract       | Implemented                   |
+   | refinement and executor-          |                               |
+   | profile conformance               |                               |
+   +-----------------------------------+-------------------------------+
+   | Trusted-issuer executor-          | Implemented                   |
+   | profile evidence and              |                               |
+   | workload-key binding              |                               |
+   +-----------------------------------+-------------------------------+
+   | Unknown successor and             | Implemented intentionally     |
+   | sibling fan-out                   |                               |
+   +-----------------------------------+-------------------------------+
+   | Stable lineage correlation        | Implemented by the PIC-X      |
+   | and absolute lineage expiry       | binding                       |
+   +-----------------------------------+-------------------------------+
+   | Abstract semantic PoR(s_i,        | Not established by current    |
+   | s_{i+1}) for an observed          | evidence                      |
+   | handoff occurrence                |                               |
+   +-----------------------------------+-------------------------------+
+   | Authenticated request or          | Not implemented by current    |
+   | runtime-occurrence binding        | PIC-X settlement              |
+   +-----------------------------------+-------------------------------+
+   | Global single consumption         | Not claimed                   |
+   | or exactly-once execution         |                               |
+   +-----------------------------------+-------------------------------+
+   | Per-lineage early                 | Not implemented; absolute     |
+   | revocation                        | expiry and signing-key policy |
+   |                                   | are the current bounds        |
+   +-----------------------------------+-------------------------------+
+   | Complete mediation and            | Outside current PIC-X         |
+   | causal attribution of             | settlement                    |
+   | protected actions                 |                               |
+   +-----------------------------------+-------------------------------+
+
+                                  Table 1
+
+
+
+
+
+Gallo                         Informational                    [Page 32]
+
+                         PIC Prover and Verifier            October 2026
+
+
+   The current assurance level is called *artifact-linked*. It is valid
+   to claim that PIC-X excludes authority import from an unrelated
+   lineage within an accepted artifact transition and enforces the
+   configured executor profile.  It is not valid to infer from that
+   claim that a trusted boundary observed the physical or runtime
+   handoff, that a particular request caused the candidate, or that
+   every protected effect passed through settlement.
+
+   A future profile may claim full semantic PoR only after defining
+   authenticated occurrence evidence, the trusted observer and its
+   failure model, request or message binding where applicable,
+   verification and retention rules, and a refinement argument from its
+   concrete acceptance predicate to the abstract relation used by the
+   formal model.  Adding another workload-self-asserted field does not
+   by itself provide that refinement [13] (Section 13).
+
+5.3.  Profile 0.2 Artifact Semantics
 
    This subsection is normative for PIC Profile 0.2.  The semantic field
    names below are normative for this profile.  Exact CBOR integer
@@ -1659,28 +1837,20 @@ Gallo                         Informational                    [Page 29]
     | PIC Continuity Transition COSE | pic-continuity-transition+cose |
     +--------------------------------+--------------------------------+
 
-                                  Table 1
+                                  Table 2
 
    These identifiers are Profile 0.2 format identifiers, not IANA-
    assigned media types unless and until a registration assigns that
    status.
 
-   Profile 0.2 also uses the following stable semantic definition URIs:
 
 
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 30]
+Gallo                         Informational                    [Page 33]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
+
+   Profile 0.2 also uses the following stable semantic definition URIs:
 
       +====================+=======================================+
       | Concept            | Definition URI                        |
@@ -1692,9 +1862,9 @@ Gallo                         Informational                    [Page 30]
       | Proposal type URI  | proposal-types/continuity-initial     |
       +--------------------+---------------------------------------+
 
-                                 Table 2
+                                 Table 3
 
-5.2.1.  PIC Token JWT
+5.3.1.  PIC Token JWT
 
    A PIC Token JWT has format identifier pic+jwt.
 
@@ -1704,39 +1874,62 @@ Gallo                         Informational                    [Page 30]
    A candidate PIC Token JWT is workload-signed.  A settled PIC Token
    JWT is signed by the trusted settlement authority.  Candidate and
    settled tokens use the same pic+jwt format; no second token format is
-   defined for the candidate role.  Exact JOSE typ assignment is
-   deferred to the applicable profile registry or later byte-level wire
-   assignment.
+   defined for the candidate role.  The current PIC-X binding requires
+   JOSE typ = "pic+jwt" and a profile claim equal to https://pic-
+   protocol.org/profiles/0.2.
 
-5.2.2.  PIC PCA COSE
+   PIC Token JWT may carry the standard claims iss, sub, aud, iat, exp,
+   and jti.  In the current PIC-X binding:
+
+   *  every initialized lineage has a non-empty PCA lineage_id and a
+      positive PCA expires_at;
+
+   *  settled and candidate JWT jti MUST equal that lineage_id;
+
+   *  settled and candidate JWT exp MUST equal that expires_at;
+
+   *  advancement MUST preserve both PCA values unchanged and MUST NOT
+      mint a later expiration;
+
+   *  the settlement authority MUST reject a candidate whose jti or exp
+      is missing or mismatched, or whose predecessor has expired.
+
+   These bindings provide stable correlation and prevent lifetime
+   extension.  They do not by themselves establish request binding or
+   semantic PoR.
+
+
+
+
+Gallo                         Informational                    [Page 34]
+
+                         PIC Prover and Verifier            October 2026
+
+
+5.3.2.  PIC PCA COSE
 
    A PIC PCA COSE is the signed checkpoint artifact representing a
    logical PCA.  Its Profile 0.2 semantic payload contains:
 
    profile
+   lineage_id              optional in the base Profile 0.2 artifact; required by PIC-X
+   expires_at              optional in the base Profile 0.2 artifact; required by PIC-X
    position
    context_of_authority
    challenge.next_challenge
 
    position is a non-negative canonical integer defined by Profile 0.2.
    context_of_authority is the canonical Indexed Authority Map defined
-   in Section 2.4. challenge.next_challenge is binary challenge material
-   for the next Profile 0.2 transition.
+   in Section 2.4. challenge.next_challenge is non-empty binary
+   challenge material for the next Profile 0.2 transition. lineage_id,
+   when present, is a non-empty stable identifier preserved by every
+   advancement. expires_at, when present, is a positive NumericDate
+   preserved by every advancement.  The current PIC-X binding requires
+   both fields and mirrors them into JWT jti and exp as described above.
 
-5.2.3.  PIC Continuity COSE
+5.3.3.  PIC Continuity COSE
 
    A PIC Continuity COSE has the following Profile 0.2 semantic payload:
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 31]
-
-                         PIC Prover and Verifier               July 2026
-
 
    profile
    root:
@@ -1755,10 +1948,19 @@ Gallo                         Informational                    [Page 31]
    Profile 0.2; those values belong to PIC PCA COSE checkpoints and PIC
    Continuity Transition COSE artifacts.
 
-5.2.4.  PIC Continuity Transition COSE
+5.3.4.  PIC Continuity Transition COSE
 
    A PIC Continuity Transition COSE has the following Profile 0.2
    semantic payload:
+
+
+
+
+
+Gallo                         Informational                    [Page 35]
+
+                         PIC Prover and Verifier            October 2026
+
 
    profile
    position
@@ -1781,30 +1983,47 @@ Gallo                         Informational                    [Page 31]
    predecessor representation while preserving exactly-one-predecessor
    semantics.
 
+   position MUST equal the predecessor PCA position plus one.
+   challenge.previous_challenge MUST equal the predecessor PCA
+   challenge.next_challenge.  Both challenge values MUST be non-empty.
+   The current PIC-X binding additionally requires
+   challenge.next_challenge != challenge.previous_challenge; this
+   prevents a successor checkpoint from retaining the challenge answered
+   by the transition.  It is challenge-state progress, not global
+   single-consumption: valid sibling candidates from one predecessor
+   remain permitted, and replay or exactly-once effect control remains a
+   separate property.
+
    proof_of_relationship is a typed object.  For current Profile 0.2,
    proof_of_relationship.type MUST be "sd-jwt" and
    proof_of_relationship.evidence MUST be a byte string containing the
    exact UTF-8 bytes of the textual issuer-signed SD-JWT presentation
-   selected by the Profile 0.2 PoR schema.  That schema MUST bind or
+   selected by the Profile 0.2 evidence schema.  That schema MUST bind
+   or identify the workload verification key used to verify the
+   workload-signed candidate artifacts.  Profile 0.2 does not define a
+   universal claim path.  The current PIC-X binding obtains the workload
+   key from disclosed cnf.jwk, rejects SD-JWT presentations carrying a
+   separate key-binding JWT, validates the configured issuer signature
+   and trust, disclosure integrity and uniqueness, credential validity,
+   and algorithm compatibility, and requires the candidate JWT,
+   Continuity COSE, and Transition COSE signatures to match that key.
+   Another binding may define a different authenticated claim path
+   without changing the base artifact schema.
 
 
 
-Gallo                         Informational                    [Page 32]
+
+Gallo                         Informational                    [Page 36]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
-
-   identify the workload verification key used to verify the workload-
-   signed candidate artifacts.  Profile 0.2 does not define a universal
-   claim path, does not require cnf.jwk at the PIC protocol level, and
-   does not require a separate SD-JWT KB-JWT for continuity advancement.
 
    Signer roles are:
 
    PoR issuer
        signs issuer-signed SD-JWT
 
-   workload key accepted through PoR
+   workload key accepted through profile evidence
        signs PIC Continuity Transition COSE
        signs candidate PIC Continuity COSE
        signs candidate PIC Token JWT
@@ -1814,16 +2033,27 @@ Gallo                         Informational                    [Page 32]
        signs settled PIC Continuity COSE
        signs settled PIC Token JWT
 
-   The workload signatures prove control of the selected workload key
-   and authenticate the candidate objects.  They do not, by themselves,
-   establish semantic continuity; the Verifier still performs the
-   complete Profile 0.2 validation procedure.
+   The candidate Continuity COSE and Transition COSE MUST declare
+   algorithms compatible with the accepted workload key.  The current
+   PIC-X binding also requires their protected-header key identifiers to
+   match.  The candidate JWT JOSE algorithm MUST be compatible with the
+   same key.  Algorithm labels and key identifiers are inputs to
+   verification; a valid signature under a different declared algorithm
+   or inconsistent candidate signer metadata MUST be rejected.
 
-5.3.  Profile 0.2 OAuth Token Exchange Binding
+   The workload signatures prove control of the selected workload key
+   and authenticate the candidate objects.  The SD-JWT proves only the
+   issuer-authenticated profile claims and key binding selected by its
+   schema.  Neither fact, alone or together, proves an observed handoff
+   or request occurrence; the Verifier still performs the complete
+   Profile 0.2 validation procedure and reports only the assurance level
+   it actually establishes.
+
+5.4.  Profile 0.2 OAuth Token Exchange Binding
 
    OAuth is not required by the PIC model.  This subsection is normative
    only for a Profile 0.2 binding that uses OAuth Token Exchange [7]
-   (Section 12) as an entry or advancement transport.
+   (Section 13) as an entry or advancement transport.
 
    For initialization:
 
@@ -1839,15 +2069,9 @@ Gallo                         Informational                    [Page 32]
 
 
 
-
-
-
-
-
-
-Gallo                         Informational                    [Page 33]
+Gallo                         Informational                    [Page 37]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
    grant_type
@@ -1891,21 +2115,22 @@ Gallo                         Informational                    [Page 33]
        settlement-authority-signed settled PIC Token JWT N+1
 
    The initialization proposal is interpreted by its internal type
-   member.  Current Profile 0.2 PIC-to-PIC advancement omits
-   continuity_proposal.
+   member.  Current Profile 0.2 PIC-to-PIC advancement MUST omit
+   continuity_proposal; the current PIC-X binding rejects an advancement
+   request that supplies it.
 
    The RFC 8693 response MAY transport the returned PIC Token JWT in the
    access_token response member.  That placement does not make the PIC
    Token JWT an OAuth Bearer token.  For this Profile 0.2 binding, when
-   an issued_token_type response member is returned for a PIC Token JWT,
 
 
 
-Gallo                         Informational                    [Page 34]
+Gallo                         Informational                    [Page 38]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
+   an issued_token_type response member is returned for a PIC Token JWT,
    its value is https://pic-protocol.org/definitions/token-types/pic.
    When a token_type response member is returned for a PIC Token JWT,
    its value is "N_A".
@@ -1916,15 +2141,52 @@ Gallo                         Informational                    [Page 34]
    paths, client-authentication rules, proposal schema fields, or URI
    values beyond the Profile 0.2 identifiers above.
 
-5.4.  Self-Contained Transition Graphs
+5.5.  Profile 0.2 Failure Behavior
+
+   A settlement implementation MUST fail closed when any required
+   parsing, signature, trust, predecessor, challenge, attenuation,
+   conformance, temporal, revocation, or policy check fails, and MUST
+   NOT issue a successor checkpoint from a rejected candidate.
+
+   When Profile 0.2 advancement is transported through the OAuth Token
+   Exchange binding above, the current PIC-X implementation reports a
+   candidate-validation refusal as OAuth invalid_grant and may include
+   human-readable error_description.  Its protocol surface does not yet
+   define stable machine-readable subcodes for individual Verifier
+   checks.  Implementations and conformance vectors therefore MUST NOT
+   treat PIC-X prose descriptions as stable reason identifiers.  A later
+   binding may define stable refusal codes without changing the
+   acceptance predicate, but those codes are not assigned by this
+   version.
+
+5.6.  Self-Contained Transition Graphs
 
    A future or separate profile MAY use a self-contained transition
    graph, provided the profile defines the graph format, predecessor
    references, authority materialization, proof requirements, and
-   acceptance predicate.  Such a graph is not the current Profile 0.2
+   acceptance predicate.  A graph whose ordinary nodes retain the core
+   exactly-one-predecessor rule represents forks as separate paths.  A
+   causal-DAG profile that permits ordinary multi-parent nodes MUST
+   enforce the every-parent bound described in Section 1.4; non-
+   conservative joins require an explicit authorized composition or
+   relaxation rule.  Such a graph is not the current Profile 0.2
    realization.
 
-5.5.  Incremental, Checkpointed, or Referenced History
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 39]
+
+                         PIC Prover and Verifier            October 2026
+
+
+5.7.  Incremental, Checkpointed, or Referenced History
 
    A profile MAY carry only the information needed for the receiving
    Verifier, rely on external authenticated state, use checkpoints, use
@@ -1933,7 +2195,7 @@ Gallo                         Informational                    [Page 34]
    trust assumption, if any, is placed on a validator, checkpoint
    issuer, history service, or prior verifier.
 
-5.6.  Succinct Proofs
+5.8.  Succinct Proofs
 
    The validity of a continuity prefix can be represented by a succinct
    proof - for example a zero-knowledge proof or accumulator proof -
@@ -1942,9 +2204,83 @@ Gallo                         Informational                    [Page 34]
    and verification procedure are out of scope for this document and
    MUST be defined by the selected profile.
 
-6.  Security Considerations
+6.  Origins, Authorship, and Historical Record
 
-6.1.  Freshness, Replay, and Fan-out
+   This section is informative and is included so that the document
+   preserves its provenance when distributed independently.
+
+   The *Provenance Identity Continuity (PIC) Model* was originally
+   developed by *Nicola Gallo* as a formal framework for reasoning about
+   causal authority propagation across distributed execution.  Its
+   development introduced Proof of Relationship (PoR), Proof of
+   Continuity (PoC), authority non-expansion, relational attenuation,
+   and event-level causal provenance as connected parts of the
+   framework.  The PIC Specifications translate those formal results
+   into technical requirements and are published and maintained by
+   *Nitro Agility S.r.l.* as Specification Steward.
+
+6.1.  Historical References
+
+   The publicly verifiable research record is:
+
+   *  *1 December 2025 — initial public PIC Model working paper.* _PIC
+      Model — Provenance Identity Continuity for Distributed Execution
+      Systems_, Zenodo record 17777421 [16] (Section 13).  That archived
+      draft is retained for historical reference and is not an
+      implementation specification.
+
+   *  *5 December 2025 — authority-propagation analysis.* _Authority
+      Propagation Models: PoP vs PoC and the Confused Deputy Problem_,
+      Zenodo record 17833000 [15] (Section 13).
+
+
+
+
+
+Gallo                         Informational                    [Page 40]
+
+                         PIC Prover and Verifier            October 2026
+
+
+   *  *9 July 2026 — formal Proof-of-Continuity paper.* _Proof-of-
+      Continuity: A Temporal Model for Authority Propagation in
+      Distributed Systems and AI Agents_, arXiv:2607.08906 [1]
+      (Section 13).
+
+   *  *25 September 2026 — relational authority theory.* _Beyond Proof
+      of Possession: A Relational Theory of Authority_, Zenodo record
+      23102206 [13] (Section 13).
+
+   *  *2 October 2026 — event-level causal closure.* _Full Provenance on
+      the COSS Causal Axis: An Event-Level Closure of Causal Attribution
+      and Confused-Deputy Exclusion_, Zenodo record 23102373 [14]
+      (Section 13).
+
+   This document was first published as a public draft on *15 July 2026*
+   as part of the PIC Specification 0.2 family.  Published tags and
+   immutable records identify the exact text applicable to a review or
+   conformance claim.  Researchers and implementers are encouraged to
+   cite the primary publication that supports the formal property they
+   discuss.  Copyright attribution for reuse of PIC specification
+   materials is governed separately by the applicable CC BY 4.0 license.
+
+7.  Implementation Status
+
+   This section is informative and records implementation coverage at
+   the time of this draft.
+
+   PIC-X 0.2.3 implements the centralized Profile 0.2 artifact and
+   settlement path described in Section 5.1.  It validates signed
+   predecessor linkage, workload-key binding, authority non-expansion,
+   execution-contract conformance, stable lineage coordinates, time
+   bounds, and challenge progress.  Its current assurance level is
+   artifact-linked; request/execution binding, observed-handoff PoR,
+   causal attribution, complete mediation, and PIC revocation state are
+   not implemented.
+
+8.  Security Considerations
+
+8.1.  Freshness, Replay, and Fan-out
 
    Freshness protects against *replay*. Because a PCA travels in the
    clear, anyone who observes one could otherwise present it again as if
@@ -1957,9 +2293,9 @@ Gallo                         Informational                    [Page 34]
 
 
 
-Gallo                         Informational                    [Page 35]
+Gallo                         Informational                    [Page 41]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
    The following JSON is an illustrative example of a profile that
@@ -1998,24 +2334,24 @@ Gallo                         Informational                    [Page 35]
    unauthorized replay: in the example profile, the difference is
    declared by mode/maxUses and enforced by the Verifier.
 
+   Current PIC-X Profile 0.2 does not define mode, maxUses, or a global
+   predecessor-consumption register.  It intentionally permits multiple
+   successors to advance the same checkpoint and requires only challenge
+   continuity plus a non-repeating next challenge.  Consequently,
+   Profile 0.2 continuity MUST NOT be described as exactly-once
+   execution, global replay prevention, or successor uniqueness.  A
+   deployment needing those properties requires an occurrence-scoped
+   mechanism that preserves legitimate sibling fan-out; globally
+   consuming the predecessor is not equivalent and would remove the
+   unknown-successor worker-pool behavior the profile supports.
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 36]
+Gallo                         Informational                    [Page 42]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
    Three consumption semantics are therefore distinct. *Local single-
@@ -2049,7 +2385,7 @@ Gallo                         Informational                    [Page 36]
    provide the shared state or coordination required to enforce that
    claim across the participating Verifiers.
 
-6.2.  Origin Trust Boundary
+8.2.  Origin Trust Boundary
 
    PIC governs propagation _after_ an origin authority context has been
    validly established.  It does not by itself determine whether an
@@ -2069,12 +2405,12 @@ Gallo                         Informational                    [Page 36]
 
 
 
-Gallo                         Informational                    [Page 37]
+Gallo                         Informational                    [Page 43]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
-6.3.  Temporal Rules and Per-Hop Expiry
+8.3.  Temporal Rules and Per-Hop Expiry
 
    For every non-root continuity advancement a Verifier MUST check the
    temporal constraints defined by the selected profile.  A simple
@@ -2101,7 +2437,7 @@ Gallo                         Informational                    [Page 37]
    trusted-time evidence for the execution instant and is left to a
    profile.
 
-6.4.  Canonicalization and Cryptographic Agility
+8.4.  Canonicalization and Cryptographic Agility
 
    The byte representation covered by a hash or signature MUST be
    unambiguous and deterministically reproducible under the selected
@@ -2125,37 +2461,66 @@ Gallo                         Informational                    [Page 37]
 
 
 
-Gallo                         Informational                    [Page 38]
+Gallo                         Informational                    [Page 44]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
-6.5.  Formal Scope
+8.5.  Formal Scope
 
-   The Lean formalization [2] (Section 12) proves the logical safety
+   The Lean formalization [2] (Section 13) proves the logical safety
    properties of the abstract model and, through a refinement mapping,
    that any chain accepted under the modeled verifier assumptions
-   satisfies the abstract PIC invariants.  The computational security of
-   the chosen cryptographic primitives, the soundness of concrete PoR
-   mechanisms and issuer infrastructure, runtime or attestation
-   integrity, revocation state, and the semantic monotonicity of a
-   concrete authority profile (Section 4.3), remain *external
-   assumptions*. It is not claimed that Lean proves the security of
-   ES256, SHA-256, COSE, JWS, SD-JWT, or any deployment-specific
-   cryptographic implementation.
+   satisfies the abstract PIC invariants.  A concrete profile inherits
+   the full continuity result only when its accepted evidence soundly
+   discharges the refinement assumptions, including the abstract PoR
+   bridge.  An implementation that verifies only artifact linkage, key
+   control, and non-expansion may claim those verified properties, but
+   MUST NOT cite the abstract theorem as proof of an observed causal
+   handoff.
 
-6.6.  Proof of Possession (Optional)
+   The current PIC-X artifact-linked acceptance predicate does not yet
+   discharge that PoR bridge because no trusted execution boundary
+   attests the concrete predecessor-to-successor occurrence or request.
+   It does enforce signed predecessor linkage, Profile 0.2 attenuation,
+   contract conformance, workload-key control, stable lineage
+   correlation, and absolute expiry under its stated settlement
+   assumptions [13] (Section 13).
+
+   Claims about accepted protected effects additionally depend on causal
+   completeness, sound causal evidence, and complete mediation.  A
+   correct artifact verifier cannot prove those deployment facts when
+   relevant causes or effects are outside its observation boundary [13]
+   (Section 13) [14] (Section 13).
+
+   The computational security of the chosen cryptographic primitives,
+   the soundness of concrete relationship or profile-evidence mechanisms
+   and issuer infrastructure, runtime or attestation integrity,
+   revocation state, and the semantic monotonicity of a concrete
+   authority profile (Section 4.3), remain *external assumptions*. It is
+   not claimed that Lean proves the security of ES256, SHA-256, COSE,
+   JWS, SD-JWT, or any deployment-specific cryptographic implementation.
+
+8.6.  Proof of Possession (Optional)
 
    The core binds a hop to its accepted continuity advancement.  When a
    selected profile defines a request/execution binding, that profile
    pins the accepted or executed action through that binding
    (Section 2.3).  A profile MAY add a *proof of possession* of the
-   request or channel — for example *DPoP* [5] (Section 12), *HTTP
-   Message Signatures* [6] (Section 12), or an equivalent signed request
+   request or channel — for example *DPoP* [5] (Section 13), *HTTP
+   Message Signatures* [6] (Section 13), or an equivalent signed request
    binding — or otherwise constrain the recipient or channel.  These are
    *not core continuation modes* and are *not needed for the N+1 model*,
    whose successor is unknown; they serve profiles that require
    additional presentation constraints.
+
+
+
+
+Gallo                         Informational                    [Page 45]
+
+                         PIC Prover and Verifier            October 2026
+
 
       Profiles MAY define recipient- or channel-constrained
       continuations when the successor or presentation key is known in
@@ -2163,7 +2528,7 @@ Gallo                         Informational                    [Page 38]
       the unknown-successor case that motivates the core N+1 model, and
       are outside the scope of this specification.
 
-6.7.  Transport Separation and Confidentiality
+8.7.  Transport Separation and Confidentiality
 
    The security model is independent of transport (Section 1): the
    guarantees rest on the signed continuity state, and an implementation
@@ -2178,24 +2543,20 @@ Gallo                         Informational                    [Page 38]
    PIC is carrier-agnostic: the same continuity state can run over HTTP,
    over messaging systems such as Apache Kafka, or over any other
    transport.  For messaging in particular, channels SHOULD be
-
-
-
-Gallo                         Informational                    [Page 39]
-
-                         PIC Prover and Verifier               July 2026
-
-
-   encrypted.  A plain outsider who reads a continuity artifact cannot
-   continue it without satisfying the selected profile's PoR and
-   conformance requirements.  In the open core (Section 2.3), the core
-   does not restrict who continues; it pins the action and prevents
-   authority expansion.  Constraints on recipient or channel are
+   encrypted.  An unauthenticated outsider who only reads a continuity
+   artifact cannot forge the signatures or evidence required by the
+   selected profile.  That is not equivalent to successor designation.
+   In the open core (Section 2.3), the core does not preselect who
+   continues.  In current artifact-linked PIC-X, a realm-accepted,
+   contract-conforming workload that obtains the settled checkpoint can
+   advance it; within that accepted workload class, the checkpoint is
+   bearer-like.  A full profile must separately establish PoR and any
+   request binding it claims.  Constraints on recipient or channel are
    profile-specific (Section 6.6).  Encryption protects payload
    confidentiality and reduces the man-in-the-middle surface; it is not
    a source of the model's integrity.
 
-6.8.  Incremental Verification and Trusted Hops
+8.8.  Incremental Verification and Trusted Hops
 
    An incremental or history-limited profile validates only the
    continuity evidence it carries or references at the receiving hop,
@@ -2210,6 +2571,13 @@ Gallo                         Informational                    [Page 39]
    two or more consecutive colluding hops when the receiving Verifier
    lacks authenticated evidence of the earlier prefix.
 
+
+
+Gallo                         Informational                    [Page 46]
+
+                         PIC Prover and Verifier            October 2026
+
+
    Cryptographic predecessor references do not close this gap by
    themselves.  They prove linkage and order.  They do not prove that
    omitted authority-state content did not expand.  A deployment that
@@ -2218,29 +2586,18 @@ Gallo                         Informational                    [Page 39]
    validation, trusted central validation, authenticated checkpoints,
    succinct proofs, or an equivalent profile-defined mechanism.
 
-7.  Deployment Models
+9.  Deployment Models
 
    PIC runs the same model in different topologies.  The trade-off is
    between three properties the lightweight profile cannot maximize at
    once: *decentralization*, *low per-hop cost*, and *resistance to
    consecutive colluding hops* (Section 6.8).  A single faulty hop is
-   contained in _every_ model (Section 1.1); deployment only decides how
-   much — and on what — to spend to also resist collusion among
-   compromised-but-authorized parties.
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 40]
-
-                         PIC Prover and Verifier               July 2026
-
+   contained with respect to every invariant that the selected concrete
+   profile soundly realizes and that the receiving Verifier actually
+   checks (Section 1.1); deployment decides how much — and on what — to
+   spend to resist collusion among compromised-but-authorized parties.
+   Neither a central service nor full history compensates for an unsound
+   PoR realization or an unobserved request/effect boundary.
 
     +=================+=========+=================+===================+
     | Model           | Central | Per-hop cost    | Consecutive       |
@@ -2263,12 +2620,19 @@ Gallo                         Informational                    [Page 40]
     | (e.g. SNARK)    |         |                 |                   |
     +-----------------+---------+-----------------+-------------------+
 
-                                  Table 3
+                                  Table 4
 
    *  *Decentralized, history-limited.* Each hop verifies the evidence
       available under the selected profile.  It can be lightweight, but
       does not resist consecutive collusion unless the profile supplies
       authenticated prefix evidence.
+
+
+
+Gallo                         Informational                    [Page 47]
+
+                         PIC Prover and Verifier            October 2026
+
 
    *  *Decentralized, full-history.* The Verifier independently
       validates the relevant prefix.  No central party is required, but
@@ -2282,60 +2646,81 @@ Gallo                         Informational                    [Page 40]
       availability dependency.
 
    *  *Succinct proof.* A succinct proof — for example a SNARK or
-      accumulator — proves non-expansion over the whole prefix
-      (Section 5.3): decentralized, O(1) to verify, and collusion-
-      resistant, all at once — at the cost of proof-generation
-      complexity and a heavier cryptographic profile.
+      accumulator — may prove the selected profile's complete prefix-
+      acceptance predicate (Section 5.3), with succinct verification and
+      resistance to omitted invalid prefix steps under the proof-system
+      assumptions, at the cost of proof-generation complexity and a
+      heavier cryptographic profile.  A proof circuit that establishes
+      only non-expansion does not establish PoR or request binding.
 
    Stated plainly: *to resist collusion among compromised-but-authorized
    hops while keeping bounded forwarding and no advanced cryptography,
    use a central or federated validator, or another profile-defined
-
-
-
-Gallo                         Informational                    [Page 41]
-
-                         PIC Prover and Verifier               July 2026
-
-
    authenticated-prefix mechanism.* Fully decentralized and lightweight
    means trusting the prior validation boundary according to the
    selected profile.
 
-8.  Zero Trust
+10.  Zero Trust
 
-   PIC is zero-trust in a precise, checkable sense, not as a label.
-   Each property below is a concrete consequence of the model, not an
-   aspiration.
+   For a full-continuity realization, PIC supports zero-trust properties
+   in a precise, checkable sense, not as a label.  Each property below
+   is either an abstract-model consequence or explicitly profile-
+   conditional.  A partial artifact-linked implementation inherits only
+   the properties its concrete receiving predicate establishes.
 
    *  *No implicit trust from network location.* Authorization comes
-      from the signed continuity state, never from where a request
-      originates.  A caller inside the perimeter has exactly the
-      authority its lineage carries, and no more (Section 6.7).
+      from the validated continuity state and applicable policy, never
+      merely from where a request originates.  A caller inside the
+      perimeter has no more accepted authority than its validated
+      lineage carries (Section 6.7).
 
-   *  *Every hop is verified, never assumed.* No step is trusted because
-      a previous one was: the Verifier re-checks the transition it holds
-      — signature, predecessor link, freshness, profile-required
-      evidence and conformance, non-expansion, time, and profile-
-      required request/execution binding (Section 3.3) — and never
-      assumes the Prover already did.  The full-chain profile re-checks
-      _every_ hop; the incremental profile re-checks the immediate
-      transition and trusts prior verifiers inductively (Section 6.8).
 
-   *  *Least privilege by construction.* Authority only attenuates; each
-      hop carries or materializes the smallest context it needs and can
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 48]
+
+                         PIC Prover and Verifier            October 2026
+
+
+   *  *Every received advancement is checked under the selected
+      profile.* The Verifier re-checks the transition it holds —
+      signature, predecessor link, freshness, profile-required evidence
+      and conformance, non-expansion, time, and profile-required
+      request/execution binding (Section 3.3) — and never assumes the
+      Prover already did.  A full-chain profile re-checks _every_
+      represented hop; an incremental profile checks the immediate
+      transition and explicitly trusts authenticated prior validation
+      state (Section 6.8).
+
+   *  *Non-expansion by construction.* Authority only attenuates and can
       never regain what an ancestor dropped (Section 2.4).  A privilege
-      absent from the origin cannot appear anywhere downstream.
+      absent from the origin cannot appear anywhere downstream.  PIC
+      permits retaining predecessor authority and therefore does not, by
+      itself, prove that each hop carries the smallest authority it
+      could have used.
 
-   *  *Assume breach, contain it.* A buggy or compromised executor can
-      act arbitrarily in its own step, but it cannot propagate an
-      invalid authority state as a valid continuation (Section 1.1).
-      The blast radius is one hop, not the chain.
+   *  *Assume breach, bound accepted authority.* A buggy or compromised
+      executor can act arbitrarily in its own step, but a following
+      conforming Verifier with the required evidence rejects an
+      authority-expanding state (Section 1.1).  This statement does not
+      claim that physical effects, omitted causes, consecutive
+      collusion, or unobserved handoffs have a one-hop blast radius.
 
-   *  *Per-request, contextual decisions.* Each continuation is
-      authorized against the context that caused it, with freshness
-      (Section 6.1) and time bounds (Section 6.3) making the decision
-      specific to this request rather than a standing grant.
+   *  *Per-request, contextual decisions when bound.* When the selected
+      profile provides authenticated request/execution binding and the
+      enforcement point applies the executed-vs-bound rule, the
+      continuation decision is specific to that occurrence.  Freshness
+      (Section 6.1) and time bounds (Section 6.3) limit reuse but do not
+      by themselves prove which request caused the action.  Current
+      artifact-linked PIC-X does not implement this binding.
 
    *  *Identity is not authority.* Authenticating who acts does not by
       itself grant continuation; the authority exercised must be a valid
@@ -2343,99 +2728,57 @@ Gallo                         Informational                    [Page 41]
       identity does not confer authority the lineage never delegated to
       it.
 
-   These hold against a single faulty hop when the selected profile
-   gives the receiving Verifier the evidence needed to reject that hop.
-   The properties that quantify over the whole continuity prefix hold
 
 
 
-Gallo                         Informational                    [Page 42]
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                    [Page 49]
 
-                         PIC Prover and Verifier               July 2026
+                         PIC Prover and Verifier            October 2026
 
 
-   absolutely only when the relevant prefix is independently
-   authenticated: full-history validation, trusted central validation,
-   authenticated checkpoints, succinct proofs, or an equivalent profile-
-   defined mechanism.  The result is not "trust nothing" as a slogan but
-   a model where trust is earned per hop, verified explicitly, and
-   bounded by construction.
+   These hold against a single faulty hop only to the extent that the
+   selected profile gives the receiving Verifier sound evidence needed
+   to reject that hop.  Properties that quantify over the whole
+   continuity prefix hold absolutely only when the relevant prefix is
+   independently authenticated: full-history validation, trusted central
+   validation, authenticated checkpoints, succinct proofs, or an
+   equivalent profile-defined mechanism.  Claims about request-caused
+   protected effects additionally require causal completeness and
+   complete mediation.  The result is not "trust nothing" as a slogan
+   but a model where each claimed property has an explicit verification
+   and trust boundary.
 
-9.  Contributors
+11.  Privacy Considerations
 
-   The editors and contributors of this document are listed in the
-   *document header* above.  Listing is governed by Appendix B.7 of the
-   PIC Legal Appendices (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-legal.md).
+   Continuity artifacts can expose stable lineage identifiers,
+   positions, authority contexts, executor characteristics, key
+   identifiers, timestamps, and predecessor relationships.  Full-history
+   representations reveal more execution structure than checkpoints or
+   profile-defined selective evidence.  A profile should minimize
+   disclosed fields and retention while preserving every input required
+   by its claimed acceptance predicate, audit model, and revocation
+   behavior.
 
-10.  Acknowledgement
+12.  Registry Considerations
 
-   The *Provenance Identity Continuity (PIC) Model* — the theoretical
-   framework this specification expresses in normative form — was
-   created by *Nicola Gallo*. It first appeared on Zenodo on 1 December
-   2025 and is developed in full in the Proof-of-Continuity paper:
+   This document defines abstract and Profile 0.2 artifact semantics but
+   requests no external registry action.  A future interoperable wire
+   profile may define registry actions for token types, media types,
+   claims, algorithms, evidence types, or error values.
 
-   *  Gallo, N. (2025). _PIC Model — Provenance Identity Continuity for
-      Distributed Execution Systems_. Zenodo. zenodo.org/
-      records/17777421 (https://zenodo.org/records/17777421) (DOI:
-      10.5281/zenodo.17777421).
+13.  References
 
-   *  Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
-      Authority Propagation in Distributed Systems and AI Agents_.
-      Zenodo. zenodo.org/records/21285112 (https://zenodo.org/
-      records/21285112) (DOI: 10.5281/zenodo.21285112).
-
-   Authorship of the PIC Model remains with Nicola Gallo; the PIC
-   specifications are published and maintained by *Nitro Agility S.r.l.*
-   as Specification Steward.  Any work that references, implements, or
-   claims conformance with PIC must preserve this attribution,
-   distinguishing the *PIC Model* (author: Nicola Gallo) from the *PIC
-   Specifications* (steward: Nitro Agility S.r.l.), as required by the
-   *PIC Legal Appendices (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-legal.md)* (Appendix B, Attribution;
-   Appendix D, Acknowledgements), which are incorporated into this
-   specification by reference.
-
-11.  Legal Notices
-
-   The appendices governing:
-
-   *  *A.* Use of Automated Language Assistance,
-
-
-
-
-Gallo                         Informational                    [Page 43]
-
-                         PIC Prover and Verifier               July 2026
-
-
-   *  *B.* Authorship, Stewardship, Attribution, and Derivative Works,
-
-   *  *C.* Disclaimer and Limitation of Liability,
-
-   *  *D.* Acknowledgements,
-
-   are maintained in a single canonical document, the *PIC Legal
-   Appendices (https://github.com/pic-protocol/pic-
-   spec/blob/main/draft/0.2/pic-legal.md)* (draft/0.2/pic-legal.md), and
-   are *incorporated into this specification by reference* as if fully
-   set forth herein.
-
-   In case of conflict between this document and the PIC Legal
-   Appendices, the PIC Legal Appendices prevail for legal, governance,
-   licensing, and attribution matters.
-
-   This specification is subordinate to the PIC Specification
-   (https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-
-   spec.md), which defines the normative semantics of the PIC Model and
-   is the entry point of the specification set.  This document does not
-   introduce new conceptual authority, invariants, or authorship claims
-   beyond those defined in the PIC Legal Appendices.
-
-12.  References
-
-12.1.  Normative References
+13.1.  Normative References
 
    *  [3] Bradner, S. (1997). _Key words for use in RFCs to Indicate
       Requirement Levels_. BCP 14, RFC 2119. rfc-editor.org/rfc/rfc2119
@@ -2449,6 +2792,16 @@ Gallo                         Informational                    [Page 43]
       Mortimore, C. (2020). _OAuth 2.0 Token Exchange_. RFC 8693. rfc-
       editor.org/rfc/rfc8693 (https://www.rfc-editor.org/rfc/rfc8693)
 
+
+
+
+
+
+Gallo                         Informational                    [Page 50]
+
+                         PIC Prover and Verifier            October 2026
+
+
    *  [8] Jones, M., Bradley, J., & Sakimura, N. (2015). _JSON Web Token
       (JWT)_. RFC 7519. rfc-editor.org/rfc/rfc7519 (https://www.rfc-
       editor.org/rfc/rfc7519)
@@ -2456,15 +2809,6 @@ Gallo                         Informational                    [Page 43]
    *  [9] Jones, M., Bradley, J., & Sakimura, N. (2015). _JSON Web
       Signature (JWS)_. RFC 7515. rfc-editor.org/rfc/rfc7515
       (https://www.rfc-editor.org/rfc/rfc7515)
-
-
-
-
-
-Gallo                         Informational                    [Page 44]
-
-                         PIC Prover and Verifier               July 2026
-
 
    *  [10] Bormann, C., & Hoffman, P. (2020). _Concise Binary Object
       Representation (CBOR)_. STD 94, RFC 8949. rfc-editor.org/rfc/
@@ -2478,11 +2822,11 @@ Gallo                         Informational                    [Page 44]
       Disclosure for JSON Web Tokens_. RFC 9901. rfc-editor.org/rfc/
       rfc9901 (https://www.rfc-editor.org/rfc/rfc9901)
 
-12.2.  Informative References
+13.2.  Informative References
 
-   *  [1] Gallo, N. (2026). _Proof-of-Continuity: A Temporal Model for
-      Authority Propagation in Distributed Systems and AI Agents_.
-      arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
+   *  [1] Gallo, N. (9 July 2026). _Proof-of-Continuity: A Temporal
+      Model for Authority Propagation in Distributed Systems and AI
+      Agents_. arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
       (https://arxiv.org/abs/2607.08906)
 
    *  [2] Gallo, N. (2026). _PIC Lean Verification_. Lean 4
@@ -2500,6 +2844,59 @@ Gallo                         Informational                    [Page 44]
       Signatures_. RFC 9421. rfc-editor.org/rfc/rfc9421
       (https://www.rfc-editor.org/rfc/rfc9421)
 
+   *  [13] Gallo, N. (25 September 2026). _Beyond Proof of Possession: A
+      Relational Theory of Authority_. Zenodo.  DOI: 10.5281/
+      zenodo.23102206 (https://doi.org/10.5281/zenodo.23102206)
+
+
+
+
+
+
+Gallo                         Informational                    [Page 51]
+
+                         PIC Prover and Verifier            October 2026
+
+
+   *  [14] Gallo, N. (2 October 2026). _Full Provenance on the COSS
+      Causal Axis: An Event-Level Closure of Causal Attribution and
+      Confused-Deputy Exclusion_. Zenodo.  DOI: 10.5281/zenodo.23102373
+      (https://doi.org/10.5281/zenodo.23102373)
+
+   *  [15] Gallo, N. (5 December 2025). _Authority Propagation Models:
+      PoP vs PoC and the Confused Deputy Problem_. Zenodo.  DOI:
+      10.5281/zenodo.17833000 (https://doi.org/10.5281/zenodo.17833000)
+
+   *  [16] Gallo, N. (1 December 2025). _PIC Model — Provenance Identity
+      Continuity for Distributed Execution Systems_. Archived working
+      paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
+      (https://doi.org/10.5281/zenodo.17777421)
+
+14.  Document History
+
+   This section is informative.
+
+   *  *0.2 — 15 July 2026.* Initial public draft of the Prover and
+      Verifier procedures and Profile 0.2 representation.
+
+   *  *0.2 revision — 26 October 2026.* Clarified full versus artifact-
+      linked assurance, relational refinement, request/execution
+      binding, fan-out, causal completeness, current PIC-X behavior, and
+      standards-oriented document structure; added a standalone origin,
+      authorship, and historical record for independent distribution.
+
+15.  Acknowledgments
+
+   The origins and research history of the PIC Model are recorded above.
+   This document reserves acknowledgments for concrete review,
+   discussion, and editorial contributions to the Prover and Verifier
+   specification.
+
+16.  Contributors
+
+   The editor and current contributors are identified in the document
+   header and repository history.
+
 Author's Address
 
    Nicola Gallo
@@ -2512,9 +2909,4 @@ Author's Address
 
 
 
-
-
-
-
-
-Gallo                         Informational                    [Page 45]
+Gallo                         Informational                    [Page 52]
