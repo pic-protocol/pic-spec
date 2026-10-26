@@ -140,6 +140,9 @@ and non-expansion semantics. COSS places that coordinate beside other independen
 refer to one causal occurrence and one predecessor graph. COSS does not replace PIC, and PIC continuity alone does not establish continuity
 for the complete COSS product.
 
+The CER is the COSS continuity artifact. A PIC Context of Authority (PCA) remains the checkpoint or state evidence for the PIC authority
+coordinate and is carried or referenced by commitment under its PIC profile. The CER does not replace or reinterpret the PCA.
+
 ## Planned Companion Specifications
 
 This document is standalone and defines the record model and the semantic conditions for COSS PoR and PoC. A future **COSS Prover and
@@ -231,7 +234,7 @@ inherited automatically from a PIC implementation or from the formal proofs for 
 For an ordinary causal edge `p -> e`, COSS continuity requires:
 
 ~~~
-PoR_COSS(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every required j
+PoR_COSS(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every j in K
 ~~~
 
 PIC is the authority coordinate of this construction. For set-valued PIC authority `C`, the order is set inclusion:
@@ -247,7 +250,7 @@ If a coordinate translates between heterogeneous state spaces, the profile MUST 
 source and target orders, and state the semantic relation preserved across their behavior universes. A translation that is
 order-preserving but excessively permissive in its intended security meaning is a profile or deployment error [[4]](#references).
 
-At an ordinary multi-parent join, the child MUST be no more permissive than every parent in every required coordinate. For PIC authority:
+At an ordinary multi-parent join, the child MUST be no more permissive than every parent in every coordinate in `K`. For PIC authority:
 
 ~~~
 C(e) subset-of intersection of C(p), for every p in Pred(e)
@@ -306,6 +309,9 @@ coherence, refinement, freshness, revocation, and admission remain separate chec
 in `K`, its authority-handoff relationship check contributes the PIC realization of the causal edge; that check alone is not a complete COSS
 step result.
 
+COSS defines one PoR over the shared causal graph, not an independent PoR for each coordinate. A coordinate MAY carry its own predecessor
+reference, but `PredCoherent_COSS` requires that reference to resolve to the coordinate state committed by the same `CER(p)`.
+
 For a trusted-policy-selected coordinate set `K`, define:
 
 - `OccurrenceBind_COSS(e, K)` to mean that the behavior and every required evidence item are bound to the occurrence represented by `e`;
@@ -330,19 +336,30 @@ ordinary refinement of unaffected coordinates remain mandatory.
 
 `PoC_COSS^K(e)` holds only when the resolved predecessor graph for `Hist(e)` is rooted, acyclic, and complete under the selected profile;
 every represented edge has an accepted COSS PoR; every ordinary edge satisfies `Step_COSS^K`; and every non-conservative transition is an
-explicitly authorized relaxation satisfying the applicable profile rule.
+explicitly authorized relaxation satisfying the applicable profile rule together with PoR, occurrence binding, predecessor coherence,
+evidence validity, and ordinary refinement of every unaffected coordinate.
 
 Projection of a successful COSS PoC to the PIC coordinate entails PIC PoC only on a path segment containing exclusively ordinary PIC
 transitions. At an authorized relaxation, the preceding authority bound does not continue across the relaxation; the ordinary bound restarts
 from the explicitly authorized resulting state [[4]](#references). A COSS PoC that contains such a boundary therefore MUST NOT be presented
 as one end-to-end PIC PoC across that boundary. Likewise, the PIC confused-deputy exclusion result applies only to request-to-effect paths
-that satisfy the paper's ordinary-segment premise, together with causal completeness and protected-effect mediation [[4]](#references).
+that satisfy the ordinary-segment premise of [[4]](#references), together with causal completeness and protected-effect mediation.
 
 PIC PoC alone does not entail COSS PoC. Joint admission is a subsequent decision: `Admit_COSS^K(e)` additionally requires every coordinate in
 `K` to admit the committed behavior at the protected effect.
 
 There is one predecessor graph. There is not an unrelated PIC chain, IFC chain, and execution-integrity chain later correlated by timestamp or
 actor name.
+
+## PoC Representation and Validation Cost
+
+The semantic predicate `PoC_COSS^K(e)` ranges over the complete represented history `Hist(e)`. This does not require every CER to transport
+that history as one fully materialized graph. A profile MAY use full-history validation, authenticated checkpoints, compacted or referenced
+history, trusted validation state, succinct proofs, or an equivalent mechanism.
+
+Such a profile MUST define what the Verifier checks independently, which history-completeness property the representation establishes, and
+every trust and soundness assumption placed on a checkpoint issuer, history service, prior verifier, or proof system. Compaction MUST NOT
+turn an omitted or invalid required transition into an accepted PoC. The verifier result MUST report the assurance actually established.
 
 ## Evidence and Verification Results
 
@@ -361,9 +378,9 @@ Admit_COSS^K(e)  = accepted or rejected for the committed behavior
 A profile MAY define a serializable verifier-result object, but it MUST keep that result distinct from the evidence record. The result MUST
 identify the Verifier, trust inputs, exact coordinate set `K`, profile versions, evaluation time, exact record or graph evaluated, and the
 assurance established for every required coordinate. If a profile uses the labels `full-continuity` and `artifact-linked`, it MUST use them
-consistently with the PIC Prover and Verifier specification: an artifact-linked result establishes only the stated linkage properties and
-MUST NOT be presented as full semantic PoR or PoC. A full COSS continuity result requires full assurance for the causal relation and for every
-coordinate in `K`; an aggregate result MUST NOT hide a weaker required-coordinate result.
+consistently with the PIC Prover and Verifier specification indexed by [[1]](#references): an artifact-linked result establishes only the
+stated linkage properties and MUST NOT be presented as full semantic PoR or PoC. A full COSS continuity result requires full assurance for
+the causal relation and for every coordinate in `K`; an aggregate result MUST NOT hide a weaker required-coordinate result.
 
 # COSS Evidence Record
 

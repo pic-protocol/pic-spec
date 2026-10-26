@@ -94,17 +94,17 @@ Table of Contents
    3.  Documents . . . . . . . . . . . . . . . . . . . . . . . . . .   5
    4.  Origins, Authorship, and Historical Record  . . . . . . . . .   7
      4.1.  Historical References . . . . . . . . . . . . . . . . . .   7
+     4.2.  Visual References . . . . . . . . . . . . . . . . . . . .   8
    5.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
    6.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   9
    7.  Registry Considerations . . . . . . . . . . . . . . . . . . .   9
    8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
-     8.2.  Informative References  . . . . . . . . . . . . . . . . .   9
-   9.  Document History  . . . . . . . . . . . . . . . . . . . . . .  10
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  10
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  10
+   9.  Document History  . . . . . . . . . . . . . . . . . . . . . .  11
    10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  11
    11. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  11
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  11
-
 
 
 
@@ -435,11 +435,11 @@ Gallo                         Informational                     [Page 7]
    reuse of PIC specification materials is governed separately by the
    applicable CC BY 4.0 license.
 
+4.2.  Visual References
 
-
-
-
-
+   The following supplementary videos provide visual explanations of
+   causal time, same-history evidence, and full provenance in PIC and
+   COSS:
 
 
 
@@ -449,6 +449,22 @@ Gallo                         Informational                     [Page 8]
 
                             PIC Specification               October 2026
 
+
+   *  *18 October 2026 — causal time in authorization.* _Encoding causal
+      time in the authorization protocol · Same key, different history_,
+      published by Permguard [9] (Section 8).
+
+   *  *19 October 2026 — authority and information on one history.*
+      _Temporal evidence: authority and information on one history · A
+      single evidence_, published by Permguard [10] (Section 8).
+
+   *  *20 October 2026 — agentic loops and effect provenance.* _Agentic
+      loops and full provenance: the evidence of every effect_,
+      published by Permguard [11] (Section 8).
+
+   These audiovisual references are informative explanations.  They do
+   not replace the formal publications or define conformance
+   requirements.
 
 5.  Security Considerations
 
@@ -479,6 +495,17 @@ Gallo                         Informational                     [Page 8]
 
 8.  References
 
+
+
+
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                            PIC Specification               October 2026
+
+
 8.1.  Normative References
 
    *  [2] Bradner, S. (1997). _Key words for use in RFCs to Indicate
@@ -495,16 +522,6 @@ Gallo                         Informational                     [Page 8]
       Model for Authority Propagation in Distributed Systems and AI
       Agents_. arXiv:2607.08906 [cs.CR]. arxiv.org/abs/2607.08906
       (https://arxiv.org/abs/2607.08906)
-
-
-
-
-
-
-Gallo                         Informational                     [Page 9]
-
-                            PIC Specification               October 2026
-
 
    *  [4] Gallo, N. (25 September 2026). _Beyond Proof of Possession: A
       Relational Theory of Authority_. Zenodo.  DOI: 10.5281/
@@ -532,6 +549,29 @@ Gallo                         Informational                     [Page 9]
       (https://www.nca-ieee.org/2026/).  IEEE Xplore DOI forthcoming;
       this reference will be updated when it becomes available.
 
+   *  [9] Permguard. (18 October 2026). _Encoding causal time in the
+      authorization protocol · Same key, different history_. YouTube
+      video. youtube.com/watch?v=liYpy6QaBGo (https://www.youtube.com/
+      watch?v=liYpy6QaBGo)
+
+
+
+
+Gallo                         Informational                    [Page 10]
+
+                            PIC Specification               October 2026
+
+
+   *  [10] Permguard. (19 October 2026). _Temporal evidence: authority
+      and information on one history · A single evidence_. YouTube
+      video. youtube.com/watch?v=cWoJiUnwHYg (https://www.youtube.com/
+      watch?v=cWoJiUnwHYg)
+
+   *  [11] Permguard. (20 October 2026). _Agentic loops and full
+      provenance: the evidence of every effect_. YouTube video.
+      youtube.com/watch?v=yceBw8TD6Ek (https://www.youtube.com/
+      watch?v=yceBw8TD6Ek)
+
 9.  Document History
 
    This section is informative.
@@ -549,18 +589,6 @@ Gallo                         Informational                     [Page 9]
       specification for transportable same-occurrence evidence from
       several security coordinates and explicit COSS Proof of
       Relationship and Proof of Continuity verification.
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 10]
-
-                            PIC Specification               October 2026
-
 
 10.  Acknowledgments
 
@@ -581,34 +609,6 @@ Author's Address
    Nicola Gallo
    Nitro Agility S.r.l.
    Email: nicola.gallo@nitroagility.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

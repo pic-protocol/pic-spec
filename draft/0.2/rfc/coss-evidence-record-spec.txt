@@ -128,34 +128,34 @@ Table of Contents
    2.  One Effect, Several Questions . . . . . . . . . . . . . . . .   6
      2.1.  One Causal Axis . . . . . . . . . . . . . . . . . . . . .   7
    3.  COSS Security State . . . . . . . . . . . . . . . . . . . . .   7
-     3.1.  Execution Integrity Coordinate  . . . . . . . . . . . . .   8
-   4.  COSS Proof of Relationship and Proof of Continuity  . . . . .   9
-     4.1.  Evidence and Verification Results . . . . . . . . . . . .  12
-   5.  COSS Evidence Record  . . . . . . . . . . . . . . . . . . . .  12
-     5.1.  Same-Occurrence Binding . . . . . . . . . . . . . . . . .  14
-     5.2.  Authorized Relaxation Evidence  . . . . . . . . . . . . .  15
-     5.3.  References Are Not Validation . . . . . . . . . . . . . .  16
-     5.4.  Illustrative Record . . . . . . . . . . . . . . . . . . .  16
-     5.5.  Minimal Integration Contract  . . . . . . . . . . . . . .  18
-   6.  Verification  . . . . . . . . . . . . . . . . . . . . . . . .  18
-   7.  Worked Decision at Dave . . . . . . . . . . . . . . . . . . .  20
-     7.1.  Rejected Ordinary Path  . . . . . . . . . . . . . . . . .  20
-     7.2.  Accepted DLP Path . . . . . . . . . . . . . . . . . . . .  20
-   8.  Conformance . . . . . . . . . . . . . . . . . . . . . . . . .  22
-   9.  Origins, Authorship, and Historical Record  . . . . . . . . .  22
-     9.1.  Historical References . . . . . . . . . . . . . . . . . .  23
-     9.2.  Visual References . . . . . . . . . . . . . . . . . . . .  24
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  24
-   11. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  25
-   12. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  25
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  25
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  25
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  25
-   14. Document History  . . . . . . . . . . . . . . . . . . . . . .  27
-   15. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  27
-   16. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  27
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  27
-
+     3.1.  Execution Integrity Coordinate  . . . . . . . . . . . . .   9
+   4.  COSS Proof of Relationship and Proof of Continuity  . . . . .  10
+     4.1.  PoC Representation and Validation Cost  . . . . . . . . .  12
+     4.2.  Evidence and Verification Results . . . . . . . . . . . .  13
+   5.  COSS Evidence Record  . . . . . . . . . . . . . . . . . . . .  13
+     5.1.  Same-Occurrence Binding . . . . . . . . . . . . . . . . .  15
+     5.2.  Authorized Relaxation Evidence  . . . . . . . . . . . . .  16
+     5.3.  References Are Not Validation . . . . . . . . . . . . . .  17
+     5.4.  Illustrative Record . . . . . . . . . . . . . . . . . . .  17
+     5.5.  Minimal Integration Contract  . . . . . . . . . . . . . .  19
+   6.  Verification  . . . . . . . . . . . . . . . . . . . . . . . .  19
+   7.  Worked Decision at Dave . . . . . . . . . . . . . . . . . . .  21
+     7.1.  Rejected Ordinary Path  . . . . . . . . . . . . . . . . .  21
+     7.2.  Accepted DLP Path . . . . . . . . . . . . . . . . . . . .  21
+   8.  Conformance . . . . . . . . . . . . . . . . . . . . . . . . .  23
+   9.  Origins, Authorship, and Historical Record  . . . . . . . . .  23
+     9.1.  Historical References . . . . . . . . . . . . . . . . . .  24
+     9.2.  Visual References . . . . . . . . . . . . . . . . . . . .  25
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  25
+   11. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  26
+   12. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  26
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  26
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  26
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  26
+   14. Document History  . . . . . . . . . . . . . . . . . . . . . .  28
+   15. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  28
+   16. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  28
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  28
 
 
 
@@ -282,6 +282,11 @@ Gallo                         Informational                     [Page 5]
                           COSS Evidence Record              October 2026
 
 
+   The CER is the COSS continuity artifact.  A PIC Context of Authority
+   (PCA) remains the checkpoint or state evidence for the PIC authority
+   coordinate and is carried or referenced by commitment under its PIC
+   profile.  The CER does not replace or reinterpret the PCA.
+
 1.5.  Planned Companion Specifications
 
    This document is standalone and defines the record model and the
@@ -320,14 +325,9 @@ Gallo                         Informational                     [Page 5]
    The two permissions can be individually valid while the proposed
    effect remains inadmissible.  Dave receives a permission and bytes:
 
-   send request
-     permission: send email
-     bytes:      52 65 6c 61 7a 69 6f 6e 65 ...
 
-   authority question: may this occurrence send email?
-   flow question:      may these bytes flow to this destination?
-   causal question:    which earlier occurrences produced this
-                       request and these bytes?
+
+
 
 
 
@@ -337,6 +337,15 @@ Gallo                         Informational                     [Page 6]
 
                           COSS Evidence Record              October 2026
 
+
+   send request
+     permission: send email
+     bytes:      52 65 6c 61 7a 69 6f 6e 65 ...
+
+   authority question: may this occurrence send email?
+   flow question:      may these bytes flow to this destination?
+   causal question:    which earlier occurrences produced this
+                       request and these bytes?
 
    Neither the bytes nor the send permission answers all three
    questions.  A log entry with an actor and timestamp does not
@@ -378,21 +387,19 @@ Gallo                         Informational                     [Page 6]
 
    *  the behaviors admitted by a state; and
 
-   *  the evidence and verification procedure that establish its claims.
-
-   For states x' and x, every conformant coordinate profile MUST make
-   its order semantically monotone:
-
-   x' <=_j x  implies  admitted_j(x') subset-of admitted_j(x)
-
-
-
 
 
 Gallo                         Informational                     [Page 7]
 
                           COSS Evidence Record              October 2026
 
+
+   *  the evidence and verification procedure that establish its claims.
+
+   For states x' and x, every conformant coordinate profile MUST make
+   its order semantically monotone:
+
+   x' <=_j x  implies  admitted_j(x') subset-of admitted_j(x)
 
    The profile MUST justify this implication for its concrete state
    representation and behavior semantics.  It MUST NOT infer semantic
@@ -403,7 +410,7 @@ Gallo                         Informational                     [Page 7]
 
    For an ordinary causal edge p -> e, COSS continuity requires:
 
-   PoR_COSS(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every required j
+   PoR_COSS(p, e)  AND  sigma_j(e) <=_j sigma_j(p)  for every j in K
 
    PIC is the authority coordinate of this construction.  For set-valued
    PIC authority C, the order is set inclusion:
@@ -423,7 +430,7 @@ Gallo                         Informational                     [Page 7]
    meaning is a profile or deployment error [4] (Section 13).
 
    At an ordinary multi-parent join, the child MUST be no more
-   permissive than every parent in every required coordinate.  For PIC
+   permissive than every parent in every coordinate in K.  For PIC
    authority:
 
    C(e) subset-of intersection of C(p), for every p in Pred(e)
@@ -432,6 +439,16 @@ Gallo                         Informational                     [Page 7]
    other non-conservative change MUST be represented as an explicit
    authorized relaxation.  It MUST NOT be presented as an ordinary
    continuation.
+
+
+
+
+
+
+Gallo                         Informational                     [Page 8]
+
+                          COSS Evidence Record              October 2026
+
 
 3.1.  Execution Integrity Coordinate
 
@@ -442,13 +459,6 @@ Gallo                         Informational                     [Page 7]
    signing key, policy commitment, or transcript commitment.  The
    coordinate is semantic and implementation-independent: an evidence
    format or project is not itself a coordinate.
-
-
-
-Gallo                         Informational                     [Page 8]
-
-                          COSS Evidence Record              October 2026
-
 
    An execution-integrity profile MUST define its state space, the order
    between states, the behaviors admitted at each state, the exact
@@ -480,6 +490,22 @@ Gallo                         Informational                     [Page 8]
    future version and defines candidate attestation grades and external
    platform-verifier inputs [12] (Section 13).
 
+
+
+
+
+
+
+
+
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                          COSS Evidence Record              October 2026
+
+
    A future COSS-to-TRACE profile may use a TRACE record as occurrence
    evidence and may map independently verified TRACE runtime results
    into the execution-integrity coordinate.  Such a profile MUST
@@ -493,18 +519,6 @@ Gallo                         Informational                     [Page 8]
 4.  COSS Proof of Relationship and Proof of Continuity
 
    PoP, PoR, and PoC answer different questions:
-
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 9]
-
-                          COSS Evidence Record              October 2026
-
 
    +===========+======================+================================+
    | Primitive | Question             | Evidence consequence           |
@@ -540,20 +554,6 @@ Gallo                         Informational                     [Page 9]
    the claimed edge is a valid causal continuation under the selected
    relationship profile.  Profile-specific checks whose purpose is to
    witness that causal relation are part of its concrete PoR
-   realization.  Occurrence binding, coordinate-evidence validity,
-   predecessor-state coherence, refinement, freshness, revocation, and
-   admission remain separate checks even when all are required to accept
-   a step.  When PIC is in K, its authority-handoff relationship check
-   contributes the PIC realization of the causal edge; that check alone
-   is not a complete COSS step result.
-
-   For a trusted-policy-selected coordinate set K, define:
-
-   *  OccurrenceBind_COSS(e, K) to mean that the behavior and every
-      required evidence item are bound to the occurrence represented by
-      e;
-
-
 
 
 
@@ -561,6 +561,24 @@ Gallo                         Informational                    [Page 10]
 
                           COSS Evidence Record              October 2026
 
+
+   realization.  Occurrence binding, coordinate-evidence validity,
+   predecessor-state coherence, refinement, freshness, revocation, and
+   admission remain separate checks even when all are required to accept
+   a step.  When PIC is in K, its authority-handoff relationship check
+   contributes the PIC realization of the causal edge; that check alone
+   is not a complete COSS step result.
+
+   COSS defines one PoR over the shared causal graph, not an independent
+   PoR for each coordinate.  A coordinate MAY carry its own predecessor
+   reference, but PredCoherent_COSS requires that reference to resolve
+   to the coordinate state committed by the same CER(p).
+
+   For a trusted-policy-selected coordinate set K, define:
+
+   *  OccurrenceBind_COSS(e, K) to mean that the behavior and every
+      required evidence item are bound to the occurrence represented by
+      e;
 
    *  PredCoherent_COSS(p, e, K) to mean that every coordinate-specific
       predecessor reference resolves to the corresponding coordinate
@@ -585,29 +603,11 @@ Gallo                         Informational                    [Page 10]
    evidence validity, and ordinary refinement of unaffected coordinates
    remain mandatory.
 
-   PoC_COSS^K(e) holds only when the resolved predecessor graph for
-   Hist(e) is rooted, acyclic, and complete under the selected profile;
-   every represented edge has an accepted COSS PoR; every ordinary edge
-   satisfies Step_COSS^K; and every non-conservative transition is an
-   explicitly authorized relaxation satisfying the applicable profile
-   rule.
 
-   Projection of a successful COSS PoC to the PIC coordinate entails PIC
-   PoC only on a path segment containing exclusively ordinary PIC
-   transitions.  At an authorized relaxation, the preceding authority
-   bound does not continue across the relaxation; the ordinary bound
-   restarts from the explicitly authorized resulting state [4]
-   (Section 13).  A COSS PoC that contains such a boundary therefore
-   MUST NOT be presented as one end-to-end PIC PoC across that boundary.
-   Likewise, the PIC confused-deputy exclusion result applies only to
-   request-to-effect paths that satisfy the paper's ordinary-segment
-   premise, together with causal completeness and protected-effect
-   mediation [4] (Section 13).
 
-   PIC PoC alone does not entail COSS PoC.  Joint admission is a
-   subsequent decision: Admit_COSS^K(e) additionally requires every
-   coordinate in K to admit the committed behavior at the protected
-   effect.
+
+
+
 
 
 
@@ -618,11 +618,63 @@ Gallo                         Informational                    [Page 11]
                           COSS Evidence Record              October 2026
 
 
+   PoC_COSS^K(e) holds only when the resolved predecessor graph for
+   Hist(e) is rooted, acyclic, and complete under the selected profile;
+   every represented edge has an accepted COSS PoR; every ordinary edge
+   satisfies Step_COSS^K; and every non-conservative transition is an
+   explicitly authorized relaxation satisfying the applicable profile
+   rule together with PoR, occurrence binding, predecessor coherence,
+   evidence validity, and ordinary refinement of every unaffected
+   coordinate.
+
+   Projection of a successful COSS PoC to the PIC coordinate entails PIC
+   PoC only on a path segment containing exclusively ordinary PIC
+   transitions.  At an authorized relaxation, the preceding authority
+   bound does not continue across the relaxation; the ordinary bound
+   restarts from the explicitly authorized resulting state [4]
+   (Section 13).  A COSS PoC that contains such a boundary therefore
+   MUST NOT be presented as one end-to-end PIC PoC across that boundary.
+   Likewise, the PIC confused-deputy exclusion result applies only to
+   request-to-effect paths that satisfy the ordinary-segment premise of
+   [4] (Section 13), together with causal completeness and protected-
+   effect mediation.
+
+   PIC PoC alone does not entail COSS PoC.  Joint admission is a
+   subsequent decision: Admit_COSS^K(e) additionally requires every
+   coordinate in K to admit the committed behavior at the protected
+   effect.
+
    There is one predecessor graph.  There is not an unrelated PIC chain,
    IFC chain, and execution-integrity chain later correlated by
    timestamp or actor name.
 
-4.1.  Evidence and Verification Results
+4.1.  PoC Representation and Validation Cost
+
+   The semantic predicate PoC_COSS^K(e) ranges over the complete
+   represented history Hist(e).  This does not require every CER to
+   transport that history as one fully materialized graph.  A profile
+   MAY use full-history validation, authenticated checkpoints, compacted
+   or referenced history, trusted validation state, succinct proofs, or
+   an equivalent mechanism.
+
+   Such a profile MUST define what the Verifier checks independently,
+   which history-completeness property the representation establishes,
+   and every trust and soundness assumption placed on a checkpoint
+   issuer, history service, prior verifier, or proof system.  Compaction
+   MUST NOT turn an omitted or invalid required transition into an
+   accepted PoC.  The verifier result MUST report the assurance actually
+   established.
+
+
+
+
+
+Gallo                         Informational                    [Page 12]
+
+                          COSS Evidence Record              October 2026
+
+
+4.2.  Evidence and Verification Results
 
    A COSS Evidence Record is witness material.  It carries or references
    the authenticated occurrence, predecessor, behavior, coordinate, and
@@ -642,12 +694,12 @@ Gallo                         Informational                    [Page 11]
    profile versions, evaluation time, exact record or graph evaluated,
    and the assurance established for every required coordinate.  If a
    profile uses the labels full-continuity and artifact-linked, it MUST
-   use them consistently with the PIC Prover and Verifier specification:
-   an artifact-linked result establishes only the stated linkage
-   properties and MUST NOT be presented as full semantic PoR or PoC.  A
-   full COSS continuity result requires full assurance for the causal
-   relation and for every coordinate in K; an aggregate result MUST NOT
-   hide a weaker required-coordinate result.
+   use them consistently with the PIC Prover and Verifier specification
+   indexed by [1] (Section 13): an artifact-linked result establishes
+   only the stated linkage properties and MUST NOT be presented as full
+   semantic PoR or PoC.  A full COSS continuity result requires full
+   assurance for the causal relation and for every coordinate in K; an
+   aggregate result MUST NOT hide a weaker required-coordinate result.
 
 5.  COSS Evidence Record
 
@@ -669,7 +721,11 @@ Gallo                         Informational                    [Page 11]
 
 
 
-Gallo                         Informational                    [Page 12]
+
+
+
+
+Gallo                         Informational                    [Page 13]
 
                           COSS Evidence Record              October 2026
 
@@ -725,7 +781,7 @@ Gallo                         Informational                    [Page 12]
 
 
 
-Gallo                         Informational                    [Page 13]
+Gallo                         Informational                    [Page 14]
 
                           COSS Evidence Record              October 2026
 
@@ -781,7 +837,7 @@ Gallo                         Informational                    [Page 13]
 
 
 
-Gallo                         Informational                    [Page 14]
+Gallo                         Informational                    [Page 15]
 
                           COSS Evidence Record              October 2026
 
@@ -837,7 +893,7 @@ Gallo                         Informational                    [Page 14]
 
 
 
-Gallo                         Informational                    [Page 15]
+Gallo                         Informational                    [Page 16]
 
                           COSS Evidence Record              October 2026
 
@@ -893,7 +949,7 @@ Gallo                         Informational                    [Page 15]
 
 
 
-Gallo                         Informational                    [Page 16]
+Gallo                         Informational                    [Page 17]
 
                           COSS Evidence Record              October 2026
 
@@ -949,7 +1005,7 @@ Gallo                         Informational                    [Page 16]
 
 
 
-Gallo                         Informational                    [Page 17]
+Gallo                         Informational                    [Page 18]
 
                           COSS Evidence Record              October 2026
 
@@ -1005,7 +1061,7 @@ Gallo                         Informational                    [Page 17]
 
 
 
-Gallo                         Informational                    [Page 18]
+Gallo                         Informational                    [Page 19]
 
                           COSS Evidence Record              October 2026
 
@@ -1061,7 +1117,7 @@ Gallo                         Informational                    [Page 18]
 
 
 
-Gallo                         Informational                    [Page 19]
+Gallo                         Informational                    [Page 20]
 
                           COSS Evidence Record              October 2026
 
@@ -1117,7 +1173,7 @@ Gallo                         Informational                    [Page 19]
 
 
 
-Gallo                         Informational                    [Page 20]
+Gallo                         Informational                    [Page 21]
 
                           COSS Evidence Record              October 2026
 
@@ -1173,7 +1229,7 @@ Gallo                         Informational                    [Page 20]
 
 
 
-Gallo                         Informational                    [Page 21]
+Gallo                         Informational                    [Page 22]
 
                           COSS Evidence Record              October 2026
 
@@ -1229,7 +1285,7 @@ Gallo                         Informational                    [Page 21]
 
 
 
-Gallo                         Informational                    [Page 22]
+Gallo                         Informational                    [Page 23]
 
                           COSS Evidence Record              October 2026
 
@@ -1285,7 +1341,7 @@ Gallo                         Informational                    [Page 22]
 
 
 
-Gallo                         Informational                    [Page 23]
+Gallo                         Informational                    [Page 24]
 
                           COSS Evidence Record              October 2026
 
@@ -1341,7 +1397,7 @@ Gallo                         Informational                    [Page 23]
 
 
 
-Gallo                         Informational                    [Page 24]
+Gallo                         Informational                    [Page 25]
 
                           COSS Evidence Record              October 2026
 
@@ -1397,7 +1453,7 @@ Gallo                         Informational                    [Page 24]
 
 
 
-Gallo                         Informational                    [Page 25]
+Gallo                         Informational                    [Page 26]
 
                           COSS Evidence Record              October 2026
 
@@ -1453,7 +1509,7 @@ Gallo                         Informational                    [Page 25]
 
 
 
-Gallo                         Informational                    [Page 26]
+Gallo                         Informational                    [Page 27]
 
                           COSS Evidence Record              October 2026
 
@@ -1509,4 +1565,4 @@ Author's Address
 
 
 
-Gallo                         Informational                    [Page 27]
+Gallo                         Informational                    [Page 28]

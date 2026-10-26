@@ -212,6 +212,19 @@ tags and immutable records identify the exact text applicable to a review or con
 to cite the primary publication that supports the formal property they discuss. Copyright attribution for reuse of PIC specification
 materials is governed separately by the applicable CC BY 4.0 license.
 
+## Visual References
+
+The following supplementary videos provide visual explanations of causal time, same-history evidence, and full provenance in PIC and COSS:
+
+- **18 October 2026 — causal time in authorization.** *Encoding causal time in the authorization protocol · Same key, different history*,
+  published by Permguard [[9]](#references).
+- **19 October 2026 — authority and information on one history.** *Temporal evidence: authority and information on one history · A single
+  evidence*, published by Permguard [[10]](#references).
+- **20 October 2026 — agentic loops and effect provenance.** *Agentic loops and full provenance: the evidence of every effect*, published
+  by Permguard [[11]](#references).
+
+These audiovisual references are informative explanations. They do not replace the formal publications or define conformance requirements.
+
 # Security Considerations
 
 The security consequences of PIC depend on the concrete profile and its realization of PoR, non-expansion, freshness, request or execution
@@ -245,6 +258,9 @@ may define registries for identifiers, algorithms, evidence types, or error valu
 - [6] Gallo, N. (5 December 2025). *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*. Zenodo. DOI: [10.5281/zenodo.17833000](https://doi.org/10.5281/zenodo.17833000)
 - [7] Gallo, N. (1 December 2025). *PIC Model — Provenance Identity Continuity for Distributed Execution Systems*. Archived working paper. Zenodo. DOI: [10.5281/zenodo.17777421](https://doi.org/10.5281/zenodo.17777421)
 - [8] Gallo, N., Silvestri, S., & Radesca, A. (forthcoming 2026). *Authority Continuity for Verifiable Lineage in Distributed Systems and AI Agents*. Accepted paper, 24th IEEE International Symposium on Network Computing and Applications (NCA 2026), 10–13 November 2026, Ortigia–Syracuse, Italy. [nca-ieee.org/2026](https://www.nca-ieee.org/2026/). IEEE Xplore DOI forthcoming; this reference will be updated when it becomes available.
+- [9] Permguard. (18 October 2026). *Encoding causal time in the authorization protocol · Same key, different history*. YouTube video. [youtube.com/watch?v=liYpy6QaBGo](https://www.youtube.com/watch?v=liYpy6QaBGo)
+- [10] Permguard. (19 October 2026). *Temporal evidence: authority and information on one history · A single evidence*. YouTube video. [youtube.com/watch?v=cWoJiUnwHYg](https://www.youtube.com/watch?v=cWoJiUnwHYg)
+- [11] Permguard. (20 October 2026). *Agentic loops and full provenance: the evidence of every effect*. YouTube video. [youtube.com/watch?v=yceBw8TD6Ek](https://www.youtube.com/watch?v=yceBw8TD6Ek)
 
 # Document History
 
