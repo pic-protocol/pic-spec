@@ -350,16 +350,16 @@ Specification Steward.
 
 The publicly verifiable research record is:
 
-- **1 December 2025 — initial public PIC Model working paper.** *PIC Model — Provenance Identity Continuity for Distributed Execution
+- **1 December 2025 — initial public PIC Model working paper.** Nicola Gallo. *PIC Model — Provenance Identity Continuity for Distributed Execution
   Systems*, Zenodo record 17777421 [[8]](#references). That archived draft is retained for historical reference and is not an implementation
   specification.
-- **5 December 2025 — authority-propagation analysis.** *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*,
+- **5 December 2025 — authority-propagation analysis.** Nicola Gallo. *Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem*,
   Zenodo record 17833000 [[7]](#references).
-- **9 July 2026 — formal Proof-of-Continuity paper.** *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed
+- **9 July 2026 — formal Proof-of-Continuity paper.** Nicola Gallo. *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed
   Systems and AI Agents*, arXiv:2607.08906 [[1]](#references).
-- **25 September 2026 — relational authority theory.** *Beyond Proof of Possession: A Relational Theory of Authority*, Zenodo record
+- **25 September 2026 — relational authority theory.** Nicola Gallo. *Beyond Proof of Possession: A Relational Theory of Authority*, Zenodo record
   23102206 [[5]](#references).
-- **2 October 2026 — event-level causal closure.** *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
+- **2 October 2026 — event-level causal closure.** Nicola Gallo. *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
   and Confused-Deputy Exclusion*, Zenodo record 23102373 [[6]](#references).
 - **10–13 November 2026 — IEEE NCA 2026 conference paper (forthcoming).** Gallo, N., Silvestri, S., and Radesca, A. *Authority Continuity for
   Verifiable Lineage in Distributed Systems and AI Agents*. Accepted for the 24th IEEE International Symposium on Network Computing and

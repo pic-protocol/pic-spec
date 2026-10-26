@@ -1294,29 +1294,29 @@ Gallo                         Informational                    [Page 23]
 
    The publicly verifiable research record is:
 
-   *  *1 December 2025 — initial public PIC Model working paper.* _PIC
-      Model — Provenance Identity Continuity for Distributed Execution
-      Systems_, Zenodo record 17777421 [9] (Section 13).  That archived
-      draft is retained for historical reference and is not an
+   *  *1 December 2025 — initial public PIC Model working paper.* Nicola
+      Gallo. _PIC Model — Provenance Identity Continuity for Distributed
+      Execution Systems_, Zenodo record 17777421 [9] (Section 13).  That
+      archived draft is retained for historical reference and is not an
       implementation specification.
 
-   *  *5 December 2025 — authority-propagation analysis.* _Authority
-      Propagation Models: PoP vs PoC and the Confused Deputy Problem_,
-      Zenodo record 17833000 [8] (Section 13).
+   *  *5 December 2025 — authority-propagation analysis.* Nicola Gallo.
+      _Authority Propagation Models: PoP vs PoC and the Confused Deputy
+      Problem_, Zenodo record 17833000 [8] (Section 13).
 
-   *  *9 July 2026 — formal Proof-of-Continuity paper.* _Proof-of-
-      Continuity: A Temporal Model for Authority Propagation in
-      Distributed Systems and AI Agents_, arXiv:2607.08906 [5]
+   *  *9 July 2026 — formal Proof-of-Continuity paper.* Nicola Gallo.
+      _Proof-of-Continuity: A Temporal Model for Authority Propagation
+      in Distributed Systems and AI Agents_, arXiv:2607.08906 [5]
       (Section 13).
 
-   *  *25 September 2026 — relational authority theory.* _Beyond Proof
-      of Possession: A Relational Theory of Authority_, Zenodo record
-      23102206 [6] (Section 13).
+   *  *25 September 2026 — relational authority theory.* Nicola Gallo.
+      _Beyond Proof of Possession: A Relational Theory of Authority_,
+      Zenodo record 23102206 [6] (Section 13).
 
    *  *2 October 2026 — event-level causal closure and COSS product
-      model.* _Full Provenance on the COSS Causal Axis: An Event-Level
-      Closure of Causal Attribution and Confused-Deputy Exclusion_,
-      Zenodo record 23102373 [4] (Section 13).
+      model.* Nicola Gallo. _Full Provenance on the COSS Causal Axis: An
+      Event-Level Closure of Causal Attribution and Confused-Deputy
+      Exclusion_, Zenodo record 23102373 [4] (Section 13).
 
    *  *10–13 November 2026 — IEEE NCA 2026 conference paper
       (forthcoming).* Gallo, N., Silvestri, S., and Radesca, A.

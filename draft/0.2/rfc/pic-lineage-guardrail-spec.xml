@@ -1193,16 +1193,16 @@ Specification Steward.</t>
 <t>The publicly verifiable research record is:</t>
 
 <t><list style="symbols">
-  <t><strong>1 December 2025 — initial public PIC Model working paper.</strong> <em>PIC Model — Provenance Identity Continuity for Distributed Execution
+  <t><strong>1 December 2025 — initial public PIC Model working paper.</strong> Nicola Gallo. <em>PIC Model — Provenance Identity Continuity for Distributed Execution
 Systems</em>, Zenodo record 17777421 <xref target="references">[7]</xref>. That archived draft is retained for historical reference and is not an implementation
 specification.</t>
-  <t><strong>5 December 2025 — authority-propagation analysis.</strong> <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>,
+  <t><strong>5 December 2025 — authority-propagation analysis.</strong> Nicola Gallo. <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>,
 Zenodo record 17833000 <xref target="references">[6]</xref>.</t>
-  <t><strong>9 July 2026 — formal Proof-of-Continuity paper.</strong> <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed
+  <t><strong>9 July 2026 — formal Proof-of-Continuity paper.</strong> Nicola Gallo. <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed
 Systems and AI Agents</em>, arXiv:2607.08906 <xref target="references">[1]</xref>.</t>
-  <t><strong>25 September 2026 — relational authority theory.</strong> <em>Beyond Proof of Possession: A Relational Theory of Authority</em>, Zenodo record
+  <t><strong>25 September 2026 — relational authority theory.</strong> Nicola Gallo. <em>Beyond Proof of Possession: A Relational Theory of Authority</em>, Zenodo record
 23102206 <xref target="references">[4]</xref>.</t>
-  <t><strong>2 October 2026 — event-level causal closure.</strong> <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
+  <t><strong>2 October 2026 — event-level causal closure.</strong> Nicola Gallo. <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
 and Confused-Deputy Exclusion</em>, Zenodo record 23102373 <xref target="references">[5]</xref>.</t>
   <t><strong>10–13 November 2026 — IEEE NCA 2026 conference paper (forthcoming).</strong> Gallo, N., Silvestri, S., and Radesca, A. <em>Authority Continuity for
 Verifiable Lineage in Distributed Systems and AI Agents</em>. Accepted for the 24th IEEE International Symposium on Network Computing and
@@ -1701,70 +1701,70 @@ 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
-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
-mvQAAA==
+fgV6jnj72dNnn5AoQdmBdiA/iBiMCDAWpxZWEGwjHKOluHG866/Ex9xD2UiI
+rwxRHRto6SUBEevdJP63rCiB32XYe5/BvxfP9uJ37z776afHH7m+j/WOZIsp
+C4G+BTlWLE1lsfGF5njzsGekP7YobJMFg2nBxXHVPulZNUe2o4B7gFrBa697
+Vsu3mT83N9D6gRVyXp7HNzX835Fz047kAGeM02/4Ntjb1S72fm+v0+fPnz99
++hTW6dP2OtEEvoj/ZQMUAoP/lAYvRE1cOYL/mH0a3OzutfvxYXyloAEmBFz0
+/omCWWW23286TffwBBgCeQhIIK1+yG/2n3369LPx08+/ePopTGqvd1KwEZfY
+rEn3hadmpYYbCCwnuLg9s3rJ3rUTT/4AG5zchX/WFT0BL3HTa5MrzOnZ872n
+z57RmF/0jzk+mzZlMOAeUYZOGtoa3fF+DR645TTx/Y/OLi/jI775EBy3fSw0
+OaYHv6YHH/ETSQLLZdIsiok+pdJJpreR0Nvxz1P2ejt8SdN8/tlzmOYnvdPc
+e/pf//m/956Dl3nT2p6T4+Pj+PTokL/B4IxwJdFd/BgIqFmAFQRyZwfnTxNP
+4tNxEl/myxuKScLHMauBixSB+ymo/oDBQrED0/vOi8bX3AikRY8D1Ggajiku
+8dkLsMBoFicF5+CYQC7vyO7EyrEiPpUI7BGB3rklCdLHoUd71PFjXYYdWMfP
+e+Rbxu/5Yb3EnMWrs5P4Noftn2SMWkc1V5cMV2MIcYk5DRfH6UB/0JzgjsxG
+Q9GR9Cz5WYbCA4FOn3qJwbaFFmQqYCtUVghN4EY14/jcPbxJr7lEJ1+tpOWz
+No53jZUs/ujnptXjIKXadmpVEDS4pMZkZG6SmsMqFZLqKsvpiyojw3VTpdec
+dJmCjRwxmidfoVXN85bjjShws1lj7FaaV7OQ1BySlPTl9XSDieWjcn0Hptmi
+cW3X8ClsbqHRi8IETdVgmRR0UWNvMZe01sy0a/FlV+HoKH75Y/xi/BRs6mlW
+1ARQBsEn6RwMsMJaSk8AshVYEn+jYTK2EnzUzHfOwTbaety15nM5xGeqxLVJ
+F4XquEu4g1JhGMOF02p0LpZ3nRNwaK9A4vsIEx4ZXc7nzML6ap93s0eGkwFF
+LWVpmMN1Xbi/UitfODgKdv35QBFRDUhycDTSyKAkNmc6JOqJrKe0iavuOyB5
+v0/cPBw0rgdLVBOyHwniza86EAw1UBQTfK2njEV8ZW0CJMs7tyiqD9oVPQ5D
+69dG5ROlTAgrkGHPV6KFrjbqldwR14YxBarcoydwZY6WW2BkXlfQdTtTuIxt
+rUHnXpuDhcyJGHwxyyyHmugHOWtQrNMSgp9BHsNM4+Smt1pQbNMJTpFrWnvf
+lGtuZvmcFqR7SKsbcVAfpMsgr/F44tYZS75mqf6QU+M829henu27swxWlKgH
+G5C+FvjYOFIrVisFbNricSkei5SwsaejAe02+HogGxIxZfhoIrVJ5brMJDwP
+TQAuOYbst7UO0Mo97QKAR4bV5px7RU/jMOige5FLdWLAESM5aEA3QHP3ru9c
+0kqLuUWqzWGDmnszk+KE610LOddus9tbtMMn1jJhFNMFBz4DaLRmzz5g6z2U
+cLRwcq7yftiIr3XeXqddf9jkjISf3817oCGS1xH/KMM4DgZqZgdUQSYZA3do
+hSusb/UTRy1/XSDPRx38hlQuoQXDvm0YqoqlQ2VLbSERUMrDlmfl88GtpGsT
+PC2x1rY6LboiAwEFaQXWJnXYTT0tlxS+Uk6IPN7GQ3ZcXYCVGm0IpoMmaXVz
+Ia092ySN0GaumHZodw1ROaMG7KhC6BHtLIa2TYBpP3DiLFzHksv1iYQIQ1F7
+KnOdetCSkL5jrxCYeZ1xz56BQhU9KNONA9GN9aIsuBTXd+/leJU8EXsmwPRV
+NGrFiOvrS02yOObTroSsTb/joDGaKyDXJIc/xsueMELKEjePDGI9kkPPuWqh
+e3wzWQWNu7pL6ruh2p+ewBek8WIDw7O1nI05yt61M5HlItuN7bPLzQpt0BCE
+c3R2enVy+vbk6scI0xKYcTiI2gkK9JNc86BAT5pQGuVdWDVilPTo7M352eUJ
+oXqOzl6/Pj7Cj/RoLJwqq94GV0yLpOqipqcEcpIRMl37jx5ElEVSeFJLJMBo
+s/B0UIrv5l6l53JuMA9+hbSDIqIHmRQ5W0SzCYFm9x1Ehjqi0kCDs9G4kItC
+eLykgufqKaignTq8uPjx5PQbIikKf8H/n31N4jeAkPFTPBI9TDHmtXabaB+h
+6ixEFNxw09hWWWuLRJ9aMKmKdJ5hbCZcfncI5ixYbkJnaT1XQ14x0oRvKeuh
+8s7WIaMNC3vxSoPC434yrue966jvmr3LTNVCrB1wpQX67eITHfjEYBE9OnEQ
+hkhugluZXrCKg8tQj/se5CBst8p0J/on2SK9ybEqqgeHSyjupC2N59p3OVRY
+Xv+EHZl7IRpJRISh7dRFLGZVRU4nWXKSrhAnwNtd6rmr4P9eoRHbe8UkjJnk
+FdteNcz+hyk7B4dMyUja2odwLxoOdzC1WVxDUUCYWefE0IATPwLDNL9Jp10/
++HCwTU6K7u5NhmYM8bdDavai+HBEhkFmLQ6hpMgxF6l3WhQkpj9MwXlFi2dV
+5aIwdJye9qm1Xe9pyFSFIOnG2aYiIiGlskz7E36glRGISu2MwBCLtMFOXkt0
+UdQoBfTQmy+YyQlRw0F0XxupFZsBVZoJa/NFUsAuIuAcCaSN4HwbRqtcY/yt
+u3WtejU5pwLNz0VakWMuN2r4gHpJwO+uEb6/wh2TIWcy0rmwIfCIquD4jqwK
+6rYiP8PEzYp7iRDP2ZMJeEbqTMe/GM/6N3Se3+395GOZ8WMTkN/5w4Prg8HM
+bmh9Wo+PLn4ax+/S6uf8ZlxW10/SSf3EX+JRbkNX7ODsnv0Uv6zSWYEi4xLm
+t/fFF5/hxP41u8M00owrbjfct/ni66MaxcNJIY1mLnwWLaZ4NQ725dF5vPci
+wavjZ3t7X8Agq/l0lM1y9FNwHPAn/hd/9MO8vb0dD19Hg33+E7wln6RJ/BKG
++uzpHg31kDr7i/X3dg1UQLDAmzp+Xd7KHzx4Gk6MU/sep9Ya6+d7n70YHCv+
++JCx4nU01hcB2XRSHjt/bw5jLKH9McaX94FMn44/efb53pO/8rea0PBjnpU5
+DXTgQhr0J+Ggg5zHzv+rLMY9OYyHTPT5Z88fNlG4kCb6aTDRVppw549M+t0z
+fM0A3jt8vZCG/1kw/L3u8P+YDK/L7465Qg0DrmFu+b7JcRr4AZPjC2lyn/+0
+JXn034PUkc06OSIdSif9EckkmnXyd+SShjJJSdybekviMzBhrvMUfru8q9Lp
+Bg3OkybFOMK7YpqO8izLaEnx8lBCdX5+AsvTzkyZFZTKaJ9w16zVZs3H5RBU
+ZiBj9VH8SjU/Yx7utoJ2xgxrwPQTUqhNW2H28CSENkiCa278pr5wXTrcR1Zc
+GeofpC92/a9pBJ8G0g4HcbRM5aQeE86XZxv04Ap8unzENi9b7rWiBp09Gbfc
+ilHLZnUJMhtxpdYGcuZJjXFXdjKdhWUqjySvKJcvOTyAjqOWW3lwVQCtICOS
+U612RA5EpDbf4fRDUd4us9k1BXfkQHRpyylhHQauKCrdZBxZEGlTwopGOilv
+vHch83EIrTR8G3d519wVJxaTSBJ6HllEuljrm3X0tYLi++il3WCQyh74Vlgx
+sAWn5s/fJLpGr+H4FPdTju1VNE1nX84UlOrmuMioGzgvGRETLpYs2jj6v+y/
+4bbg9AAA
 
 -->
 
