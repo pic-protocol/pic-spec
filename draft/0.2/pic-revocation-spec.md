@@ -90,10 +90,12 @@ Expiry bounds how long a continuity state may be accepted; revocation withdraws 
 core model invariants: exactly one predecessor per non-root advancement, Proof of Relationship, authority non-expansion, and no authority
 import from unrelated continuities.
 
-For revocation profiles that support causal lineage or suffix revocation, the native causal revocation coordinate is a stable authenticated
-lineage/PCA identifier plus a continuity **position**. This document calls that semantic identifier **PCA ID**, but current PIC Profile 0.2
-does not define a mandatory concrete PCA-ID wire field. Additional authenticated selectors, such as grant, issuer, key, delegate,
-attestation, or policy selectors, may be used by a profile but do not replace the causal coordinate when descendants must be invalidated.
+For a linear revocation profile, a stable authenticated lineage/PCA identifier plus a continuity **position** can name a causal suffix. In a
+fan-out profile, the same pair names a lineage and path depth but does not uniquely name an occurrence or its causal descendants: sibling
+states may share the same position. Branch-selective or occurrence-selective revocation therefore requires an additional authenticated
+occurrence, checkpoint, branch, or ancestry coordinate. This document calls the stable lineage identifier **PCA ID**. Additional
+authenticated selectors, such as grant, issuer, key, delegate, attestation, or policy selectors, may be used by a profile but do not replace
+the required causal coordinates when descendants, rather than a whole lineage-depth range, must be invalidated.
 
 --- middle
 
@@ -102,8 +104,9 @@ attestation, or policy selectors, may be used by a profile but do not replace th
 This section is non-normative. It introduces the revocation model used by this document.
 
 PIC continuity starts from a trusted root PIC Context of Authority, or PCA, and advances through non-root continuity advancements. A
-revocation that must affect descendants needs a stable way to name the root authority context and a stable way to name the causal position at
-which validity stops.
+revocation that must affect an entire lineage or depth range needs a stable way to name the root authority context and the path position at
+which validity stops. A revocation that must affect only descendants of one occurrence in a fan-out graph additionally needs authenticated
+occurrence identity and ancestry.
 
 In PIC Profile 0.2, a trusted settlement authority issues settled PIC Token JWTs carrying settled PIC Continuity COSE artifacts. A workload
 may propose exactly one advancement in a workload-signed candidate PIC Token JWT whose candidate PIC Continuity COSE carries exactly one PIC
@@ -113,6 +116,11 @@ Token JWT. Settled Profile 0.2 Continuity COSE artifacts have `transitions = nul
 Revocation state remains external and dynamic. Revoking a PCA, position, key, delegate, attestation, grant, issuer, or policy does not
 rewrite signed PIC PCA COSE checkpoints and does not rebuild historical transitions. Verifiers and settlement services evaluate authenticated
 revocation state against the presented continuity state.
+
+The current PIC-X 0.2.3 binding requires a signed PCA `lineage_id`, preserves it across advancement, and mirrors it into PIC Token JWT
+`jti`; it also preserves a signed PCA `position`. These are useful authenticated revocation coordinates. PIC-X 0.2.3 nevertheless configures
+the PIC revocation hook as a no-op and implements no PIC revocation state. Absolute `expires_at` and settlement-key retention bound
+acceptance but are not early revocation [[4]](#references).
 
 ## Requirements Notation
 
@@ -129,15 +137,17 @@ This section is normative.
 ## PCA ID
 
 A revocation profile that supports causal lineage or suffix revocation MUST define a stable authenticated **PCA ID** or equivalent
-lineage/PCA identifier. The PCA ID identifies the relevant trusted continuity origin or checkpoint state for revocation purposes.
+lineage/PCA identifier. The PCA ID identifies the trusted continuity origin and revocation domain. It is stable across successor checkpoints;
+a changing checkpoint hash identifies one occurrence and is not the lineage identifier unless a profile explicitly defines a separate
+checkpoint-scoped revocation domain.
 
 The PCA ID MUST be bound to the relevant trusted PCA checkpoint artifact or to authenticated metadata covered by the selected revocation
 profile. It MUST NOT be a freely chosen unauthenticated value. The selected revocation profile MUST define its representation,
 authentication, issuer or authority, lookup and validation procedure, freshness, rollback protection, and unavailable-state behavior.
 
-This document does not define the concrete wire claim or field carrying the PCA ID. It also does not define the JWT `jti` claim as the PCA
-ID. A profile MAY map a concrete claim, field, artifact hash, or authenticated metadata item to the PCA ID only when that mapping is
-explicitly defined and authenticated by that profile.
+This document does not define one universal wire claim or field carrying the PCA ID. It also does not define JWT `jti` as the PCA ID for
+every profile. A profile MAY map a concrete claim, field, artifact hash, or authenticated metadata item to the PCA ID only when that mapping
+is explicitly defined and authenticated by that profile.
 
 Current Profile 0.2 settled PIC Continuity COSE carries the exact signed current PIC PCA COSE checkpoint bytes at:
 
@@ -151,15 +161,21 @@ The corresponding signed-artifact hash is carried at:
 root.pca_hash
 ~~~
 
-Those fields identify the current trusted checkpoint artifact for Profile 0.2 validation. Whether either value, or another authenticated
-coordinate, is used as the revocation PCA ID is profile-defined.
+Those fields identify the current trusted checkpoint artifact for Profile 0.2 validation. In the current PIC-X binding, the signed PCA
+`lineage_id` is the stable lineage/PCA identifier and the PIC Token JWT `jti` MUST equal it. The base Profile 0.2 artifact schema leaves
+`lineage_id` optional, while PIC-X requires it. `root.pca_hash` identifies one checkpoint and MUST NOT be substituted for the stable
+`lineage_id` when the intended revocation scope is the whole lineage.
 
 ## Position
 
 A revocation profile that supports causal suffix revocation MUST expose or authenticate a continuity `position`.
 
-The position identifies causal order within the continuity rooted at the PCA ID. The root position and non-root positions MUST be
-unambiguous. A non-root advancement MUST have the position required by the selected continuity profile.
+The position identifies causal order along one path within the continuity rooted at the PCA ID. The root position and the progression from
+each predecessor to each successor MUST be unambiguous. A non-root advancement MUST have the position required by the selected continuity
+profile.
+
+Position is not a global event identifier. In a fan-out profile, two incomparable sibling states MAY have the same PCA ID and position. A
+profile MUST NOT infer that equal positions identify one occurrence, or that numeric ordering alone proves ancestry across branches.
 
 The profile MUST reject missing, negative, fractional, non-canonical, overflowing, wrapping, or otherwise invalid positions. A profile MUST
 NOT introduce a second mandatory counter solely for revocation when the continuity profile already defines positions.
@@ -167,9 +183,9 @@ NOT introduce a second mandatory counter solely for revocation when the continui
 For current Profile 0.2, `position` is carried by PIC PCA COSE checkpoints and PIC Continuity Transition COSE artifacts. PIC Continuity COSE
 itself does not carry a `position` field.
 
-## Causal Coordinate
+## Linear and Branching Coordinates
 
-A revocation profile's native causal coordinate for suffix revocation is:
+For a profile that guarantees one accepted state at each position, the linear causal coordinate for suffix revocation is:
 
 ~~~text
 (PCA ID, position)
@@ -188,7 +204,13 @@ state.PCA_ID == target.PCA_ID
 AND state.position >= target.fromPosition
 ~~~
 
-Whole-continuity revocation is the root-position case. The selected profile MUST define the root position used for that comparison.
+In a profile that permits fan-out, this predicate defines a **lineage-depth cutoff**: it applies across every branch sharing the PCA ID at or
+beyond the selected depth. It does not mean “descendants of one selected occurrence.” A profile that claims occurrence-selective or
+branch-selective causal revocation MUST additionally authenticate an occurrence or checkpoint identifier and the ancestry relation by which
+the presented state descends from it.
+
+Whole-continuity revocation is the root-position case and is unaffected by fan-out. The selected profile MUST define the root position used
+for that comparison.
 
 Knowledge of the PCA ID, the position, or both MUST NOT authorize revocation. Targeting and revocation authorization are separate.
 
@@ -202,9 +224,9 @@ Attenuation of a selected continuity advancement changes only the materialized a
 interpreted as revocation of the predecessor checkpoint, invalidation of that predecessor, or invalidation of another otherwise-valid sibling
 continuation from the same predecessor. Invalidating those states requires authenticated revocation state under the selected revocation profile.
 
-## Causal Suffix
+## Linear Suffix and Lineage-Depth Cutoff
 
-A causal suffix cutoff invalidates the selected position and its causal future:
+In a linear profile, a suffix cutoff invalidates the selected position and its causal future:
 
 ~~~text
 (PCA ID, fromPosition)
@@ -217,8 +239,11 @@ state.PCA_ID == target.PCA_ID
 AND state.position >= target.fromPosition
 ~~~
 
-The exact wire representation and any concrete revocation-profile naming for this operation are profile-defined. This document defines only
-the semantic causal cutoff.
+In a fan-out profile, the same comparison invalidates all matching branches at the selected position or greater and is therefore a
+lineage-depth cutoff, not a branch-selective causal suffix. The profile MUST name that broader scope explicitly. If only descendants of one
+occurrence are to be invalidated, the profile MUST use the additional occurrence/ancestry coordinate required by Section 2.3.
+
+The exact wire representation and any concrete revocation-profile naming for these operations are profile-defined.
 
 ## Whole PCA
 
@@ -242,8 +267,9 @@ A revocation profile MAY define additional authenticated selectors, including:
 - resource, tenant, or security-domain selector;
 - another explicitly profile-defined authenticated selector.
 
-These selectors are administrative or evidentiary criteria. They do not replace `(PCA ID, position)` when causal descendants must be
-invalidated.
+These selectors are administrative or evidentiary criteria. They do not replace the causal coordinates required by the selected scope. In
+a linear profile those coordinates may be `(PCA ID, position)`; in a branch-selective profile they additionally identify the selected
+occurrence and authenticate ancestry.
 
 Possession or knowledge of a selector value MUST NOT authorize revocation. For example, knowledge of a grant identifier, PCA ID, key
 identifier, issuer identifier, or position is not a revocation credential.
@@ -266,6 +292,10 @@ authenticated affected position
 The resolver MUST authenticate the selector occurrence, the PCA ID, the position, the integrity of the evidence used for resolution, and the
 authority to materialize the resulting cutoff.
 
+When fan-out is possible, resolving only to `(PCA ID, fromPosition)` intentionally creates a lineage-depth cutoff across sibling branches. A
+resolver that intends branch-selective effect MUST also authenticate the selected occurrence and descendant relation. It MUST NOT infer
+ancestry from numeric position alone.
+
 A bare assertion that a selector occurred at a position MUST NOT be sufficient. A valid position witness MAY be an authenticated settled
 continuity artifact, an authenticated transition extract, an authenticated historical-index record, a checkpoint, a Merkle inclusion proof, a
 succinct proof, or another profile-defined authenticated witness.
@@ -282,6 +312,10 @@ against the presented PCA ID, position, and optional selectors.
 Dynamic restrictions MUST be monotonic: they may only make effective authority or execution conformance equally or more restrictive. They
 MUST NOT rewrite signed PCA checkpoint artifacts, mutate historical transitions, alter predecessor uniqueness, replace Proof of Relationship,
 or expand authority.
+
+This monotonic external state is compatible with treating revocation as an additional ordered security-state coordinate: ordinary state
+updates may only restrict acceptance. Any relaxation is a separate re-origination or explicitly authorized relaxation event, not an ordinary
+continuation [[5]](#references).
 
 The profile MUST define restriction scope, composition, conflict resolution, freshness, rollback protection, and unavailable-state behavior.
 
@@ -342,8 +376,10 @@ less restrictive state, or silently un-revoking an existing cutoff.
 This section is non-normative.
 
 PIC can support branch-capable revocation in a future or separate profile, but branch-domain machinery is not part of the current
-centralized Profile 0.2 base coordinate. This document therefore does not define branch-domain fields, branch-suffix strategies,
-branch-creation evidence, parent branch ancestry, or branch-domain escape rules for Profile 0.2.
+centralized Profile 0.2 base coordinate. PIC-X currently permits sibling fan-out from one checkpoint; its `lineage_id` plus `position`
+therefore supports whole-lineage and lineage-depth targeting, not unique branch or occurrence targeting. This document does not define
+branch-domain fields, branch-suffix strategies, branch-creation evidence, parent branch ancestry, or branch-domain escape rules for Profile
+0.2.
 
 A future branch-capable profile would need to define bounded authenticated branch coordinates, branch-creation authorization, anti-escape
 validation order, branch-selective cutoff authorization, historical resolution rules, and privacy properties. Those details are intentionally
@@ -370,6 +406,9 @@ Revocation security depends on authenticated, fresh, rollback-protected revocati
 Stale or rolled-back state can cause a Verifier or settlement service to accept continuity that should have been cut off. A selector value, PCA
 ID, position, key identifier, grant identifier, or policy label is only a target coordinate; knowledge or possession of it is not revocation
 authority.
+
+In a fan-out profile, `(PCA ID, position)` is not a unique causal-event coordinate. Treating it as one can either over-revoke independent
+siblings or falsely claim branch-selective semantics. A branch-selective profile needs authenticated occurrence identity and ancestry.
 
 Selector-to-position resolution needs authenticated evidence that the selector occurred at the affected continuity position. For compromised
 key revocation, evidence authenticated only by the compromised key is not sufficient where this document requires independent corroboration.
@@ -423,3 +462,5 @@ authorship claims beyond those defined in the PIC Legal Appendices.
 - [1] Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. arXiv:2607.08906 [cs.CR]. [arxiv.org/abs/2607.08906](https://arxiv.org/abs/2607.08906)
 - [2] Bradner, S. (1997). *Key words for use in RFCs to Indicate Requirement Levels*. BCP 14, RFC 2119. [rfc-editor.org/rfc/rfc2119](https://www.rfc-editor.org/rfc/rfc2119)
 - [3] Leiba, B. (2017). *Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words*. BCP 14, RFC 8174. [rfc-editor.org/rfc/rfc8174](https://www.rfc-editor.org/rfc/rfc8174)
+- [4] Gallo, N. (2026). *Beyond Proof of Possession: A Relational Theory of Authority*.
+- [5] Gallo, N. (2026). *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion*.

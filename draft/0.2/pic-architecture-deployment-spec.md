@@ -119,6 +119,13 @@ This section is non-normative. This specification defines two deployment topolog
 chain-validation profiles ([PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Sections 5 and 7) provide different
 cost and assurance properties.
 
+Deployment topology and semantic assurance are independent axes. A central service does not establish PoR merely because it signs a
+checkpoint, and a decentralized verifier does not lose PoR merely because it validates locally. A full-continuity deployment must identify
+the trusted observation boundary and concrete evidence that soundly establishes the predecessor-to-successor relation. A deployment that
+validates only predecessor artifacts, workload-key control, non-expansion, and executor-profile conformance has `artifact-linked`
+assurance and must not claim observed handoff, request causation, complete mediation, or the full PIC confused-deputy result
+[[5]](#references).
+
 ## Centralized
 
 In the centralized architecture, a current continuity state and continuation input are submitted to a trusted central continuity service. The
@@ -149,7 +156,10 @@ trusted settled PIC Token JWT N+1
 
 The trusted settlement service validates the workload-signed candidate and PIC Continuity Transition COSE. It does not centrally sign the
 workload's Transition COSE; after successful validation it signs the new PIC PCA COSE checkpoint, settled PIC Continuity COSE, and settled
-PIC Token JWT. PIC-X is a concrete implementation and profile realization of this role, not a required component of the abstract PIC model.
+PIC Token JWT. PIC-X 0.2.3 is a concrete implementation of this settlement and artifact-processing role, not a required component of the
+abstract PIC model. Its current assurance level is `artifact-linked`: it does not yet observe the concrete handoff or bind a trusted request
+occurrence, and its configured PIC revocation hook is a no-op. Those implementation gaps do not weaken the requirements of a full PIC
+profile.
 
 ~~~text
 +--------+        +--------+        +--------+
@@ -248,14 +258,19 @@ choice for bounded validation without advanced cryptography, but not the only pr
 Trust is a property of the deployment threat model, its trust anchors, and the adopted profile — a single administrative domain is not
 trusted by itself.
 
+Declaring a segment trusted also does not silently discharge causal completeness, handoff observation, request binding, or protected-effect
+mediation. If a deployment relies on those assumptions for a full-continuity or confused-deputy claim, it must state which component observes
+and enforces them and what failures remain outside scope [[5]](#references) [[6]](#references).
+
 | Environment | Threat assumption | Suitable topology and profile |
 | --- | --- | --- |
 | Trusted | consecutive collusion out of scope | decentralized incremental may be sufficient |
 | Untrusted or high-risk | consecutive collusion in scope | Trust Plane with authenticated history, full-chain validation, or an approved succinct-proof profile |
 
-The same segmentation drives the guardrail deployment modes of the
-[PIC Sandboxed Execution Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md) (Section 3.4): trusted segments may operate hops in non-sandbox
-mode; untrusted or high-risk segments use sandbox mode.
+Sandboxed Execution may be required at selected high-risk boundaries by deployment policy. Trusted segments may use ordinary continuity
+without wrapping every hop in a Sandboxed Execution, while an untrusted boundary may require the outer `ENFORCE` continuity defined by the
+[PIC Sandboxed Execution Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md). These are
+deployment choices, not protocol-defined “sandbox” and “non-sandbox” modes.
 
 # Hybrid Enterprise Architectures
 
@@ -336,6 +351,11 @@ profiles need to define what each Verifier independently validates, what prior v
 handled. Transport protections such as TLS, mTLS, broker authentication, or service-mesh policy protect channels and operational exposure, but
 they do not replace PIC continuity validation, non-expansion checks, freshness checks, or authenticated revocation evaluation.
 
+For claims about accepted physical effects, deployments additionally need sound causal evidence, causal completeness for the stated threat
+model, and complete mediation of the protected effects in scope. Artifact verification or centralized settlement alone does not supply
+those properties. Multi-parent ordinary joins must preserve every participating parent bound; a non-conservative composition must be an
+explicit, separately authorized event rather than an ordinary continuation [[6]](#references).
+
 # Contributors {#contributors}
 
 The editors and contributors of this document are listed in the **document header** above. Listing is governed by Appendix B.7 of the
@@ -382,3 +402,5 @@ those defined in the PIC Legal Appendices.
 - [2] Bradner, S. (1997). *Key words for use in RFCs to Indicate Requirement Levels*. BCP 14, RFC 2119. [rfc-editor.org/rfc/rfc2119](https://www.rfc-editor.org/rfc/rfc2119)
 - [3] Leiba, B. (2017). *Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words*. BCP 14, RFC 8174. [rfc-editor.org/rfc/rfc8174](https://www.rfc-editor.org/rfc/rfc8174)
 - [4] Jones, M., Nadalin, A., Campbell, B., Bradley, J., & Mortimore, C. (2020). *OAuth 2.0 Token Exchange*. RFC 8693. [rfc-editor.org/rfc/rfc8693](https://www.rfc-editor.org/rfc/rfc8693)
+- [5] Gallo, N. (2026). *Beyond Proof of Possession: A Relational Theory of Authority*.
+- [6] Gallo, N. (2026). *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion*.

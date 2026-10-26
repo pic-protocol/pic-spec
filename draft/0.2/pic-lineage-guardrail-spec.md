@@ -387,14 +387,33 @@ invalid composition member B advancement:
 { BACKUP, READ-ALL }
 ~~~
 
-PIC eliminates cross-lineage authority composition from valid PIC state. Sandboxed Execution recursively protects the decision that
-determines whether independently valid continuities may participate in one exact transition.
+Ordinary PIC excludes silent cross-lineage authority import from a valid continuation. Sandboxed Execution recursively protects the decision
+that determines whether independently valid continuities may participate in one exact transition; it does not turn that decision into an
+authority union. Any explicit non-conservative composition remains the separate authorized event described below.
 
 At every recursive level, the local continuity preserves its own root-bounded authority, while nested executions are treated only as
 independently verified execution inputs.
 
 This is a guarantee about valid and accepted PIC state. It does not prove that a compromised executor cannot perform an unauthorized physical
 action locally.
+
+### Causal Composition Boundary
+
+A Composition Collection is not, merely by containing several continuities, an ordinary multi-parent causal join. Its members are verified
+inputs to the independently rooted outer `ENFORCE` continuity and are not additional outer predecessors. Consequently, an outer permit does
+not create an application authority equal to the union of member authorities.
+
+If a concrete protected effect is causally dependent on more than one member continuity, the profile MUST represent that dependency under
+one of the following disciplines:
+
+- as an ordinary causal join whose resulting authority is no more permissive than every security-relevant parent; for set-valued authority,
+  the result is a subset of the intersection of the parent authorities; or
+- as an explicit, separately authorized composition or relaxation event whose authority source, policy, causal parents, and resulting state
+  are authenticated and auditable.
+
+A non-conservative result MUST NOT be hidden inside an ordinary PIC continuation. `ENFORCE` authorizes evaluation of the bound collection; it
+does not, by itself, authorize a union, grant, endorsement, or relaxation in the application authority domain. These rules preserve the
+ordinary-join and explicit-relaxation boundary of the causal PIC/COSS model [[5]](#references).
 
 ## Composition Collection Binding
 
@@ -709,13 +728,12 @@ PIC Prover procedure. It MUST:
 
 No additional approval signature is created. The next guardrail repeats the same procedure — and that repetition is the sandbox.
 
-In a current Profile 0.2 / PIC-X realization, the guardrail or workload creates a workload-signed PIC Continuity Transition COSE, places it
-as the single transition in a workload-signed candidate PIC Continuity COSE, carries that candidate in a workload-signed candidate PIC Token
-JWT, and submits the candidate for settlement validation. The settlement authority validates the outer continuity, `ENFORCE` authority,
-Composition Collection commitment, PoR/key binding, predecessor hash over the current PIC PCA COSE checkpoint, challenge continuity,
-attenuation, revocation, and local/profile policy.
-On success, it issues the next settled outer PIC Token JWT carrying a settled PIC Continuity COSE with `transitions = null`. This is ordinary
-Profile 0.2 continuity advancement, not a sandbox-specific protocol.
+The current PIC-X 0.2.3 implementation does not implement Sandboxed Execution, Composition Collection processing, the `ENFORCE` operation,
+or the mandatory request/execution binding defined by this specification. A future Profile 0.2 Sandboxed Execution binding may reuse the
+existing candidate artifact family: a guardrail or workload would create a workload-signed PIC Continuity Transition COSE, place it as the
+single transition in a workload-signed candidate PIC Continuity COSE, carry that candidate in a workload-signed candidate PIC Token JWT, and
+submit the candidate for settlement. Such a binding MUST add every outer and inner validation phase in this section; ordinary PIC-X
+settlement alone does not provide them.
 
 ~~~text
 receive outer continuity state
@@ -889,11 +907,11 @@ already-authenticated advancement. The materializing guardrail:
 7. follows any profile-required settlement or acceptance rules for treating the continuation as valid;
 8. performs exactly the bound physical action according to the selected materialization profile and its ordering rules.
 
-For current PIC Profile 0.2, the materializing guardrail or workload validates the outer predecessor, validates every Composition Collection
-member, evaluates enforcement, constructs and signs the PIC Continuity Transition COSE, constructs and signs the candidate PIC Continuity
-COSE, carries it in a signed candidate PIC Token JWT, and submits the candidate through the ordinary advancement flow. The settlement
-authority validates the candidate and transition and, on success, issues the next settled outer PIC Token JWT carrying a settled PIC
-Continuity COSE with `transitions = null`.
+In a future Sandboxed Execution binding that reuses Profile 0.2 artifacts, the materializing guardrail or workload would validate the outer
+predecessor, validate every Composition Collection member, evaluate enforcement, construct and sign the PIC Continuity Transition COSE,
+construct and sign the candidate PIC Continuity COSE, carry it in a signed candidate PIC Token JWT, and submit the candidate through the
+advancement flow. The settlement authority would then need to validate both the ordinary candidate and every additional rule of this
+specification before issuing a settled outer continuity. Current PIC-X 0.2.3 does not perform those Sandboxed Execution checks.
 
 This document does not define the exact temporal ordering between Profile 0.2 settlement and the final irreversible physical side effect against a
 non-PIC-aware target. That ordering is profile-defined or deployment-defined.
@@ -1036,6 +1054,11 @@ they do not change PIC semantics.
 
 ## Model Guarantee
 
+The guarantees in this subsection require a full-continuity outer profile whose concrete PoR evidence soundly establishes the claimed
+guardrail handoff, and require the executed-vs-bound and mediation rules of this specification to hold. An artifact-linked checkpoint chain
+without observed handoff or trusted request occurrence does not inherit these causal or physical-effect guarantees. Claims about protected
+effects additionally require causal completeness and complete mediation for the stated threat model [[4]](#references) [[5]](#references).
+
 Within the accepted model:
 
 - an outer hop without valid PoR cannot continue;
@@ -1143,3 +1166,5 @@ those defined in the PIC Legal Appendices.
 - [1] Gallo, N. (2026). *Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents*. arXiv:2607.08906 [cs.CR]. [arxiv.org/abs/2607.08906](https://arxiv.org/abs/2607.08906)
 - [2] Bradner, S. (1997). *Key words for use in RFCs to Indicate Requirement Levels*. BCP 14, RFC 2119. [rfc-editor.org/rfc/rfc2119](https://www.rfc-editor.org/rfc/rfc2119)
 - [3] Leiba, B. (2017). *Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words*. BCP 14, RFC 8174. [rfc-editor.org/rfc/rfc8174](https://www.rfc-editor.org/rfc/rfc8174)
+- [4] Gallo, N. (2026). *Beyond Proof of Possession: A Relational Theory of Authority*.
+- [5] Gallo, N. (2026). *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion*.

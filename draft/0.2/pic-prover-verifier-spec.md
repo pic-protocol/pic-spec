@@ -68,14 +68,15 @@ informative: {}
 --- abstract
 
 This document is the **PIC Prover and Verifier Specification**, a subordinate specification of the [PIC Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-spec.md). It
-defines the normative requirements for the two complementary components of Proof of Continuity handling:
+defines the normative requirements for the two complementary components of continuity handling:
 
-- **PIC Provers**: the components that construct Proofs of Continuity for an execution hop;
-- **PIC Verifiers**: the trusted components that validate Proofs of Continuity and enforce the invariants of the
-  **Provenance Identity Continuity (PIC) Model** at verification time.
+- **PIC Provers**: the components that construct candidate continuity advancements and the evidence required by the selected profile;
+- **PIC Verifiers**: the trusted components that validate those advancements and enforce the invariants claimed by the selected profile at
+  verification time.
 
-At every hop, a node acts in both roles: it **verifies** the continuity state received from its predecessor and **proves** continuity to its
-successor by producing the next continuity advancement required by the selected profile.
+At every hop, a node can act in both roles: it **verifies** the continuity state received from its predecessor and **proposes** the next
+continuity advancement required by the selected profile. A profile may call the accepted result a Proof of Continuity only to the extent
+that its concrete acceptance predicate is shown to refine the abstract PoR and non-expansion predicates of the PIC Model.
 
 It specifies the per-hop **Proof of Relationship** and continuity-advancement requirements (Section 2), the ordered **Verifier checks** -
 including profile-conditional request/execution binding - that validate a hop before authority is exercised (Section 3), authority as an abstract
@@ -98,22 +99,30 @@ valid across the steps of a distributed execution. This specification defines ho
 implemented at each execution hop to close that gap. The model, including
 **Proof of Relationship (PoR)**, **Proof of Continuity (PoC)**, and the resulting safety guarantees, is formally defined in the companion
 paper [[1]](#references) and formally verified with the Lean theorem prover [[2]](#references). The paper treats PoR as an abstract,
-unforgeable primitive. This document specifies the two components that realize it:
+unforgeable primitive. A concrete profile realizes the full model only when it defines evidence and a receiving predicate that soundly
+witness that primitive. This document specifies the two components that process such evidence:
 
-- The **PIC Prover** constructs the relationship evidence required by the selected profile to witness the PoR relation binding the current
-  execution step to its causal predecessor, and uses the resulting valid advancement to construct the PoC handed to the next hop. A PoC is
-  valid only if it satisfies the PIC invariants: causal linkage witnessed by PoR at every hop, and a non-expansive authority context.
-- The **PIC Verifier** validates both proofs at the receiving hop: the PoR, which establishes that the incoming step is a genuine
-  continuation of its predecessor, and the PoC, which establishes that the invariants hold along the entire received lineage. If either
-  proof is invalid, the hop is rejected before any authority is exercised.
+- The **PIC Prover** constructs the relationship or profile evidence required by the selected profile and uses it to construct a candidate
+  advancement handed to the next verification boundary.
+- The **PIC Verifier** validates the candidate at the receiving hop. For a full-continuity profile, it validates concrete evidence that
+  soundly witnesses the abstract PoR together with non-expansion and all other profile checks. For an artifact-linked profile, it validates
+  only the narrower artifact, key, authority, and contract relationships the profile defines.
+
+These assurance levels are not interchangeable. In particular, a signed predecessor, an executor-profile credential, possession of a
+workload key, and a non-expansive authority transition do not by themselves prove that a trusted boundary observed the concrete handoff or
+request occurrence that caused the successor action.
 
 PIC **does not require a central server**. Depending on deployment topology and selected profile, a chain can be validated *fully
 decentralized* — each hop carrying everything the next needs to verify it — or with the help of a trusted component such as a snapshot
 server. Section 5 describes these representations; the PIC *invariants* are the same in every case, but the concrete assurance and trust
 assumptions differ by profile (Sections 6.8, 7) — the profiles are not equivalent.
 
-This statement concerns the abstract PIC model and profile space. The current PIC Profile 0.2 uses centralized advancement and settlement by
-a trusted settlement authority. PIC-X is one conforming realization of that profile, not a required component of the abstract PIC model.
+This statement concerns the abstract PIC model and profile space. The current PIC Profile 0.2 artifact family uses centralized advancement
+and settlement by a trusted settlement authority. PIC-X implements the artifact and settlement subset of that profile; it is not a required
+component of the abstract PIC model and is not yet a full semantic-PoR realization. The current PIC-X implementation advertises
+`artifact-linked` continuity evidence: it enforces signed predecessor linkage, key binding, authority
+attenuation, and execution-contract conformance, but it does not yet claim observed-handoff PoR, request binding, complete mediation, or
+causal attribution of a runtime action.
 
 PIC also draws a **clean line between the security model and transport**. The guarantees come from the signed continuity chain, not from how
 it travels: an implementation must not rely on the transport — a TLS session, a network perimeter, a message bus — to obtain them (the
@@ -212,10 +221,15 @@ Under PIC the same state cannot be represented as valid. `READ-ALL` is absent fr
 continuation can expand an authority context: the composed proof does not satisfy the lineage, and the Verifier at executor `n+1` rejects
 it. The bug can still execute locally, as stated in Section 1.1, but the state it produces is invalid and stops at that hop.
 
-This is a *structural* elimination of cross-lineage confused-deputy authority composition from the PIC state model, and it is what PIC
-shares with the object-capability approach: a capability
+This document's ordinary advancement has exactly one predecessor. A future causal-DAG profile that defines an ordinary multi-parent join
+must preserve every parent bound; for set-valued authority, the joined authority is a subset of the intersection of the parent authorities.
+If a join intentionally creates a state more permissive than any parent, it is an explicit, separately authorized composition or relaxation
+event, not an ordinary continuation [[14]](#references).
+
+This is a *structural* elimination of silent cross-lineage confused-deputy authority composition from the ordinary PIC continuation model,
+and it is what PIC shares with the object-capability approach: a capability
 removes the mismatch by construction at a single hop, by fusing designation and authority at invocation; PIC extends the same by-construction
-guarantee across the whole lineage, so the mismatch is not a state a valid chain can represent at any hop. It is ruled out by construction,
+guarantee across an ordinary lineage, so the mismatch is not a state a valid chain can represent at any hop. It is ruled out by construction,
 not caught by runtime vigilance — and this is exactly the property the Lean formalization verifies [[2]](#references).
 
 ## The Execution Flow as Part of the Security Model
@@ -389,7 +403,7 @@ advancement produced by a Prover MUST:
 
 1. identify **exactly one** predecessor continuity state;
 2. include or bind a **cryptographic reference** to that predecessor;
-3. include or bind the **Proof of Relationship** required by the selected profile;
+3. include or bind the relationship or executor-profile evidence required by the selected profile;
 4. yield authority equal to or more restrictive than the predecessor materialized authority;
 5. bind the concrete execution or request as required by the selected profile;
 6. be integrity-protected according to the selected profile.
@@ -405,7 +419,7 @@ fails:
 
 1. validate the predecessor continuity state (Section 2.2);
 2. establish exactly one causal predecessor;
-3. build the Proof of Relationship required by the selected profile (Section 2.3);
+3. build the relationship or executor-profile evidence required by the selected profile (Section 2.3);
 4. keep or attenuate the predecessor materialized authority (Section 2.4);
 5. bind the concrete execution or request as required by the selected profile;
 6. produce the next continuity advancement artifact (Section 2.5);
@@ -415,10 +429,11 @@ fails:
 receive current continuity state
       |
       v
-validate predecessor continuity state
+validate predecessor continuity state, or construct an untrusted candidate
+that a trusted receiving boundary will validate before authority is exercised
       |
       v
-build PoR and profile-required request/execution binding
+build relationship/profile evidence and profile-required request/execution binding
       |
       v
 keep or attenuate materialized authority
@@ -437,19 +452,30 @@ JWT carrying a settled PIC Continuity COSE with `transitions = null`.
 
 ## Predecessor Validation
 
-The Prover MUST validate the predecessor continuity state by applying the Verifier procedure of Section 3. If validation fails, the Prover
-MUST NOT emit a continuity advancement. The rest of this section assumes a valid predecessor.
+Before treating predecessor authority as trusted or exercising it, the Prover MUST validate the predecessor continuity state by applying the
+Verifier procedure of Section 3. A candidate-construction library MAY parse and semantically validate a predecessor without authenticating
+it when all of the following hold:
+
+- the output is explicitly an untrusted candidate and is not treated as settled authority;
+- no protected effect is authorized from the unauthenticated parse;
+- the trusted receiving or settlement boundary independently performs the complete Verifier procedure before accepting the advancement;
+- failure at that boundary prevents issuance and authority exercise.
+
+This exception matches the current PIC-X workload flow, in which a workload may lack the realm verification key while constructing a
+candidate, and PIC-X revalidates the realm-signed predecessor during settlement. It changes no receiving-side safety requirement.
 
 ## Proof of Relationship
 
-The abstract **PoR** relation binds the current execution to exactly one predecessor. A non-root continuity advancement MUST carry or
-cryptographically bind the relationship evidence required by the selected profile. The selected profile MUST define the concrete checks that
-soundly witness the abstract single-hop PoR relation.
+The abstract **PoR** relation binds the current execution to exactly one predecessor. A non-root advancement in a profile claiming full
+continuity MUST carry or cryptographically bind evidence whose concrete checks soundly witness the abstract single-hop PoR relation. A
+profile that validates a narrower relationship MAY define an artifact-linked assurance level, but it MUST identify the missing refinement
+obligation and MUST NOT claim that its evidence establishes the abstract PoR.
 
-A `proof_of_relationship` field, when defined by a profile, is relationship evidence. It is not by itself the complete Proof of Continuity
-and does not by itself establish semantic continuity. A transition is accepted as valid only when the required PoR relation holds and the
-separate non-expansion requirement, together with all other applicable profile checks such as predecessor binding, freshness, integrity,
-evidence or conformance, request/execution binding, revocation, and policy, also succeeds.
+A `proof_of_relationship` field, when defined by a profile, is relationship or profile evidence. It is not by itself the complete Proof of
+Continuity and does not by itself establish semantic continuity. A transition is accepted as a full PIC continuation only when the required
+PoR relation holds and the separate non-expansion requirement, together with all other applicable profile checks such as predecessor
+binding, freshness, integrity, evidence or conformance, request/execution binding, revocation, and policy, also succeeds. An artifact-linked
+acceptance establishes only the subset its profile states.
 
 Profile-defined concrete relationship validation may cover, as applicable:
 
@@ -460,7 +486,7 @@ Profile-defined concrete relationship validation may cover, as applicable:
 Request/execution binding and executor or execution-contract conformance remain separate applicable advancement-validation checks; they are
 not, merely by being required for acceptance, part of the abstract PoR relation.
 
-For PIC Profile 0.2, the PIC Continuity Transition COSE carries `proof_of_relationship` as a typed object:
+For PIC Profile 0.2, the PIC Continuity Transition COSE retains the field name `proof_of_relationship` as a typed object:
 
 ~~~text
 proof_of_relationship.type = "sd-jwt"
@@ -468,9 +494,11 @@ proof_of_relationship.evidence = exact UTF-8 bytes of the textual issuer-signed
                                  Profile 0.2 SD-JWT presentation
 ~~~
 
-The `type` value controls parsing and validation of `evidence`. The selected Profile 0.2 PoR schema MUST bind or identify the workload
-verification key; this specification does not define a universal claim name and does not define a separate generic `key_binding` field. The
-predecessor reference for the current centralized Profile 0.2 realization is:
+The `type` value controls parsing and validation of `evidence`. In the current `artifact-linked` assurance level, this field contains
+executor-profile and workload-key evidence; the historical field name does not, by itself, establish the abstract relation
+`PoR(s_i, s_{i+1})`. A Profile 0.2 schema MUST bind or identify the workload verification key. This specification does not define a universal
+claim name and does not define a separate generic `key_binding` field. The predecessor reference for the current centralized Profile 0.2
+realization is:
 
 ~~~text
 predecessor.type = "pca"
@@ -481,17 +509,17 @@ The first transition consumes the bootstrap challenge from the current PIC PCA C
 use the `challenge.next_challenge` value carried by the current signed PIC PCA COSE checkpoint. The hash input is the exact signed PIC PCA
 COSE artifact bytes, not a decoded payload, diagnostic notation, JSON representation, Base64url text, or reserialized structure.
 
-The Prover MUST check its own PoR before proceeding: if the predecessor reference does not match the predecessor continuity state, or if the
-challenge or equivalent freshness evidence does not satisfy the selected relationship-validation rules, the required PoR relation is not
-established and the Prover MUST stop. If profile-required executor, contract, request/execution, or other required evidence is missing or
-invalid, the advancement is invalid and the Prover MUST stop. A continuity advancement carrying invalid required evidence is rejected at the
-next hop anyway.
+The Prover MUST check the profile evidence it can validate before proceeding: if the predecessor reference does not match the predecessor
+continuity state, or if the challenge or equivalent freshness evidence does not satisfy the selected validation rules, the candidate is
+invalid and the Prover MUST stop. If profile-required executor, contract, request/execution, or other required evidence is missing or
+invalid, the advancement is invalid and the Prover MUST stop. The trusted Verifier MUST repeat every acceptance check independently.
 
-**What the PoR proves.** The PoR does not prove physical, counterfactual, or prior-designation causation. Taken in isolation, a challenge
-response or concrete relationship artifact proves only the relationship semantics defined by the selected profile. A hop is accepted as a
-valid PIC continuation only when the Verifier also applies the other required PIC and profile checks, including non-expansion and any
-applicable contract, request/execution, evidence, freshness, revocation, and policy checks. The selected concrete relationship checks are
-assumed to soundly witness the abstract single-hop PoR relation used by the model [[1]](#references) and Lean formalization [[2]](#references).
+**What the PoR proves.** The abstract PoR does not prove physical or counterfactual causation beyond the relation it models. A concrete
+challenge response or relationship artifact proves only the semantics defined by its selected profile. A profile MUST NOT claim the abstract
+single-hop PoR relation used by the model [[1]](#references) and Lean formalization [[2]](#references) unless it states the concrete evidence,
+trust assumptions, and refinement argument by which its receiving predicate soundly witnesses that relation. Current PIC-X Profile 0.2 does
+not make that full claim: its SD-JWT evidence establishes trusted executor-profile claims and control of the bound workload key, not an
+observed causal handoff occurrence.
 
 **Continuation is open by default.** The core model does not require a predecessor to preselect a concrete successor. A profile MAY constrain
 holder keys, recipients, or channels, but those constraints are profile-specific. When a selected profile defines a request or execution
@@ -516,6 +544,10 @@ attenuated, **never expanded**:
 
 A Prover MAY drop operations, add constraints, or shorten the validity period. A Prover MUST NOT add operations, relax constraints,
 or extend the validity period. *What is dropped at a hop is lost:* no later hop can reintroduce it.
+
+For a relational execution contract, the predecessor contract governs admission of the current executor, and the successor contract must
+logically imply the predecessor contract: `rho(i+1) => rho(i)`. Concrete profile evidence must be sound for the executor attributes it
+establishes; missing or withheld required evidence causes rejection and cannot widen admission [[13]](#references).
 
 The root authority context (Section 1.8) granted `READ-ALL` and `BACKUP`. The backup service needs only read access downstream, so it drops
 `BACKUP` and sets the attenuated `invariants`:
@@ -651,10 +683,12 @@ Given a received continuity state, the Verifier MUST perform the following steps
 2. validate the root representation and its authenticated origin;
 3. validate the profile-selected continuity representation;
 4. validate predecessor continuity for each required advancement;
-5. validate PoR for each non-root advancement;
+5. validate the relationship/profile evidence required for each non-root advancement and, when full PoR is claimed, validate the
+   concrete predicate that witnesses the abstract PoR;
 6. validate challenge continuity or the equivalent freshness mechanism used by the profile;
 7. validate profile-required evidence, conformance, freshness, temporal state, and revocation state;
-8. validate request/execution binding when required by the selected profile;
+8. validate request/execution binding when required by the selected profile, and do not claim that property when no authenticated
+   occurrence or request commitment is available;
 9. apply profile-defined attenuations and verify non-expansion;
 10. verify the final materialized authority commitment when the profile defines one;
 11. accept the materialized current authority.
@@ -662,11 +696,14 @@ Given a received continuity state, the Verifier MUST perform the following steps
 For PIC Profile 0.2, ordinary verification of a settled artifact includes verifying the settled PIC Token JWT signature, obtaining `pic.root`
 as the exact PIC Continuity COSE bytes, verifying the settled PIC Continuity COSE signature and profile, verifying that `transitions = null`,
 verifying `root.pca` as the exact signed PIC PCA COSE bytes for the current trusted checkpoint, recomputing `root.pca_hash`, and verifying
-that the signed PIC PCA COSE payload supplies the materialized authority, `position`, and `challenge.next_challenge`. When revocation is
+that the signed PIC PCA COSE payload supplies the materialized authority, `position`, and `challenge.next_challenge`. When `lineage_id` or
+`expires_at` is present in that checkpoint, a binding that mirrors those values into PIC Token JWT `jti` or `exp` MUST validate equality and
+MUST NOT extend the checkpoint lifetime. When revocation is
 enabled for a revocable continuity, the Verifier also validates the authenticated revocation coordinates required by the PIC Revocation
-Specification before evaluating applicable authenticated revocation state. This document does not assign concrete settled-token fields or
-placement for revocation coordinates other than the Profile 0.2 PCA `position`. Ordinary Profile 0.2 Verifiers are not required to replay a
-transported transition history.
+Specification before evaluating applicable authenticated revocation state. The base Profile 0.2 artifact schema does not assign one
+universal PCA-ID mapping. The current PIC-X binding uses the signed PCA `lineage_id` as its stable lineage/PCA identifier and mirrors it into
+JWT `jti`, while PCA `position` supplies path depth; PIC-X 0.2.3 configures no PIC revocation state. Ordinary Profile 0.2 Verifiers are not
+required to replay a transported transition history.
 
 When a trusted settlement authority processes a Profile 0.2 advancement candidate, it additionally:
 
@@ -676,27 +713,36 @@ When a trusted settlement authority processes a Profile 0.2 advancement candidat
    `transitions`;
 4. requires `transitions` to contain exactly one PIC Continuity Transition COSE;
 5. parses that Transition as untrusted input and extracts `proof_of_relationship`;
-6. validates the `proof_of_relationship` structure;
+6. validates the `proof_of_relationship` structure, treating the field name as a Profile 0.2 compatibility name rather than proof that the
+   abstract PoR has been discharged;
 7. requires `proof_of_relationship.type = "sd-jwt"`;
 8. parses `proof_of_relationship.evidence` as the exact UTF-8 bytes of the textual issuer-signed Profile 0.2 SD-JWT presentation;
-9. validates the SD-JWT issuer signature, issuer trust, required disclosures, claims, and schema requirements;
-10. obtains or resolves the workload verification key accepted from the PoR;
+9. validates the SD-JWT issuer signature, issuer trust, required disclosures, claims, validity interval, and schema requirements;
+10. obtains or resolves the workload verification key accepted from the profile evidence;
 11. verifies the Transition COSE signature, candidate Continuity COSE signature, and candidate PIC Token JWT signature using that accepted
-   workload key, and verifies signer consistency as required by the profile;
-12. verifies `root.pca` as the exact signed PIC PCA COSE bytes for the currently trusted checkpoint;
+   workload key; verifies that the declared JOSE and COSE algorithms match the accepted key; and verifies signer-key identifier consistency
+   as required by the profile;
+12. verifies `root.pca` as the exact signed PIC PCA COSE bytes for the currently trusted checkpoint; when the deployment requires a stable
+   lineage identifier and absolute expiration, verifies their presence and verifies that candidate JWT `jti` and `exp` equal the predecessor
+   PCA `lineage_id` and `expires_at`;
 13. recomputes `SHA-256(exact signed root.pca PIC PCA COSE bytes)` and compares it with `root.pca_hash`;
 14. verifies that `Transition.position = current PCA.position + 1`;
 15. verifies `predecessor.type = "pca"` and `predecessor.hash = SHA-256(exact signed current root.pca PIC PCA COSE bytes)`;
-16. verifies that `Transition.challenge.previous_challenge = current PCA.challenge.next_challenge` and validates `challenge.next_challenge`;
+16. verifies that `Transition.challenge.previous_challenge = current PCA.challenge.next_challenge`, requires a non-empty
+   `challenge.next_challenge`, and, for the current PIC-X binding, requires that it differ from `previous_challenge`;
 17. validates removal bitmaps and execution-contract additions, including deterministic ordering and section-local index assignment for
     accepted additions;
-18. validates request/execution binding and executor evidence or conformance when required by the selected profile;
+18. validates request/execution binding and executor evidence or conformance when required by the selected profile; a deployment with no
+   authenticated request or occurrence commitment MUST treat request binding as unsupported rather than satisfied;
 19. validates authority non-expansion, revocation, and local/profile policy;
 20. materializes the new authority, creates logical PCA N+1, transfers the accepted next challenge into it, serializes and signs it as a new
     PIC PCA COSE checkpoint, creates a settled PIC Continuity COSE with the new `root.pca`, recomputed `root.pca_hash`, and `transitions =
     null`, and creates/signs the settled PIC Token JWT.
 
 If validation succeeds, the settlement authority issues the next settled PIC Token JWT. PIC-X is one realization of this settlement role.
+Its current acceptance predicate implements the artifact-linked subset of these checks. In particular, current PIC-X validates
+executor-profile conformance but has no trusted runtime occurrence or request to compare with `request_digest`; it therefore does not claim
+request binding or observed-handoff PoR.
 
 ## Root Validation
 
@@ -762,10 +808,11 @@ where `≤` is an *attenuation order* defined by the profile. The `operations` s
 **reference profile**: it corresponds to the operation-resource privileges of the model [[1]](#references).
 
 A label may *denote* authority without listing it: `EU-BACKUP-READONLY` denotes a set of operation-resource permissions and carries that
-meaning by reference. This keeps the confused-deputy result intact rather than discarding it — a label is defined to denote a semantic set
-(in the reference case an O×R set), and the label order is required to **refine** the subset order on those denotations. O×R is thus the
-profile where non-expansion is immediate, and any other profile inherits the guarantee exactly to the extent that its order refines its
-denotation order.
+meaning by reference. This preserves the authority non-expansion premise rather than discarding it: a label is defined to denote a semantic
+set (in the reference case an O×R set), and the label order is required to **refine** the subset order on those denotations. O×R is thus the
+profile where non-expansion is immediate, and any other profile inherits that premise exactly to the extent that its order refines its
+denotation order. The full confused-deputy result still requires the separate PoR, causal-attribution, and mediation assumptions stated in
+Section 6.5.
 
 ## Attenuation Profiles
 
@@ -816,8 +863,10 @@ label vocabularies with provably semantic-monotone orders, and the PIC↔PDP int
 
 A PIC continuity state can be represented and validated in more than one way. The choice does not change the model - the invariants and the
 checks of Section 3 stay the same - but it changes validation cost and trust assumptions. This section contains non-normative representation
-guidance and explicit profile requirements. A representation does not inherit the Lean proof automatically; each profile MUST show that its
-concrete acceptance predicate implies the abstract PoC (Section 6.5).
+guidance and explicit profile requirements. A representation does not inherit the Lean proof automatically. A profile claiming full PIC
+continuity MUST show that its concrete acceptance predicate implies the abstract PoC (Section 6.5). A partial implementation MAY expose a
+narrower assurance level only when it names the verified subset and the missing refinement obligations, and it MUST NOT label that result a
+Proof of Continuity or full PIC conformance.
 
 A continuity profile MAY use:
 
@@ -829,8 +878,9 @@ A continuity profile MAY use:
 - other proof mechanisms.
 
 The profile MUST define its acceptance predicate, canonicalization, cryptographic references, freshness mechanism, authority materialization,
-and failure behavior. It MUST preserve exactly-one-predecessor continuity, PoR, non-expansion, request/execution binding when required by that
-profile, and verifier independence.
+and failure behavior. A full-continuity profile MUST preserve exactly-one-predecessor continuity, PoR, non-expansion,
+request/execution binding when required by that profile, and verifier independence. A partial assurance level MUST preserve every property
+it claims and MUST fail closed for every check declared mandatory at that level.
 
 ## Current Profile 0.2 Representation
 
@@ -864,7 +914,7 @@ trusted settled PIC Token JWT N+1
 ~~~
 
 The candidate is not a trusted settled continuity artifact. The settlement authority validates the current settled continuity, the candidate
-PIC Token JWT, the candidate PIC Continuity COSE, the single PIC Continuity Transition COSE, PoR/key binding, predecessor hash over the exact
+PIC Token JWT, the candidate PIC Continuity COSE, the single PIC Continuity Transition COSE, profile/key evidence, predecessor hash over the exact
 current PIC PCA COSE bytes, position increment, challenge continuity, removal attenuations, execution-contract additions including
 deterministic canonical ordering and index assignment for accepted additions, non-expansion, revocation, and local/profile policy. If
 validation succeeds, the settlement authority materializes the new authority into a new PIC PCA COSE checkpoint and issues the next settled
@@ -873,6 +923,36 @@ PIC Token JWT.
 Profile 0.2 does not transport a replayable transition graph in the settled PIC Continuity COSE. The current authority and post-initial
 challenge material are represented by the latest trusted PIC PCA COSE checkpoint carried in `root.pca`; the settled Continuity itself has no
 `position` field and no `challenge` field.
+
+## Profile 0.2 Assurance Boundary
+
+The abstract PIC Model and the current PIC-X Profile 0.2 implementation have different claim boundaries. A conforming document or
+implementation MUST identify which boundary it is claiming. The `artifact-linked` level is a partial implementation assurance class, not an
+alternative definition of PoR and not full PIC conformance.
+
+| Property | Current PIC-X Profile 0.2 status |
+| --- | --- |
+| Signed artifact lineage and exactly-one predecessor reference | Implemented |
+| Authority attenuation and irreversible branch-local removal | Implemented |
+| Additive execution-contract refinement and executor-profile conformance | Implemented |
+| Trusted-issuer executor-profile evidence and workload-key binding | Implemented |
+| Unknown successor and sibling fan-out | Implemented intentionally |
+| Stable lineage correlation and absolute lineage expiry | Implemented by the PIC-X binding |
+| Abstract semantic `PoR(s_i, s_{i+1})` for an observed handoff occurrence | Not established by current evidence |
+| Authenticated request or runtime-occurrence binding | Not implemented by current PIC-X settlement |
+| Global single consumption or exactly-once execution | Not claimed |
+| Per-lineage early revocation | Not implemented; absolute expiry and signing-key policy are the current bounds |
+| Complete mediation and causal attribution of protected actions | Outside current PIC-X settlement |
+
+The current assurance level is called **`artifact-linked`**. It is valid to claim that PIC-X excludes authority import from an unrelated
+lineage within an accepted artifact transition and enforces the configured executor profile. It is not valid to infer from that claim that a
+trusted boundary observed the physical or runtime handoff, that a particular request caused the candidate, or that every protected effect
+passed through settlement.
+
+A future profile may claim full semantic PoR only after defining authenticated occurrence evidence, the trusted observer and its failure
+model, request or message binding where applicable, verification and retention rules, and a refinement argument from its concrete acceptance
+predicate to the abstract relation used by the formal model. Adding another workload-self-asserted field does not by itself provide that
+refinement [[13]](#references).
 
 ## Profile 0.2 Artifact Semantics
 
@@ -911,8 +991,19 @@ A PIC Token JWT has format identifier `pic+jwt`.
 The `pic.root` member MUST contain the unpadded Base64url encoding of the exact binary PIC Continuity COSE artifact bytes.
 
 A candidate PIC Token JWT is workload-signed. A settled PIC Token JWT is signed by the trusted settlement authority. Candidate and settled
-tokens use the same `pic+jwt` format; no second token format is defined for the candidate role. Exact JOSE `typ` assignment is deferred to
-the applicable profile registry or later byte-level wire assignment.
+tokens use the same `pic+jwt` format; no second token format is defined for the candidate role. The current PIC-X binding requires JOSE
+`typ = "pic+jwt"` and a `profile` claim equal to `https://pic-protocol.org/profiles/0.2`.
+
+PIC Token JWT may carry the standard claims `iss`, `sub`, `aud`, `iat`, `exp`, and `jti`. In the current PIC-X binding:
+
+- every initialized lineage has a non-empty PCA `lineage_id` and a positive PCA `expires_at`;
+- settled and candidate JWT `jti` MUST equal that `lineage_id`;
+- settled and candidate JWT `exp` MUST equal that `expires_at`;
+- advancement MUST preserve both PCA values unchanged and MUST NOT mint a later expiration;
+- the settlement authority MUST reject a candidate whose `jti` or `exp` is missing or mismatched, or whose predecessor has expired.
+
+These bindings provide stable correlation and prevent lifetime extension. They do not by themselves establish request binding or semantic
+PoR.
 
 ### PIC PCA COSE
 
@@ -920,13 +1011,17 @@ A PIC PCA COSE is the signed checkpoint artifact representing a logical PCA. Its
 
 ~~~text
 profile
+lineage_id              optional in the base Profile 0.2 artifact; required by PIC-X
+expires_at              optional in the base Profile 0.2 artifact; required by PIC-X
 position
 context_of_authority
 challenge.next_challenge
 ~~~
 
 `position` is a non-negative canonical integer defined by Profile 0.2. `context_of_authority` is the canonical Indexed Authority Map defined
-in Section 2.4. `challenge.next_challenge` is binary challenge material for the next Profile 0.2 transition.
+in Section 2.4. `challenge.next_challenge` is non-empty binary challenge material for the next Profile 0.2 transition. `lineage_id`, when
+present, is a non-empty stable identifier preserved by every advancement. `expires_at`, when present, is a positive NumericDate preserved by
+every advancement. The current PIC-X binding requires both fields and mirrors them into JWT `jti` and `exp` as described above.
 
 ### PIC Continuity COSE
 
@@ -972,11 +1067,20 @@ For current Profile 0.2, `predecessor.type` MUST be `"pca"` and `predecessor.has
 `SHA-256(exact signed current root.pca PIC PCA COSE bytes)`. A future or separate profile MAY define another predecessor representation while
 preserving exactly-one-predecessor semantics.
 
+`position` MUST equal the predecessor PCA position plus one.
+`challenge.previous_challenge` MUST equal the predecessor PCA `challenge.next_challenge`. Both challenge values MUST be non-empty. The
+current PIC-X binding additionally requires `challenge.next_challenge != challenge.previous_challenge`; this prevents a successor checkpoint
+from retaining the challenge answered by the transition. It is challenge-state progress, not global single-consumption: valid sibling
+candidates from one predecessor remain permitted, and replay or exactly-once effect control remains a separate property.
+
 `proof_of_relationship` is a typed object. For current Profile 0.2, `proof_of_relationship.type` MUST be `"sd-jwt"` and
 `proof_of_relationship.evidence` MUST be a byte string containing the exact UTF-8 bytes of the textual issuer-signed SD-JWT presentation
-selected by the Profile 0.2 PoR schema. That schema MUST bind or identify the workload verification key used to verify the workload-signed
-candidate artifacts. Profile 0.2 does not define a universal claim path, does not require `cnf.jwk` at the PIC protocol level, and does not
-require a separate SD-JWT KB-JWT for continuity advancement.
+selected by the Profile 0.2 evidence schema. That schema MUST bind or identify the workload verification key used to verify the
+workload-signed candidate artifacts. Profile 0.2 does not define a universal claim path. The current PIC-X binding obtains the workload key
+from disclosed `cnf.jwk`, rejects SD-JWT presentations carrying a separate key-binding JWT, validates the configured issuer signature and
+trust, disclosure integrity and uniqueness, credential validity, and algorithm compatibility, and requires the candidate JWT, Continuity
+COSE, and Transition COSE signatures to match that key. Another binding may define a different authenticated claim path without changing the
+base artifact schema.
 
 Signer roles are:
 
@@ -984,7 +1088,7 @@ Signer roles are:
 PoR issuer
     signs issuer-signed SD-JWT
 
-workload key accepted through PoR
+workload key accepted through profile evidence
     signs PIC Continuity Transition COSE
     signs candidate PIC Continuity COSE
     signs candidate PIC Token JWT
@@ -995,8 +1099,15 @@ trusted settlement authority
     signs settled PIC Token JWT
 ~~~
 
-The workload signatures prove control of the selected workload key and authenticate the candidate objects. They do not, by themselves,
-establish semantic continuity; the Verifier still performs the complete Profile 0.2 validation procedure.
+The candidate Continuity COSE and Transition COSE MUST declare algorithms compatible with the accepted workload key. The current PIC-X
+binding also requires their protected-header key identifiers to match. The candidate JWT JOSE algorithm MUST be compatible with the same
+key. Algorithm labels and key identifiers are inputs to verification; a valid signature under a different declared algorithm or inconsistent
+candidate signer metadata MUST be rejected.
+
+The workload signatures prove control of the selected workload key and authenticate the candidate objects. The SD-JWT proves only the
+issuer-authenticated profile claims and key binding selected by its schema. Neither fact, alone or together, proves an observed handoff or
+request occurrence; the Verifier still performs the complete Profile 0.2 validation procedure and reports only the assurance level it
+actually establishes.
 
 ## Profile 0.2 OAuth Token Exchange Binding
 
@@ -1049,8 +1160,8 @@ result
     settlement-authority-signed settled PIC Token JWT N+1
 ~~~
 
-The initialization proposal is interpreted by its internal `type` member. Current Profile 0.2 PIC-to-PIC advancement omits
-`continuity_proposal`.
+The initialization proposal is interpreted by its internal `type` member. Current Profile 0.2 PIC-to-PIC advancement MUST omit
+`continuity_proposal`; the current PIC-X binding rejects an advancement request that supplies it.
 
 The RFC 8693 response MAY transport the returned PIC Token JWT in the `access_token` response member. That placement does not make the PIC
 Token JWT an OAuth Bearer token. For this Profile 0.2 binding, when an `issued_token_type` response member is returned for a PIC Token JWT,
@@ -1061,10 +1172,24 @@ Endpoint paths, client authentication, and the complete Initial Continuity Propo
 document does not assign additional OAuth endpoint paths, client-authentication rules, proposal schema fields, or URI values beyond the
 Profile 0.2 identifiers above.
 
+## Profile 0.2 Failure Behavior
+
+A settlement implementation MUST fail closed when any required parsing, signature, trust, predecessor, challenge, attenuation,
+conformance, temporal, revocation, or policy check fails, and MUST NOT issue a successor checkpoint from a rejected candidate.
+
+When Profile 0.2 advancement is transported through the OAuth Token Exchange binding above, the current PIC-X implementation reports a
+candidate-validation refusal as OAuth `invalid_grant` and may include human-readable `error_description`. Its protocol surface does not yet
+define stable machine-readable subcodes for individual Verifier checks. Implementations and conformance vectors therefore MUST NOT treat
+PIC-X prose descriptions as stable reason identifiers. A later binding may define stable refusal codes without changing the acceptance
+predicate, but those codes are not assigned by this version.
+
 ## Self-Contained Transition Graphs
 
 A future or separate profile MAY use a self-contained transition graph, provided the profile defines the graph format, predecessor
-references, authority materialization, proof requirements, and acceptance predicate. Such a graph is not the current Profile 0.2 realization.
+references, authority materialization, proof requirements, and acceptance predicate. A graph whose ordinary nodes retain the core
+exactly-one-predecessor rule represents forks as separate paths. A causal-DAG profile that permits ordinary multi-parent nodes MUST enforce
+the every-parent bound described in Section 1.4; non-conservative joins require an explicit authorized composition or relaxation rule.
+Such a graph is not the current Profile 0.2 realization.
 
 ## Incremental, Checkpointed, or Referenced History
 
@@ -1112,6 +1237,12 @@ at-least-once) are out of scope for this document. **Fan-out** is the case where
 predecessor, which is permitted provided each branch references that predecessor, each branch is individually valid, and no branch composes
 authority from — or recovers authority attenuated by — another branch. Authorized fan-out is therefore distinct from unauthorized replay: in
 the example profile, the difference is declared by `mode`/`maxUses` and enforced by the Verifier.
+
+Current PIC-X Profile 0.2 does not define `mode`, `maxUses`, or a global predecessor-consumption register. It intentionally permits multiple
+successors to advance the same checkpoint and requires only challenge continuity plus a non-repeating next challenge. Consequently, Profile
+0.2 continuity MUST NOT be described as exactly-once execution, global replay prevention, or successor uniqueness. A deployment needing
+those properties requires an occurrence-scoped mechanism that preserves legitimate sibling fan-out; globally consuming the predecessor is
+not equivalent and would remove the unknown-successor worker-pool behavior the profile supports.
 
 Three consumption semantics are therefore distinct. **Local single-use**: the challenge is consumed once per Verifier state; independent
 Verifiers without shared state can each accept the same continuation.
@@ -1174,10 +1305,24 @@ semantics, but they may change the cryptographic trust model.
 ## Formal Scope
 
 The Lean formalization [[2]](#references) proves the logical safety properties of the abstract model and, through a refinement mapping, that
-any chain accepted under the modeled verifier assumptions satisfies the abstract PIC invariants. The computational security of the chosen
-cryptographic primitives, the soundness of concrete PoR mechanisms and issuer infrastructure, runtime or attestation integrity, revocation
-state, and the semantic monotonicity of a concrete authority profile (Section 4.3), remain **external assumptions**. It is not claimed that
-Lean proves the security of ES256, SHA-256, COSE, JWS, SD-JWT, or any deployment-specific cryptographic implementation.
+any chain accepted under the modeled verifier assumptions satisfies the abstract PIC invariants. A concrete profile inherits the full
+continuity result only when its accepted evidence soundly discharges the refinement assumptions, including the abstract PoR bridge. An
+implementation that verifies only artifact linkage, key control, and non-expansion may claim those verified properties, but MUST NOT cite the
+abstract theorem as proof of an observed causal handoff.
+
+The current PIC-X `artifact-linked` acceptance predicate does not yet discharge that PoR bridge because no trusted execution boundary
+attests the concrete predecessor-to-successor occurrence or request. It does enforce signed predecessor linkage, Profile 0.2 attenuation,
+contract conformance, workload-key control, stable lineage correlation, and absolute expiry under its stated settlement assumptions
+[[13]](#references).
+
+Claims about accepted protected effects additionally depend on causal completeness, sound causal evidence, and complete mediation. A
+correct artifact verifier cannot prove those deployment facts when relevant causes or effects are outside its observation boundary
+[[13]](#references) [[14]](#references).
+
+The computational security of the chosen cryptographic primitives, the soundness of concrete relationship or profile-evidence mechanisms
+and issuer infrastructure, runtime or attestation integrity, revocation state, and the semantic monotonicity of a concrete authority profile
+(Section 4.3), remain **external assumptions**. It is not claimed that Lean proves the security of ES256, SHA-256, COSE, JWS, SD-JWT, or any
+deployment-specific cryptographic implementation.
 
 ## Proof of Possession (Optional)
 
@@ -1199,9 +1344,11 @@ man-in-the-middle on an unprotected channel cannot forge a valid continuity stat
 including the result of a command, and attempt interception. That is a transport problem, addressed by transport, not by PIC.
 
 PIC is carrier-agnostic: the same continuity state can run over HTTP, over messaging systems such as Apache Kafka, or over any other
-transport. For messaging in particular, channels SHOULD be encrypted. A plain outsider who reads a continuity artifact cannot continue it
-without satisfying the selected profile's PoR and conformance requirements. In the open core (Section 2.3), the core does not restrict who
-continues; it pins the action and prevents authority expansion. Constraints on recipient or channel are profile-specific (Section 6.6).
+transport. For messaging in particular, channels SHOULD be encrypted. An unauthenticated outsider who only reads a continuity artifact
+cannot forge the signatures or evidence required by the selected profile. That is not equivalent to successor designation. In the open core
+(Section 2.3), the core does not preselect who continues. In current artifact-linked PIC-X, a realm-accepted, contract-conforming workload
+that obtains the settled checkpoint can advance it; within that accepted workload class, the checkpoint is bearer-like. A full profile must
+separately establish PoR and any request binding it claims. Constraints on recipient or channel are profile-specific (Section 6.6).
 Encryption protects payload confidentiality and reduces the man-in-the-middle surface; it is not a source of the model's integrity.
 
 ## Incremental Verification and Trusted Hops
@@ -1223,8 +1370,9 @@ equivalent profile-defined mechanism.
 
 PIC runs the same model in different topologies. The trade-off is between three properties the lightweight profile cannot maximize at once:
 **decentralization**, **low per-hop cost**, and **resistance to consecutive colluding hops** (Section 6.8). A single faulty hop is contained
-in *every* model (Section 1.1); deployment only decides how much — and on what — to spend to also resist collusion among
-compromised-but-authorized parties.
+with respect to every invariant that the selected concrete profile soundly realizes and that the receiving Verifier actually checks
+(Section 1.1); deployment decides how much — and on what — to spend to resist collusion among compromised-but-authorized parties. Neither a
+central service nor full history compensates for an unsound PoR realization or an unobserved request/effect boundary.
 
 | Model | Central party | Per-hop cost | Consecutive collusion |
 | --- | --- | --- | --- |
@@ -1239,8 +1387,10 @@ compromised-but-authorized parties.
   validation cost grow with the represented history unless the profile defines compaction.
 - **Central validator or checkpoint issuer.** A trusted service validates advancements, maintains or authenticates validation state, or
   issues checkpoints. This can resist collusion under the central-validator assumptions, at the cost of a trust and availability dependency.
-- **Succinct proof.** A succinct proof — for example a SNARK or accumulator — proves non-expansion over the whole prefix (Section 5.3): decentralized, O(1) to verify, and
-  collusion-resistant, all at once — at the cost of proof-generation complexity and a heavier cryptographic profile.
+- **Succinct proof.** A succinct proof — for example a SNARK or accumulator — may prove the selected profile's complete prefix-acceptance
+  predicate (Section 5.3), with succinct verification and resistance to omitted invalid prefix steps under the proof-system assumptions, at
+  the cost of proof-generation complexity and a heavier cryptographic profile. A proof circuit that establishes only non-expansion does not
+  establish PoR or request binding.
 
 Stated plainly: **to resist collusion among compromised-but-authorized hops while keeping bounded forwarding and no advanced cryptography,
 use a central or federated validator, or another profile-defined authenticated-prefix mechanism.** Fully decentralized and lightweight means
@@ -1248,28 +1398,36 @@ trusting the prior validation boundary according to the selected profile.
 
 # Zero Trust
 
-PIC is zero-trust in a precise, checkable sense, not as a label. Each property below is a concrete consequence of the model, not an
-aspiration.
+For a full-continuity realization, PIC supports zero-trust properties in a precise, checkable sense, not as a label. Each property below is
+either an abstract-model consequence or explicitly profile-conditional. A partial `artifact-linked` implementation inherits only the
+properties its concrete receiving predicate establishes.
 
-- **No implicit trust from network location.** Authorization comes from the signed continuity state, never from where a request originates. A
-  caller inside the perimeter has exactly the authority its lineage carries, and no more (Section 6.7).
-- **Every hop is verified, never assumed.** No step is trusted because a previous one was: the Verifier re-checks the transition it holds —
-  signature, predecessor link, freshness, profile-required evidence and conformance, non-expansion, time, and profile-required request/execution
-  binding (Section 3.3) — and never assumes the Prover already did. The full-chain profile re-checks *every* hop; the incremental profile re-checks the immediate transition and trusts prior verifiers
-  inductively (Section 6.8).
-- **Least privilege by construction.** Authority only attenuates; each hop carries or materializes the smallest context it needs and can never regain what an
-  ancestor dropped (Section 2.4). A privilege absent from the origin cannot appear anywhere downstream.
-- **Assume breach, contain it.** A buggy or compromised executor can act arbitrarily in its own step, but it cannot propagate an invalid
-  authority state as a valid continuation (Section 1.1). The blast radius is one hop, not the chain.
-- **Per-request, contextual decisions.** Each continuation is authorized against the context that caused it, with freshness (Section 6.1) and
-  time bounds (Section 6.3) making the decision specific to this request rather than a standing grant.
+- **No implicit trust from network location.** Authorization comes from the validated continuity state and applicable policy, never merely
+  from where a request originates. A caller inside the perimeter has no more accepted authority than its validated lineage carries
+  (Section 6.7).
+- **Every received advancement is checked under the selected profile.** The Verifier re-checks the transition it holds — signature,
+  predecessor link, freshness, profile-required evidence and conformance, non-expansion, time, and profile-required request/execution binding
+  (Section 3.3) — and never assumes the Prover already did. A full-chain profile re-checks *every* represented hop; an incremental profile
+  checks the immediate transition and explicitly trusts authenticated prior validation state (Section 6.8).
+- **Non-expansion by construction.** Authority only attenuates and can never regain what an ancestor dropped (Section 2.4). A privilege
+  absent from the origin cannot appear anywhere downstream. PIC permits retaining predecessor authority and therefore does not, by itself,
+  prove that each hop carries the smallest authority it could have used.
+- **Assume breach, bound accepted authority.** A buggy or compromised executor can act arbitrarily in its own step, but a following
+  conforming Verifier with the required evidence rejects an authority-expanding state (Section 1.1). This statement does not claim that
+  physical effects, omitted causes, consecutive collusion, or unobserved handoffs have a one-hop blast radius.
+- **Per-request, contextual decisions when bound.** When the selected profile provides authenticated request/execution binding and the
+  enforcement point applies the executed-vs-bound rule, the continuation decision is specific to that occurrence. Freshness (Section 6.1)
+  and time bounds (Section 6.3) limit reuse but do not by themselves prove which request caused the action. Current artifact-linked PIC-X
+  does not implement this binding.
 - **Identity is not authority.** Authenticating who acts does not by itself grant continuation; the authority exercised must be a valid
   continuation of the lineage (Section 1.2). Compromising an identity does not confer authority the lineage never delegated to it.
 
-These hold against a single faulty hop when the selected profile gives the receiving Verifier the evidence needed to reject that hop. The
-properties that quantify over the whole continuity prefix hold absolutely only when the relevant prefix is independently authenticated:
+These hold against a single faulty hop only to the extent that the selected profile gives the receiving Verifier sound evidence needed to
+reject that hop. Properties that quantify over the whole continuity prefix hold absolutely only when the relevant prefix is independently
+authenticated:
 full-history validation, trusted central validation, authenticated checkpoints, succinct proofs, or an equivalent profile-defined mechanism.
-The result is not "trust nothing" as a slogan but a model where trust is earned per hop, verified explicitly, and bounded by construction.
+Claims about request-caused protected effects additionally require causal completeness and complete mediation. The result is not "trust
+nothing" as a slogan but a model where each claimed property has an explicit verification and trust boundary.
 
 # Contributors {#contributors}
 
@@ -1330,3 +1488,5 @@ those defined in the PIC Legal Appendices.
 - [2] Gallo, N. (2026). *PIC Lean Verification*. Lean 4 formalization of the definitions and theorems of [1]. [github.com/ngallo/pic-model/draft/0.1/pic-model-math/pic-lean](https://github.com/ngallo/pic-model/tree/main/draft/0.1/pic-model-math/pic-lean)
 - [5] Fett, D., Campbell, B., Bradley, J., Lodderstedt, T., Jones, M. B., & Waite, D. (2023). *OAuth 2.0 Demonstrating Proof of Possession (DPoP)*. RFC 9449. [rfc-editor.org/rfc/rfc9449](https://www.rfc-editor.org/rfc/rfc9449)
 - [6] Backman, A., Richer, J., & Sporny, M. (2024). *HTTP Message Signatures*. RFC 9421. [rfc-editor.org/rfc/rfc9421](https://www.rfc-editor.org/rfc/rfc9421)
+- [13] Gallo, N. (2026). *Beyond Proof of Possession: A Relational Theory of Authority*.
+- [14] Gallo, N. (2026). *Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion*.
