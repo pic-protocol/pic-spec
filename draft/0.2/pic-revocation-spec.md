@@ -64,21 +64,6 @@ This document is made available under the Creative Commons Attribution 4.0 Inter
 [LICENSE](https://github.com/pic-protocol/pic-spec/blob/main/LICENSE) and [NOTICE](https://github.com/pic-protocol/pic-spec/blob/main/NOTICE.md).
 This notice does not add restrictions to that license.
 
---- to_be_removed_note_Work_In_Progress
-
-**Work in Progress — Experimental Design**
-
-The revocation model described in this document is under active development.
-
-This model may change substantially before a later stable revision.
-
-Implementers MUST NOT assume wire compatibility, semantic compatibility, or backward compatibility with future revisions.
-
-Future drafts may introduce breaking changes to terminology, data structures, processing rules, profile bindings, and
-interoperability requirements.
-
-The current text is published for design review, experimentation, and implementation feedback.
-
 --- note_Editors
 
 - **Nicola Gallo** (Nitro Agility S.r.l.) Lead Editor
@@ -125,14 +110,17 @@ Revocation state remains external and dynamic. Revoking a PCA, position, key, de
 rewrite signed PIC PCA COSE checkpoints and does not rebuild historical transitions. Verifiers and settlement services evaluate authenticated
 revocation state against the presented continuity state.
 
-The current PIC-X 0.2.3 binding requires a signed PCA `lineage_id`, preserves it across advancement, and mirrors it into PIC Token JWT
-`jti`; it also preserves a signed PCA `position`. These are useful authenticated revocation coordinates. PIC-X 0.2.3 nevertheless configures
-the PIC revocation hook as a no-op and implements no PIC revocation state. Absolute `expires_at` and settlement-key retention bound
-acceptance but are not early revocation [[4]](#references).
+An artifact profile can carry a signed stable `lineage_id`, preserve it across advancement, and mirror it into a transport-token identifier;
+it can also preserve a signed continuity `position`. These are useful authenticated revocation coordinates, but coordinates and absolute
+expiration are not by themselves early revocation. A revocation-capable profile additionally has to define the authenticated revocation
+state and the processing rules specified by this document [[4]](#references).
 
 ## Requirements Notation
 
-The normative sections of this document are Sections 2, 3, 4, and 5. Sections 1 and 6 are non-normative.
+The normative sections of this document are **Revocation Coordinates**, **Revocation Semantics**, **Revocation Authorization**,
+**Revocation State**, and **Security Considerations**. **Introduction**, **Future Branch-Capable Profiles**, **Position Capacity**,
+**Origins, Authorship, and Historical Record**, **Privacy Considerations**, and **Registry Considerations** are non-normative unless a
+statement explicitly says otherwise.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
 "OPTIONAL" are to be interpreted as described in BCP 14 [[2]](#references) [[3]](#references) when, and only when, they appear in all capitals
@@ -169,10 +157,10 @@ The corresponding signed-artifact hash is carried at:
 root.pca_hash
 ~~~
 
-Those fields identify the current trusted checkpoint artifact for Profile 0.2 validation. In the current PIC-X binding, the signed PCA
-`lineage_id` is the stable lineage/PCA identifier and the PIC Token JWT `jti` MUST equal it. The base Profile 0.2 artifact schema leaves
-`lineage_id` optional, while PIC-X requires it. `root.pca_hash` identifies one checkpoint and MUST NOT be substituted for the stable
-`lineage_id` when the intended revocation scope is the whole lineage.
+Those fields identify the current trusted checkpoint artifact for Profile 0.2 validation. A revocation binding for this profile MUST define
+which authenticated value is the stable lineage/PCA identifier. When it selects the signed PCA `lineage_id`, every successor MUST preserve
+that value and any mirrored PIC Token JWT `jti` MUST equal it. `root.pca_hash` identifies one checkpoint and MUST NOT be substituted for the
+stable lineage identifier when the intended revocation scope is the whole lineage.
 
 ## Position
 
@@ -384,8 +372,8 @@ less restrictive state, or silently un-revoking an existing cutoff.
 This section is non-normative.
 
 PIC can support branch-capable revocation in a future or separate profile, but branch-domain machinery is not part of the current
-centralized Profile 0.2 base coordinate. PIC-X currently permits sibling fan-out from one checkpoint; its `lineage_id` plus `position`
-therefore supports whole-lineage and lineage-depth targeting, not unique branch or occurrence targeting. This document does not define
+centralized Profile 0.2 base coordinate. A profile that permits sibling fan-out from one checkpoint cannot use `lineage_id` plus `position`
+as a unique branch or occurrence coordinate; that pair supports whole-lineage and lineage-depth targeting only. This document does not define
 branch-domain fields, branch-suffix strategies, branch-creation evidence, parent branch ancestry, or branch-domain escape rules for Profile
 0.2.
 
@@ -439,14 +427,6 @@ immutable records identify the exact text applicable to a review or conformance 
 the primary publication that supports the formal property they discuss. Copyright attribution for reuse of PIC specification materials is
 governed separately by the applicable CC BY 4.0 license.
 
-# Implementation Status
-
-This section is informative and records implementation coverage at the time of this draft.
-
-PIC-X 0.2.3 authenticates stable `lineage_id` and `position` coordinates that can support future revocation profiles, but its current
-revocation hook is a no-op and it implements no PIC revocation state. Expiration and settlement-key retention are lifetime controls, not the
-early revocation mechanism specified here.
-
 # Security Considerations
 
 Revocation security depends on authenticated, fresh, rollback-protected revocation state and explicit behavior when that state is unavailable.
@@ -489,7 +469,7 @@ This section is informative.
 
 - **0.2 — 18 July 2026.** Initial public draft of PIC revocation.
 - **0.2 revision — 26 October 2026.** Clarified fan-out, lineage-depth versus branch-selective cutoffs, selector resolution, monotonic
-  restriction, the current PIC-X implementation boundary, and standards-oriented document structure; added a standalone origin,
+  restriction, implementation-independent conformance boundaries, and standards-oriented document structure; added a standalone origin,
   authorship, and historical record for independent distribution.
 
 # Acknowledgments

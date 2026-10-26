@@ -14,10 +14,10 @@
 architectures -  centralized , where a trusted central continuity service validates continuation requests and issues or authenticates the
 resulting continuity state, and  decentralized , where permitted nodes advance continuity locally according to profile rules - their fit
 to trusted and untrusted environments, hybrid enterprise compositions of the two, and interoperability with existing token infrastructures
-through a profile-defined OAuth token-exchange binding.
+through a profile-defined OAuth token-exchange binding. 
        This revision describes the architectures; the normative deployment requirements will be developed in forthcoming revisions. This document
 does not redefine, extend, or alter the PIC Model or the normative semantics defined by the PIC Specification. In case of conflict, the
- PIC Specification  is authoritative.
+ PIC Specification  is authoritative. 
     " name="description">
 <meta content="xml2rfc 3.32.0" name="generator">
 <meta content="pic-architecture-deployment-02" name="ietf.draft">
@@ -237,7 +237,7 @@ dl > dt {
   float: left;
   margin-right: 1em;
 }
-/*
+/* 
 dl.nohang > dt {
   float: none;
 }
@@ -1313,39 +1313,26 @@ process. Published releases, tags, and immutable research references identify th
 <a href="https://github.com/pic-protocol/pic-spec/blob/main/LICENSE">LICENSE</a> and <a href="https://github.com/pic-protocol/pic-spec/blob/main/NOTICE.md">NOTICE</a>.
 This notice does not add restrictions to that license.<a href="#section-note.4-1" class="pilcrow">¶</a></p>
 </section>
-<section class="note rfcEditorRemove" id="section-note.5">
-      <h2 id="name-work-in-progress">
-<a href="#name-work-in-progress" class="section-name selfRef">Work In Progress</a>
-      </h2>
-<p id="section-note.5-1">This note is to be removed before publishing as an RFC.<a href="#section-note.5-1" class="pilcrow">¶</a></p>
-<p id="section-note.5-2"><strong>Work in Progress — Experimental Design</strong><a href="#section-note.5-2" class="pilcrow">¶</a></p>
-<p id="section-note.5-3">The deployment and architecture model described in this document is under active development.<a href="#section-note.5-3" class="pilcrow">¶</a></p>
-<p id="section-note.5-4">This model may change substantially before a later stable revision.<a href="#section-note.5-4" class="pilcrow">¶</a></p>
-<p id="section-note.5-5">Implementers MUST NOT assume wire compatibility, semantic compatibility, or backward compatibility with future revisions.<a href="#section-note.5-5" class="pilcrow">¶</a></p>
-<p id="section-note.5-6">Future drafts may introduce breaking changes to terminology, data structures, processing rules, profile bindings, and
-interoperability requirements.<a href="#section-note.5-6" class="pilcrow">¶</a></p>
-<p id="section-note.5-7">The current text is published for design review, experimentation, and implementation feedback.<a href="#section-note.5-7" class="pilcrow">¶</a></p>
-</section>
-<section class="note" id="section-note.6">
+<section class="note" id="section-note.5">
       <h2 id="name-editors">
 <a href="#name-editors" class="section-name selfRef">Editors</a>
       </h2>
 <ul class="normal note">
-<li class="normal note" id="section-note.6-1.1">
-          <p id="section-note.6-1.1.1"><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor<a href="#section-note.6-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal note" id="section-note.5-1.1">
+          <p id="section-note.5-1.1.1"><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor<a href="#section-note.5-1.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal note" id="section-note.6-1.2">
-          <p id="section-note.6-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 14</a>).</em><a href="#section-note.6-1.2.1" class="pilcrow">¶</a></p>
+        <li class="normal note" id="section-note.5-1.2">
+          <p id="section-note.5-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 13</a>).</em><a href="#section-note.5-1.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
-<section class="note" id="section-note.7">
+<section class="note" id="section-note.6">
       <h2 id="name-contributors">
 <a href="#name-contributors" class="section-name selfRef">Contributors</a>
       </h2>
 <ul class="normal note">
-<li class="normal note" id="section-note.7-1.1">
-          <p id="section-note.7-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 14</a>).</em><a href="#section-note.7-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal note" id="section-note.6-1.1">
+          <p id="section-note.6-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 13</a>).</em><a href="#section-note.6-1.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1400,31 +1387,28 @@ interoperability requirements.<a href="#section-note.5-6" class="pilcrow">¶</a>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-implementation-status" class="internal xref">Implementation Status</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-registry-considerations" class="internal xref">Registry Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-registry-considerations" class="internal xref">Registry Considerations</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-references" class="internal xref">References</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-document-history" class="internal xref">Document History</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-document-history" class="internal xref">Document History</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.14.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1447,7 +1431,7 @@ existing token infrastructures (Section 5). The components deployed are those of
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-requirements-notation" class="section-name selfRef">Requirements Notation</a>
         </h3>
 <p id="section-1.1-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> when, and only when, they appear in all capitals,
+"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span> when, and only when, they appear in all capitals,
 and only within the normative sections of this document. Examples are illustrative and non-normative.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1459,14 +1443,15 @@ and only within the normative sections of this document. Examples are illustrati
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-architectures" class="section-name selfRef">Architectures</a>
       </h2>
 <p id="section-2-1">This section is non-normative. This specification defines two deployment topologies, centralized and decentralized; within each, different
-chain-validation profiles (<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Sections 5 and 7) provide different
+chain-validation profiles (see <strong>Continuity Representations</strong> and <strong>Security Considerations</strong> in the
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>) provide different
 cost and assurance properties.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">Deployment topology and semantic assurance are independent axes. A central service does not establish PoR merely because it signs a
 checkpoint, and a decentralized verifier does not lose PoR merely because it validates locally. A full-continuity deployment must identify
 the trusted observation boundary and concrete evidence that soundly establishes the predecessor-to-successor relation. A deployment that
 validates only predecessor artifacts, workload-key control, non-expansion, and executor-profile conformance has <code>artifact-linked</code>
 assurance and must not claim observed handoff, request causation, complete mediation, or the full PIC confused-deputy result
-<span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span>.<a href="#section-2-2" class="pilcrow">¶</a></p>
 <div id="centralized">
 <section id="section-2.1">
         <h3 id="name-centralized">
@@ -1499,10 +1484,10 @@ trusted settled PIC Token JWT N+1
 </div>
 <p id="section-2.1-4">The trusted settlement service validates the workload-signed candidate and PIC Continuity Transition COSE. It does not centrally sign the
 workload's Transition COSE; after successful validation it signs the new PIC PCA COSE checkpoint, settled PIC Continuity COSE, and settled
-PIC Token JWT. PIC-X 0.2.3 is a concrete implementation of this settlement and artifact-processing role, not a required component of the
-abstract PIC model. Its current assurance level is <code>artifact-linked</code>: it does not yet observe the concrete handoff or bind a trusted request
-occurrence, and its configured PIC revocation hook is a no-op. Those implementation gaps do not weaken the requirements of a full PIC
-profile.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
+PIC Token JWT. This is one profile-selected settlement topology, not a required component of the abstract PIC model. A deployment claiming
+full PIC continuity has to realize the selected profile's PoR, request/execution binding, applicable revocation, and other acceptance
+requirements. Claims about protected effects additionally depend on sound causal evidence and complete mediation; centralized artifact
+processing by itself does not establish those properties.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.1-5">
 <pre>
 +--------+        +--------+        +--------+
@@ -1569,7 +1554,8 @@ decentralized subchain re-issuance behavior.<a href="#section-2.2-6" class="pilc
 <a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-consecutive-collusion-and-h" class="section-name selfRef">Consecutive Collusion and History</a>
         </h3>
 <p id="section-2.3-1">An incremental or history-limited profile is secure hop by hop under its selected trust assumptions, with one documented limit
-(<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Section 6.8): two or more consecutive colluding hops cannot be
+(see <strong>Incremental Verification and Trusted Hops</strong> in the
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>): two or more consecutive colluding hops cannot be
 detected when the receiving Verifier lacks authenticated evidence of the earlier lineage prefix.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.3-2">
 <pre>
@@ -1629,7 +1615,8 @@ verification cheap but moves the cost to proof generation and adds the proof-sys
             </tr>
           </tbody>
         </table>
-<p id="section-2.3-5">The profile trade-offs are analyzed in the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>, Sections 6.8 and 7.<a href="#section-2.3-5" class="pilcrow">¶</a></p>
+<p id="section-2.3-5">The profile trade-offs are analyzed under <strong>Incremental Verification and Trusted Hops</strong> and <strong>Deployment Models</strong> in the
+<a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>.<a href="#section-2.3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1649,7 +1636,7 @@ Trust is a property of the deployment threat model, its trust anchors, and the a
 trusted by itself.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <p id="section-3-3">Declaring a segment trusted also does not silently discharge causal completeness, handoff observation, request binding, or protected-effect
 mediation. If a deployment relies on those assumptions for a full-continuity or confused-deputy claim, it must state which component observes
-and enforces them and what failures remain outside scope <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-3-3" class="pilcrow">¶</a></p>
+and enforces them and what failures remain outside scope <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span> <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span>.<a href="#section-3-3" class="pilcrow">¶</a></p>
 <table class="center" id="table-2">
         <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
 <thead>
@@ -1747,7 +1734,7 @@ the trusted PIC PCA COSE checkpoint and settled PIC Continuity COSE
 are created inside the exchange
 </pre><a href="#section-5-2" class="pilcrow">¶</a>
 </div>
-<p id="section-5-3">In the Profile 0.2 / PIC-X realization, the exchange returns a settled PIC Token JWT. The initial PIC PCA COSE is created as the trusted
+<p id="section-5-3">In a Profile 0.2 OAuth Token Exchange realization, the exchange returns a settled PIC Token JWT. The initial PIC PCA COSE is created as the trusted
 checkpoint inside that process, carried as exact signed bytes in <code>root.pca</code> by the settled PIC Continuity COSE, and referenced by
 <code>root.pca_hash</code>. The PIC Continuity COSE is carried by the returned PIC Token JWT in <code>pic.root</code>. The returned PIC Token JWT is not an OAuth
 Bearer token merely because OAuth Token Exchange carries it in an <code>access_token</code> response member. Transport of PIC continuity artifacts is a
@@ -1776,24 +1763,24 @@ Specification Steward.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-6.1-2.1">
             <p id="section-6.1-2.1.1"><strong>1 December 2025 — initial public PIC Model working paper.</strong> <em>PIC Model — Provenance Identity Continuity for Distributed Execution
-Systems</em>, Zenodo record 17777421 <span><a href="#references" class="internal xref">[8]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>. That archived draft is retained for historical reference and is not an implementation
+Systems</em>, Zenodo record 17777421 <span><a href="#references" class="internal xref">[8]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span>. That archived draft is retained for historical reference and is not an implementation
 specification.<a href="#section-6.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-2.2">
             <p id="section-6.1-2.2.1"><strong>5 December 2025 — authority-propagation analysis.</strong> <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>,
-Zenodo record 17833000 <span><a href="#references" class="internal xref">[7]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-6.1-2.2.1" class="pilcrow">¶</a></p>
+Zenodo record 17833000 <span><a href="#references" class="internal xref">[7]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span>.<a href="#section-6.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-2.3">
             <p id="section-6.1-2.3.1"><strong>9 July 2026 — formal Proof-of-Continuity paper.</strong> <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed
-Systems and AI Agents</em>, arXiv:2607.08906 <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
+Systems and AI Agents</em>, arXiv:2607.08906 <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span>.<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-2.4">
             <p id="section-6.1-2.4.1"><strong>25 September 2026 — relational authority theory.</strong> <em>Beyond Proof of Possession: A Relational Theory of Authority</em>, Zenodo record
-23102206 <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
+23102206 <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span>.<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-2.5">
             <p id="section-6.1-2.5.1"><strong>2 October 2026 — event-level causal closure.</strong> <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
-and Confused-Deputy Exclusion</em>, Zenodo record 23102373 <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
+and Confused-Deputy Exclusion</em>, Zenodo record 23102373 <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span>.<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-6.1-3">This document was first published as a public draft on <strong>12 August 2026</strong> as part of the PIC Specification 0.2 family. Published tags and
@@ -1804,117 +1791,107 @@ governed separately by the applicable CC BY 4.0 license.<a href="#section-6.1-3"
 </div>
 </section>
 </div>
-<div id="implementation-status">
-<section id="section-7">
-      <h2 id="name-implementation-status">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
-      </h2>
-<p id="section-7-1">This section is informative and records implementation coverage at the time of this draft.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<p id="section-7-2">PIC-X 0.2.3 implements the centralized artifact and settlement subset of Profile 0.2. It does not implement the decentralized, federated,
-Sandboxed Execution, or full semantic-PoR deployment profiles described as future or profile-selected possibilities in this document.<a href="#section-7-2" class="pilcrow">¶</a></p>
-</section>
-</div>
 <div id="security-considerations">
-<section id="section-8">
+<section id="section-7">
       <h2 id="name-security-considerations">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-8-1">This document describes deployment topology and trust placement; it does not replace the security requirements of the PIC Prover and Verifier
+<p id="section-7-1">This document describes deployment topology and trust placement; it does not replace the security requirements of the PIC Prover and Verifier
 Specification or the PIC Revocation Specification. Deployments need to evaluate trusted-service compromise, trust-boundary assumptions,
-history availability, collusion resistance, and revocation-state availability separately from artifact integrity.<a href="#section-8-1" class="pilcrow">¶</a></p>
-<p id="section-8-2">Centralized profiles rely on the correctness and availability of the trusted settlement or continuity service. Decentralized and hybrid
+history availability, collusion resistance, and revocation-state availability separately from artifact integrity.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">Centralized profiles rely on the correctness and availability of the trusted settlement or continuity service. Decentralized and hybrid
 profiles need to define what each Verifier independently validates, what prior validation or checkpoint state it trusts, and how failures are
 handled. Transport protections such as TLS, mTLS, broker authentication, or service-mesh policy protect channels and operational exposure, but
-they do not replace PIC continuity validation, non-expansion checks, freshness checks, or authenticated revocation evaluation.<a href="#section-8-2" class="pilcrow">¶</a></p>
-<p id="section-8-3">For claims about accepted physical effects, deployments additionally need sound causal evidence, causal completeness for the stated threat
+they do not replace PIC continuity validation, non-expansion checks, freshness checks, or authenticated revocation evaluation.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-3">For claims about accepted physical effects, deployments additionally need sound causal evidence, causal completeness for the stated threat
 model, and complete mediation of the protected effects in scope. Artifact verification or centralized settlement alone does not supply
 those properties. Multi-parent ordinary joins must preserve every participating parent bound; a non-conservative composition must be an
-explicit, separately authorized event rather than an ordinary continuation <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-8-3" class="pilcrow">¶</a></p>
+explicit, separately authorized event rather than an ordinary continuation <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 10</a>)</span>.<a href="#section-7-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="privacy-considerations">
-<section id="section-9">
+<section id="section-8">
       <h2 id="name-privacy-considerations">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<p id="section-9-1">Centralized and federated continuity services can observe stable lineage identifiers, executor metadata, authority contexts, and service-to-
+<p id="section-8-1">Centralized and federated continuity services can observe stable lineage identifiers, executor metadata, authority contexts, and service-to-
 service relationships. Decentralized deployments may disclose the same information through carried history. Deployments should minimize
-disclosure, retention, and cross-domain correlation while preserving the evidence required by the selected assurance profile.<a href="#section-9-1" class="pilcrow">¶</a></p>
+disclosure, retention, and cross-domain correlation while preserving the evidence required by the selected assurance profile.<a href="#section-8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="registry-considerations">
-<section id="section-10">
+<section id="section-9">
       <h2 id="name-registry-considerations">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-registry-considerations" class="section-name selfRef">Registry Considerations</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-registry-considerations" class="section-name selfRef">Registry Considerations</a>
       </h2>
-<p id="section-10-1">This document defines deployment architectures and requests no external registry action.<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-9-1">This document defines deployment architectures and requests no external registry action.<a href="#section-9-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="references">
-<section id="section-11">
+<section id="section-10">
       <h2 id="name-references">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <ul class="normal">
-<li class="normal" id="section-11-1.1">
-          <p id="section-11-1.1.1">[1] Gallo, N. (9 July 2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-11-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-10-1.1">
+          <p id="section-10-1.1.1">[1] Gallo, N. (9 July 2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-10-1.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.2">
-          <p id="section-11-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-11-1.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-10-1.2">
+          <p id="section-10-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-10-1.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.3">
-          <p id="section-11-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-11-1.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-10-1.3">
+          <p id="section-10-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-10-1.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.4">
-          <p id="section-11-1.4.1">[4] Jones, M., Nadalin, A., Campbell, B., Bradley, J., &amp; Mortimore, C. (2020). <em>OAuth 2.0 Token Exchange</em>. RFC 8693. <a href="https://www.rfc-editor.org/rfc/rfc8693">rfc-editor.org/rfc/rfc8693</a><a href="#section-11-1.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-10-1.4">
+          <p id="section-10-1.4.1">[4] Jones, M., Nadalin, A., Campbell, B., Bradley, J., &amp; Mortimore, C. (2020). <em>OAuth 2.0 Token Exchange</em>. RFC 8693. <a href="https://www.rfc-editor.org/rfc/rfc8693">rfc-editor.org/rfc/rfc8693</a><a href="#section-10-1.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.5">
-          <p id="section-11-1.5.1">[5] Gallo, N. (25 September 2026). <em>Beyond Proof of Possession: A Relational Theory of Authority</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102206">10.5281/zenodo.23102206</a><a href="#section-11-1.5.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-10-1.5">
+          <p id="section-10-1.5.1">[5] Gallo, N. (25 September 2026). <em>Beyond Proof of Possession: A Relational Theory of Authority</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102206">10.5281/zenodo.23102206</a><a href="#section-10-1.5.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.6">
-          <p id="section-11-1.6.1">[6] Gallo, N. (2 October 2026). <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102373">10.5281/zenodo.23102373</a><a href="#section-11-1.6.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-10-1.6">
+          <p id="section-10-1.6.1">[6] Gallo, N. (2 October 2026). <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102373">10.5281/zenodo.23102373</a><a href="#section-10-1.6.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.7">
-          <p id="section-11-1.7.1">[7] Gallo, N. (5 December 2025). <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17833000">10.5281/zenodo.17833000</a><a href="#section-11-1.7.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-10-1.7">
+          <p id="section-10-1.7.1">[7] Gallo, N. (5 December 2025). <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17833000">10.5281/zenodo.17833000</a><a href="#section-10-1.7.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-1.8">
-          <p id="section-11-1.8.1">[8] Gallo, N. (1 December 2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Archived working paper. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17777421">10.5281/zenodo.17777421</a><a href="#section-11-1.8.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-10-1.8">
+          <p id="section-10-1.8.1">[8] Gallo, N. (1 December 2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Archived working paper. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17777421">10.5281/zenodo.17777421</a><a href="#section-10-1.8.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="document-history">
-<section id="section-12">
+<section id="section-11">
       <h2 id="name-document-history">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
       </h2>
-<p id="section-12-1">This section is informative.<a href="#section-12-1" class="pilcrow">¶</a></p>
+<p id="section-11-1">This section is informative.<a href="#section-11-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12-2.1">
-          <p id="section-12-2.1.1"><strong>0.2 — 12 August 2026.</strong> Initial public draft describing centralized, decentralized, trusted, untrusted, and hybrid deployment models.<a href="#section-12-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-11-2.1">
+          <p id="section-11-2.1.1"><strong>0.2 — 12 August 2026.</strong> Initial public draft describing centralized, decentralized, trusted, untrusted, and hybrid deployment models.<a href="#section-11-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-12-2.2">
-          <p id="section-12-2.2.1"><strong>0.2 revision — 26 October 2026.</strong> Distinguished topology from assurance and current PIC-X coverage from future profiles, adopted a
-standards-oriented document structure, and added a standalone origin, authorship, and historical record for independent distribution.<a href="#section-12-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-11-2.2">
+          <p id="section-11-2.2.1"><strong>0.2 revision — 26 October 2026.</strong> Distinguished topology from assurance and implementation coverage from profile requirements, adopted a
+standards-oriented document structure, and added a standalone origin, authorship, and historical record for independent distribution.<a href="#section-11-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="acknowledgments">
-<section id="section-13">
+<section id="section-12">
       <h2 id="name-acknowledgments">
-<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="section-13-1">The origins and research history of the PIC Model are recorded above. This document reserves acknowledgments for concrete review,
-discussion, and editorial contributions to this architecture specification.<a href="#section-13-1" class="pilcrow">¶</a></p>
+<p id="section-12-1">The origins and research history of the PIC Model are recorded above. This document reserves acknowledgments for concrete review,
+discussion, and editorial contributions to this architecture specification.<a href="#section-12-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="contributors">
-<section id="section-14">
+<section id="section-13">
       <h2 id="name-contributors-2">
-<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
       </h2>
-<p id="section-14-1">The editor and current contributors are identified in the document header and repository history.<a href="#section-14-1" class="pilcrow">¶</a></p>
+<p id="section-13-1">The editor and current contributors are identified in the document header and repository history.<a href="#section-13-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">

@@ -9,26 +9,26 @@
 <meta content="
        This document is the  PIC Sandboxed Execution Specification , a subordinate specification of the
  PIC Specification . It retains its historical repository
-filename ( pic-lineage-guardrail-spec.md ).
+filename ( pic-lineage-guardrail-spec.md ). 
        A  Composition Collection  carries one or more independent PIC continuities together for one proposed transition. When such a transition
 must be validated and controlled by configured policy, that control is itself an execution, and PIC governs it the way it governs any other
-execution: as a continuity.
+execution: as a continuity. 
        A  Sandboxed Execution  places the Composition Collection inside an ordinary outer PIC continuity. Each  guardrail  is a normal executor
 of that outer continuity: it verifies the outer continuity state, verifies every member continuity, applies the enforcement function, and —
-on permit — produces the next ordinary continuity advancement.
+on permit — produces the next ordinary continuity advancement. 
        No new continuity primitive is introduced, no trusted sandbox, and no external guardrail authority. The outer continuity is identified by the
 operation  ENFORCE  and by a profile-defined authenticated binding to the exact Composition Collection being evaluated. The construction is
-recursive: a member continuity may itself be a Sandboxed Execution.
-
-
-           A Sandboxed Execution is PIC applied recursively: an outer PIC execution carries and governs an inner PIC execution.
-
-
+recursive: a member continuity may itself be a Sandboxed Execution. 
+       
+         
+           A Sandboxed Execution is PIC applied recursively: an outer PIC execution carries and governs an inner PIC execution. 
+         
+       
        Guardrails build on the continuity semantics of the
  PIC Prover and Verifier Specification  and are
 consistent with the  PIC Revocation Specification ;
 they do not alter Proof of Relationship, non-expansion, or the rule that every non-root continuity advancement continues exactly one
-predecessor. In case of conflict, the  PIC Specification  is authoritative.
+predecessor. In case of conflict, the  PIC Specification  is authoritative. 
     " name="description">
 <meta content="xml2rfc 3.32.0" name="generator">
 <meta content="pic-sandboxed-execution-02" name="ietf.draft">
@@ -248,7 +248,7 @@ dl > dt {
   float: left;
   margin-right: 1em;
 }
-/*
+/* 
 dl.nohang > dt {
   float: none;
 }
@@ -1337,39 +1337,26 @@ process. Published releases, tags, and immutable research references identify th
 <a href="https://github.com/pic-protocol/pic-spec/blob/main/LICENSE">LICENSE</a> and <a href="https://github.com/pic-protocol/pic-spec/blob/main/NOTICE.md">NOTICE</a>.
 This notice does not add restrictions to that license.<a href="#section-note.4-1" class="pilcrow">¶</a></p>
 </section>
-<section class="note rfcEditorRemove" id="section-note.5">
-      <h2 id="name-work-in-progress">
-<a href="#name-work-in-progress" class="section-name selfRef">Work In Progress</a>
-      </h2>
-<p id="section-note.5-1">This note is to be removed before publishing as an RFC.<a href="#section-note.5-1" class="pilcrow">¶</a></p>
-<p id="section-note.5-2"><strong>Work in Progress — Experimental Design</strong><a href="#section-note.5-2" class="pilcrow">¶</a></p>
-<p id="section-note.5-3">The Sandboxed Execution and Composition Collection model described in this document is under active development.<a href="#section-note.5-3" class="pilcrow">¶</a></p>
-<p id="section-note.5-4">This model may change substantially before a later stable revision.<a href="#section-note.5-4" class="pilcrow">¶</a></p>
-<p id="section-note.5-5">Implementers MUST NOT assume wire compatibility, semantic compatibility, or backward compatibility with future revisions.<a href="#section-note.5-5" class="pilcrow">¶</a></p>
-<p id="section-note.5-6">Future drafts may introduce breaking changes to terminology, data structures, processing rules, profile bindings, and
-interoperability requirements.<a href="#section-note.5-6" class="pilcrow">¶</a></p>
-<p id="section-note.5-7">The current text is published for design review, experimentation, and implementation feedback.<a href="#section-note.5-7" class="pilcrow">¶</a></p>
-</section>
-<section class="note" id="section-note.6">
+<section class="note" id="section-note.5">
       <h2 id="name-editors">
 <a href="#name-editors" class="section-name selfRef">Editors</a>
       </h2>
 <ul class="normal note">
-<li class="normal note" id="section-note.6-1.1">
-          <p id="section-note.6-1.1.1"><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor<a href="#section-note.6-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal note" id="section-note.5-1.1">
+          <p id="section-note.5-1.1.1"><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor<a href="#section-note.5-1.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal note" id="section-note.6-1.2">
-          <p id="section-note.6-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 15</a>).</em><a href="#section-note.6-1.2.1" class="pilcrow">¶</a></p>
+        <li class="normal note" id="section-note.5-1.2">
+          <p id="section-note.5-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 14</a>).</em><a href="#section-note.5-1.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
-<section class="note" id="section-note.7">
+<section class="note" id="section-note.6">
       <h2 id="name-contributors">
 <a href="#name-contributors" class="section-name selfRef">Contributors</a>
       </h2>
 <ul class="normal note">
-<li class="normal note" id="section-note.7-1.1">
-          <p id="section-note.7-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 15</a>).</em><a href="#section-note.7-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal note" id="section-note.6-1.1">
+          <p id="section-note.6-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 14</a>).</em><a href="#section-note.6-1.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1456,45 +1443,42 @@ interoperability requirements.<a href="#section-note.5-6" class="pilcrow">¶</a>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-implementation-status" class="internal xref">Implementation Status</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
-                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-model-guarantee" class="internal xref">Model Guarantee</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-model-guarantee" class="internal xref">Model Guarantee</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
-                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-implementation-failure" class="internal xref">Implementation Failure</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-implementation-failure" class="internal xref">Implementation Failure</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
-                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-semantic-divergence" class="internal xref">Semantic Divergence</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-semantic-divergence" class="internal xref">Semantic Divergence</a></p>
 </li>
             </ul>
 </li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-model-summary" class="internal xref">Model Summary</a></p>
+</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-model-summary" class="internal xref">Model Summary</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-registry-considerations" class="internal xref">Registry Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-registry-considerations" class="internal xref">Registry Considerations</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-references" class="internal xref">References</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-document-history" class="internal xref">Document History</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-document-history" class="internal xref">Document History</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#section-15" class="auto internal xref">15</a>. <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
-            <p id="section-toc.1-1.16.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.15.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1577,7 +1561,7 @@ One root. One predecessor per advancement. Authority only narrows.
 <p id="section-1.1-4">The construction — root representation, continuity advancement, Prover, and Verifier — is defined by the
 <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier Specification</a>;
 revocation by the <a href="pic-revocation-spec.html">PIC Revocation Specification</a>; the
-formal model and proofs by the PIC Model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>. This document restates none of them.<a href="#section-1.1-4" class="pilcrow">¶</a></p>
+formal model and proofs by the PIC Model <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>. This document restates none of them.<a href="#section-1.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="composition-collection">
@@ -1738,7 +1722,7 @@ execution.<a href="#section-1.3-9" class="pilcrow">¶</a></p>
 <a href="#section-1.4" class="section-number selfRef">1.4. </a><a href="#name-requirements-notation" class="section-name selfRef">Requirements Notation</a>
         </h3>
 <p id="section-1.4-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> when, and only when, they appear in all capitals
+"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> when, and only when, they appear in all capitals
 in normative text. The sections defining Composition Collection binding, its canonical binding, sandbox origination, the Guardrail Prover and Verifier
 profile, the operation profile, Acceptance, Bypass rejection behavior, materializing-guardrail requirements, and Recursion resource limits
 are normative. The Abstract, Introduction, explanatory diagrams, examples, deployment comparisons, the service-mesh explanation, and Security
@@ -1882,7 +1866,7 @@ are authenticated and auditable.<a href="#section-2.3.1-3.2.1" class="pilcrow">�
           </ul>
 <p id="section-2.3.1-4">A non-conservative result MUST NOT be hidden inside an ordinary PIC continuation. <code>ENFORCE</code> authorizes evaluation of the bound collection; it
 does not, by itself, authorize a union, grant, endorsement, or relaxation in the application authority domain. These rules preserve the
-ordinary-join and explicit-relaxation boundary of the causal PIC/COSS model <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-2.3.1-4" class="pilcrow">¶</a></p>
+ordinary-join and explicit-relaxation boundary of the causal PIC/COSS model <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-2.3.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2265,12 +2249,10 @@ PIC Prover procedure. It MUST:<a href="#section-2.6-12" class="pilcrow">¶</a></
 </li>
         </ol>
 <p id="section-2.6-14">No additional approval signature is created. The next guardrail repeats the same procedure — and that repetition is the sandbox.<a href="#section-2.6-14" class="pilcrow">¶</a></p>
-<p id="section-2.6-15">The current PIC-X 0.2.3 implementation does not implement Sandboxed Execution, Composition Collection processing, the <code>ENFORCE</code> operation,
-or the mandatory request/execution binding defined by this specification. A future Profile 0.2 Sandboxed Execution binding may reuse the
-existing candidate artifact family: a guardrail or workload would create a workload-signed PIC Continuity Transition COSE, place it as the
-single transition in a workload-signed candidate PIC Continuity COSE, carry that candidate in a workload-signed candidate PIC Token JWT, and
-submit the candidate for settlement. Such a binding MUST add every outer and inner validation phase in this section; ordinary PIC-X
-settlement alone does not provide them.<a href="#section-2.6-15" class="pilcrow">¶</a></p>
+<p id="section-2.6-15">A Sandboxed Execution binding may reuse an existing candidate artifact family: a guardrail or workload creates a signed continuity
+advancement, binds the exact Composition Collection and execution occurrence, and submits that candidate to the selected acceptance or
+settlement boundary. Such a binding MUST add every outer and inner validation phase in this section. Validating an ordinary single-lineage
+continuation alone does not establish Sandboxed Execution conformance.<a href="#section-2.6-15" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.6-16">
 <pre>
 receive outer continuity state
@@ -2497,11 +2479,11 @@ already-authenticated advancement. The materializing guardrail:<a href="#section
             <p id="section-4.1-3.8.1">performs exactly the bound physical action according to the selected materialization profile and its ordering rules.<a href="#section-4.1-3.8.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-4.1-4">In a future Sandboxed Execution binding that reuses Profile 0.2 artifacts, the materializing guardrail or workload would validate the outer
+<p id="section-4.1-4">In a Sandboxed Execution binding that reuses Profile 0.2 artifacts, the materializing guardrail or workload MUST validate the outer
 predecessor, validate every Composition Collection member, evaluate enforcement, construct and sign the PIC Continuity Transition COSE,
 construct and sign the candidate PIC Continuity COSE, carry it in a signed candidate PIC Token JWT, and submit the candidate through the
-advancement flow. The settlement authority would then need to validate both the ordinary candidate and every additional rule of this
-specification before issuing a settled outer continuity. Current PIC-X 0.2.3 does not perform those Sandboxed Execution checks.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+advancement flow. The settlement authority MUST then validate both the ordinary candidate and every additional rule of this specification
+before issuing a settled outer continuity.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <p id="section-4.1-5">This document does not define the exact temporal ordering between Profile 0.2 settlement and the final irreversible physical side effect against a
 non-PIC-aware target. That ordering is profile-defined or deployment-defined.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
 <p id="section-4.1-6">After the decision, control of that concrete materialized target operation does not return to the proposing executor; this concerns the
@@ -2595,7 +2577,7 @@ case under the <a href="pic-prover-verifier-spec.html">PIC Prover and Verifier S
 Detection beyond the colluding pair depends on the selected chain-validation profile and the authenticated history available to the later
 Verifier: a full-chain, Trust Plane, authenticated-checkpoint, or approved succinct-proof profile may detect the invalid prefix according to
 its guarantees, while an incremental Verifier without authenticated evidence of the earlier prefix has the consecutive-collusion limitation
-already documented by that specification (Section 6.8). Sandboxed Execution introduces no new failure class.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+already documented by that specification (<strong>Incremental Verification and Trusted Hops</strong>). Sandboxed Execution introduces no new failure class.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2688,24 +2670,24 @@ Specification Steward.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-6.1-2.1">
             <p id="section-6.1-2.1.1"><strong>1 December 2025 — initial public PIC Model working paper.</strong> <em>PIC Model — Provenance Identity Continuity for Distributed Execution
-Systems</em>, Zenodo record 17777421 <span><a href="#references" class="internal xref">[7]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>. That archived draft is retained for historical reference and is not an implementation
+Systems</em>, Zenodo record 17777421 <span><a href="#references" class="internal xref">[7]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>. That archived draft is retained for historical reference and is not an implementation
 specification.<a href="#section-6.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-2.2">
             <p id="section-6.1-2.2.1"><strong>5 December 2025 — authority-propagation analysis.</strong> <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>,
-Zenodo record 17833000 <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-6.1-2.2.1" class="pilcrow">¶</a></p>
+Zenodo record 17833000 <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-6.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-2.3">
             <p id="section-6.1-2.3.1"><strong>9 July 2026 — formal Proof-of-Continuity paper.</strong> <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed
-Systems and AI Agents</em>, arXiv:2607.08906 <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
+Systems and AI Agents</em>, arXiv:2607.08906 <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-2.4">
             <p id="section-6.1-2.4.1"><strong>25 September 2026 — relational authority theory.</strong> <em>Beyond Proof of Possession: A Relational Theory of Authority</em>, Zenodo record
-23102206 <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
+23102206 <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-2.5">
             <p id="section-6.1-2.5.1"><strong>2 October 2026 — event-level causal closure.</strong> <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
-and Confused-Deputy Exclusion</em>, Zenodo record 23102373 <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
+and Confused-Deputy Exclusion</em>, Zenodo record 23102373 <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-6.1-3">This document was first published as a public draft on <strong>20 July 2026</strong> as part of the PIC Specification 0.2 family. Published tags and
@@ -2716,88 +2698,77 @@ governed separately by the applicable CC BY 4.0 license.<a href="#section-6.1-3"
 </div>
 </section>
 </div>
-<div id="implementation-status">
-<section id="section-7">
-      <h2 id="name-implementation-status">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
-      </h2>
-<p id="section-7-1">This section is informative and records implementation coverage at the time of this draft.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<p id="section-7-2">PIC-X 0.2.3 does not implement Sandboxed Execution, Composition Collection processing, the <code>ENFORCE</code> operation, or the required outer
-request/execution binding. Existing PIC-X artifacts may support a future profile, but they do not constitute an implementation of this
-specification.<a href="#section-7-2" class="pilcrow">¶</a></p>
-</section>
-</div>
 <div id="security-considerations">
-<section id="section-8">
+<section id="section-7">
       <h2 id="name-security-considerations">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
 <div id="model-guarantee">
-<section id="section-8.1">
+<section id="section-7.1">
         <h3 id="name-model-guarantee">
-<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-model-guarantee" class="section-name selfRef">Model Guarantee</a>
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-model-guarantee" class="section-name selfRef">Model Guarantee</a>
         </h3>
-<p id="section-8.1-1">The guarantees in this subsection require a full-continuity outer profile whose concrete PoR evidence soundly establishes the claimed
+<p id="section-7.1-1">The guarantees in this subsection require a full-continuity outer profile whose concrete PoR evidence soundly establishes the claimed
 guardrail handoff, and require the executed-vs-bound and mediation rules of this specification to hold. An artifact-linked checkpoint chain
 without observed handoff or trusted request occurrence does not inherit these causal or physical-effect guarantees. Claims about protected
-effects additionally require causal completeness and complete mediation for the stated threat model <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
-<p id="section-8.1-2">Within the accepted model:<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+effects additionally require causal completeness and complete mediation for the stated threat model <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span> <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 11</a>)</span>.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">Within the accepted model:<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-8.1-3.1">
-            <p id="section-8.1-3.1.1">an outer hop without valid PoR cannot continue;<a href="#section-8.1-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.1-3.1">
+            <p id="section-7.1-3.1.1">an outer hop without valid PoR cannot continue;<a href="#section-7.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-8.1-3.2">
-            <p id="section-8.1-3.2.1">an unauthorized guardrail cannot become a valid continuity advancement;<a href="#section-8.1-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-3.2">
+            <p id="section-7.1-3.2.1">an unauthorized guardrail cannot become a valid continuity advancement;<a href="#section-7.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-8.1-3.3">
-            <p id="section-8.1-3.3.1">the outer authority cannot expand beyond <code>ENFORCE</code>;<a href="#section-8.1-3.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-3.3">
+            <p id="section-7.1-3.3.1">the outer authority cannot expand beyond <code>ENFORCE</code>;<a href="#section-7.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-8.1-3.4">
-            <p id="section-8.1-3.4.1">an invalid inner continuity causes rejection;<a href="#section-8.1-3.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-3.4">
+            <p id="section-7.1-3.4.1">an invalid inner continuity causes rejection;<a href="#section-7.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-8.1-3.5">
-            <p id="section-8.1-3.5.1">a different inner execution cannot be substituted without invalidating the authenticated binding;<a href="#section-8.1-3.5.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-3.5">
+            <p id="section-7.1-3.5.1">a different inner execution cannot be substituted without invalidating the authenticated binding;<a href="#section-7.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-8.1-3.6">
-            <p id="section-8.1-3.6.1">skipping guardrails cannot produce a valid outer continuation.<a href="#section-8.1-3.6.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-3.6">
+            <p id="section-7.1-3.6.1">skipping guardrails cannot produce a valid outer continuation.<a href="#section-7.1-3.6.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-8.1-4">This specification adds no independent trust primitive. The trusted elements remain those already required by the PIC Prover and Verifier
+<p id="section-7.1-4">This specification adds no independent trust primitive. The trusted elements remain those already required by the PIC Prover and Verifier
 model: Verifier correctness, origin trust boundaries, sandbox-origin authorization, attestation issuers, canonicalization and hash profiles,
 revocation-state authenticity and freshness, cryptographic primitives, and the physical correctness of any materializing implementation.
 Sandboxed Execution changes the anchor of enforcement, not the kind of trust assumed: enforcement is represented as an ordinary PIC
 continuation checked by the next conforming outer executor. Trust is not eliminated; no special trusted sandbox or independently recognized
-guardrail authority is added.<a href="#section-8.1-4" class="pilcrow">¶</a></p>
+guardrail authority is added.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="implementation-failure">
-<section id="section-8.2">
+<section id="section-7.2">
         <h3 id="name-implementation-failure">
-<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-implementation-failure" class="section-name selfRef">Implementation Failure</a>
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-implementation-failure" class="section-name selfRef">Implementation Failure</a>
         </h3>
-<p id="section-8.2-1">The guarantee can fail physically if cryptographic primitives fail, keys or attestation issuers are compromised, a Verifier omits required
+<p id="section-7.2-1">The guarantee can fail physically if cryptographic primitives fail, keys or attestation issuers are compromised, a Verifier omits required
 checks, an executor performs a different physical action from the signed one, or canonicalization or digest construction is implemented
-incorrectly. These break the implementation or its assumptions, not the model.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+incorrectly. These break the implementation or its assumptions, not the model.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="semantic-divergence">
-<section id="section-8.3">
+<section id="section-7.3">
         <h3 id="name-semantic-divergence">
-<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-semantic-divergence" class="section-name selfRef">Semantic Divergence</a>
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-semantic-divergence" class="section-name selfRef">Semantic Divergence</a>
         </h3>
-<p id="section-8.3-1">The enforcement function may be incorrect, dishonest, or semantically divergent. Signing the policy identifier, version, input commitments,
+<p id="section-7.3-1">The enforcement function may be incorrect, dishonest, or semantically divergent. Signing the policy identifier, version, input commitments,
 semantic profile, and result makes the decision attributable and checkable. PIC proves the continuity and integrity of that decision; it
-does not prove that a human policy or its interpretation is correct.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+does not prove that a human policy or its interpretation is correct.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="model-summary">
-<section id="section-9">
+<section id="section-8">
       <h2 id="name-model-summary">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-model-summary" class="section-name selfRef">Model Summary</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-model-summary" class="section-name selfRef">Model Summary</a>
       </h2>
-<div class="lang-text sourcecode" id="section-9-1">
+<div class="lang-text sourcecode" id="section-8-1">
 <pre>
 PIC CONTINUITY
 one root;
@@ -2817,99 +2788,99 @@ each guardrail verifies and advances that outer continuity.
 PIC CARRYING PIC — PIC OF PIC
 the execution that validates PIC execution
 is itself represented and protected by PIC.
-</pre><a href="#section-9-1" class="pilcrow">¶</a>
+</pre><a href="#section-8-1" class="pilcrow">¶</a>
 </div>
-<p id="section-9-2">The result is recursive execution safety: independently originated authorities may participate in one evaluated transition without becoming
-one authority state, and the evaluation process itself continues only as valid PIC state.<a href="#section-9-2" class="pilcrow">¶</a></p>
-<p id="section-9-3">A service mesh may carry, observe, encrypt, or operationally restrict this execution, but it is not the source of its sandboxing property.<a href="#section-9-3" class="pilcrow">¶</a></p>
-<p id="section-9-4">Physical executor behavior, alternate physical paths, implementation failure, cryptographic compromise, unavailable authenticated history,
-and policy-semantic error remain at the stated boundaries of the model.<a href="#section-9-4" class="pilcrow">¶</a></p>
-<p id="section-9-5">Without at least one composition member, there is no inner Composition Collection for this profile to evaluate. This does not make the member
-continuities authority parents of the outer continuity.<a href="#section-9-5" class="pilcrow">¶</a></p>
+<p id="section-8-2">The result is recursive execution safety: independently originated authorities may participate in one evaluated transition without becoming
+one authority state, and the evaluation process itself continues only as valid PIC state.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<p id="section-8-3">A service mesh may carry, observe, encrypt, or operationally restrict this execution, but it is not the source of its sandboxing property.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-4">Physical executor behavior, alternate physical paths, implementation failure, cryptographic compromise, unavailable authenticated history,
+and policy-semantic error remain at the stated boundaries of the model.<a href="#section-8-4" class="pilcrow">¶</a></p>
+<p id="section-8-5">Without at least one composition member, there is no inner Composition Collection for this profile to evaluate. This does not make the member
+continuities authority parents of the outer continuity.<a href="#section-8-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="privacy-considerations">
-<section id="section-10">
+<section id="section-9">
       <h2 id="name-privacy-considerations">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<p id="section-10-1">A Composition Collection can reveal that otherwise independent continuities participated in one evaluation. Exact collection binding,
+<p id="section-9-1">A Composition Collection can reveal that otherwise independent continuities participated in one evaluation. Exact collection binding,
 recursive nesting, guardrail decisions, and outer-lineage identifiers can also create durable correlation. Implementations should minimize
-member disclosure and record retention while retaining the complete authenticated collection and decision evidence required for verification.<a href="#section-10-1" class="pilcrow">¶</a></p>
+member disclosure and record retention while retaining the complete authenticated collection and decision evidence required for verification.<a href="#section-9-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="registry-considerations">
-<section id="section-11">
+<section id="section-10">
       <h2 id="name-registry-considerations">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-registry-considerations" class="section-name selfRef">Registry Considerations</a>
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-registry-considerations" class="section-name selfRef">Registry Considerations</a>
       </h2>
-<p id="section-11-1">This document defines no shared registry and requests no external registry action. A future wire profile may define registered operation,
-collection, evidence, or error identifiers.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-10-1">This document defines no shared registry and requests no external registry action. A future wire profile may define registered operation,
+collection, evidence, or error identifiers.<a href="#section-10-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="references">
-<section id="section-12">
+<section id="section-11">
       <h2 id="name-references">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <ul class="normal">
-<li class="normal" id="section-12-1.1">
-          <p id="section-12-1.1.1">[1] Gallo, N. (9 July 2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-12-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-11-1.1">
+          <p id="section-11-1.1.1">[1] Gallo, N. (9 July 2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-11-1.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-12-1.2">
-          <p id="section-12-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-12-1.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-11-1.2">
+          <p id="section-11-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-11-1.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-12-1.3">
-          <p id="section-12-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-12-1.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-11-1.3">
+          <p id="section-11-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-11-1.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-12-1.4">
-          <p id="section-12-1.4.1">[4] Gallo, N. (25 September 2026). <em>Beyond Proof of Possession: A Relational Theory of Authority</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102206">10.5281/zenodo.23102206</a><a href="#section-12-1.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-11-1.4">
+          <p id="section-11-1.4.1">[4] Gallo, N. (25 September 2026). <em>Beyond Proof of Possession: A Relational Theory of Authority</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102206">10.5281/zenodo.23102206</a><a href="#section-11-1.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-12-1.5">
-          <p id="section-12-1.5.1">[5] Gallo, N. (2 October 2026). <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102373">10.5281/zenodo.23102373</a><a href="#section-12-1.5.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-11-1.5">
+          <p id="section-11-1.5.1">[5] Gallo, N. (2 October 2026). <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102373">10.5281/zenodo.23102373</a><a href="#section-11-1.5.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-12-1.6">
-          <p id="section-12-1.6.1">[6] Gallo, N. (5 December 2025). <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17833000">10.5281/zenodo.17833000</a><a href="#section-12-1.6.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-11-1.6">
+          <p id="section-11-1.6.1">[6] Gallo, N. (5 December 2025). <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17833000">10.5281/zenodo.17833000</a><a href="#section-11-1.6.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-12-1.7">
-          <p id="section-12-1.7.1">[7] Gallo, N. (1 December 2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Archived working paper. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17777421">10.5281/zenodo.17777421</a><a href="#section-12-1.7.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-11-1.7">
+          <p id="section-11-1.7.1">[7] Gallo, N. (1 December 2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Archived working paper. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17777421">10.5281/zenodo.17777421</a><a href="#section-11-1.7.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="document-history">
-<section id="section-13">
+<section id="section-12">
       <h2 id="name-document-history">
-<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
       </h2>
-<p id="section-13-1">This section is informative.<a href="#section-13-1" class="pilcrow">¶</a></p>
+<p id="section-12-1">This section is informative.<a href="#section-12-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-13-2.1">
-          <p id="section-13-2.1.1"><strong>0.2 — 20 July 2026.</strong> Initial public draft of recursive Sandboxed Execution and Composition Collection processing.<a href="#section-13-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-12-2.1">
+          <p id="section-12-2.1.1"><strong>0.2 — 20 July 2026.</strong> Initial public draft of recursive Sandboxed Execution and Composition Collection processing.<a href="#section-12-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-13-2.2">
-          <p id="section-13-2.2.1"><strong>0.2 revision — 26 October 2026.</strong> Clarified causal composition, ordinary multi-parent bounds, exact binding, the current PIC-X
-implementation boundary, and standards-oriented document structure; added a standalone origin, authorship, and historical record for
-independent distribution.<a href="#section-13-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-2.2">
+          <p id="section-12-2.2.1"><strong>0.2 revision — 26 October 2026.</strong> Clarified causal composition, ordinary multi-parent bounds, exact binding,
+implementation-independent conformance boundaries, and standards-oriented document structure; added a standalone origin, authorship, and historical record for
+independent distribution.<a href="#section-12-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="acknowledgments">
-<section id="section-14">
+<section id="section-13">
       <h2 id="name-acknowledgments">
-<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="section-14-1">The origins and research history of the PIC Model are recorded above. This document reserves acknowledgments for concrete review,
-discussion, and editorial contributions to the Sandboxed Execution specification.<a href="#section-14-1" class="pilcrow">¶</a></p>
+<p id="section-13-1">The origins and research history of the PIC Model are recorded above. This document reserves acknowledgments for concrete review,
+discussion, and editorial contributions to the Sandboxed Execution specification.<a href="#section-13-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="contributors">
-<section id="section-15">
+<section id="section-14">
       <h2 id="name-contributors-2">
-<a href="#section-15" class="section-number selfRef">15. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
+<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
       </h2>
-<p id="section-15-1">The editor and current contributors are identified in the document header and repository history.<a href="#section-15-1" class="pilcrow">¶</a></p>
+<p id="section-14-1">The editor and current contributors are identified in the document header and repository history.<a href="#section-14-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">

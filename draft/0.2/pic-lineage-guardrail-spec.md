@@ -67,21 +67,6 @@ This document is made available under the Creative Commons Attribution 4.0 Inter
 [LICENSE](https://github.com/pic-protocol/pic-spec/blob/main/LICENSE) and [NOTICE](https://github.com/pic-protocol/pic-spec/blob/main/NOTICE.md).
 This notice does not add restrictions to that license.
 
---- to_be_removed_note_Work_In_Progress
-
-**Work in Progress — Experimental Design**
-
-The Sandboxed Execution and Composition Collection model described in this document is under active development.
-
-This model may change substantially before a later stable revision.
-
-Implementers MUST NOT assume wire compatibility, semantic compatibility, or backward compatibility with future revisions.
-
-Future drafts may introduce breaking changes to terminology, data structures, processing rules, profile bindings, and
-interoperability requirements.
-
-The current text is published for design review, experimentation, and implementation feedback.
-
 --- note_Editors
 
 - **Nicola Gallo** (Nitro Agility S.r.l.) Lead Editor
@@ -736,12 +721,10 @@ PIC Prover procedure. It MUST:
 
 No additional approval signature is created. The next guardrail repeats the same procedure — and that repetition is the sandbox.
 
-The current PIC-X 0.2.3 implementation does not implement Sandboxed Execution, Composition Collection processing, the `ENFORCE` operation,
-or the mandatory request/execution binding defined by this specification. A future Profile 0.2 Sandboxed Execution binding may reuse the
-existing candidate artifact family: a guardrail or workload would create a workload-signed PIC Continuity Transition COSE, place it as the
-single transition in a workload-signed candidate PIC Continuity COSE, carry that candidate in a workload-signed candidate PIC Token JWT, and
-submit the candidate for settlement. Such a binding MUST add every outer and inner validation phase in this section; ordinary PIC-X
-settlement alone does not provide them.
+A Sandboxed Execution binding may reuse an existing candidate artifact family: a guardrail or workload creates a signed continuity
+advancement, binds the exact Composition Collection and execution occurrence, and submits that candidate to the selected acceptance or
+settlement boundary. Such a binding MUST add every outer and inner validation phase in this section. Validating an ordinary single-lineage
+continuation alone does not establish Sandboxed Execution conformance.
 
 ~~~text
 receive outer continuity state
@@ -915,11 +898,11 @@ already-authenticated advancement. The materializing guardrail:
 7. follows any profile-required settlement or acceptance rules for treating the continuation as valid;
 8. performs exactly the bound physical action according to the selected materialization profile and its ordering rules.
 
-In a future Sandboxed Execution binding that reuses Profile 0.2 artifacts, the materializing guardrail or workload would validate the outer
+In a Sandboxed Execution binding that reuses Profile 0.2 artifacts, the materializing guardrail or workload MUST validate the outer
 predecessor, validate every Composition Collection member, evaluate enforcement, construct and sign the PIC Continuity Transition COSE,
 construct and sign the candidate PIC Continuity COSE, carry it in a signed candidate PIC Token JWT, and submit the candidate through the
-advancement flow. The settlement authority would then need to validate both the ordinary candidate and every additional rule of this
-specification before issuing a settled outer continuity. Current PIC-X 0.2.3 does not perform those Sandboxed Execution checks.
+advancement flow. The settlement authority MUST then validate both the ordinary candidate and every additional rule of this specification
+before issuing a settled outer continuity.
 
 This document does not define the exact temporal ordering between Profile 0.2 settlement and the final irreversible physical side effect against a
 non-PIC-aware target. That ordering is profile-defined or deployment-defined.
@@ -1005,7 +988,7 @@ case under the [PIC Prover and Verifier Specification](https://github.com/pic-pr
 Detection beyond the colluding pair depends on the selected chain-validation profile and the authenticated history available to the later
 Verifier: a full-chain, Trust Plane, authenticated-checkpoint, or approved succinct-proof profile may detect the invalid prefix according to
 its guarantees, while an incremental Verifier without authenticated evidence of the earlier prefix has the consecutive-collusion limitation
-already documented by that specification (Section 6.8). Sandboxed Execution introduces no new failure class.
+already documented by that specification (**Incremental Verification and Trusted Hops**). Sandboxed Execution introduces no new failure class.
 
 # Recursion
 
@@ -1088,14 +1071,6 @@ This document was first published as a public draft on **20 July 2026** as part 
 immutable records identify the exact text applicable to a review or conformance claim. Researchers and implementers are encouraged to cite
 the primary publication that supports the formal property they discuss. Copyright attribution for reuse of PIC specification materials is
 governed separately by the applicable CC BY 4.0 license.
-
-# Implementation Status
-
-This section is informative and records implementation coverage at the time of this draft.
-
-PIC-X 0.2.3 does not implement Sandboxed Execution, Composition Collection processing, the `ENFORCE` operation, or the required outer
-request/execution binding. Existing PIC-X artifacts may support a future profile, but they do not constitute an implementation of this
-specification.
 
 # Security Considerations
 
@@ -1194,8 +1169,8 @@ collection, evidence, or error identifiers.
 This section is informative.
 
 - **0.2 — 20 July 2026.** Initial public draft of recursive Sandboxed Execution and Composition Collection processing.
-- **0.2 revision — 26 October 2026.** Clarified causal composition, ordinary multi-parent bounds, exact binding, the current PIC-X
-  implementation boundary, and standards-oriented document structure; added a standalone origin, authorship, and historical record for
+- **0.2 revision — 26 October 2026.** Clarified causal composition, ordinary multi-parent bounds, exact binding,
+  implementation-independent conformance boundaries, and standards-oriented document structure; added a standalone origin, authorship, and historical record for
   independent distribution.
 
 # Acknowledgments

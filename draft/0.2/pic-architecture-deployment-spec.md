@@ -64,21 +64,6 @@ This document is made available under the Creative Commons Attribution 4.0 Inter
 [LICENSE](https://github.com/pic-protocol/pic-spec/blob/main/LICENSE) and [NOTICE](https://github.com/pic-protocol/pic-spec/blob/main/NOTICE.md).
 This notice does not add restrictions to that license.
 
---- to_be_removed_note_Work_In_Progress
-
-**Work in Progress — Experimental Design**
-
-The deployment and architecture model described in this document is under active development.
-
-This model may change substantially before a later stable revision.
-
-Implementers MUST NOT assume wire compatibility, semantic compatibility, or backward compatibility with future revisions.
-
-Future drafts may introduce breaking changes to terminology, data structures, processing rules, profile bindings, and
-interoperability requirements.
-
-The current text is published for design review, experimentation, and implementation feedback.
-
 --- note_Editors
 
 - **Nicola Gallo** (Nitro Agility S.r.l.) Lead Editor
@@ -124,7 +109,8 @@ and only within the normative sections of this document. Examples are illustrati
 # Architectures
 
 This section is non-normative. This specification defines two deployment topologies, centralized and decentralized; within each, different
-chain-validation profiles ([PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Sections 5 and 7) provide different
+chain-validation profiles (see **Continuity Representations** and **Security Considerations** in the
+[PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md)) provide different
 cost and assurance properties.
 
 Deployment topology and semantic assurance are independent axes. A central service does not establish PoR merely because it signs a
@@ -164,10 +150,10 @@ trusted settled PIC Token JWT N+1
 
 The trusted settlement service validates the workload-signed candidate and PIC Continuity Transition COSE. It does not centrally sign the
 workload's Transition COSE; after successful validation it signs the new PIC PCA COSE checkpoint, settled PIC Continuity COSE, and settled
-PIC Token JWT. PIC-X 0.2.3 is a concrete implementation of this settlement and artifact-processing role, not a required component of the
-abstract PIC model. Its current assurance level is `artifact-linked`: it does not yet observe the concrete handoff or bind a trusted request
-occurrence, and its configured PIC revocation hook is a no-op. Those implementation gaps do not weaken the requirements of a full PIC
-profile.
+PIC Token JWT. This is one profile-selected settlement topology, not a required component of the abstract PIC model. A deployment claiming
+full PIC continuity has to realize the selected profile's PoR, request/execution binding, applicable revocation, and other acceptance
+requirements. Claims about protected effects additionally depend on sound causal evidence and complete mediation; centralized artifact
+processing by itself does not establish those properties.
 
 ~~~text
 +--------+        +--------+        +--------+
@@ -226,7 +212,8 @@ decentralized subchain re-issuance behavior.
 ## Consecutive Collusion and History
 
 An incremental or history-limited profile is secure hop by hop under its selected trust assumptions, with one documented limit
-([PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Section 6.8): two or more consecutive colluding hops cannot be
+(see **Incremental Verification and Trusted Hops** in the
+[PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md)): two or more consecutive colluding hops cannot be
 detected when the receiving Verifier lacks authenticated evidence of the earlier lineage prefix.
 
 ~~~text
@@ -252,7 +239,8 @@ verification cheap but moves the cost to proof generation and adds the proof-sys
 | Other-profile decentralized, full-history | none | complete prefix carried or otherwise available | O(n) size and verification unless compacted | resisted |
 | Other-profile decentralized, succinct proof | none | proof commits to the validated prefix | succinct verification; generation cost per proof system | resisted under the proof-system assumptions |
 
-The profile trade-offs are analyzed in the [PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md), Sections 6.8 and 7.
+The profile trade-offs are analyzed under **Incremental Verification and Trusted Hops** and **Deployment Models** in the
+[PIC Prover and Verifier Specification](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md).
 
 # Trusted and Untrusted Environments
 
@@ -339,7 +327,7 @@ the trusted PIC PCA COSE checkpoint and settled PIC Continuity COSE
 are created inside the exchange
 ~~~
 
-In the Profile 0.2 / PIC-X realization, the exchange returns a settled PIC Token JWT. The initial PIC PCA COSE is created as the trusted
+In a Profile 0.2 OAuth Token Exchange realization, the exchange returns a settled PIC Token JWT. The initial PIC PCA COSE is created as the trusted
 checkpoint inside that process, carried as exact signed bytes in `root.pca` by the settled PIC Continuity COSE, and referenced by
 `root.pca_hash`. The PIC Continuity COSE is carried by the returned PIC Token JWT in `pic.root`. The returned PIC Token JWT is not an OAuth
 Bearer token merely because OAuth Token Exchange carries it in an `access_token` response member. Transport of PIC continuity artifacts is a
@@ -378,13 +366,6 @@ This document was first published as a public draft on **12 August 2026** as par
 immutable records identify the exact text applicable to a review or conformance claim. Researchers and implementers are encouraged to cite
 the primary publication that supports the formal property they discuss. Copyright attribution for reuse of PIC specification materials is
 governed separately by the applicable CC BY 4.0 license.
-
-# Implementation Status
-
-This section is informative and records implementation coverage at the time of this draft.
-
-PIC-X 0.2.3 implements the centralized artifact and settlement subset of Profile 0.2. It does not implement the decentralized, federated,
-Sandboxed Execution, or full semantic-PoR deployment profiles described as future or profile-selected possibilities in this document.
 
 # Security Considerations
 
@@ -428,7 +409,7 @@ This document defines deployment architectures and requests no external registry
 This section is informative.
 
 - **0.2 — 12 August 2026.** Initial public draft describing centralized, decentralized, trusted, untrusted, and hybrid deployment models.
-- **0.2 revision — 26 October 2026.** Distinguished topology from assurance and current PIC-X coverage from future profiles, adopted a
+- **0.2 revision — 26 October 2026.** Distinguished topology from assurance and implementation coverage from profile requirements, adopted a
   standards-oriented document structure, and added a standalone origin, authorship, and historical record for independent distribution.
 
 # Acknowledgments

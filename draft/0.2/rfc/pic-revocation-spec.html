@@ -9,16 +9,16 @@
 <meta content="
        This document is the  PIC Revocation Specification , a subordinate specification of the
  PIC Specification . It defines how authority is revoked within
-the Provenance Identity Continuity (PIC) Model.
+the Provenance Identity Continuity (PIC) Model. 
        Expiry bounds how long a continuity state may be accepted; revocation withdraws validity before that bound. PIC revocation preserves the
 core model invariants: exactly one predecessor per non-root advancement, Proof of Relationship, authority non-expansion, and no authority
-import from unrelated continuities.
+import from unrelated continuities. 
        For a linear revocation profile, a stable authenticated lineage/PCA identifier plus a continuity  position  can name a causal suffix. In a
 fan-out profile, the same pair names a lineage and path depth but does not uniquely name an occurrence or its causal descendants: sibling
 states may share the same position. Branch-selective or occurrence-selective revocation therefore requires an additional authenticated
 occurrence, checkpoint, branch, or ancestry coordinate. This document calls the stable lineage identifier  PCA ID . Additional
 authenticated selectors, such as grant, issuer, key, delegate, attestation, or policy selectors, may be used by a profile but do not replace
-the required causal coordinates when descendants, rather than a whole lineage-depth range, must be invalidated.
+the required causal coordinates when descendants, rather than a whole lineage-depth range, must be invalidated. 
     " name="description">
 <meta content="xml2rfc 3.32.0" name="generator">
 <meta content="pic-revocation-02" name="ietf.draft">
@@ -238,7 +238,7 @@ dl > dt {
   float: left;
   margin-right: 1em;
 }
-/*
+/* 
 dl.nohang > dt {
   float: none;
 }
@@ -1315,39 +1315,26 @@ process. Published releases, tags, and immutable research references identify th
 <a href="https://github.com/pic-protocol/pic-spec/blob/main/LICENSE">LICENSE</a> and <a href="https://github.com/pic-protocol/pic-spec/blob/main/NOTICE.md">NOTICE</a>.
 This notice does not add restrictions to that license.<a href="#section-note.4-1" class="pilcrow">¶</a></p>
 </section>
-<section class="note rfcEditorRemove" id="section-note.5">
-      <h2 id="name-work-in-progress">
-<a href="#name-work-in-progress" class="section-name selfRef">Work In Progress</a>
-      </h2>
-<p id="section-note.5-1">This note is to be removed before publishing as an RFC.<a href="#section-note.5-1" class="pilcrow">¶</a></p>
-<p id="section-note.5-2"><strong>Work in Progress — Experimental Design</strong><a href="#section-note.5-2" class="pilcrow">¶</a></p>
-<p id="section-note.5-3">The revocation model described in this document is under active development.<a href="#section-note.5-3" class="pilcrow">¶</a></p>
-<p id="section-note.5-4">This model may change substantially before a later stable revision.<a href="#section-note.5-4" class="pilcrow">¶</a></p>
-<p id="section-note.5-5">Implementers MUST NOT assume wire compatibility, semantic compatibility, or backward compatibility with future revisions.<a href="#section-note.5-5" class="pilcrow">¶</a></p>
-<p id="section-note.5-6">Future drafts may introduce breaking changes to terminology, data structures, processing rules, profile bindings, and
-interoperability requirements.<a href="#section-note.5-6" class="pilcrow">¶</a></p>
-<p id="section-note.5-7">The current text is published for design review, experimentation, and implementation feedback.<a href="#section-note.5-7" class="pilcrow">¶</a></p>
-</section>
-<section class="note" id="section-note.6">
+<section class="note" id="section-note.5">
       <h2 id="name-editors">
 <a href="#name-editors" class="section-name selfRef">Editors</a>
       </h2>
 <ul class="normal note">
-<li class="normal note" id="section-note.6-1.1">
-          <p id="section-note.6-1.1.1"><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor<a href="#section-note.6-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal note" id="section-note.5-1.1">
+          <p id="section-note.5-1.1.1"><strong>Nicola Gallo</strong> (Nitro Agility S.r.l.) Lead Editor<a href="#section-note.5-1.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal note" id="section-note.6-1.2">
-          <p id="section-note.6-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 16</a>).</em><a href="#section-note.6-1.2.1" class="pilcrow">¶</a></p>
+        <li class="normal note" id="section-note.5-1.2">
+          <p id="section-note.5-1.2.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 15</a>).</em><a href="#section-note.5-1.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
-<section class="note" id="section-note.7">
+<section class="note" id="section-note.6">
       <h2 id="name-contributors">
 <a href="#name-contributors" class="section-name selfRef">Contributors</a>
       </h2>
 <ul class="normal note">
-<li class="normal note" id="section-note.7-1.1">
-          <p id="section-note.7-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 16</a>).</em><a href="#section-note.7-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal note" id="section-note.6-1.1">
+          <p id="section-note.6-1.1.1"><em>Add your name via pull request (individual or organization) — listing is subject to editor approval (see <a href="#contributors" class="auto internal xref">Section 15</a>).</em><a href="#section-note.6-1.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1423,31 +1410,28 @@ interoperability requirements.<a href="#section-note.5-6" class="pilcrow">¶</a>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-implementation-status" class="internal xref">Implementation Status</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-registry-considerations" class="internal xref">Registry Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-registry-considerations" class="internal xref">Registry Considerations</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-references" class="internal xref">References</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-document-history" class="internal xref">Document History</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-document-history" class="internal xref">Document History</a></p>
+            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#section-15" class="auto internal xref">15</a>. <a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.15.1"><a href="#section-15" class="auto internal xref">15</a>. <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
-            <p id="section-toc.1-1.16.1"><a href="#section-16" class="auto internal xref">16</a>. <a href="#name-contributors-2" class="internal xref">Contributors</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17">
-            <p id="section-toc.1-1.17.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.16.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1470,18 +1454,21 @@ Token JWT. Settled Profile 0.2 Continuity COSE artifacts have <code>transitions 
 <p id="section-1-4">Revocation state remains external and dynamic. Revoking a PCA, position, key, delegate, attestation, grant, issuer, or policy does not
 rewrite signed PIC PCA COSE checkpoints and does not rebuild historical transitions. Verifiers and settlement services evaluate authenticated
 revocation state against the presented continuity state.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">The current PIC-X 0.2.3 binding requires a signed PCA <code>lineage_id</code>, preserves it across advancement, and mirrors it into PIC Token JWT
-<code>jti</code>; it also preserves a signed PCA <code>position</code>. These are useful authenticated revocation coordinates. PIC-X 0.2.3 nevertheless configures
-the PIC revocation hook as a no-op and implements no PIC revocation state. Absolute <code>expires_at</code> and settlement-key retention bound
-acceptance but are not early revocation <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-5">An artifact profile can carry a signed stable <code>lineage_id</code>, preserve it across advancement, and mirror it into a transport-token identifier;
+it can also preserve a signed continuity <code>position</code>. These are useful authenticated revocation coordinates, but coordinates and absolute
+expiration are not by themselves early revocation. A revocation-capable profile additionally has to define the authenticated revocation
+state and the processing rules specified by this document <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-1-5" class="pilcrow">¶</a></p>
 <div id="requirements-notation">
 <section id="section-1.1">
         <h3 id="name-requirements-notation">
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-requirements-notation" class="section-name selfRef">Requirements Notation</a>
         </h3>
-<p id="section-1.1-1">The normative sections of this document are Sections 2, 3, 4, and 5. Sections 1 and 6 are non-normative.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-1">The normative sections of this document are <strong>Revocation Coordinates</strong>, <strong>Revocation Semantics</strong>, <strong>Revocation Authorization</strong>,
+<strong>Revocation State</strong>, and <strong>Security Considerations</strong>. <strong>Introduction</strong>, <strong>Future Branch-Capable Profiles</strong>, <strong>Position Capacity</strong>,
+<strong>Origins, Authorship, and Historical Record</strong>, <strong>Privacy Considerations</strong>, and <strong>Registry Considerations</strong> are non-normative unless a
+statement explicitly says otherwise.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
 <p id="section-1.1-2">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span> when, and only when, they appear in all capitals
+"OPTIONAL" are to be interpreted as described in BCP 14 <span><a href="#references" class="internal xref">[2]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> <span><a href="#references" class="internal xref">[3]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span> when, and only when, they appear in all capitals
 within normative text.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1520,10 +1507,10 @@ root.pca
 root.pca_hash
 </pre><a href="#section-2.1-7" class="pilcrow">¶</a>
 </div>
-<p id="section-2.1-8">Those fields identify the current trusted checkpoint artifact for Profile 0.2 validation. In the current PIC-X binding, the signed PCA
-<code>lineage_id</code> is the stable lineage/PCA identifier and the PIC Token JWT <code>jti</code> MUST equal it. The base Profile 0.2 artifact schema leaves
-<code>lineage_id</code> optional, while PIC-X requires it. <code>root.pca_hash</code> identifies one checkpoint and MUST NOT be substituted for the stable
-<code>lineage_id</code> when the intended revocation scope is the whole lineage.<a href="#section-2.1-8" class="pilcrow">¶</a></p>
+<p id="section-2.1-8">Those fields identify the current trusted checkpoint artifact for Profile 0.2 validation. A revocation binding for this profile MUST define
+which authenticated value is the stable lineage/PCA identifier. When it selects the signed PCA <code>lineage_id</code>, every successor MUST preserve
+that value and any mirrored PIC Token JWT <code>jti</code> MUST equal it. <code>root.pca_hash</code> identifies one checkpoint and MUST NOT be substituted for the
+stable lineage identifier when the intended revocation scope is the whole lineage.<a href="#section-2.1-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="position">
@@ -1714,7 +1701,7 @@ MUST NOT rewrite signed PCA checkpoint artifacts, mutate historical transitions,
 or expand authority.<a href="#section-3.6-2" class="pilcrow">¶</a></p>
 <p id="section-3.6-3">This monotonic external state is compatible with treating revocation as an additional ordered security-state coordinate: ordinary state
 updates may only restrict acceptance. Any relaxation is a separate re-origination or explicitly authorized relaxation event, not an ordinary
-continuation <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-3.6-3" class="pilcrow">¶</a></p>
+continuation <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-3.6-3" class="pilcrow">¶</a></p>
 <p id="section-3.6-4">The profile MUST define restriction scope, composition, conflict resolution, freshness, rollback protection, and unavailable-state behavior.<a href="#section-3.6-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1827,8 +1814,8 @@ less restrictive state, or silently un-revoking an existing cutoff.<a href="#sec
       </h2>
 <p id="section-6-1">This section is non-normative.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">PIC can support branch-capable revocation in a future or separate profile, but branch-domain machinery is not part of the current
-centralized Profile 0.2 base coordinate. PIC-X currently permits sibling fan-out from one checkpoint; its <code>lineage_id</code> plus <code>position</code>
-therefore supports whole-lineage and lineage-depth targeting, not unique branch or occurrence targeting. This document does not define
+centralized Profile 0.2 base coordinate. A profile that permits sibling fan-out from one checkpoint cannot use <code>lineage_id</code> plus <code>position</code>
+as a unique branch or occurrence coordinate; that pair supports whole-lineage and lineage-depth targeting only. This document does not define
 branch-domain fields, branch-suffix strategies, branch-creation evidence, parent branch ancestry, or branch-domain escape rules for Profile
 0.2.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">A future branch-capable profile would need to define bounded authenticated branch coordinates, branch-creation authorization, anti-escape
@@ -1875,24 +1862,24 @@ Specification Steward.<a href="#section-8-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8.1-2.1">
             <p id="section-8.1-2.1.1"><strong>1 December 2025 — initial public PIC Model working paper.</strong> <em>PIC Model — Provenance Identity Continuity for Distributed Execution
-Systems</em>, Zenodo record 17777421 <span><a href="#references" class="internal xref">[7]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>. That archived draft is retained for historical reference and is not an implementation
+Systems</em>, Zenodo record 17777421 <span><a href="#references" class="internal xref">[7]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>. That archived draft is retained for historical reference and is not an implementation
 specification.<a href="#section-8.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-2.2">
             <p id="section-8.1-2.2.1"><strong>5 December 2025 — authority-propagation analysis.</strong> <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>,
-Zenodo record 17833000 <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-8.1-2.2.1" class="pilcrow">¶</a></p>
+Zenodo record 17833000 <span><a href="#references" class="internal xref">[6]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-8.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-2.3">
             <p id="section-8.1-2.3.1"><strong>9 July 2026 — formal Proof-of-Continuity paper.</strong> <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed
-Systems and AI Agents</em>, arXiv:2607.08906 <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-8.1-2.3.1" class="pilcrow">¶</a></p>
+Systems and AI Agents</em>, arXiv:2607.08906 <span><a href="#references" class="internal xref">[1]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-8.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-2.4">
             <p id="section-8.1-2.4.1"><strong>25 September 2026 — relational authority theory.</strong> <em>Beyond Proof of Possession: A Relational Theory of Authority</em>, Zenodo record
-23102206 <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-8.1-2.4.1" class="pilcrow">¶</a></p>
+23102206 <span><a href="#references" class="internal xref">[4]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-8.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-2.5">
             <p id="section-8.1-2.5.1"><strong>2 October 2026 — event-level causal closure.</strong> <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution
-and Confused-Deputy Exclusion</em>, Zenodo record 23102373 <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 13</a>)</span>.<a href="#section-8.1-2.5.1" class="pilcrow">¶</a></p>
+and Confused-Deputy Exclusion</em>, Zenodo record 23102373 <span><a href="#references" class="internal xref">[5]</a> (<a href="#references" class="auto internal xref">Section 12</a>)</span>.<a href="#section-8.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-8.1-3">This document was first published as a public draft on <strong>18 July 2026</strong> as part of the PIC Specification 0.2 family. Published tags and
@@ -1903,116 +1890,105 @@ governed separately by the applicable CC BY 4.0 license.<a href="#section-8.1-3"
 </div>
 </section>
 </div>
-<div id="implementation-status">
-<section id="section-9">
-      <h2 id="name-implementation-status">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
-      </h2>
-<p id="section-9-1">This section is informative and records implementation coverage at the time of this draft.<a href="#section-9-1" class="pilcrow">¶</a></p>
-<p id="section-9-2">PIC-X 0.2.3 authenticates stable <code>lineage_id</code> and <code>position</code> coordinates that can support future revocation profiles, but its current
-revocation hook is a no-op and it implements no PIC revocation state. Expiration and settlement-key retention are lifetime controls, not the
-early revocation mechanism specified here.<a href="#section-9-2" class="pilcrow">¶</a></p>
-</section>
-</div>
 <div id="security-considerations">
-<section id="section-10">
+<section id="section-9">
       <h2 id="name-security-considerations">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-10-1">Revocation security depends on authenticated, fresh, rollback-protected revocation state and explicit behavior when that state is unavailable.
+<p id="section-9-1">Revocation security depends on authenticated, fresh, rollback-protected revocation state and explicit behavior when that state is unavailable.
 Stale or rolled-back state can cause a Verifier or settlement service to accept continuity that should have been cut off. A selector value, PCA
 ID, position, key identifier, grant identifier, or policy label is only a target coordinate; knowledge or possession of it is not revocation
-authority.<a href="#section-10-1" class="pilcrow">¶</a></p>
-<p id="section-10-2">In a fan-out profile, <code>(PCA ID, position)</code> is not a unique causal-event coordinate. Treating it as one can either over-revoke independent
-siblings or falsely claim branch-selective semantics. A branch-selective profile needs authenticated occurrence identity and ancestry.<a href="#section-10-2" class="pilcrow">¶</a></p>
-<p id="section-10-3">Selector-to-position resolution needs authenticated evidence that the selector occurred at the affected continuity position. For compromised
+authority.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">In a fan-out profile, <code>(PCA ID, position)</code> is not a unique causal-event coordinate. Treating it as one can either over-revoke independent
+siblings or falsely claim branch-selective semantics. A branch-selective profile needs authenticated occurrence identity and ancestry.<a href="#section-9-2" class="pilcrow">¶</a></p>
+<p id="section-9-3">Selector-to-position resolution needs authenticated evidence that the selector occurred at the affected continuity position. For compromised
 key revocation, evidence authenticated only by the compromised key is not sufficient where this document requires independent corroboration.
 Dynamic restrictions need to remain monotonic: they can make effective authority or execution-contract conformance more restrictive, but cannot
-rewrite signed checkpoints, mutate history, replace Proof of Relationship, or expand authority.<a href="#section-10-3" class="pilcrow">¶</a></p>
+rewrite signed checkpoints, mutate history, replace Proof of Relationship, or expand authority.<a href="#section-9-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="privacy-considerations">
-<section id="section-11">
+<section id="section-10">
       <h2 id="name-privacy-considerations">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<p id="section-11-1">Revocation lookups and distribution can expose stable lineage identifiers, positions, issuers, keys, delegates, resources, and policy
+<p id="section-10-1">Revocation lookups and distribution can expose stable lineage identifiers, positions, issuers, keys, delegates, resources, and policy
 selectors. Branch or occurrence coordinates can reveal execution structure. Profiles should disclose only the selectors needed for the
-selected scope, prevent unauthorized enumeration, and define retention, access-control, and correlation boundaries for revocation records.<a href="#section-11-1" class="pilcrow">¶</a></p>
+selected scope, prevent unauthorized enumeration, and define retention, access-control, and correlation boundaries for revocation records.<a href="#section-10-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="registry-considerations">
-<section id="section-12">
+<section id="section-11">
       <h2 id="name-registry-considerations">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-registry-considerations" class="section-name selfRef">Registry Considerations</a>
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-registry-considerations" class="section-name selfRef">Registry Considerations</a>
       </h2>
-<p id="section-12-1">This document defines abstract revocation operations and requests no external registry action. Concrete wire profiles may define registries
-for revocation operations, selector types, status values, and error codes.<a href="#section-12-1" class="pilcrow">¶</a></p>
+<p id="section-11-1">This document defines abstract revocation operations and requests no external registry action. Concrete wire profiles may define registries
+for revocation operations, selector types, status values, and error codes.<a href="#section-11-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="references">
-<section id="section-13">
+<section id="section-12">
       <h2 id="name-references">
-<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <ul class="normal">
-<li class="normal" id="section-13-1.1">
-          <p id="section-13-1.1.1">[1] Gallo, N. (9 July 2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-13-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-12-1.1">
+          <p id="section-12-1.1.1">[1] Gallo, N. (9 July 2026). <em>Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents</em>. arXiv:2607.08906 [cs.CR]. <a href="https://arxiv.org/abs/2607.08906">arxiv.org/abs/2607.08906</a><a href="#section-12-1.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-13-1.2">
-          <p id="section-13-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-13-1.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.2">
+          <p id="section-12-1.2.1">[2] Bradner, S. (1997). <em>Key words for use in RFCs to Indicate Requirement Levels</em>. BCP 14, RFC 2119. <a href="https://www.rfc-editor.org/rfc/rfc2119">rfc-editor.org/rfc/rfc2119</a><a href="#section-12-1.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-13-1.3">
-          <p id="section-13-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-13-1.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.3">
+          <p id="section-12-1.3.1">[3] Leiba, B. (2017). <em>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</em>. BCP 14, RFC 8174. <a href="https://www.rfc-editor.org/rfc/rfc8174">rfc-editor.org/rfc/rfc8174</a><a href="#section-12-1.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-13-1.4">
-          <p id="section-13-1.4.1">[4] Gallo, N. (25 September 2026). <em>Beyond Proof of Possession: A Relational Theory of Authority</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102206">10.5281/zenodo.23102206</a><a href="#section-13-1.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.4">
+          <p id="section-12-1.4.1">[4] Gallo, N. (25 September 2026). <em>Beyond Proof of Possession: A Relational Theory of Authority</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102206">10.5281/zenodo.23102206</a><a href="#section-12-1.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-13-1.5">
-          <p id="section-13-1.5.1">[5] Gallo, N. (2 October 2026). <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102373">10.5281/zenodo.23102373</a><a href="#section-13-1.5.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.5">
+          <p id="section-12-1.5.1">[5] Gallo, N. (2 October 2026). <em>Full Provenance on the COSS Causal Axis: An Event-Level Closure of Causal Attribution and Confused-Deputy Exclusion</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.23102373">10.5281/zenodo.23102373</a><a href="#section-12-1.5.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-13-1.6">
-          <p id="section-13-1.6.1">[6] Gallo, N. (5 December 2025). <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17833000">10.5281/zenodo.17833000</a><a href="#section-13-1.6.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.6">
+          <p id="section-12-1.6.1">[6] Gallo, N. (5 December 2025). <em>Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem</em>. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17833000">10.5281/zenodo.17833000</a><a href="#section-12-1.6.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-13-1.7">
-          <p id="section-13-1.7.1">[7] Gallo, N. (1 December 2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Archived working paper. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17777421">10.5281/zenodo.17777421</a><a href="#section-13-1.7.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-1.7">
+          <p id="section-12-1.7.1">[7] Gallo, N. (1 December 2025). <em>PIC Model — Provenance Identity Continuity for Distributed Execution Systems</em>. Archived working paper. Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.17777421">10.5281/zenodo.17777421</a><a href="#section-12-1.7.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="document-history">
-<section id="section-14">
+<section id="section-13">
       <h2 id="name-document-history">
-<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
       </h2>
-<p id="section-14-1">This section is informative.<a href="#section-14-1" class="pilcrow">¶</a></p>
+<p id="section-13-1">This section is informative.<a href="#section-13-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-14-2.1">
-          <p id="section-14-2.1.1"><strong>0.2 — 18 July 2026.</strong> Initial public draft of PIC revocation.<a href="#section-14-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13-2.1">
+          <p id="section-13-2.1.1"><strong>0.2 — 18 July 2026.</strong> Initial public draft of PIC revocation.<a href="#section-13-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-14-2.2">
-          <p id="section-14-2.2.1"><strong>0.2 revision — 26 October 2026.</strong> Clarified fan-out, lineage-depth versus branch-selective cutoffs, selector resolution, monotonic
-restriction, the current PIC-X implementation boundary, and standards-oriented document structure; added a standalone origin,
-authorship, and historical record for independent distribution.<a href="#section-14-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-13-2.2">
+          <p id="section-13-2.2.1"><strong>0.2 revision — 26 October 2026.</strong> Clarified fan-out, lineage-depth versus branch-selective cutoffs, selector resolution, monotonic
+restriction, implementation-independent conformance boundaries, and standards-oriented document structure; added a standalone origin,
+authorship, and historical record for independent distribution.<a href="#section-13-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="acknowledgments">
-<section id="section-15">
+<section id="section-14">
       <h2 id="name-acknowledgments">
-<a href="#section-15" class="section-number selfRef">15. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="section-15-1">The origins and research history of the PIC Model are recorded above. This document reserves acknowledgments for concrete review,
-discussion, and editorial contributions to the revocation specification.<a href="#section-15-1" class="pilcrow">¶</a></p>
+<p id="section-14-1">The origins and research history of the PIC Model are recorded above. This document reserves acknowledgments for concrete review,
+discussion, and editorial contributions to the revocation specification.<a href="#section-14-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="contributors">
-<section id="section-16">
+<section id="section-15">
       <h2 id="name-contributors-2">
-<a href="#section-16" class="section-number selfRef">16. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
+<a href="#section-15" class="section-number selfRef">15. </a><a href="#name-contributors-2" class="section-name selfRef">Contributors</a>
       </h2>
-<p id="section-16-1">The editor and current contributors are identified in the document header and repository history.<a href="#section-16-1" class="pilcrow">¶</a></p>
+<p id="section-15-1">The editor and current contributors are identified in the document header and repository history.<a href="#section-15-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">

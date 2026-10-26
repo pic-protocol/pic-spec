@@ -167,10 +167,13 @@ separately authorized and MUST NOT masquerade as an ordinary continuation
 
 | Document | Description | Status | Date |
 | --- | --- | --- | --- |
-| [PIC Prover and Verifier](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md) | Normative requirements for PIC Provers and Verifiers: trusted roots, non-root continuity advancements, Proof of Relationship, ordered Verifier checks including profile-conditional request/execution binding, authority as an abstract attenuation domain, profile-selected continuity representations, and explicit separation between full PIC continuity and partial artifact-linked assurance. Current Profile 0.2 uses centralized settlement with PIC Token JWTs carrying settled PIC Continuity COSE, PIC PCA COSE checkpoints, and workload-signed candidate advancement artifacts. | Draft 0.2 | 2026-07-15 |
-| [PIC Revocation](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md) | Revocation around stable lineage identifiers, path positions, lineage-depth and causal cutoffs, optional authenticated selectors, position or ancestry witnesses, revocation authorization, and authenticated revocation state. PIC-X 0.2.3 exposes useful signed coordinates but implements no PIC revocation state. | Draft 0.2 | 2026-07-18 |
-| [PIC Sandboxed Execution](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md) | Sandboxed Execution as an outer `ENFORCE` PIC continuity governing a Composition Collection of independently verifiable PIC continuities. The collection is bound exactly, members remain independent, and no authority union is created. PIC-X 0.2.3 does not implement this profile. | Draft 0.2 | 2026-07-20 |
-| [PIC Architecture and Deployment](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md) | Profile-selected PIC deployment architectures, including trusted continuity services, hybrid enterprise topologies, service meshes, and optional interoperability through selected exchange profiles. Current Profile 0.2 settlement is centralized; PIC-X implements its current artifact-linked settlement subset, while future or other profiles may define other modes. | Draft 0.2 | 2026-08-12 |
+| [PIC Prover and Verifier](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-prover-verifier-spec.md) | Normative, implementation-independent requirements for PIC Provers and Verifiers: logical objects, trusted roots, non-root continuity advancements, Proof of Relationship, ordered Verifier checks, authority attenuation, request/execution binding, conformance, and profile-selected representations. | Draft 0.2 | 2026-07-15 |
+| [PIC Revocation](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-revocation-spec.md) | Revocation around stable lineage identifiers, path positions, lineage-depth and causal cutoffs, optional authenticated selectors, position or ancestry witnesses, revocation authorization, and authenticated revocation state. | Draft 0.2 | 2026-07-18 |
+| [PIC Sandboxed Execution](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-lineage-guardrail-spec.md) | Sandboxed Execution as an outer `ENFORCE` PIC continuity governing a Composition Collection of independently verifiable PIC continuities. The collection is bound exactly, members remain independent, and no authority union is created. | Draft 0.2 | 2026-07-20 |
+| [PIC Architecture and Deployment](https://github.com/pic-protocol/pic-spec/blob/main/draft/0.2/pic-architecture-deployment-spec.md) | Profile-selected PIC deployment architectures, including trusted continuity services, decentralized validation, hybrid enterprise topologies, service meshes, and optional interoperability through selected exchange profiles. | Draft 0.2 | 2026-08-12 |
+
+Implementation mappings, product coverage reports, and deployment-specific interoperability notes are maintained outside the normative
+specification set. They may demonstrate conformance but do not define PIC semantics or modify a profile's requirements.
 
 # Origins, Authorship, and Historical Record
 
@@ -202,15 +205,6 @@ The PIC Specification 0.2 family was first published on **15 July 2026** and sub
 tags and immutable records identify the exact text applicable to a review or conformance claim. Researchers and implementers are encouraged
 to cite the primary publication that supports the formal property they discuss. Copyright attribution for reuse of PIC specification
 materials is governed separately by the applicable CC BY 4.0 license.
-
-# Implementation Status
-
-This section is informative and records implementation coverage at the time of this draft.
-
-PIC-X 0.2.3 implements the current centralized artifact and settlement subset described by the PIC Prover and Verifier Specification. Its
-current assurance level is `artifact-linked`; it does not implement all obligations required for full semantic PoR, request/execution
-binding, causal attribution, revocation, or Sandboxed Execution. Implementation coverage is evidence of running code, not a redefinition of
-PIC conformance.
 
 # Security Considerations
 

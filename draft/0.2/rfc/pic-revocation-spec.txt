@@ -98,14 +98,14 @@ Copyright and License
    NOTICE (https://github.com/pic-protocol/pic-spec/blob/main/
    NOTICE.md).  This notice does not add restrictions to that license.
 
-Work In Progress
+Editors
 
-   This note is to be removed before publishing as an RFC.
+   *  *Nicola Gallo* (Nitro Agility S.r.l.)  Lead Editor
 
-   *Work in Progress — Experimental Design*
+   *  _Add your name via pull request (individual or organization) —
+      listing is subject to editor approval (see Section 15)._
 
-   The revocation model described in this document is under active
-   development.
+Contributors
 
 
 
@@ -114,68 +114,38 @@ Gallo                         Informational                     [Page 2]
                              PIC Revocation                 October 2026
 
 
-   This model may change substantially before a later stable revision.
-
-   Implementers MUST NOT assume wire compatibility, semantic
-   compatibility, or backward compatibility with future revisions.
-
-   Future drafts may introduce breaking changes to terminology, data
-   structures, processing rules, profile bindings, and interoperability
-   requirements.
-
-   The current text is published for design review, experimentation, and
-   implementation feedback.
-
-Editors
-
-   *  *Nicola Gallo* (Nitro Agility S.r.l.)  Lead Editor
-
    *  _Add your name via pull request (individual or organization) —
-      listing is subject to editor approval (see Section 16)._
-
-Contributors
-
-   *  _Add your name via pull request (individual or organization) —
-      listing is subject to editor approval (see Section 16)._
+      listing is subject to editor approval (see Section 15)._
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   4
-     1.1.  Requirements Notation . . . . . . . . . . . . . . . . . .   5
-   2.  Revocation Coordinates  . . . . . . . . . . . . . . . . . . .   5
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.1.  Requirements Notation . . . . . . . . . . . . . . . . . .   4
+   2.  Revocation Coordinates  . . . . . . . . . . . . . . . . . . .   4
      2.1.  PCA ID  . . . . . . . . . . . . . . . . . . . . . . . . .   5
-     2.2.  Position  . . . . . . . . . . . . . . . . . . . . . . . .   6
+     2.2.  Position  . . . . . . . . . . . . . . . . . . . . . . . .   5
      2.3.  Linear and Branching Coordinates  . . . . . . . . . . . .   6
    3.  Revocation Semantics  . . . . . . . . . . . . . . . . . . . .   7
      3.1.  Attenuation Is Not Revocation . . . . . . . . . . . . . .   7
      3.2.  Linear Suffix and Lineage-Depth Cutoff  . . . . . . . . .   7
-     3.3.  Whole PCA . . . . . . . . . . . . . . . . . . . . . . . .   8
+     3.3.  Whole PCA . . . . . . . . . . . . . . . . . . . . . . . .   7
      3.4.  Optional Selectors  . . . . . . . . . . . . . . . . . . .   8
-     3.5.  Historical Selector Resolution  . . . . . . . . . . . . .   9
-     3.6.  Dynamic Restrictions  . . . . . . . . . . . . . . . . . .  10
+     3.5.  Historical Selector Resolution  . . . . . . . . . . . . .   8
+     3.6.  Dynamic Restrictions  . . . . . . . . . . . . . . . . . .   9
    4.  Revocation Authorization  . . . . . . . . . . . . . . . . . .  10
    5.  Revocation State  . . . . . . . . . . . . . . . . . . . . . .  11
-   6.  Future Branch-Capable Profiles  . . . . . . . . . . . . . . .  12
-   7.  Position Capacity . . . . . . . . . . . . . . . . . . . . . .  13
-   8.  Origins, Authorship, and Historical Record  . . . . . . . . .  13
+   6.  Future Branch-Capable Profiles  . . . . . . . . . . . . . . .  11
+   7.  Position Capacity . . . . . . . . . . . . . . . . . . . . . .  12
+   8.  Origins, Authorship, and Historical Record  . . . . . . . . .  12
      8.1.  Historical References . . . . . . . . . . . . . . . . . .  13
-   9.  Implementation Status . . . . . . . . . . . . . . . . . . . .  14
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  14
-   11. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  15
-
-
-
-Gallo                         Informational                     [Page 3]
-
-                             PIC Revocation                 October 2026
-
-
-   12. Registry Considerations . . . . . . . . . . . . . . . . . . .  15
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  15
-   14. Document History  . . . . . . . . . . . . . . . . . . . . . .  16
-   15. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  16
-   16. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  16
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  16
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  13
+   10. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  14
+   11. Registry Considerations . . . . . . . . . . . . . . . . . . .  14
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  14
+   13. Document History  . . . . . . . . . . . . . . . . . . . . . .  15
+   14. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  15
+   15. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  15
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  15
 
 1.  Introduction
 
@@ -189,6 +159,16 @@ Gallo                         Informational                     [Page 3]
    at which validity stops.  A revocation that must affect only
    descendants of one occurrence in a fan-out graph additionally needs
    authenticated occurrence identity and ancestry.
+
+
+
+
+
+
+Gallo                         Informational                     [Page 3]
+
+                             PIC Revocation                 October 2026
+
 
    In PIC Profile 0.2, a trusted settlement authority issues settled PIC
    Token JWTs carrying settled PIC Continuity COSE artifacts.  A
@@ -207,14 +187,34 @@ Gallo                         Informational                     [Page 3]
    authenticated revocation state against the presented continuity
    state.
 
-   The current PIC-X 0.2.3 binding requires a signed PCA lineage_id,
-   preserves it across advancement, and mirrors it into PIC Token JWT
-   jti; it also preserves a signed PCA position.  These are useful
-   authenticated revocation coordinates.  PIC-X 0.2.3 nevertheless
-   configures the PIC revocation hook as a no-op and implements no PIC
-   revocation state.  Absolute expires_at and settlement-key retention
-   bound acceptance but are not early revocation [4] (Section 13).
+   An artifact profile can carry a signed stable lineage_id, preserve it
+   across advancement, and mirror it into a transport-token identifier;
+   it can also preserve a signed continuity position.  These are useful
+   authenticated revocation coordinates, but coordinates and absolute
+   expiration are not by themselves early revocation.  A revocation-
+   capable profile additionally has to define the authenticated
+   revocation state and the processing rules specified by this document
+   [4] (Section 12).
 
+1.1.  Requirements Notation
+
+   The normative sections of this document are *Revocation Coordinates*,
+   *Revocation Semantics*, *Revocation Authorization*, *Revocation
+   State*, and *Security Considerations*. *Introduction*, *Future
+   Branch-Capable Profiles*, *Position Capacity*, *Origins, Authorship,
+   and Historical Record*, *Privacy Considerations*, and *Registry
+   Considerations* are non-normative unless a statement explicitly says
+   otherwise.
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" are to be interpreted as described in BCP 14 [2]
+   (Section 12) [3] (Section 12) when, and only when, they appear in all
+   capitals within normative text.
+
+2.  Revocation Coordinates
+
+   This section is normative.
 
 
 
@@ -225,21 +225,6 @@ Gallo                         Informational                     [Page 4]
 
                              PIC Revocation                 October 2026
 
-
-1.1.  Requirements Notation
-
-   The normative sections of this document are Sections 2, 3, 4, and 5.
-   Sections 1 and 6 are non-normative.
-
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-   "OPTIONAL" are to be interpreted as described in BCP 14 [2]
-   (Section 13) [3] (Section 13) when, and only when, they appear in all
-   capitals within normative text.
-
-2.  Revocation Coordinates
-
-   This section is normative.
 
 2.1.  PCA ID
 
@@ -274,6 +259,21 @@ Gallo                         Informational                     [Page 4]
 
    root.pca_hash
 
+   Those fields identify the current trusted checkpoint artifact for
+   Profile 0.2 validation.  A revocation binding for this profile MUST
+   define which authenticated value is the stable lineage/PCA
+   identifier.  When it selects the signed PCA lineage_id, every
+   successor MUST preserve that value and any mirrored PIC Token JWT jti
+   MUST equal it. root.pca_hash identifies one checkpoint and MUST NOT
+   be substituted for the stable lineage identifier when the intended
+   revocation scope is the whole lineage.
+
+2.2.  Position
+
+   A revocation profile that supports causal suffix revocation MUST
+   expose or authenticate a continuity position.
+
+
 
 
 
@@ -281,19 +281,6 @@ Gallo                         Informational                     [Page 5]
 
                              PIC Revocation                 October 2026
 
-
-   Those fields identify the current trusted checkpoint artifact for
-   Profile 0.2 validation.  In the current PIC-X binding, the signed PCA
-   lineage_id is the stable lineage/PCA identifier and the PIC Token JWT
-   jti MUST equal it.  The base Profile 0.2 artifact schema leaves
-   lineage_id optional, while PIC-X requires it. root.pca_hash
-   identifies one checkpoint and MUST NOT be substituted for the stable
-   lineage_id when the intended revocation scope is the whole lineage.
-
-2.2.  Position
-
-   A revocation profile that supports causal suffix revocation MUST
-   expose or authenticate a continuity position.
 
    The position identifies causal order along one path within the
    continuity rooted at the PCA ID.  The root position and the
@@ -331,13 +318,6 @@ Gallo                         Informational                     [Page 5]
    state.PCA_ID == target.PCA_ID
    AND state.position >= target.fromPosition
 
-
-
-Gallo                         Informational                     [Page 6]
-
-                             PIC Revocation                 October 2026
-
-
    In a profile that permits fan-out, this predicate defines a *lineage-
    depth cutoff*: it applies across every branch sharing the PCA ID at
    or beyond the selected depth.  It does not mean “descendants of one
@@ -349,6 +329,14 @@ Gallo                         Informational                     [Page 6]
    Whole-continuity revocation is the root-position case and is
    unaffected by fan-out.  The selected profile MUST define the root
    position used for that comparison.
+
+
+
+
+Gallo                         Informational                     [Page 6]
+
+                             PIC Revocation                 October 2026
+
 
    Knowledge of the PCA ID, the position, or both MUST NOT authorize
    revocation.  Targeting and revocation authorization are separate.
@@ -381,19 +369,6 @@ Gallo                         Informational                     [Page 6]
    state.PCA_ID == target.PCA_ID
    AND state.position >= target.fromPosition
 
-
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 7]
-
-                             PIC Revocation                 October 2026
-
-
    In a fan-out profile, the same comparison invalidates all matching
    branches at the selected position or greater and is therefore a
    lineage-depth cutoff, not a branch-selective causal suffix.  The
@@ -411,6 +386,13 @@ Gallo                         Informational                     [Page 7]
    root position:
 
    (PCA ID, rootPosition)
+
+
+
+Gallo                         Informational                     [Page 7]
+
+                             PIC Revocation                 October 2026
+
 
 3.4.  Optional Selectors
 
@@ -439,17 +421,6 @@ Gallo                         Informational                     [Page 7]
    branch-selective profile they additionally identify the selected
    occurrence and authenticate ancestry.
 
-
-
-
-
-
-
-Gallo                         Informational                     [Page 8]
-
-                             PIC Revocation                 October 2026
-
-
    Possession or knowledge of a selector value MUST NOT authorize
    revocation.  For example, knowledge of a grant identifier, PCA ID,
    key identifier, issuer identifier, or position is not a revocation
@@ -469,6 +440,15 @@ Gallo                         Informational                     [Page 8]
            |
            v
    (PCA ID, fromPosition)
+
+
+
+
+
+Gallo                         Informational                     [Page 8]
+
+                             PIC Revocation                 October 2026
+
 
    The resolver MUST authenticate the selector occurrence, the PCA ID,
    the position, the integrity of the evidence used for resolution, and
@@ -494,18 +474,6 @@ Gallo                         Informational                     [Page 8]
    authenticated index, a trusted validator record, a checkpoint, or
    another profile-defined proof.
 
-
-
-
-
-
-
-
-Gallo                         Informational                     [Page 9]
-
-                             PIC Revocation                 October 2026
-
-
 3.6.  Dynamic Restrictions
 
    A profile MAY define dynamic authority or execution-contract
@@ -523,11 +491,20 @@ Gallo                         Informational                     [Page 9]
    as an additional ordered security-state coordinate: ordinary state
    updates may only restrict acceptance.  Any relaxation is a separate
    re-origination or explicitly authorized relaxation event, not an
-   ordinary continuation [5] (Section 13).
+   ordinary continuation [5] (Section 12).
 
    The profile MUST define restriction scope, composition, conflict
    resolution, freshness, rollback protection, and unavailable-state
    behavior.
+
+
+
+
+
+Gallo                         Informational                     [Page 9]
+
+                             PIC Revocation                 October 2026
+
 
 4.  Revocation Authorization
 
@@ -540,27 +517,6 @@ Gallo                         Informational                     [Page 9]
 
    A profile MUST define how each revocation authority is proven.
    Possible authorities include:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Gallo                         Informational                    [Page 10]
-
-                             PIC Revocation                 October 2026
-
 
    +==============+========================+==========================+
    | Revoker      | Scope                  | Required proof           |
@@ -597,6 +553,15 @@ Gallo                         Informational                    [Page 10]
    to revoke its own future from k+1, or from k when the current
    position itself must be invalidated.
 
+
+
+
+
+Gallo                         Informational                    [Page 10]
+
+                             PIC Revocation                 October 2026
+
+
    Grant revocation MUST be accepted only when the Verifier can
    establish that the revocation issuer is authorized for the grant.
    Possession or knowledge of a grant identifier alone MUST NOT
@@ -610,13 +575,6 @@ Gallo                         Informational                    [Page 10]
    profile MUST specify:
 
    *  how revocation state is authenticated;
-
-
-
-Gallo                         Informational                    [Page 11]
-
-                             PIC Revocation                 October 2026
-
 
    *  how freshness is determined;
 
@@ -651,28 +609,27 @@ Gallo                         Informational                    [Page 11]
 
    PIC can support branch-capable revocation in a future or separate
    profile, but branch-domain machinery is not part of the current
-   centralized Profile 0.2 base coordinate.  PIC-X currently permits
-   sibling fan-out from one checkpoint; its lineage_id plus position
-   therefore supports whole-lineage and lineage-depth targeting, not
-   unique branch or occurrence targeting.  This document does not define
-   branch-domain fields, branch-suffix strategies, branch-creation
-   evidence, parent branch ancestry, or branch-domain escape rules for
-   Profile 0.2.
+   centralized Profile 0.2 base coordinate.  A profile that permits
+
+
+
+Gallo                         Informational                    [Page 11]
+
+                             PIC Revocation                 October 2026
+
+
+   sibling fan-out from one checkpoint cannot use lineage_id plus
+   position as a unique branch or occurrence coordinate; that pair
+   supports whole-lineage and lineage-depth targeting only.  This
+   document does not define branch-domain fields, branch-suffix
+   strategies, branch-creation evidence, parent branch ancestry, or
+   branch-domain escape rules for Profile 0.2.
 
    A future branch-capable profile would need to define bounded
    authenticated branch coordinates, branch-creation authorization,
    anti-escape validation order, branch-selective cutoff authorization,
    historical resolution rules, and privacy properties.  Those details
    are intentionally out of scope for this revision.
-
-
-
-
-
-Gallo                         Informational                    [Page 12]
-
-                             PIC Revocation                 October 2026
-
 
 7.  Position Capacity
 
@@ -707,19 +664,62 @@ Gallo                         Informational                    [Page 12]
    into technical requirements and are published and maintained by
    *Nitro Agility S.r.l.* as Specification Steward.
 
+
+
+
+
+
+Gallo                         Informational                    [Page 12]
+
+                             PIC Revocation                 October 2026
+
+
 8.1.  Historical References
 
    The publicly verifiable research record is:
 
    *  *1 December 2025 — initial public PIC Model working paper.* _PIC
       Model — Provenance Identity Continuity for Distributed Execution
-      Systems_, Zenodo record 17777421 [7] (Section 13).  That archived
+      Systems_, Zenodo record 17777421 [7] (Section 12).  That archived
       draft is retained for historical reference and is not an
       implementation specification.
 
    *  *5 December 2025 — authority-propagation analysis.* _Authority
       Propagation Models: PoP vs PoC and the Confused Deputy Problem_,
-      Zenodo record 17833000 [6] (Section 13).
+      Zenodo record 17833000 [6] (Section 12).
+
+   *  *9 July 2026 — formal Proof-of-Continuity paper.* _Proof-of-
+      Continuity: A Temporal Model for Authority Propagation in
+      Distributed Systems and AI Agents_, arXiv:2607.08906 [1]
+      (Section 12).
+
+   *  *25 September 2026 — relational authority theory.* _Beyond Proof
+      of Possession: A Relational Theory of Authority_, Zenodo record
+      23102206 [4] (Section 12).
+
+   *  *2 October 2026 — event-level causal closure.* _Full Provenance on
+      the COSS Causal Axis: An Event-Level Closure of Causal Attribution
+      and Confused-Deputy Exclusion_, Zenodo record 23102373 [5]
+      (Section 12).
+
+   This document was first published as a public draft on *18 July 2026*
+   as part of the PIC Specification 0.2 family.  Published tags and
+   immutable records identify the exact text applicable to a review or
+   conformance claim.  Researchers and implementers are encouraged to
+   cite the primary publication that supports the formal property they
+   discuss.  Copyright attribution for reuse of PIC specification
+   materials is governed separately by the applicable CC BY 4.0 license.
+
+9.  Security Considerations
+
+   Revocation security depends on authenticated, fresh, rollback-
+   protected revocation state and explicit behavior when that state is
+   unavailable.  Stale or rolled-back state can cause a Verifier or
+   settlement service to accept continuity that should have been cut
+   off.  A selector value, PCA ID, position, key identifier, grant
+   identifier, or policy label is only a target coordinate; knowledge or
+   possession of it is not revocation authority.
+
 
 
 
@@ -730,61 +730,11 @@ Gallo                         Informational                    [Page 13]
                              PIC Revocation                 October 2026
 
 
-   *  *9 July 2026 — formal Proof-of-Continuity paper.* _Proof-of-
-      Continuity: A Temporal Model for Authority Propagation in
-      Distributed Systems and AI Agents_, arXiv:2607.08906 [1]
-      (Section 13).
-
-   *  *25 September 2026 — relational authority theory.* _Beyond Proof
-      of Possession: A Relational Theory of Authority_, Zenodo record
-      23102206 [4] (Section 13).
-
-   *  *2 October 2026 — event-level causal closure.* _Full Provenance on
-      the COSS Causal Axis: An Event-Level Closure of Causal Attribution
-      and Confused-Deputy Exclusion_, Zenodo record 23102373 [5]
-      (Section 13).
-
-   This document was first published as a public draft on *18 July 2026*
-   as part of the PIC Specification 0.2 family.  Published tags and
-   immutable records identify the exact text applicable to a review or
-   conformance claim.  Researchers and implementers are encouraged to
-   cite the primary publication that supports the formal property they
-   discuss.  Copyright attribution for reuse of PIC specification
-   materials is governed separately by the applicable CC BY 4.0 license.
-
-9.  Implementation Status
-
-   This section is informative and records implementation coverage at
-   the time of this draft.
-
-   PIC-X 0.2.3 authenticates stable lineage_id and position coordinates
-   that can support future revocation profiles, but its current
-   revocation hook is a no-op and it implements no PIC revocation state.
-   Expiration and settlement-key retention are lifetime controls, not
-   the early revocation mechanism specified here.
-
-10.  Security Considerations
-
-   Revocation security depends on authenticated, fresh, rollback-
-   protected revocation state and explicit behavior when that state is
-   unavailable.  Stale or rolled-back state can cause a Verifier or
-   settlement service to accept continuity that should have been cut
-   off.  A selector value, PCA ID, position, key identifier, grant
-   identifier, or policy label is only a target coordinate; knowledge or
-   possession of it is not revocation authority.
-
    In a fan-out profile, (PCA ID, position) is not a unique causal-event
    coordinate.  Treating it as one can either over-revoke independent
    siblings or falsely claim branch-selective semantics.  A branch-
    selective profile needs authenticated occurrence identity and
    ancestry.
-
-
-
-Gallo                         Informational                    [Page 14]
-
-                             PIC Revocation                 October 2026
-
 
    Selector-to-position resolution needs authenticated evidence that the
    selector occurred at the affected continuity position.  For
@@ -795,7 +745,7 @@ Gallo                         Informational                    [Page 14]
    conformance more restrictive, but cannot rewrite signed checkpoints,
    mutate history, replace Proof of Relationship, or expand authority.
 
-11.  Privacy Considerations
+10.  Privacy Considerations
 
    Revocation lookups and distribution can expose stable lineage
    identifiers, positions, issuers, keys, delegates, resources, and
@@ -805,14 +755,14 @@ Gallo                         Informational                    [Page 14]
    define retention, access-control, and correlation boundaries for
    revocation records.
 
-12.  Registry Considerations
+11.  Registry Considerations
 
    This document defines abstract revocation operations and requests no
    external registry action.  Concrete wire profiles may define
    registries for revocation operations, selector types, status values,
    and error codes.
 
-13.  References
+12.  References
 
    *  [1] Gallo, N. (9 July 2026). _Proof-of-Continuity: A Temporal
       Model for Authority Propagation in Distributed Systems and AI
@@ -827,20 +777,18 @@ Gallo                         Informational                    [Page 14]
       2119 Key Words_. BCP 14, RFC 8174. rfc-editor.org/rfc/rfc8174
       (https://www.rfc-editor.org/rfc/rfc8174)
 
-   *  [4] Gallo, N. (25 September 2026). _Beyond Proof of Possession: A
-      Relational Theory of Authority_. Zenodo.  DOI: 10.5281/
-      zenodo.23102206 (https://doi.org/10.5281/zenodo.23102206)
 
 
 
 
-
-
-
-Gallo                         Informational                    [Page 15]
+Gallo                         Informational                    [Page 14]
 
                              PIC Revocation                 October 2026
 
+
+   *  [4] Gallo, N. (25 September 2026). _Beyond Proof of Possession: A
+      Relational Theory of Authority_. Zenodo.  DOI: 10.5281/
+      zenodo.23102206 (https://doi.org/10.5281/zenodo.23102206)
 
    *  [5] Gallo, N. (2 October 2026). _Full Provenance on the COSS
       Causal Axis: An Event-Level Closure of Causal Attribution and
@@ -856,7 +804,7 @@ Gallo                         Informational                    [Page 15]
       paper.  Zenodo.  DOI: 10.5281/zenodo.17777421
       (https://doi.org/10.5281/zenodo.17777421)
 
-14.  Document History
+13.  Document History
 
    This section is informative.
 
@@ -864,18 +812,19 @@ Gallo                         Informational                    [Page 15]
 
    *  *0.2 revision — 26 October 2026.* Clarified fan-out, lineage-depth
       versus branch-selective cutoffs, selector resolution, monotonic
-      restriction, the current PIC-X implementation boundary, and
-      standards-oriented document structure; added a standalone origin,
-      authorship, and historical record for independent distribution.
+      restriction, implementation-independent conformance boundaries,
+      and standards-oriented document structure; added a standalone
+      origin, authorship, and historical record for independent
+      distribution.
 
-15.  Acknowledgments
+14.  Acknowledgments
 
    The origins and research history of the PIC Model are recorded above.
    This document reserves acknowledgments for concrete review,
    discussion, and editorial contributions to the revocation
    specification.
 
-16.  Contributors
+15.  Contributors
 
    The editor and current contributors are identified in the document
    header and repository history.
@@ -888,9 +837,4 @@ Author's Address
 
 
 
-
-
-
-
-
-Gallo                         Informational                    [Page 16]
+Gallo                         Informational                    [Page 15]
